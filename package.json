@@ -1,0 +1,11 @@
+{
+  "name": "swup",
+  "version": "0.0.1",
+  "description": "Css animating between website pages.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Georgy Marchuk",
+  "license": "ISC"
+}

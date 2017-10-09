@@ -1,0 +1,15 @@
+.DS_Store
+*.DS_Store
+!.gitignore
+!.htaccess
+!web.config
+node_modules
+bower_components
+Thumbs.db
+wiki-common
+wiki-images files
+wiki-wishlist
+*.sublime-project
+*.sublime-workspace
+.editorconfig
+.idea
