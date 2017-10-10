@@ -2,7 +2,11 @@ const { forEach } = Array.prototype;
 
 module.exports = function (page, popstate) {
     document.documentElement.classList.remove('is-leaving')
-    document.documentElement.classList.add('is-rendering')
+
+    // only add for non-popstate transitions
+    if (!popstate) {
+        document.documentElement.classList.add('is-rendering')
+    }
 
     // replace blocks
     for (var i = 0; i < page.blocks.length; i++) {

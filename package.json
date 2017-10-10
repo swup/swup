@@ -1,6 +1,6 @@
 {
   "name": "swup",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Css animating between website pages.",
   "main": "index.js",
   "scripts": {
