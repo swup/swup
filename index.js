@@ -156,6 +156,11 @@ export default class Swup {
                     if (link.getHash() != '') {
                         this.scrollToElement = link.getHash()
                     }
+                    // custom class fro dynamic pages
+                    var swupClass = event.delegateTarget.dataset.swupClass
+                    if (swupClass != null) {
+                        document.documentElement.classList.add(`to-${swupClass}`)
+                    }
                     this.loadPage(link.getPath(), false)
                 }
             } else {

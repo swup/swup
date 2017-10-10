@@ -51,9 +51,14 @@ module.exports = function (page, popstate) {
         .all(promises)
         .then(() => {
             this.triggerEvent('animationInDone')
+            // remove "to-{page}" classes
+            document.documentElement.classList.forEach(classItem => {
+                if (classItem.startsWith('to-')) {
+                    document.documentElement.classList.remove(classItem)
+                }
+            })
             document.documentElement.classList.remove('is-changing')
             document.documentElement.classList.remove('is-rendering')
-            document.documentElement.classList.remove('to-' + this.classify(page.url))
         })
 
     // update current url

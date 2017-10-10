@@ -71,6 +71,8 @@ And that's it! Swup loads the page, handles the classes for the css animation, w
 In some cases there is a need to animate elements that are common for all pages, but may for example display or hide for some pages, change color or whatever... In that case you would usually like to start the animation on the click of the link, instead of when the next page is loaded. For this purpose there is special class added to your html tag on transition start and removed once the process of page transition is done. 
 This special class takes form of `to-{whatever is the route of new page}`, where only exception is homepage, which does not have any route and so `to-homepage` is added.
 
+Animation to dynamic pages with unknown routes (blog posts, etc.) can be animated to using data attribute `data-swup-class` set on link element. Swup takes the content of the attribute of clicked link and adds class name on html tag in a format `to-{content of the attribute}`, and also removes it after the whole process of routing is done. So for blog posts, you would want to add  `data-swup-class="blog-post"`, which would be added to html tag as `to-blog-post`.
+
 Lets assume we want our header to be blue on homepage (/), but yellow in about (/about) page.
 ```css
 header {
