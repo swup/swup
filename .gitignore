@@ -13,3 +13,4 @@ wiki-wishlist
 *.sublime-workspace
 .editorconfig
 .idea
+lib
