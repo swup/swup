@@ -19,6 +19,7 @@ import scrollTo from './modules/scrollTo'
 import classify from './modules/classify'
 import doScrolling from './modules/doScrolling'
 import markSwupElements from './modules/markSwupElements'
+import updateTransition from './modules/updateTransition'
 
 export default class Swup {
     constructor(setOptions) {
@@ -40,6 +41,11 @@ export default class Swup {
 
             LINK_SELECTOR: 'a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup]), a[xlink\\:href]'
         }
+
+        /**
+         * current transition object
+         */
+        this.transition = {}
 
         let options = {
             ...defaults,
@@ -63,7 +69,7 @@ export default class Swup {
          */
         this.getUrl = getUrl
         this.cache = new Cache()
-        this.link = Link
+        this.link = new Link()
         this.transitionEndEvent = transitionEnd()
         this.getDataFromHtml = getDataFromHtml
         this.getPage = request
@@ -76,6 +82,7 @@ export default class Swup {
         this.classify = classify
         this.doScrolling = doScrolling
         this.markSwupElements = markSwupElements
+        this.updateTransition = updateTransition
 
         /**
          * detect mobile devices
@@ -127,76 +134,12 @@ export default class Swup {
         /**
          * link click handler
          */
-        delegate(document, this.options.LINK_SELECTOR, 'click', event => {
-            // no control key pressed
-            if (!event.metaKey) {
-                this.triggerEvent('clickLink')
-                var link = new Link()
-                event.preventDefault()
-                link.setPath(event.delegateTarget.href)
-                if (link.getPath() == this.currentUrl || link.getPath() == '') {
-                    if (link.getHash() != '') {
-                        this.triggerEvent('samePageWithHash')
-                        var element = document.querySelector(link.getHash())
-                        if (element != null) {
-                            if (this.options.scroll) {
-                                this.scrollTo(document.body, element.offsetTop, 320)
-                            }
-                            history.replaceState(undefined, undefined, link.getHash())
-                        } else {
-                            console.warn(`Element for offset not found (${link.getHash()})`)
-                        }
-                    } else {
-                        this.triggerEvent('samePage')
-                        if (this.options.scroll) {
-                            this.scrollTo(document.body, 0, 320)
-                        }
-                    }
-                } else {
-                    if (link.getHash() != '') {
-                        this.scrollToElement = link.getHash()
-                    }
-                    // custom class fro dynamic pages
-                    var swupClass = event.delegateTarget.dataset.swupClass
-                    if (swupClass != null) {
-                        document.documentElement.classList.add(`to-${swupClass}`)
-                    }
-                    this.loadPage(link.getPath(), false)
-                }
-            } else {
-                this.triggerEvent('openPageInNewTab')
-            }
-        });
+        delegate(document, this.options.LINK_SELECTOR, 'click', this.linkClickHandler.bind(this))
 
         /**
          * link mouseover handler (preload)
          */
-        delegate(document.body, this.options.LINK_SELECTOR, 'mouseover', event => {
-            this.triggerEvent('hoverLink')
-            if (this.options.preload) {
-                var link = new Link()
-                link.setPath(event.delegateTarget.href)
-                if (link.getPath() != this.currentUrl && !this.cache.exists(link.getPath()) && this.preloadPromise == null) {
-                    this.preloadPromise = new Promise(resolve => {
-                        this.getPage(link.getPath(), response => {
-                            if (response === null) {
-                                console.warn('Server error.')
-                                this.triggerEvent('serverError')
-                            } else {
-                                this.triggerEvent('pagePreloaded')
-                                // get json data
-                                var page = this.getDataFromHtml(response)
-                                page.url = link.getPath()
-                                this.cache.cacheUrl(page, this.options.debugMode)
-                            }
-                            resolve()
-                            this.preloadPromise = null
-                        })
-                    })
-                    this.preloadPromise.route = link.getPath()
-                }
-            }
-        });
+        delegate(document.body, this.options.LINK_SELECTOR, 'mouseover', this.linkMouseoverHandler.bind(this))
 
         /**
          * popstate handler
@@ -223,5 +166,76 @@ export default class Swup {
         }
         this.markSwupElements(document.documentElement)
         this.triggerEvent('pageView')
+    }
+
+    linkClickHandler (event) {
+        // no control key pressed
+        if (!event.metaKey) {
+            this.triggerEvent('clickLink')
+            var link = new Link()
+            event.preventDefault()
+            link.setPath(event.delegateTarget.href)
+            if (link.getPath() == this.currentUrl || link.getPath() == '') {
+                if (link.getHash() != '') {
+                    this.triggerEvent('samePageWithHash')
+                    var element = document.querySelector(link.getHash())
+                    if (element != null) {
+                        if (this.options.scroll) {
+                            this.scrollTo(document.body, element.offsetTop, 320)
+                        }
+                        history.replaceState(undefined, undefined, link.getHash())
+                    } else {
+                        console.warn(`Element for offset not found (${link.getHash()})`)
+                    }
+                } else {
+                    this.triggerEvent('samePage')
+                    if (this.options.scroll) {
+                        this.scrollTo(document.body, 0, 320)
+                    }
+                }
+            } else {
+                if (link.getHash() != '') {
+                    this.scrollToElement = link.getHash()
+                }
+                // custom class fro dynamic pages
+                var swupClass = event.delegateTarget.dataset.swupClass
+                if (swupClass != null) {
+                    this.updateTransition(window.location.pathname, link.getPath(), event.delegateTarget.dataset.swupClass)
+                    document.documentElement.classList.add(`to-${swupClass}`)
+                } else {
+                    this.updateTransition(window.location.pathname, link.getPath())
+                }
+                this.loadPage(link.getPath(), false)
+            }
+        } else {
+            this.triggerEvent('openPageInNewTab')
+        }
+    }
+
+    linkMouseoverHandler () {
+        this.triggerEvent('hoverLink')
+        if (this.options.preload) {
+            var link = new Link()
+            link.setPath(event.delegateTarget.href)
+            if (link.getPath() != this.currentUrl && !this.cache.exists(link.getPath()) && this.preloadPromise == null) {
+                this.preloadPromise = new Promise(resolve => {
+                    this.getPage(link.getPath(), response => {
+                        if (response === null) {
+                            console.warn('Server error.')
+                            this.triggerEvent('serverError')
+                        } else {
+                            this.triggerEvent('pagePreloaded')
+                            // get json data
+                            var page = this.getDataFromHtml(response)
+                            page.url = link.getPath()
+                            this.cache.cacheUrl(page, this.options.debugMode)
+                        }
+                        resolve()
+                        this.preloadPromise = null
+                    })
+                })
+                this.preloadPromise.route = link.getPath()
+            }
+        }
     }
 }
