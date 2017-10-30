@@ -25,15 +25,19 @@ module.exports = function (page, popstate) {
     // handle classes after render
     if (this.options.pageClassPrefix !== false) {
         document.body.className.split(' ').forEach(className => {
-            if (className.includes(this.options.pageClassPrefix)) {
+            // empty string for page class
+            if (className != "" && className.includes(this.options.pageClassPrefix)) {
                 document.body.classList.remove(className)
             }
         })
     }
 
-    page.pageClass.split(' ').forEach(function (className) {
-        document.body.classList.add(className)
-    })
+    // empty string for page class
+    if (page.pageClass != "") {
+        page.pageClass.split(' ').forEach(className => {
+            document.body.classList.add(className)
+        })
+    }
 
     // scrolling
     if (!this.options.doScrollingRightAway || this.scrollToElement) {
