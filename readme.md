@@ -14,7 +14,7 @@ Apart from simply loading the contents of the new page and replacing it in html,
 * **is-rendering** - assigned once content is replaced and removed when all css animations are done
 * **is-changing** - assigned once link is clicked and remove whe all css animations are done
 
-`is-animating` is the main class you should worry about, as it enables the animations. `is-leaving` and `is-rendering` can be used for defining different animations for animating the elements in/out. `is-changing` may be used for for displaying some kind of loading while the transition is being done.
+`is-animating` is the main class you should worry about, as it enables the animations. `is-leaving` and `is-rendering` can be used for defining different animations for animating the elements in/out. `is-changing` may be used for displaying some kind of loading while the transition is being done.
 
 ### Example
 While developing the site, simply define the elements that are being animated and need to be replaced. Lets assume we want to fade in/out the main content of the page.
@@ -199,7 +199,7 @@ document.addEventListener('swup:pageView', event => {
 
 // load scripts for replaced elements
 document.addEventListener('swup:contentReplaced', event => {
-    swup.elements.forEach((element) => {
+    swup.options.elements.forEach((element) => {
         loadComponents(document.querySelector(element))
     })
 });
@@ -222,11 +222,11 @@ document.addEventListener('swup:contentReplaced', event => {
 Instance of the swup can be imported and used across your sites javascript to enable some additional features. When debugMode (see options section) is enabled, instance is also available in `window` object as `window.swup` so you can play with it.
 You can for example access some of the information used by swup such as the elements to be replaced:
 ```javascript
-swup.elements.forEach((element) => {
+swup.options.elements.forEach((element) => {
     // do whatever for each replaced element
 })
 ```
-or possibly use built in function for your own functions
+or possibly use built in function for your own purpose
 ```javascript
 // navigates to /someRoute with the animations and all
 swup.loadPage('/someRoute', false)
