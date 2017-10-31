@@ -151,7 +151,9 @@ support: true
 ```
 
 ### Preload
-Preload is an additional feature that can be used in combination with cache. When enabled, swup starts loading the page on hover of the link and does not wait for the user to click on the link. In case the page is not loaded at the time of clicking on the link, swup simply waits for the request to finish and does not create new request. If cache is disabled, swup still preloads pages of hovered links, but the contents of cache are removed after each page transition. 
+Preload is an additional feature that can be used in combination with cache. When enabled, swup starts loading the page on hover of the link and does not wait for the user to click on the link. In case the page is not loaded at the time of clicking on the link, swup simply waits for the request to finish and does not create new request. Also, swup only creates one request at the time, so don't worry, your server won't be overwhelmed by few people just passing their cursor through some grid of links. 
+If cache is disabled, swup still preloads pages of hovered links, but the contents of cache are removed after each page transition. 
+In case you want to preload some page automatically without any trigger by user, `data-swup-preload` on the link will do the trick.
 ```javascript
 preload: true
 ```

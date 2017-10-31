@@ -53,7 +53,10 @@ module.exports = function (page, popstate) {
             element.addEventListener(this.transitionEndEvent, resolve)
         });
         promises.push(promise)
-    });
+    })
+
+    //preload pages if possible
+    this.preloadPages()
 
     Promise
         .all(promises)

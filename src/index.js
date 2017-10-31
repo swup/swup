@@ -20,6 +20,7 @@ import classify from './modules/classify'
 import doScrolling from './modules/doScrolling'
 import markSwupElements from './modules/markSwupElements'
 import updateTransition from './modules/updateTransition'
+import preloadPages from './modules/preloadPages'
 
 export default class Swup {
     constructor(setOptions) {
@@ -83,6 +84,7 @@ export default class Swup {
         this.doScrolling = doScrolling
         this.markSwupElements = markSwupElements
         this.updateTransition = updateTransition
+        this.preloadPages = preloadPages
 
         /**
          * detect mobile devices
@@ -166,6 +168,11 @@ export default class Swup {
         }
         this.markSwupElements(document.documentElement)
         this.triggerEvent('pageView')
+
+        /**
+         * preload pages if possible
+         */
+        this.preloadPages()
     }
 
     linkClickHandler (event) {
