@@ -84,6 +84,8 @@ export default class Swup {
         this.markSwupElements = markSwupElements
         this.updateTransition = updateTransition
         this.preloadPages = preloadPages
+        this.enable = this.enable
+        this.destroy = this.destroy
 
         /**
          * detect mobile devices
@@ -100,10 +102,10 @@ export default class Swup {
         }
 
         this.getUrl()
-        this.prepare()
+        this.enable()
     }
 
-    prepare() {
+    enable() {
         /**
          * support check
          */
@@ -127,30 +129,23 @@ export default class Swup {
             }
         }
 
+        // variable to keep event listeners from "delegate"
+        this.delegatedListeners = {}
+
         /**
          * link click handler
          */
-        delegate(document, this.options.LINK_SELECTOR, 'click', this.linkClickHandler.bind(this))
+        this.delegatedListeners.click = delegate(document, this.options.LINK_SELECTOR, 'click', this.linkClickHandler.bind(this))
 
         /**
          * link mouseover handler (preload)
          */
-        delegate(document.body, this.options.LINK_SELECTOR, 'mouseover', this.linkMouseoverHandler.bind(this))
+        this.delegatedListeners.mouseover = delegate(document.body, this.options.LINK_SELECTOR, 'mouseover', this.linkMouseoverHandler.bind(this))
 
         /**
          * popstate handler
          */
-        window.onpopstate = (event) => {
-            var link = new Link();
-            link.setPath(event.state ? event.state.url : window.location.pathname)
-            if (link.getHash() != '') {
-                this.scrollToElement = link.getHash()
-            } else {
-                event.preventDefault()
-            }
-            this.triggerEvent('popState')
-            this.loadPage(link.getPath(), event)
-        };
+        window.addEventListener('popstate', this.popStateHandler.bind(this))
 
         /**
          * initial save to cache
@@ -160,13 +155,38 @@ export default class Swup {
         if (this.options.cache) {
             this.cache.cacheUrl(page, this.options.debugMode)
         }
+
+        /**
+         * mark swup blocks in html
+         */
         this.markSwupElements(document.documentElement)
+
+        /**
+         * trigger page view event
+         */
         this.triggerEvent('pageView')
 
         /**
          * preload pages if possible
          */
         this.preloadPages()
+    }
+
+    destroy () {
+        // remove delegated listeners
+        this.delegatedListeners.click.destroy()
+        this.delegatedListeners.mouseover.destroy()
+
+        // remove popstate listener
+        window.removeEventListener('popstate', this.popStateHandler.bind(this))
+
+        // empty cache
+        this.cache.empty()
+
+        // remove swup data atributes from blocks
+        document.querySelectorAll('[data-swup]').forEach(element => {
+            delete element.dataset.swup
+        })
     }
 
     linkClickHandler (event) {
@@ -213,7 +233,7 @@ export default class Swup {
         }
     }
 
-    linkMouseoverHandler () {
+    linkMouseoverHandler (event) {
         this.triggerEvent('hoverLink')
         if (this.options.preload) {
             var link = new Link()
@@ -238,5 +258,17 @@ export default class Swup {
                 this.preloadPromise.route = link.getPath()
             }
         }
+    }
+
+    popStateHandler (event)  {
+        var link = new Link()
+        link.setPath(event.state ? event.state.url : window.location.pathname)
+        if (link.getHash() != '') {
+            this.scrollToElement = link.getHash()
+        } else {
+            event.preventDefault()
+        }
+        this.triggerEvent('popState')
+        this.loadPage(link.getPath(), event)
     }
 }
