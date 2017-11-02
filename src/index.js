@@ -1,4 +1,3 @@
-import enquire from 'enquire.js'
 import delegate from 'delegate'
 
 // helpers
@@ -54,8 +53,8 @@ export default class Swup {
         }
 
         /**
-        * helper variables
-        */
+         * helper variables
+         */
         // mobile detection variable
         this.mobile = false
         // id of element to scroll to after render
@@ -90,14 +89,9 @@ export default class Swup {
          * detect mobile devices
          */
         if (this.options.scroll) {
-            enquire.register('screen and (max-width: 47.9375em)', {
-                match: () => {
-                    this.mobile = true
-                },
-                unmatch: () => {
-                    this.mobile = false
-                }
-            })
+            if (window.innerWidth <= 767) {
+                this.mobile = true
+            }
         }
 
         // attach instance to window in debug mode

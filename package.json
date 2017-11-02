@@ -15,8 +15,7 @@
     "url": "https://github.com/gmrchk/swup.git"
   },
   "dependencies": {
-    "delegate": "^3.1.3",
-    "enquire.js": "^2.1.6"
+    "delegate": "^3.1.3"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
