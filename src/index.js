@@ -112,7 +112,7 @@ export default class Swup {
         /**
          * support check
          */
-        if (this.support) {
+        if (this.options.support) {
             // check pushState support
             if (!('pushState' in window.history)) {
                 console.warn('pushState is not supported')
