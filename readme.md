@@ -170,6 +170,12 @@ In case you want to preload some page automatically without any trigger by user,
 preload: true
 ```
 
+### Disable IE
+While swup itself should run without problem in IE10+, I have ran into multiple problems on IE (including Edge), related to updating browser history, replacing large parts of page with javascript or performance of animation on large elements. That's why swup allows to simply disable the whole thing in all IE browsers with `disableIE` option. IE is enabled by default.
+```javasrripts
+disableIE: false
+```
+
 ### Debug Mode
 Debug mode is very useful for integrating swup into your site. When enabled, swup displays emitted events (see events section) in console, as well as contents of the cache when changed. Options defaults to false.
 ```javasrripts
@@ -189,7 +195,8 @@ let options = {
     scroll: true,
     debugMode: false,
     preload: true,
-    support: true
+    support: true,
+    disableIE: false,
     animateScrollToAnchor: false,
     animateScrollOnMobile: false,
     doScrollingRightAway: false,

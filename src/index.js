@@ -1,4 +1,5 @@
 import delegate from 'delegate'
+import detectie from 'detectie'
 
 // helpers
 import Cache from './Cache'
@@ -33,6 +34,7 @@ export default class Swup {
             scroll: true,
             preload: true,
             support: true,
+            disableIE: false,
 
             animateScrollToAnchor: false,
             animateScrollOnMobile: false,
@@ -84,6 +86,7 @@ export default class Swup {
         this.markSwupElements = markSwupElements
         this.updateTransition = updateTransition
         this.preloadPages = preloadPages
+        this.detectie = detectie
         this.enable = this.enable
         this.destroy = this.destroy
 
@@ -127,6 +130,12 @@ export default class Swup {
                 console.warn('Promise is not supported')
                 return
             }
+        }
+        /**
+         * disable IE
+         */
+        if (this.options.disableIE && this.detectie()) {
+            return
         }
 
         // variable to keep event listeners from "delegate"
