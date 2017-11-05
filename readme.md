@@ -1,5 +1,17 @@
 # swup
-Swup lets you easily create site equipped with animated transitions between pages, without all that hassle of dealing with popstates, requests... All you have to care about is css transitions. Whether the site is ready or you are just starting, swup implementation is very easy and straight forward.
+Animated page transitions with css - simple, quick and fun.
+
+## Introduction
+### What it does
+* Swup takes care of browser history... without breaking it - animation is disabled for popstate events, browsers native window scrollTop amount is remembered and your page won't be jumping around on that iOS/OSX swipe for previous/next page).
+* Swup works with your code. Need to attach your js on the loaded content? Need to trigger some analytics events? ...or simply want to close a sidebar on page transition. No problem. Swup emits whole bunch of events that you can you use in your code.
+* Swup takes care of timing. Is your "out" animation done before page is loaded? It'll wait for the page to continue... Is your page loaded before animation is done? It'll wait for all your css transitions to finish... All you need is to define that buttery smooth transition, and swup does the rest.
+
+### What it doesn't
+* Swup never loads same page twice (when cache option is enabled). Actually, once you visited several pages of the site, you can even disable your internet connection and continue browsing.
+* Swup doesn't wait for next page to be loaded to start the animation - it all happens at the same time. While user is trying to process what is happening on screen, your request is being served. With preload option enabled it can even start loading your page before you click the link... and don't worry, swup won't start another request to the same page in case you click the link while it's being pre loaded. 
+* Swup works with any server side rendered content and it doesn't require any setup on server. While it would be possible to limit the data sent from server to minimum and serve only blocks required by swup, it would require setup on server... and let's face it, those few extra lines of html is usually not what's slowing your load time. 
+
 
 ## Installation
 ```shell
@@ -186,7 +198,7 @@ let options = {
 ```
 
 ## Events
-As it usually is when loading the page with ajax, there may be many constrains such as analytics or enabling the scripts for replaced content. For this purpose, swup emits whole bunch of events triggered on document while working, which can be used as follows:
+As it usually is when loading the page with js, there may be many constrains such as analytics or enabling the scripts for replaced content. For this purpose, swup emits whole bunch of events triggered on document while working, which can be used as follows:
 ```javascripts
 // trigger page view for GTM
 document.addEventListener('swup:pageView', event => {
@@ -226,10 +238,12 @@ swup.options.elements.forEach((element) => {
     // do whatever for each replaced element
 })
 ```
-or possibly use built in function for your own purpose
+or use built in function for your own stuff
 ```javascript
 // navigates to /someRoute with the animations and all
 swup.loadPage('/someRoute', false)
+// or disable swup
+swup.destroy()
 ```
 
 
