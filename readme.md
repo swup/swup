@@ -171,7 +171,7 @@ preload: true
 ```
 
 ### Disable IE
-While swup itself should run without problem in IE10+, I have ran into multiple problems on IE (including Edge), related to updating browser history, replacing large parts of page with javascript or performance of animation on large elements. That's why swup allows to simply disable the whole thing in all IE browsers with `disableIE` option. IE is enabled by default.
+While swup itself should run without problem in IE Edge (or other IE with help of some polyfills), I have ran into multiple problems on IE (including Edge), related to updating browser history, replacing large parts of page with javascript or performance of animation on large elements. That's why swup allows to simply disable the whole thing in all IE browsers with `disableIE` option. IE is enabled by default.
 ```javasrripts
 disableIE: false
 ```
