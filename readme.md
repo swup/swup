@@ -1,6 +1,8 @@
 # swup
 Animated page transitions with css - simple, quick and fun.
 
+**Note:** In case you like to do your animations in JS, you may also checkout [swupjs](https://www.npmjs.com/package/swupjs).
+
 ## Introduction
 ### What it does
 * Swup takes care of browser history... without breaking it - animation is disabled for popstate events, browsers native window scrollTop amount is remembered and your page won't be jumping around on that iOS/OSX swipe for previous/next page.
