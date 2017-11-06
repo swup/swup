@@ -3,13 +3,13 @@ Animated page transitions with css - simple, quick and fun.
 
 ## Introduction
 ### What it does
-* Swup takes care of browser history... without breaking it - animation is disabled for popstate events, browsers native window scrollTop amount is remembered and your page won't be jumping around on that iOS/OSX swipe for previous/next page).
-* Swup works with your code. Need to attach your js on the loaded content? Need to trigger some analytics events? ...or simply want to close a sidebar on page transition. No problem. Swup emits whole bunch of events that you can you use in your code.
-* Swup takes care of timing. Is your "out" animation done before page is loaded? It'll wait for the page to continue... Is your page loaded before animation is done? It'll wait for all your css transitions to finish... All you need is to define that buttery smooth transition, and swup does the rest.
+* Swup takes care of browser history... without breaking it - animation is disabled for popstate events, browsers native window scrollTop amount is remembered and your page won't be jumping around on that iOS/OSX swipe for previous/next page.
+* Swup works with your code. Need to attach your JS on the loaded content? Need to trigger some analytics events? ...or simply want to close a sidebar on page transition. No problem. Swup emits whole bunch of events that you can use in your code.
+* Swup takes care of timing. Is your "out" animation done before page is loaded? It'll wait for the page to load to continue... Is your page loaded before animation is done? It'll wait for all your css transitions to finish... All you need is to define that buttery smooth transition, and swup does the rest.
 
 ### What it doesn't
-* Swup never loads same page twice (when cache option is enabled). Actually, once you visited several pages of the site, you can even disable your internet connection and continue browsing.
-* Swup doesn't wait for next page to be loaded to start the animation - it all happens at the same time. While user is trying to process what is happening on screen, your request is being served. With preload option enabled it can even start loading your page before you click the link... and don't worry, swup won't start another request to the same page in case you click the link while it's being pre loaded. 
+* Swup never loads same page twice (when cache option is enabled). Actually, once you've visited several pages of site, you can even disable your internet connection and continue browsing.
+* Swup doesn't wait for next page to be loaded to start the animation - it all happens at the same time. While user is trying to process what is happening on screen, your request is being served. With preload option enabled it can even start loading your page before you click the link... and don't worry, swup won't start another request to the same page in case you click the link while it's being preloaded. 
 * Swup works with any server side rendered content and it doesn't require any setup on server. While it would be possible to limit the data sent from server to minimum and serve only blocks required by swup, it would require setup on server... and let's face it, those few extra lines of html is usually not what's slowing your load time. 
 
 
@@ -52,7 +52,7 @@ import Swup from 'swup'
 const swup = new Swup()
 ```
 
-Add the `swup` id to the main element in html so it is replaced with the main element of the loaded page. Also add the class that handles the animations of the element - `a-fade`.
+Add the `swup` id to the main element in html so it is replaced with the main element of the loaded page. Also add class that handles animations of the element - `a-fade`.
 ```html
     <main id="swup" class="a-fade">
         ...
@@ -78,14 +78,14 @@ html.is-changing .loading{
     display: block;
 }
 ```
-And that's it! Swup loads the page, handles the classes for the css animation, waits for the animation to finish/page to load, replaces the content and fades your content back, as well as changes the title of your page to the loaded one, and exchanges the classes of the body element (more in options section).
+And that's it! Swup loads the page, handles classes for the css animation, waits for the animation to finish/page to load, replaces content and fades your content back. Swup also changes title of your page to the loaded one, and exchanges classes of body element (more in options section).
 
-In some cases there is a need to animate elements that are common for all pages, but may for example display or hide for some pages, change color or whatever... In that case you would usually like to start the animation on the click of the link, instead of when the next page is loaded. For this purpose there is special class added to your html tag on transition start and removed once the process of page transition is done. 
-This special class takes form of `to-{whatever is the route of new page}`, where only exception is homepage, which does not have any route and so `to-homepage` is added.
+In some cases there is a need to animate elements that are common for all pages, but may for example display or hide for some pages, change color or whatever.. Let's assume we want navigation to change background color for different pages, based on body class. In that case you would usually like to start the animation on the click of the link, instead of when the next page is loaded. For this purpose there is special class added to your html tag on transition start and removed once the process of page transition is done. 
+This special class takes form of `to-{whatever is the route of new page}`, where only exception is homepage, which does not have any route and so `to-homepage` is used.
 
 Animation to dynamic pages with unknown routes (blog posts, etc.) can be animated to using data attribute `data-swup-class` set on link element. Swup takes the content of the attribute of clicked link and adds class name on html tag in a format `to-{content of the attribute}`, and also removes it after the whole process of routing is done. So for blog posts, you would want to add  `data-swup-class="blog-post"`, which would be added to html tag as `to-blog-post`.
 
-Lets assume we want our header to be blue on homepage (/), but yellow in about (/about) page.
+Let's assume we want our header to be blue on homepage (/), but yellow in about (/about) page.
 ```css
 header {
     transition: .4s;
@@ -97,7 +97,7 @@ body.page-about header {
     background: yellow;
 }
 ``` 
-For the color to start changing right after the click on the link, simply change add...
+For the color to start changing right after the click on the link, simply add...
 ```css
 html.to-homepage header {
     background: blue;
@@ -108,7 +108,7 @@ html.to-about header {
 ``` 
 **Note:** For popState events the process is disabled and the content of page is replaced right away, to avoid tedious back button clicking and ensure proper functionality on mobile devices. 
 
-## options
+## Options
 Swup has a several options passed into a constructor as an object.
 ```javascript
 let options = {}
@@ -116,15 +116,16 @@ const swup = new Swup(options)
 ```
 
 ### Link Selector
-Link selector defines link elements will trigger the transition. Default form is shown below.
+Link selector defines link elements that will trigger the transition. Default form is shown below.
 ```javascript
 LINK_SELECTOR: 'a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup]), a[xlink\\:href]'
 ```
 In case you want to exclude links for some routes, lightbox or any other functionality, simply extend the selector. By default, you can simply add **data-no-swup** attribute if you want to exclude just a few.
-**Note:** it is recommended to disable transition between the language versions of your site, for multiple reasons (replacing of header/footer elements, analytics...).
+
+**Note:** it is recommended to disable transition between language versions of your site, for multiple reasons (replacing of header/footer, analytics...).
 
 ### Elements
-Elements option defines the array of elements to be replaced. Elements option usually contains the main elements with a content of the page. However, elements can include any element that is common for all transitioned pages. Example of such additional element is the "change language" link, which appears the same across site, but leads to a different link on each page. Options defaults to the single element of id `#swup`.
+Elements option defines the array of elements to be replaced. Elements option usually contains the main element with content of the page. However, elements can include any element that is common for all transitioned pages. Example of such additional element is the "change language" link, which appears the same across site, but leads to a different link on each page. Option defaults to the single element of id `#swup`.
 ```javascript
 options = {
     elements: ['#swup']
@@ -132,7 +133,7 @@ options = {
 ```
 
 ### Animation Selector
-As swup is built on animations, it is required to define the elements that are being animated. Usually you would like to give the elements some common class or class prefix. By default option is set to `[class^='a-']`, which selects all elements with class attribute beginning with prexif `a-`.
+As swup is built on animations, it is required to define the elements that are being animated. Usually you would like to give the elements some common class or class prefix. By default option is set to `[class^='a-']`, which selects all elements with class attribute beginning with prefix `a-`.
 ```javascript
 animationSelector: '[class^="a-"]'
 ```
@@ -144,20 +145,20 @@ cache: true
 ```
 
 ### Page Class Prefix
-CSS styles are very often based on the class of the page defined in body element. Swup replaces the body classes for each loaded page. However, the site may use the body class attribute for functionality such as opening of some sort of menu by adding class to the body element. In that case, you may want to define a prefix for your page style classes such as `page-`, so only those are replaced. By default option is set to `''` and all classes of body element are replaced during the transition. In case of no classes are used on body element, simply set the options to `false`.
+Css styles are very often based on the class of the page defined in body element. Swup replaces the body classes for each loaded page. However, the site may use the body class attribute for functionality such as opening of some sort of menu by adding class to the body element. In that case, you may want to define a prefix for your page style classes such as `page-`, so only those are replaced. By default option is set to `''` and all classes of body element are replaced during the transition. In case of no classes are used on body element, simply set option to `false`.
 ```javascript
 pageClassPrefix: 'page-'
 ```
 
 ### Scroll
-Swup has a built in scroll control, where page smoothly scrolls to the top on desktop, and jumps directly to the top on mobile (as menu is usually fixed for mobile sites). The scrolls to the anchor elements in url are also handled. This feature can be turned of and you can use your own scroll based on the emitted events discussed in events section. By default the options is set to `true`. Scrolling has several other options, such as `scrollDuration` - duration of the scroll, which is set to 0 by default (expects the page to be fully invisible while transitioning). Another options are `animateScrollToAnchor` and `animateScrollOnMobile`, where the name speaks for itself. Last is `doScrollingRightAway`, which determines whether scroll starts immediately, or after the content is replaced. 
+Swup has a built in scroll control, where page smoothly scrolls to the top on desktop, and jumps directly to the top on mobile. Scroll to the anchor elements in url are also handled. This feature can be turned off and you can use your own scroll based on the emitted events discussed in events section. By default the option is set to `true`. Scrolling has several other options, such as `scrollDuration` - duration of the scroll, which is set to 0 by default (expects the page to be fully invisible while transitioning). Another options are `animateScrollToAnchor` and `animateScrollOnMobile`, where the name speaks for itself. Last is `doScrollingRightAway`, which determines whether scroll starts immediately after click on link, or after the content is replaced. 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 ```javascript
 scroll: true
 ```
 
 ### Support
-Due to the use of promises, transitionEnd and pushState features of javascript, swup has a basic support check built in to avoid breaking of the site in case of older browser that do not support used features. However, as there may always be some exceptions for browsers, or different polyfills (that may or may not work) can be used, this support check can be disabled and you can use your own support check before creating the instance. Support option is enabled by default.
+Due to the use of promises, transitionEnd and pushState features of javascript, swup has a basic support check built in to avoid breaking of the site in case of older browser that do not support used features. However, as there may always be some exceptions for browsers, or different polyfills may be used on page (that may or may not work), this support check can be disabled and you can use your own support check before creating the instance. Support option is enabled by default.
 ```javascript
 support: true
 ```
@@ -171,13 +172,13 @@ preload: true
 ```
 
 ### Disable IE
-While swup itself should run without problem in IE Edge (or other IE with help of some polyfills), I have ran into multiple problems on IE (including Edge), related to updating browser history, replacing large parts of page with javascript or performance of animation on large elements. That's why swup allows to simply disable the whole thing in all IE browsers with `disableIE` option. IE is enabled by default.
+While swup itself should run without problem in IE Edge (or other IE with help of some polyfills), I have ran into multiple problems on IE (including Edge), related to updating browser history, replacing large parts of page with javascript or performance of animation on large elements. That's why swup allows to simply disable the whole thing in all IE browsers with `disableIE` option. Swup is enabled in IE by default.
 ```javasrripts
 disableIE: false
 ```
 
 ### Debug Mode
-Debug mode is very useful for integrating swup into your site. When enabled, swup displays emitted events (see events section) in console, as well as contents of the cache when changed. Options defaults to false.
+Debug mode is very useful for integrating swup into your site. When enabled, swup displays emitted events (see events section) in console, as well as contents of the cache when changed. Option defaults to false.
 ```javasrripts
 debugMode: false
 ```
@@ -205,7 +206,7 @@ let options = {
 ```
 
 ## Events
-As it usually is when loading the page with js, there may be many constrains such as analytics or enabling the scripts for replaced content. For this purpose, swup emits whole bunch of events triggered on document while working, which can be used as follows:
+As it usually is when loading page with JS, there may be many constrains such as analytics or enabling the scripts for replaced content. For this purpose, swup emits whole bunch of events triggered on document while working, which can be used as follows:
 ```javascripts
 // trigger page view for GTM
 document.addEventListener('swup:pageView', event => {
@@ -228,14 +229,14 @@ document.addEventListener('swup:contentReplaced', event => {
 * **swup:contentReplaced** - triggers when the content of page is replaced
 * **swup:pageView** - similar as previous, except it is once trigger on load of the page
 * **swup:hoverLink** - triggers when link for transition is hovered
-* **swup:clickLink** - triggers when link for transition is hovered
-* **swup:animationOutDone** - triggers when animating (out) of all animated elements is done
+* **swup:clickLink** - triggers when link for transition is clicked
+* **swup:animationOutDone** - triggers when transition of all animated elements is done (after click of link and before content is replaced)
 * **swup:pagePreloaded** - triggers when the preload of some page is done
-* **swup:pageLoaded** - triggers when the loading of some page is done (differs from previous only by the source of event - hover/click)
+* **swup:pageLoaded** - triggers when loading of some page is done (differs from previous only by the source of event - hover/click)
 * **swup:scrollStart** - triggers when built in scroll is started
 * **swup:scrollDone** - triggers when built in scroll is done
-* **swup:animationInDone** - triggers when animating (in) of all animated elements is done
-* **swup:pageRetrievedFromCache** - triggers when page is retrieved from cache and no loading is necessary
+* **swup:animationInDone** - triggers when transition of all animated elements is done (after content is replaced)
+* **swup:pageRetrievedFromCache** - triggers when page is retrieved from cache and no request is necessary
 
 ## API
 Instance of the swup can be imported and used across your sites javascript to enable some additional features. When debugMode (see options section) is enabled, instance is also available in `window` object as `window.swup` so you can play with it.
@@ -247,7 +248,7 @@ swup.options.elements.forEach((element) => {
 ```
 or use built in function for your own stuff
 ```javascript
-// navigates to /someRoute with the animations and all
+// navigates to /someRoute with the animations and all...
 swup.loadPage('/someRoute', false)
 // or disable swup
 swup.destroy()
