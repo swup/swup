@@ -173,7 +173,7 @@ export default class Swup {
         /**
          * trigger enabled event
          */
-        this.triggerEvent('swupEnabled')
+        this.triggerEvent('enabled')
         document.documentElement.classList.add('swup-enabled')
 
         /**
@@ -203,7 +203,7 @@ export default class Swup {
             delete element.dataset.swup
         })
 
-        this.triggerEvent('swupDisabled')
+        this.triggerEvent('disabled')
         document.documentElement.classList.remove('swup-enabled')
     }
 
