@@ -263,11 +263,11 @@ export default class Swup {
                             console.warn('Server error.')
                             this.triggerEvent('serverError')
                         } else {
-                            this.triggerEvent('pagePreloaded')
                             // get json data
                             var page = this.getDataFromHtml(response)
                             page.url = link.getPath()
                             this.cache.cacheUrl(page, this.options.debugMode)
+                            this.triggerEvent('pagePreloaded')
                         }
                         resolve()
                         this.preloadPromise = null

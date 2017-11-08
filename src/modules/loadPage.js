@@ -59,12 +59,12 @@ module.exports = function (url, popstate) {
                         this.triggerEvent('serverError')
                         this.goBack()
                     } else {
-                        this.triggerEvent('pageLoaded')
                         // get json data
                         var page = this.getDataFromHtml(response)
                         page.url = url
                         // render page
                         this.cache.cacheUrl(page, this.options.debugMode)
+                        this.triggerEvent('pageLoaded')
                     }
                     resolve()
                 })
