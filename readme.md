@@ -239,6 +239,8 @@ document.addEventListener('swup:contentReplaced', event => {
 * **swup:scrollDone** - triggers when built in scroll is done
 * **swup:animationInDone** - triggers when transition of all animated elements is done (after content is replaced)
 * **swup:pageRetrievedFromCache** - triggers when page is retrieved from cache and no request is necessary
+* **swup:swupEnabled** - triggers when swup instance is created or re-enabled after call of `destroy()`
+* **swup:swupDisabled** - triggers on `destroy()`
 
 ## API
 Instance of the swup can be imported and used across your sites javascript to enable some additional features. When debugMode (see options section) is enabled, instance is also available in `window` object as `window.swup` so you can play with it.

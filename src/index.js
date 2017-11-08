@@ -171,6 +171,12 @@ export default class Swup {
         this.markSwupElements(document.documentElement)
 
         /**
+         * trigger enabled event
+         */
+        this.triggerEvent('swupEnabled')
+        document.documentElement.classList.add('swup-enabled')
+
+        /**
          * trigger page view event
          */
         this.triggerEvent('pageView')
@@ -196,6 +202,9 @@ export default class Swup {
         document.querySelectorAll('[data-swup]').forEach(element => {
             delete element.dataset.swup
         })
+
+        this.triggerEvent('swupDisabled')
+        document.documentElement.classList.remove('swup-enabled')
     }
 
     linkClickHandler (event) {
