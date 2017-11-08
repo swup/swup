@@ -1,6 +1,6 @@
 {
   "name": "swup",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Animated page transitions with css - simple, quick and fun.",
   "main": "lib/index.js",
   "scripts": {
