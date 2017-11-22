@@ -7,7 +7,7 @@ export default class Link {
         this.link.href = href;
     }
 
-    getPath (href) {
+    getPath () {
         var path = this.link.pathname;
         if (path[0] != '/') {
             path = '/' + path;
@@ -15,7 +15,15 @@ export default class Link {
         return path;
     }
 
-    getHash (href) {
+    getAddress () {
+        var path = this.link.pathname + this.link.search;
+        if (path[0] != '/') {
+            path = '/' + path;
+        }
+        return path;
+    }
+
+    getHash () {
         return this.link.hash;
     }
 }

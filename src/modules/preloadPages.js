@@ -5,15 +5,15 @@ module.exports = function (eventName) {
         const preload = pathname => {
             var link = new Link()
             link.setPath(pathname)
-            if (link.getPath() != this.currentUrl && !this.cache.exists(link.getPath()) && this.preloadPromise == null) {
-                this.getPage(link.getPath(), response => {
+            if (link.getAddress() != this.currentUrl && !this.cache.exists(link.getAddress()) && this.preloadPromise == null) {
+                this.getPage(link.getAddress(), response => {
                     if (response === null) {
                         console.warn('Server error.')
                         this.triggerEvent('serverError')
                     } else {
                         // get json data
                         var page = this.getDataFromHtml(response)
-                        page.url = link.getPath()
+                        page.url = link.getAddress()
                         this.cache.cacheUrl(page, this.options.debugMode)
                         this.triggerEvent('pagePreloaded')
                     }

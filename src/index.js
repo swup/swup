@@ -214,7 +214,7 @@ export default class Swup {
             var link = new Link()
             event.preventDefault()
             link.setPath(event.delegateTarget.href)
-            if (link.getPath() == this.currentUrl || link.getPath() == '') {
+            if (link.getAddress() == this.currentUrl || link.getAddress() == '') {
                 if (link.getHash() != '') {
                     this.triggerEvent('samePageWithHash')
                     var element = document.querySelector(link.getHash())
@@ -239,12 +239,12 @@ export default class Swup {
                 // custom class fro dynamic pages
                 var swupClass = event.delegateTarget.dataset.swupClass
                 if (swupClass != null) {
-                    this.updateTransition(window.location.pathname, link.getPath(), event.delegateTarget.dataset.swupClass)
+                    this.updateTransition(window.location.pathname, link.getAddress(), event.delegateTarget.dataset.swupClass)
                     document.documentElement.classList.add(`to-${swupClass}`)
                 } else {
-                    this.updateTransition(window.location.pathname, link.getPath())
+                    this.updateTransition(window.location.pathname, link.getAddress())
                 }
-                this.loadPage(link.getPath(), false)
+                this.loadPage(link.getAddress(), false)
             }
         } else {
             this.triggerEvent('openPageInNewTab')
@@ -256,16 +256,16 @@ export default class Swup {
         if (this.options.preload) {
             var link = new Link()
             link.setPath(event.delegateTarget.href)
-            if (link.getPath() != this.currentUrl && !this.cache.exists(link.getPath()) && this.preloadPromise == null) {
+            if (link.getAddress() != this.currentUrl && !this.cache.exists(link.getAddress()) && this.preloadPromise == null) {
                 this.preloadPromise = new Promise(resolve => {
-                    this.getPage(link.getPath(), response => {
+                    this.getPage(link.getAddress(), response => {
                         if (response === null) {
                             console.warn('Server error.')
                             this.triggerEvent('serverError')
                         } else {
                             // get json data
                             var page = this.getDataFromHtml(response)
-                            page.url = link.getPath()
+                            page.url = link.getAddress()
                             this.cache.cacheUrl(page, this.options.debugMode)
                             this.triggerEvent('pagePreloaded')
                         }
@@ -273,7 +273,7 @@ export default class Swup {
                         this.preloadPromise = null
                     })
                 })
-                this.preloadPromise.route = link.getPath()
+                this.preloadPromise.route = link.getAddress()
             }
         }
     }
@@ -287,6 +287,6 @@ export default class Swup {
             event.preventDefault()
         }
         this.triggerEvent('popState')
-        this.loadPage(link.getPath(), event)
+        this.loadPage(link.getAddress(), event)
     }
 }
