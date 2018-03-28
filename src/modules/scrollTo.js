@@ -1,31 +1,74 @@
-module.exports = function (element, to, duration) {
-    this.triggerEvent('scrollStart')
-    var start = (window.pageYOffset || document.documentElement.scrollTop)  - (document.documentElement.clientTop || 0),
-        change = to - start,
-        increment = 20
+module.exports = function(element, to, duration) {
+    const body = document.body;
 
-    var animateScroll = (elapsedTime) => {
-        elapsedTime += increment
-        var position = easeInOut(elapsedTime, start, change, duration)
-        window.scrollTo(0, position)
-        if (elapsedTime < duration) {
-            setTimeout(() => {
-                animateScroll(elapsedTime)
-            }, increment)
+    const UP = -1;
+    const DOWN = 1;
+
+    let friction = 0.7;
+    let acceleration = 0.04;
+
+    let positionY = 100;
+    let velocityY = 0;
+    let targetPositionY = 400;
+
+    let raf = null;
+
+    function getScrollTop() {
+        return document.body.scrollTop || document.documentElement.scrollTop;
+    }
+
+    const animate = () => {
+        const distance = update();
+        render();
+
+        if (Math.abs(distance) > 0.1) {
+            raf = requestAnimationFrame(animate);
         } else {
             this.triggerEvent('scrollDone')
         }
-    };
-
-    animateScroll(0);
-
-    function easeInOut(currentTime, start, change, duration) {
-        currentTime /= duration / 2;
-        if (currentTime < 1) {
-            return change / 2 * currentTime * currentTime + start;
-        }
-        currentTime -= 1;
-        return -change / 2 * (currentTime * (currentTime - 2) - 1) + start;
     }
-}
 
+    function update() {
+        const distance = targetPositionY - positionY;
+        const attraction = distance * acceleration;
+
+        applyForce(attraction);
+
+        velocityY *= friction;
+        positionY += velocityY;
+
+        return distance;
+    }
+
+    const applyForce = (force) => {
+        velocityY += force;
+    }
+
+    const render = () => {
+        window.scrollTo(0, positionY);
+    }
+
+    window.addEventListener('mousewheel', event => {
+        if (raf) {
+            cancelAnimationFrame(raf);
+            raf = null;
+        }
+    }, {
+        passive: true
+    });
+
+    const scrollTo = (offset, callback) => {
+        positionY = getScrollTop();
+        targetPositionY = offset;
+        velocityY = 0;
+        animate();
+    }
+
+    this.triggerEvent('scrollStart');
+    if (duration == 0) {
+        window.scrollTo(0, 0);
+        this.triggerEvent('scrollDone')
+    } else {
+        scrollTo(to);
+    }
+};
