@@ -13,7 +13,7 @@ module.exports = function(location, callback) {
     }
 
     request.open("GET", location, true)
-    request.setRequestHeader("X-Requested-With", "XMLHttpRequest")
+    request.setRequestHeader("X-Requested-With", "swup")
     request.send(null)
     return request
 }
