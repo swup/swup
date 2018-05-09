@@ -1,7 +1,7 @@
 {
   "name": "swup",
-  "version": "0.2.5",
-  "description": "Animated page transitions with css - simple, quick and fun.",
+  "version": "0.2.6",
+  "description": "Animated page transitions with css.",
   "main": "lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
