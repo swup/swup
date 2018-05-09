@@ -1,6 +1,8 @@
 # swup
 **Animated page transitions with css.**
 
+![Transition examples](https://user-images.githubusercontent.com/9338324/39842661-9ec5d41a-53e7-11e8-87de-963b4da4a952.gif)
+
 **Note:** In case you like to do your animations in JavaScript, you may also check out [swupjs](https://github.com/gmrchk/swupjs).
 
 ## Table of contents
