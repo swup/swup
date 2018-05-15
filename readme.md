@@ -94,7 +94,7 @@ const swup = new Swup()
 or simply 
 
 ```javascript
-const swup = new Swup()
+var swup = new Swup()
 ```
 in case you've included swup from a dist folder. 
 
