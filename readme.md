@@ -52,6 +52,12 @@ Swup enables animated transitions between pages powered by CSS. All you need to 
 npm install swup
 ```
 
+or include the file from the dist folder
+
+```html
+<script src="./dist/swup.js"></script>
+```
+
 
 ## How it works
 Apart from simply loading the contents of the new page and replacing it in HTML, swup is built around css animation - you defined the transition and timing in CSS and swup handles the rest. Swup detects the end of transition of animated elements and proceeds to replacing the content and animating your page back. For the animations based on CSS to be possible, swup uses several classes that are assigned to the html tag through the process of page transition.
@@ -84,6 +90,13 @@ The first thing we need to do is enable swup.
 import Swup from 'swup'
 const swup = new Swup()
 ```
+
+or simply 
+
+```javascript
+const swup = new Swup()
+```
+in case you've included swup from a dist folder. 
 
 Add the `swup` id to the main element in HTML so it is replaced with the main element of the loaded page. Also, add the class that handles animations of our faded element - `a-fade`.
 ```html
