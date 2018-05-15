@@ -1,7 +1,7 @@
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 module.exports = {
-    mode: "development",
+    mode: "production",
     entry: {
         "swup": "./entry.js",
         "swup.min": "./entry.js",
@@ -28,6 +28,11 @@ module.exports = {
         minimizer: [
             // we specify a custom UglifyJsPlugin here to get source maps in production
             new UglifyJsPlugin({
+                uglifyOptions: {
+                    compress: false,
+                    ecma: 6,
+                    mangle: true
+                },
                 include: /\.min\.js$/
             })
         ]
