@@ -10,7 +10,6 @@ module.exports = {
         library: "Swup",
         libraryTarget: "umd",
         filename: "[name].js",
-        auxiliaryComment: "Test Comment"
     },
     module: {
         rules: [
