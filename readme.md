@@ -68,7 +68,7 @@ Apart from simply loading the contents of the new page and replacing it in HTML,
 * `is-rendering` - Assigned right before the content is replaced and removed when the whole process of transition of pages is done. (same as above)
 
 ### Example
-While developing the site, simply define the elements that are being animated and need to be replaced. Let's assume we want to fade in/out the main content of the page.
+While developing the site, define the elements that are being animated and need to be replaced. Let's assume we want to fade in/out the main content of the page.
 ```html
 <html>
     <head>
@@ -91,7 +91,7 @@ import Swup from 'swup'
 const swup = new Swup()
 ```
 
-or simply 
+or 
 
 ```javascript
 var swup = new Swup()
