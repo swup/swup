@@ -1,14 +1,10 @@
 (function webpackUniversalModuleDefinition(root, factory) {
-	//Test Comment
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
-	//Test Comment
 	else if(typeof define === 'function' && define.amd)
 		define([], factory);
-	//Test Comment
 	else if(typeof exports === 'object')
 		exports["Swup"] = factory();
-	//Test Comment
 	else
 		root["Swup"] = factory();
 })(window, function() {
@@ -248,10 +244,11 @@ module.exports = function (popstate) {
 
             var element = document.querySelector(self.scrollToElement);
             if (element != null) {
+                var top = element.getBoundingClientRect().top + window.pageYOffset;
                 if (self.animateScrollToAnchor) {
-                    self.scrollTo(document.body, element.offsetTop, this.options.scrollDuration);
+                    self.scrollTo(document.body, top, this.options.scrollDuration);
                 } else {
-                    self.scrollTo(document.body, element.offsetTop, 20);
+                    self.scrollTo(document.body, top, 20);
                 }
             } else {
                 console.warn("Element for offset not found (" + self.scrollToElement + ")");
@@ -1189,7 +1186,8 @@ var Swup = function () {
                         var element = document.querySelector(link.getHash());
                         if (element != null) {
                             if (this.options.scroll) {
-                                this.scrollTo(document.body, element.offsetTop, 320);
+                                var top = element.getBoundingClientRect().top + window.pageYOffset;
+                                this.scrollTo(document.body, top, 320);
                             }
                             history.replaceState(undefined, undefined, link.getHash());
                         } else {

@@ -220,7 +220,8 @@ export default class Swup {
                     var element = document.querySelector(link.getHash())
                     if (element != null) {
                         if (this.options.scroll) {
-                            this.scrollTo(document.body, element.offsetTop, 320)
+                            let top = element.getBoundingClientRect().top + window.pageYOffset;
+                            this.scrollTo(document.body, top, 320)
                         }
                         history.replaceState(undefined, undefined, link.getHash())
                     } else {
