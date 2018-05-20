@@ -223,6 +223,21 @@ Swup has a built-in scroll control. Scroll to the anchor element in URL is also 
 scroll: true
 ```
 
+There are additional settings for scroll:
+
+`doScrollingRightAway` defines if swup is supposed to wait for the replace of the page to scroll to the top. 
+`animateScroll` sets whether the scroll animation is enabled. 
+Animation of scroll is also adjustable with options `scrollFriction` and `scrollAcceleration`.
+
+All default values for additional options of scroll are displayed below:
+
+```javascript
+doScrollingRightAway: false,
+animateScroll: true,
+scrollFriction: .3,
+scrollAcceleration: .04,
+```
+
 ### Support
 Due to the use of promises, transitionEnd and pushState features of JavaScript, swup has a basic support check built in to avoid breaking of the site in case of an older browser that doesn't support used features. 
 However, as there may always be some exceptions for browsers or polyfills can be used on the page (that may or may not work), this support check can be disabled and you can use your own support check before creating the instance. Support option is enabled by default.

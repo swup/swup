@@ -32,14 +32,15 @@ export default class Swup {
             pageClassPrefix: '',
             debugMode: false,
             scroll: true,
+
+            doScrollingRightAway: false,
+            animateScroll: true,
+            scrollFriction: .3,
+            scrollAcceleration: .04,
+
             preload: true,
             support: true,
             disableIE: false,
-
-            animateScrollToAnchor: false,
-            animateScrollOnMobile: false,
-            doScrollingRightAway: false,
-            scrollDuration: 0,
 
             LINK_SELECTOR: 'a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup]), a[xlink\\:href]'
         }
@@ -93,10 +94,8 @@ export default class Swup {
         /**
          * detect mobile devices
          */
-        if (this.options.scroll) {
-            if (window.innerWidth <= 767) {
-                this.mobile = true
-            }
+        if (window.innerWidth <= 767) {
+            this.mobile = true
         }
 
         // attach instance to window in debug mode
@@ -221,7 +220,7 @@ export default class Swup {
                     if (element != null) {
                         if (this.options.scroll) {
                             let top = element.getBoundingClientRect().top + window.pageYOffset;
-                            this.scrollTo(document.body, top, 320)
+                            this.scrollTo(document.body, top)
                         }
                         history.replaceState(undefined, undefined, link.getHash())
                     } else {
@@ -230,7 +229,7 @@ export default class Swup {
                 } else {
                     this.triggerEvent('samePage')
                     if (this.options.scroll) {
-                        this.scrollTo(document.body, 0, 320)
+                        this.scrollTo(document.body, 0, 1)
                     }
                 }
             } else {

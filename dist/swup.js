@@ -245,23 +245,13 @@ module.exports = function (popstate) {
             var element = document.querySelector(self.scrollToElement);
             if (element != null) {
                 var top = element.getBoundingClientRect().top + window.pageYOffset;
-                if (self.animateScrollToAnchor) {
-                    self.scrollTo(document.body, top, this.options.scrollDuration);
-                } else {
-                    self.scrollTo(document.body, top, 20);
-                }
+                self.scrollTo(document.body, top);
             } else {
                 console.warn("Element for offset not found (" + self.scrollToElement + ")");
             }
             self.scrollToElement = null;
         } else {
-            if (this.mobile && !this.options.animateScrollOnMobile) {
-                this.scrollTo(document.body, 0, 0);
-            } else if (this.mobile && this.options.animateScrollOnMobile) {
-                this.scrollTo(document.body, 0, this.options.scrollDuration);
-            } else {
-                this.scrollTo(document.body, 0, this.options.scrollDuration);
-            }
+            this.scrollTo(document.body, 0);
         }
     }
 };
@@ -292,16 +282,18 @@ module.exports = function (text) {
 "use strict";
 
 
-module.exports = function (element, to, duration) {
+module.exports = function (element, to) {
     var _this = this;
+
+    var animatedScroll = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this.options.animateScroll;
 
     var body = document.body;
 
     var UP = -1;
     var DOWN = 1;
 
-    var friction = 0.7;
-    var acceleration = 0.04;
+    var friction = 1 - this.options.scrollFriction;
+    var acceleration = this.options.scrollAcceleration;
 
     var positionY = 100;
     var velocityY = 0;
@@ -361,8 +353,8 @@ module.exports = function (element, to, duration) {
     };
 
     this.triggerEvent('scrollStart');
-    if (duration == 0) {
-        window.scrollTo(0, 0);
+    if (animatedScroll == 0) {
+        window.scrollTo(0, to);
         this.triggerEvent('scrollDone');
     } else {
         scrollTo(to);
@@ -998,14 +990,15 @@ var Swup = function () {
             pageClassPrefix: '',
             debugMode: false,
             scroll: true,
+
+            doScrollingRightAway: false,
+            animateScroll: true,
+            scrollFriction: .3,
+            scrollAcceleration: .04,
+
             preload: true,
             support: true,
             disableIE: false,
-
-            animateScrollToAnchor: false,
-            animateScrollOnMobile: false,
-            doScrollingRightAway: false,
-            scrollDuration: 0,
 
             LINK_SELECTOR: 'a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup]), a[xlink\\:href]'
 
@@ -1055,10 +1048,8 @@ var Swup = function () {
         /**
          * detect mobile devices
          */
-        if (this.options.scroll) {
-            if (window.innerWidth <= 767) {
-                this.mobile = true;
-            }
+        if (window.innerWidth <= 767) {
+            this.mobile = true;
         }
 
         // attach instance to window in debug mode
@@ -1187,7 +1178,7 @@ var Swup = function () {
                         if (element != null) {
                             if (this.options.scroll) {
                                 var top = element.getBoundingClientRect().top + window.pageYOffset;
-                                this.scrollTo(document.body, top, 320);
+                                this.scrollTo(document.body, top);
                             }
                             history.replaceState(undefined, undefined, link.getHash());
                         } else {
@@ -1196,7 +1187,7 @@ var Swup = function () {
                     } else {
                         this.triggerEvent('samePage');
                         if (this.options.scroll) {
-                            this.scrollTo(document.body, 0, 320);
+                            this.scrollTo(document.body, 0, 1);
                         }
                     }
                 } else {

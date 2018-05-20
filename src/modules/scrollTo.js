@@ -1,11 +1,11 @@
-module.exports = function(element, to, duration) {
+module.exports = function(element, to, animatedScroll = this.options.animateScroll) {
     const body = document.body;
 
     const UP = -1;
     const DOWN = 1;
 
-    let friction = 0.7;
-    let acceleration = 0.04;
+    let friction = 1 - this.options.scrollFriction;
+    let acceleration = this.options.scrollAcceleration;
 
     let positionY = 100;
     let velocityY = 0;
@@ -65,8 +65,8 @@ module.exports = function(element, to, duration) {
     }
 
     this.triggerEvent('scrollStart');
-    if (duration == 0) {
-        window.scrollTo(0, 0);
+    if (animatedScroll == 0) {
+        window.scrollTo(0, to);
         this.triggerEvent('scrollDone')
     } else {
         scrollTo(to);
