@@ -76,7 +76,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 21);
+/******/ 	return __webpack_require__(__webpack_require__.s = 22);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -143,6 +143,19 @@ exports.default = Link;
 "use strict";
 
 
+module.exports = function (plugin, options) {
+    this.plugins.push(plugin);
+    plugin(options, this);
+    return this.plugins;
+};
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var _Link = __webpack_require__(0);
 
 var _Link2 = _interopRequireDefault(_Link);
@@ -179,7 +192,7 @@ module.exports = function (eventName) {
 };
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -207,7 +220,7 @@ module.exports = function (from, to, custom) {
 };
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -231,7 +244,7 @@ module.exports = function (element) {
 };
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -257,7 +270,7 @@ module.exports = function (popstate) {
 };
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -276,7 +289,7 @@ module.exports = function (text) {
 };
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -362,7 +375,7 @@ module.exports = function (element, to) {
 };
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -373,7 +386,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -388,7 +401,7 @@ module.exports = function (eventName) {
 };
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -402,7 +415,7 @@ module.exports = function (url) {
 };
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -416,7 +429,7 @@ module.exports = function (page, popstate) {
 };
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -501,7 +514,7 @@ module.exports = function (page, popstate) {
 };
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -594,7 +607,7 @@ module.exports = function (url, popstate) {
 };
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -629,7 +642,7 @@ module.exports = function (html) {
 };
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -655,7 +668,7 @@ module.exports = function (location, callback) {
 };
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -681,7 +694,7 @@ module.exports = function transitionEnd() {
 };
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -754,7 +767,7 @@ var Cache = function () {
 exports.default = Cache;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports) {
 
 /**
@@ -789,7 +802,7 @@ var detectie = function() {
 module.exports = detectie;
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports) {
 
 var DOCUMENT_NODE_TYPE = 9;
@@ -828,10 +841,10 @@ module.exports = closest;
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var closest = __webpack_require__(18);
+var closest = __webpack_require__(19);
 
 /**
  * Delegates event to a selector.
@@ -878,7 +891,7 @@ module.exports = delegate;
 
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -898,15 +911,15 @@ var _createClass = function () { function defineProperties(target, props) { for 
 // modules
 
 
-var _delegate = __webpack_require__(19);
+var _delegate = __webpack_require__(20);
 
 var _delegate2 = _interopRequireDefault(_delegate);
 
-var _detectie = __webpack_require__(17);
+var _detectie = __webpack_require__(18);
 
 var _detectie2 = _interopRequireDefault(_detectie);
 
-var _Cache = __webpack_require__(16);
+var _Cache = __webpack_require__(17);
 
 var _Cache2 = _interopRequireDefault(_Cache);
 
@@ -914,65 +927,69 @@ var _Link = __webpack_require__(0);
 
 var _Link2 = _interopRequireDefault(_Link);
 
-var _transitionEnd = __webpack_require__(15);
+var _transitionEnd = __webpack_require__(16);
 
 var _transitionEnd2 = _interopRequireDefault(_transitionEnd);
 
-var _request = __webpack_require__(14);
+var _request = __webpack_require__(15);
 
 var _request2 = _interopRequireDefault(_request);
 
-var _getDataFromHtml = __webpack_require__(13);
+var _getDataFromHtml = __webpack_require__(14);
 
 var _getDataFromHtml2 = _interopRequireDefault(_getDataFromHtml);
 
-var _loadPage = __webpack_require__(12);
+var _loadPage = __webpack_require__(13);
 
 var _loadPage2 = _interopRequireDefault(_loadPage);
 
-var _renderPage = __webpack_require__(11);
+var _renderPage = __webpack_require__(12);
 
 var _renderPage2 = _interopRequireDefault(_renderPage);
 
-var _goBack = __webpack_require__(10);
+var _goBack = __webpack_require__(11);
 
 var _goBack2 = _interopRequireDefault(_goBack);
 
-var _createState = __webpack_require__(9);
+var _createState = __webpack_require__(10);
 
 var _createState2 = _interopRequireDefault(_createState);
 
-var _triggerEvent = __webpack_require__(8);
+var _triggerEvent = __webpack_require__(9);
 
 var _triggerEvent2 = _interopRequireDefault(_triggerEvent);
 
-var _getUrl = __webpack_require__(7);
+var _getUrl = __webpack_require__(8);
 
 var _getUrl2 = _interopRequireDefault(_getUrl);
 
-var _scrollTo = __webpack_require__(6);
+var _scrollTo = __webpack_require__(7);
 
 var _scrollTo2 = _interopRequireDefault(_scrollTo);
 
-var _classify = __webpack_require__(5);
+var _classify = __webpack_require__(6);
 
 var _classify2 = _interopRequireDefault(_classify);
 
-var _doScrolling = __webpack_require__(4);
+var _doScrolling = __webpack_require__(5);
 
 var _doScrolling2 = _interopRequireDefault(_doScrolling);
 
-var _markSwupElements = __webpack_require__(3);
+var _markSwupElements = __webpack_require__(4);
 
 var _markSwupElements2 = _interopRequireDefault(_markSwupElements);
 
-var _updateTransition = __webpack_require__(2);
+var _updateTransition = __webpack_require__(3);
 
 var _updateTransition2 = _interopRequireDefault(_updateTransition);
 
-var _preloadPages = __webpack_require__(1);
+var _preloadPages = __webpack_require__(2);
 
 var _preloadPages2 = _interopRequireDefault(_preloadPages);
+
+var _usePlugin = __webpack_require__(1);
+
+var _usePlugin2 = _interopRequireDefault(_usePlugin);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1020,6 +1037,8 @@ var Swup = function () {
         this.preloadPromise = null;
         // save options
         this.options = options;
+        // plugins array
+        this.plugins = [];
 
         /**
          * make modules accessible in instance
@@ -1041,6 +1060,7 @@ var Swup = function () {
         this.markSwupElements = _markSwupElements2.default;
         this.updateTransition = _updateTransition2.default;
         this.preloadPages = _preloadPages2.default;
+        this.usePlugin = _usePlugin2.default;
         this.detectie = _detectie2.default;
         this.enable = this.enable;
         this.destroy = this.destroy;
@@ -1259,13 +1279,13 @@ var Swup = function () {
 exports.default = Swup;
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _index = __webpack_require__(20);
+var _index = __webpack_require__(21);
 
 var _index2 = _interopRequireDefault(_index);
 

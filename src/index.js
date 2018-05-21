@@ -21,6 +21,7 @@ import doScrolling from './modules/doScrolling'
 import markSwupElements from './modules/markSwupElements'
 import updateTransition from './modules/updateTransition'
 import preloadPages from './modules/preloadPages'
+import usePlugin from './modules/usePlugin'
 
 export default class Swup {
     constructor(setOptions) {
@@ -66,6 +67,8 @@ export default class Swup {
         this.preloadPromise = null
         // save options
         this.options = options
+        // plugins array
+        this.plugins = []
 
         /**
          * make modules accessible in instance
@@ -87,6 +90,7 @@ export default class Swup {
         this.markSwupElements = markSwupElements
         this.updateTransition = updateTransition
         this.preloadPages = preloadPages
+        this.usePlugin = usePlugin
         this.detectie = detectie
         this.enable = this.enable
         this.destroy = this.destroy
