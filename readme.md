@@ -31,7 +31,7 @@
 [Events](#events)
 
 [Plugins](#plugins)
-* [Installation](#installation)
+* [Plugin Installation](#plugin-installation)
 * [swupMergeHeadPlugin](#swupmergeheadplugin)
 
 [API](#api)
@@ -317,7 +317,7 @@ document.addEventListener('swup:contentReplaced', event => {
 ## Plugins
 Some functionality is only necessary in certain projects. For this reason, swup has support for plugins.
 
-### Installation
+### Plugin Installation
 ```javascript
 import Swup from 'swup'
 import pluginName from 'swup/plugins/pluginName'
