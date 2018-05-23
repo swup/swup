@@ -320,7 +320,7 @@ Some functionality is only necessary in certain projects. For this reason, swup 
 ### Installation
 ```javascript
 import Swup from 'swup'
-import { pluginName } from 'swup'
+import pluginName from 'swup/plugins/pluginName'
 ```
 or
 ```html

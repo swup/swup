@@ -24,10 +24,6 @@ import preloadPages from './modules/preloadPages'
 import usePlugin from './modules/usePlugin'
 import log from './modules/log'
 
-// plugins
-import swupMergeHeadPlugin from './plugins/swupMergeHeadPlugin'
-export { swupMergeHeadPlugin }
-
 export default class Swup {
     constructor(setOptions) {
         // default options
