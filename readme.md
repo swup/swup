@@ -30,6 +30,9 @@
 
 [Events](#events)
 
+[Plugins](#plugins)
+* [Merge Head Plugin](#merge-head-plugin)
+
 [API](#api)
 
 ## Introduction
@@ -309,6 +312,43 @@ document.addEventListener('swup:contentReplaced', event => {
 * **swup:pageRetrievedFromCache** - triggers when page is retrieved from cache and no request is necessary
 * **swup:enabled** - triggers when swup instance is created or re-enabled after call of `destroy()`
 * **swup:disabled** - triggers on `destroy()`
+
+## Plugins
+Some functionality is only necessary in certain projects. For this reason, swup has support for plugins.
+
+### Installation
+```javascript
+import Swup from 'swup'
+import pluginName from 'swup/plugins/pluginName'
+```
+or
+```html
+<script src="./dist/swup.js"></script>
+<script src="./dist/plugins/pluginName.js"></script>
+```
+
+and enable plugin at initialisation of swup by including it in options:
+
+```javascript
+var options = {
+    plugins: [
+        pluginName
+    ]
+}
+var swup = new Swup(options)
+```
+
+Plugins may also have some default options. To rewrite default options of plugin, use swup's `usePlugin` function.
+
+```javascript
+var swup = new Swup(options)
+swup.usePlugin(pluginName, {option1: "value of options"})
+```
+
+### Merge Head Plugin
+Merge Head Plugin replaces the html tags in head on each content replace (`swup:contentReplaced` event).
+Plugin has one option `runScripts`. If the options is set to `true`, script tags placed into head are executed (code inside of the tag as well as linked by `src` attribute).
+Option defaults to `false`.
 
 ## API
 The instance of the swup can be imported and used across your sites JavaScript to enable some additional features. When debug mode (see [options](#options) section) is enabled, instance is also available in `window` object as `window.swup`.
