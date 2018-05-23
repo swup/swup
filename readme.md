@@ -31,7 +31,8 @@
 [Events](#events)
 
 [Plugins](#plugins)
-* [Merge Head Plugin](#merge-head-plugin)
+* [Installation](#installation)
+* [swupMergeHeadPlugin](#swupmergeheadplugin)
 
 [API](#api)
 
@@ -342,10 +343,10 @@ Plugins may also have some default options. To rewrite default options of plugin
 
 ```javascript
 var swup = new Swup(options)
-swup.usePlugin(pluginName, {option1: "value of options"})
+swup.usePlugin(pluginName, {option: "value of options"})
 ```
 
-### Merge Head Plugin
+### swupMergeHeadPlugin
 Merge Head Plugin replaces the html tags in head on each content replace (`swup:contentReplaced` event).
 Plugin has one option `runScripts`. If the options is set to `true`, script tags placed into head are executed (code inside of the tag as well as linked by `src` attribute).
 Option defaults to `false`.
