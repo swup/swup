@@ -343,7 +343,7 @@ Plugins may also have some default options. To rewrite default options of plugin
 
 ```javascript
 var swup = new Swup()
-swup.usePlugin(pluginName, {option: "value of options"})
+swup.usePlugin(pluginName, {option: "value of option"})
 ```
 
 ### swupMergeHeadPlugin
