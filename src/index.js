@@ -22,6 +22,7 @@ import markSwupElements from './modules/markSwupElements'
 import updateTransition from './modules/updateTransition'
 import preloadPages from './modules/preloadPages'
 import usePlugin from './modules/usePlugin'
+import log from './modules/log'
 
 export default class Swup {
     constructor(setOptions) {
@@ -42,6 +43,7 @@ export default class Swup {
             preload: true,
             support: true,
             disableIE: false,
+            plugins: [],
 
             LINK_SELECTOR: 'a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup]), a[xlink\\:href]'
         }
@@ -91,6 +93,7 @@ export default class Swup {
         this.updateTransition = updateTransition
         this.preloadPages = preloadPages
         this.usePlugin = usePlugin
+        this.log = log
         this.detectie = detectie
         this.enable = this.enable
         this.destroy = this.destroy
@@ -162,7 +165,7 @@ export default class Swup {
         /**
          * initial save to cache
          */
-        var page = this.getDataFromHtml(document.documentElement.innerHTML)
+        var page = this.getDataFromHtml(document.documentElement.outerHTML)
         page.url = this.currentUrl
         if (this.options.cache) {
             this.cache.cacheUrl(page, this.options.debugMode)
@@ -172,6 +175,11 @@ export default class Swup {
          * mark swup blocks in html
          */
         this.markSwupElements(document.documentElement)
+
+        /**
+         * enable plugins from options
+         */
+        this.options.plugins.forEach(item => this.usePlugin(item))
 
         /**
          * trigger enabled event
