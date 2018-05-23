@@ -339,10 +339,10 @@ var options = {
 var swup = new Swup(options)
 ```
 
-Plugins may also have some default options. To rewrite default options of plugin, use swup's `usePlugin` function.
+Plugins may also have some default options. To rewrite default options of plugin, use swup's `usePlugin` function to enable plugin.
 
 ```javascript
-var swup = new Swup(options)
+var swup = new Swup()
 swup.usePlugin(pluginName, {option: "value of options"})
 ```
 
