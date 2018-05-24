@@ -76,7 +76,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 24);
+/******/ 	return __webpack_require__(__webpack_require__.s = 23);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -143,91 +143,6 @@ exports.default = Link;
 "use strict";
 
 
-module.exports = {
-    name: 'swupMergeHeadPlugin',
-    options: { runScripts: false },
-    exec: function exec(options, swup, getHTMLfromCache) {
-        document.addEventListener('swup:contentReplaced', function () {
-            var currentHead = document.querySelector('head');
-            var newHead = getHTMLfromCache().querySelector('head');
-            replaceHeadWithoutReplacingExistingTags(currentHead, newHead);
-        });
-
-        var replaceHeadWithoutReplacingExistingTags = function replaceHeadWithoutReplacingExistingTags(currentHead, newHead) {
-            var oldTags = currentHead.children;
-            var newTags = newHead.children;
-            var oldTagsToRemove = [];
-            var newTagsToRemove = [];
-
-            for (var i = 0; i < oldTags.length; i++) {
-                var oldTag = oldTags[i];
-                var oldTagIdentifier = oldTag.outerHTML;
-                var foundInNewHead = false;
-                var newTag = void 0;
-                for (var j = 0; j < newTags.length; j++) {
-                    newTag = newTags[j];
-                    var newTagIdentifier = newTag.outerHTML;
-
-                    if (newTagIdentifier === oldTagIdentifier) {
-                        foundInNewHead = true;
-                        break;
-                    }
-                }
-
-                if (foundInNewHead) {
-                    newTagsToRemove.push(newTag);
-                } else {
-                    oldTagsToRemove.push(oldTag);
-                }
-            }
-
-            for (var _i = 0; _i < newTagsToRemove.length; _i++) {
-                newHead.removeChild(newTagsToRemove[_i]);
-            }
-
-            for (var _i2 = 0; _i2 < oldTagsToRemove.length; _i2++) {
-                currentHead.removeChild(oldTagsToRemove[_i2]);
-            }
-
-            var added = newHead.children.length;
-            var removed = oldTagsToRemove.length;
-
-            var fragment = document.createDocumentFragment();
-            for (var _i3 = 0; _i3 < newHead.children.length; _i3++) {
-                fragment.appendChild(newHead.children[_i3]);
-            }
-            currentHead.appendChild(fragment);
-
-            if (options.runScripts) {
-                newHead.querySelectorAll('script').forEach(function (item) {
-                    if (item.tagName == "SCRIPT" && (item.type == null || item.type == "" || item.type == "text/javascript")) {
-                        var elem = document.createElement('script');
-                        if (item.src != null && item.src != "") {
-                            elem.src = item.src;
-                        } else {
-                            var inline = document.createTextNode(item.innerText);
-                            elem.appendChild(inline);
-                        }
-                        if (item.type != null && item.type != "") {
-                            elem.type = item.type;
-                        }
-                        currentHead.appendChild(elem);
-                    } else {}
-                });
-            }
-
-            swup.log('Removed ' + removed + ' / added ' + added + ' tags in head');
-        };
-    }
-};
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
 module.exports = function (str) {
     if (this.options.debugMode) {
         console.log(str + '%c', 'color: #009ACD');
@@ -235,7 +150,7 @@ module.exports = function (str) {
 };
 
 /***/ }),
-/* 3 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -261,7 +176,7 @@ module.exports = function (plugin, options) {
 };
 
 /***/ }),
-/* 4 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -303,7 +218,7 @@ module.exports = function (eventName) {
 };
 
 /***/ }),
-/* 5 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -331,7 +246,7 @@ module.exports = function (from, to, custom) {
 };
 
 /***/ }),
-/* 6 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -355,7 +270,7 @@ module.exports = function (element) {
 };
 
 /***/ }),
-/* 7 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -381,7 +296,7 @@ module.exports = function (popstate) {
 };
 
 /***/ }),
-/* 8 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -400,7 +315,7 @@ module.exports = function (text) {
 };
 
 /***/ }),
-/* 9 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -486,7 +401,7 @@ module.exports = function (element, to) {
 };
 
 /***/ }),
-/* 10 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -497,7 +412,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 11 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -512,7 +427,7 @@ module.exports = function (eventName) {
 };
 
 /***/ }),
-/* 12 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -526,7 +441,7 @@ module.exports = function (url) {
 };
 
 /***/ }),
-/* 13 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -540,7 +455,7 @@ module.exports = function (page, popstate) {
 };
 
 /***/ }),
-/* 14 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -600,7 +515,11 @@ module.exports = function (page, popstate) {
     var promises = [];
     forEach.call(animatedElements, function (element) {
         var promise = new Promise(function (resolve) {
-            element.addEventListener(_this.transitionEndEvent, resolve);
+            element.addEventListener(_this.transitionEndEvent, function (event) {
+                if (element == event.target) {
+                    resolve();
+                }
+            });
         });
         promises.push(promise);
     });
@@ -625,7 +544,7 @@ module.exports = function (page, popstate) {
 };
 
 /***/ }),
-/* 15 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -657,7 +576,11 @@ module.exports = function (url, popstate) {
         var animatedElements = document.querySelectorAll(this.options.animationSelector);
         forEach.call(animatedElements, function (element) {
             var promise = new Promise(function (resolve) {
-                element.addEventListener(_this.transitionEndEvent, resolve);
+                element.addEventListener(_this.transitionEndEvent, function (event) {
+                    if (element == event.target) {
+                        resolve();
+                    }
+                });
             });
             animationPromises.push(promise);
         });
@@ -718,7 +641,7 @@ module.exports = function (url, popstate) {
 };
 
 /***/ }),
-/* 16 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -753,7 +676,7 @@ module.exports = function (html) {
 };
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -779,7 +702,7 @@ module.exports = function (location, callback) {
 };
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -805,7 +728,7 @@ module.exports = function transitionEnd() {
 };
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -878,7 +801,7 @@ var Cache = function () {
 exports.default = Cache;
 
 /***/ }),
-/* 20 */
+/* 19 */
 /***/ (function(module, exports) {
 
 /**
@@ -913,7 +836,7 @@ var detectie = function() {
 module.exports = detectie;
 
 /***/ }),
-/* 21 */
+/* 20 */
 /***/ (function(module, exports) {
 
 var DOCUMENT_NODE_TYPE = 9;
@@ -952,10 +875,10 @@ module.exports = closest;
 
 
 /***/ }),
-/* 22 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var closest = __webpack_require__(21);
+var closest = __webpack_require__(20);
 
 /**
  * Delegates event to a selector.
@@ -1002,7 +925,7 @@ module.exports = delegate;
 
 
 /***/ }),
-/* 23 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1011,7 +934,6 @@ module.exports = delegate;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.swupMergeHeadPlugin = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -1023,18 +945,15 @@ var _createClass = function () { function defineProperties(target, props) { for 
 // modules
 
 
-// plugins
-
-
-var _delegate = __webpack_require__(22);
+var _delegate = __webpack_require__(21);
 
 var _delegate2 = _interopRequireDefault(_delegate);
 
-var _detectie = __webpack_require__(20);
+var _detectie = __webpack_require__(19);
 
 var _detectie2 = _interopRequireDefault(_detectie);
 
-var _Cache = __webpack_require__(19);
+var _Cache = __webpack_require__(18);
 
 var _Cache2 = _interopRequireDefault(_Cache);
 
@@ -1042,83 +961,77 @@ var _Link = __webpack_require__(0);
 
 var _Link2 = _interopRequireDefault(_Link);
 
-var _transitionEnd = __webpack_require__(18);
+var _transitionEnd = __webpack_require__(17);
 
 var _transitionEnd2 = _interopRequireDefault(_transitionEnd);
 
-var _request = __webpack_require__(17);
+var _request = __webpack_require__(16);
 
 var _request2 = _interopRequireDefault(_request);
 
-var _getDataFromHtml = __webpack_require__(16);
+var _getDataFromHtml = __webpack_require__(15);
 
 var _getDataFromHtml2 = _interopRequireDefault(_getDataFromHtml);
 
-var _loadPage = __webpack_require__(15);
+var _loadPage = __webpack_require__(14);
 
 var _loadPage2 = _interopRequireDefault(_loadPage);
 
-var _renderPage = __webpack_require__(14);
+var _renderPage = __webpack_require__(13);
 
 var _renderPage2 = _interopRequireDefault(_renderPage);
 
-var _goBack = __webpack_require__(13);
+var _goBack = __webpack_require__(12);
 
 var _goBack2 = _interopRequireDefault(_goBack);
 
-var _createState = __webpack_require__(12);
+var _createState = __webpack_require__(11);
 
 var _createState2 = _interopRequireDefault(_createState);
 
-var _triggerEvent = __webpack_require__(11);
+var _triggerEvent = __webpack_require__(10);
 
 var _triggerEvent2 = _interopRequireDefault(_triggerEvent);
 
-var _getUrl = __webpack_require__(10);
+var _getUrl = __webpack_require__(9);
 
 var _getUrl2 = _interopRequireDefault(_getUrl);
 
-var _scrollTo = __webpack_require__(9);
+var _scrollTo = __webpack_require__(8);
 
 var _scrollTo2 = _interopRequireDefault(_scrollTo);
 
-var _classify = __webpack_require__(8);
+var _classify = __webpack_require__(7);
 
 var _classify2 = _interopRequireDefault(_classify);
 
-var _doScrolling = __webpack_require__(7);
+var _doScrolling = __webpack_require__(6);
 
 var _doScrolling2 = _interopRequireDefault(_doScrolling);
 
-var _markSwupElements = __webpack_require__(6);
+var _markSwupElements = __webpack_require__(5);
 
 var _markSwupElements2 = _interopRequireDefault(_markSwupElements);
 
-var _updateTransition = __webpack_require__(5);
+var _updateTransition = __webpack_require__(4);
 
 var _updateTransition2 = _interopRequireDefault(_updateTransition);
 
-var _preloadPages = __webpack_require__(4);
+var _preloadPages = __webpack_require__(3);
 
 var _preloadPages2 = _interopRequireDefault(_preloadPages);
 
-var _usePlugin = __webpack_require__(3);
+var _usePlugin = __webpack_require__(2);
 
 var _usePlugin2 = _interopRequireDefault(_usePlugin);
 
-var _log = __webpack_require__(2);
+var _log = __webpack_require__(1);
 
 var _log2 = _interopRequireDefault(_log);
-
-var _swupMergeHeadPlugin = __webpack_require__(1);
-
-var _swupMergeHeadPlugin2 = _interopRequireDefault(_swupMergeHeadPlugin);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-exports.swupMergeHeadPlugin = _swupMergeHeadPlugin2.default;
 
 var Swup = function () {
     function Swup(setOptions) {
@@ -1415,13 +1328,13 @@ var Swup = function () {
 exports.default = Swup;
 
 /***/ }),
-/* 24 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _index = __webpack_require__(23);
+var _index = __webpack_require__(22);
 
 var _index2 = _interopRequireDefault(_index);
 

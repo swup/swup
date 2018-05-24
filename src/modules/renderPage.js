@@ -50,7 +50,11 @@ module.exports = function (page, popstate) {
     animatedElements
         ::forEach(element => {
         var promise = new Promise(resolve => {
-            element.addEventListener(this.transitionEndEvent, resolve)
+            element.addEventListener(this.transitionEndEvent, event => {
+                if (element == event.target) {
+                    resolve()
+                }
+            })
         });
         promises.push(promise)
     })
