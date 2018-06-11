@@ -35,7 +35,9 @@ module.exports = function (page, popstate) {
     // empty string for page class
     if (page.pageClass != "") {
         page.pageClass.split(' ').forEach(className => {
-            document.body.classList.add(className)
+            if (className != "" && className.includes(this.options.pageClassPrefix)) {
+                document.body.classList.add(className)
+            }
         })
     }
 
