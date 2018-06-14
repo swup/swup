@@ -8,6 +8,8 @@ module.exports = function (page, popstate) {
         document.documentElement.classList.add('is-rendering')
     }
 
+    this.triggerEvent('willReplaceContent')
+
     // replace blocks
     for (var i = 0; i < page.blocks.length; i++) {
         document.body.querySelector(`[data-swup="${i}"]`).outerHTML = page.blocks[i]
