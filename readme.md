@@ -304,8 +304,9 @@ document.addEventListener('swup:contentReplaced', event => {
 ```
 
 ### List of all events
-* **swup:contentReplaced** - triggers when the content of page is replaced
-* **swup:pageView** - similar as previous, except it is once trigger on load of the page
+* **swup:willReplaceContent** - triggers right before the content of page is replaced
+* **swup:contentReplaced** - triggers right after the content of page is replaced
+* **swup:pageView** - similar as previous, except it is once triggered on load
 * **swup:hoverLink** - triggers when link is hovered
 * **swup:clickLink** - triggers when link is clicked
 * **swup:animationOutDone** - triggers when transition of all animated elements is done (after click of link and before content is replaced)
