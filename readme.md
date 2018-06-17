@@ -26,6 +26,7 @@
 * [Support](#support)
 * [Disable IE](#disable-ie)
 * [Debug Mode](#debug-mode)
+* [Skip popState Handling](#skip-popstate-handling)
 * [Default values](#default-values)
 
 [Events](#events)
