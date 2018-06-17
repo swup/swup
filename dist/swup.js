@@ -436,7 +436,8 @@ module.exports = function (eventName) {
 module.exports = function (url) {
     window.history.pushState({
         url: url || window.location.href.split(window.location.hostname)[1],
-        random: Math.random()
+        random: Math.random(),
+        source: "swup"
     }, document.getElementsByTagName('title')[0].innerText, url || window.location.href.split(window.location.hostname)[1]);
 };
 
@@ -1060,6 +1061,13 @@ var Swup = function () {
             disableIE: false,
             plugins: [],
 
+            skipPopStateHandling: function skipPopStateHandling(event) {
+                if (event.state && event.state.source == "swup") {
+                    return false;
+                }
+                return true;
+            },
+
             LINK_SELECTOR: 'a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup]), a[xlink\\:href]'
 
             /**
@@ -1199,6 +1207,15 @@ var Swup = function () {
             });
 
             /**
+             * modify initial history record
+             */
+            window.history.replaceState(Object.assign({}, window.history.state, {
+                url: window.location.href,
+                random: Math.random(),
+                source: "swup"
+            }), document.title, window.location.href);
+
+            /**
              * trigger enabled event
              */
             this.triggerEvent('enabled');
@@ -1315,6 +1332,7 @@ var Swup = function () {
         key: 'popStateHandler',
         value: function popStateHandler(event) {
             var link = new _Link2.default();
+            if (this.options.skipPopStateHandling(event)) return;
             link.setPath(event.state ? event.state.url : window.location.pathname);
             if (link.getHash() != '') {
                 this.scrollToElement = link.getHash();

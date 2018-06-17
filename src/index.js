@@ -45,7 +45,12 @@ export default class Swup {
             disableIE: false,
             plugins: [],
 
-            skipPopStateHandling: function(){ return false; },
+            skipPopStateHandling: function(event){
+                if (event.state && event.state.source == "swup") {
+                    return false;
+                }
+                return true;
+            },
 
             LINK_SELECTOR: 'a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup]), a[xlink\\:href]'
         }
@@ -184,6 +189,19 @@ export default class Swup {
         this.options.plugins.forEach(item => this.usePlugin(item))
 
         /**
+         * modify initial history record
+         */
+        window.history.replaceState(
+            Object.assign({}, window.history.state, {
+                url: window.location.href,
+                random: Math.random(),
+                source: "swup",
+            }),
+            document.title,
+            window.location.href
+        );
+
+        /**
          * trigger enabled event
          */
         this.triggerEvent('enabled')
@@ -294,8 +312,8 @@ export default class Swup {
 
     popStateHandler (event)  {
         var link = new Link()
+        if (this.options.skipPopStateHandling(event)) return;
         link.setPath(event.state ? event.state.url : window.location.pathname)
-        if (this.options.skipPopStateHandling(link)) return;
         if (link.getHash() != '') {
             this.scrollToElement = link.getHash()
         } else {

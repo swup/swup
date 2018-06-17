@@ -265,6 +265,21 @@ Debug mode is useful for integrating swup into your site. When enabled, swup dis
 debugMode: false
 ```
 
+### Skip popState Handling
+Swup is built around browser history API, but sometimes some other tools manipulating the browser history can be used as well. 
+For this reason, swup places a source property into every history state object it creates, so it can be later identified (swup also modifies current history record on start, to include the "swup" source property as well). 
+On `popState` events, swup only handles the records that were created by swup. 
+This behavior can be modified by `skipPopStateHandling` option, which is represented by a function returning boolean (false = handle the popstate, true = do nothing). 
+The function accepts one argument - the popstate event. Option defaults to the following:
+```javascript
+skipPopStateHandling: function(event){
+    if (event.state && event.state.source == "swup") {
+        return false;
+    }
+    return true;
+}
+```
+
 ### Default values
 ```javascript
 let options = {
@@ -279,7 +294,13 @@ let options = {
     debugMode: false,
     preload: true,
     support: true,
-    disableIE: false
+    disableIE: false,
+    skipPopStateHandling: function(event){
+        if (event.state && event.state.source == "swup") {
+            return false;
+        }
+        return true;
+    },
 }
 ```
 
