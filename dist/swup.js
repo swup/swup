@@ -196,7 +196,7 @@ module.exports = function (eventName) {
             var link = new _Link2.default();
             link.setPath(pathname);
             if (link.getAddress() != _this.currentUrl && !_this.cache.exists(link.getAddress()) && _this.preloadPromise == null) {
-                _this.getPage(link.getAddress(), function (response) {
+                _this.getPage({ url: link.getAddress() }, function (response) {
                     if (response === null) {
                         console.warn('Server error.');
                         _this.triggerEvent('serverError');
@@ -558,7 +558,7 @@ module.exports = function (page, popstate) {
 var forEach = Array.prototype.forEach;
 
 
-module.exports = function (url, popstate) {
+module.exports = function (data, popstate) {
     var _this = this;
 
     var finalPage = null;
@@ -575,7 +575,7 @@ module.exports = function (url, popstate) {
         document.documentElement.classList.add('is-changing');
         document.documentElement.classList.add('is-leaving');
         document.documentElement.classList.add('is-animating');
-        document.documentElement.classList.add('to-' + this.classify(url));
+        document.documentElement.classList.add('to-' + this.classify(data.url));
 
         // detect animation end
         var animatedElements = document.querySelectorAll(this.options.animationSelector);
@@ -596,9 +596,9 @@ module.exports = function (url, popstate) {
 
         // create pop element with or without anchor
         if (this.scrollToElement != null) {
-            var pop = url + this.scrollToElement;
+            var pop = data.url + this.scrollToElement;
         } else {
-            var pop = url;
+            var pop = data.url;
         }
         this.createState(pop);
     } else {
@@ -606,15 +606,15 @@ module.exports = function (url, popstate) {
         this.triggerEvent('animationSkipped');
     }
 
-    if (this.cache.exists(url)) {
+    if (this.cache.exists(data.url)) {
         var xhrPromise = new Promise(function (resolve) {
             resolve();
         });
         this.triggerEvent('pageRetrievedFromCache');
     } else {
-        if (!this.preloadPromise || this.preloadPromise.route != url) {
+        if (!this.preloadPromise || this.preloadPromise.route != data.url) {
             var xhrPromise = new Promise(function (resolve) {
-                _this.getPage(url, function (response) {
+                _this.getPage(data, function (response) {
                     if (response === null) {
                         console.warn('Server error.');
                         _this.triggerEvent('serverError');
@@ -622,7 +622,7 @@ module.exports = function (url, popstate) {
                     } else {
                         // get json data
                         var page = _this.getDataFromHtml(response);
-                        page.url = url;
+                        page.url = data.url;
                         // render page
                         _this.cache.cacheUrl(page, _this.options.debugMode);
                         _this.triggerEvent('pageLoaded');
@@ -636,7 +636,7 @@ module.exports = function (url, popstate) {
     }
 
     Promise.all(animationPromises.concat([xhrPromise])).then(function () {
-        finalPage = _this.cache.getPage(url);
+        finalPage = _this.cache.getPage(data.url);
         if (!_this.options.cache) {
             _this.cache.empty(_this.options.debugMode);
         }
@@ -687,7 +687,19 @@ module.exports = function (html) {
 "use strict";
 
 
-module.exports = function (location, callback) {
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+module.exports = function (options) {
+    var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+    var defaults = {
+        url: window.location.pathname + window.location.search,
+        method: "GET",
+        data: null
+    };
+
+    var data = _extends({}, defaults, options);
+
     var request = new XMLHttpRequest();
 
     request.onreadystatechange = function () {
@@ -700,9 +712,9 @@ module.exports = function (location, callback) {
         }
     };
 
-    request.open("GET", location, true);
+    request.open(data.method, data.url, true);
     request.setRequestHeader("X-Requested-With", "swup");
-    request.send(null);
+    request.send(data.data);
     return request;
 };
 
@@ -1068,7 +1080,8 @@ var Swup = function () {
                 return true;
             },
 
-            LINK_SELECTOR: 'a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup]), a[xlink\\:href]'
+            LINK_SELECTOR: 'a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup]), a[xlink\\:href]',
+            FORM_SELECTOR: 'form[data-swup-form]'
 
             /**
              * current transition object
@@ -1179,6 +1192,11 @@ var Swup = function () {
              * link mouseover handler (preload)
              */
             this.delegatedListeners.mouseover = (0, _delegate2.default)(document.body, this.options.LINK_SELECTOR, 'mouseover', this.linkMouseoverHandler.bind(this));
+
+            /**
+             * form submit handler
+             */
+            this.delegatedListeners.formSubmit = (0, _delegate2.default)(document, this.options.FORM_SELECTOR, 'submit', this.formSubmitHandler.bind(this));
 
             /**
              * popstate handler
@@ -1292,7 +1310,7 @@ var Swup = function () {
                     } else {
                         this.updateTransition(window.location.pathname, link.getAddress());
                     }
-                    this.loadPage(link.getAddress(), false);
+                    this.loadPage({ url: link.getAddress() }, false);
                 }
             } else {
                 this.triggerEvent('openPageInNewTab');
@@ -1309,7 +1327,7 @@ var Swup = function () {
                 link.setPath(event.delegateTarget.href);
                 if (link.getAddress() != this.currentUrl && !this.cache.exists(link.getAddress()) && this.preloadPromise == null) {
                     this.preloadPromise = new Promise(function (resolve) {
-                        _this2.getPage(link.getAddress(), function (response) {
+                        _this2.getPage({ url: link.getAddress() }, function (response) {
                             if (response === null) {
                                 console.warn('Server error.');
                                 _this2.triggerEvent('serverError');
@@ -1329,6 +1347,59 @@ var Swup = function () {
             }
         }
     }, {
+        key: 'formSubmitHandler',
+        value: function formSubmitHandler(event) {
+            // no control key pressed
+            if (!event.metaKey) {
+                this.triggerEvent('submitForm');
+                event.preventDefault();
+                var form = event.target;
+                var formData = new FormData(form);
+
+                var link = new _Link2.default();
+                link.setPath(form.action);
+
+                if (form.method.toLowerCase() != "get") {
+                    // send data
+                    this.loadPage({
+                        url: link.getAddress(),
+                        method: form.method,
+                        data: formData
+                    });
+                } else {
+                    // create base url
+                    var url = link.getAddress() || window.location.href;
+                    var inputs = form.querySelectorAll('input');
+                    if (url.indexOf('?') == -1) {
+                        url += "?";
+                    } else {
+                        url += "&";
+                    }
+
+                    // add form data to url
+                    inputs.forEach(function (input) {
+                        if (input.type == "checkbox" || input.type == "radio") {
+                            if (input.checked) {
+                                url += encodeURIComponent(input.name) + "=" + encodeURIComponent(input.value) + "&";
+                            }
+                        } else {
+                            url += encodeURIComponent(input.name) + "=" + encodeURIComponent(input.value) + "&";
+                        }
+                    });
+
+                    // remove last "&"
+                    url = url.slice(0, -1);
+
+                    // send data
+                    this.loadPage({
+                        url: url
+                    });
+                }
+            } else {
+                this.triggerEvent('openFormSubmitInNewTab');
+            }
+        }
+    }, {
         key: 'popStateHandler',
         value: function popStateHandler(event) {
             var link = new _Link2.default();
@@ -1340,7 +1411,7 @@ var Swup = function () {
                 event.preventDefault();
             }
             this.triggerEvent('popState');
-            this.loadPage(link.getAddress(), event);
+            this.loadPage({ url: link.getAddress() }, event);
         }
     }]);
 

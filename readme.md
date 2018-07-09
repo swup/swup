@@ -18,6 +18,7 @@
 
 [Options](#options)
 * [Link Selector](#link-selector)
+* [Form Selector](#form-selector)
 * [Element](#elements)
 * [Animation Selector](#animation-selector)
 * [Cache](#cache)
@@ -183,6 +184,20 @@ In case you want to exclude links for some routes, lightbox or any other functio
 
 **Tip:** In most cases, it is good to disable transition between language versions of your site for multiple reasons - replacing of header/footer, analytics, etc.
 
+### Form Selector
+Form selector defines forms that will be submitted via swup (with animation and all, as any other request). By default, any form with `data-swup-form` attribute is selected. The raw selector form is shown below.
+```javascript
+FORM_SELECTOR: 'form[data-swup-form]'
+```
+Swup will take the form data and submit it with appropriate `method` and `action` based on form attributes, where method defaults to `GET` and action defaults to current url.
+In case of `GET` method, swup serializes the data into url. In case of `POST` request, swup wraps the data and sends in via POST request. 
+
+**Note:** This feature is rather experimental and serves to enable submission of simple forms such as "search on website" form. 
+The response from the server must be a valid page with all elements that need to be replaced by swup.
+This method does not support submission of files, or other advanced features. 
+You can also refer to [API](#api) section, for using swup API for sending requests. 
+
+
 ### Elements
 Elements option defines the array of selectors of elements to be replaced. 
 Elements option usually contains the main element with the content of the page. 
@@ -285,6 +300,7 @@ skipPopStateHandling: function(event){
 ```javascript
 let options = {
     LINK_SELECTOR: 'a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup]), a[xlink\\:href]',
+    FORM_SELECTOR: 'form[data-swup-form]',
     elements: [
         '#swup'
     ],
@@ -395,11 +411,19 @@ swup.options.cache = true;
 or use built in functions
 ```javascript
 // navigates to /someRoute with the animations and all...
-swup.loadPage('/someRoute', false)
+swup.loadPage({
+    url: "/someRoute", // route of request (defaults to current url)
+    method: "GET", // method of request (defaults to "GET")
+    data: data, // data passed into XMLHttpRequest send method
+}) 
+```
+**Note:** This built in function is used to submit forms with swup. For more information on submitting forms with `XMLHttpRequest`, refer to [Sending forms through JavaScript](https://developer.mozilla.org/en-US/docs/Learn/HTML/Forms/Sending_forms_through_JavaScript).
+
+```javascript
 // disable swup
 swup.destroy()
 ```
-Sky is the limit here.
+Sky is the limit here...
 
 
 

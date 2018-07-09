@@ -6,7 +6,7 @@ module.exports = function (eventName) {
             var link = new Link()
             link.setPath(pathname)
             if (link.getAddress() != this.currentUrl && !this.cache.exists(link.getAddress()) && this.preloadPromise == null) {
-                this.getPage(link.getAddress(), response => {
+                this.getPage({ url: link.getAddress() }, response => {
                     if (response === null) {
                         console.warn('Server error.')
                         this.triggerEvent('serverError')

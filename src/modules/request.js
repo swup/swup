@@ -1,5 +1,16 @@
-module.exports = function(location, callback) {
-    var request = new XMLHttpRequest()
+module.exports = function(options, callback = false) {
+    let defaults = {
+        url: window.location.pathname + window.location.search,
+        method: "GET",
+        data: null
+    }
+
+    let data = {
+        ...defaults,
+        ...options
+    }
+
+    let request = new XMLHttpRequest()
 
     request.onreadystatechange = function() {
         if (request.readyState === 4) {
@@ -12,8 +23,8 @@ module.exports = function(location, callback) {
         }
     }
 
-    request.open("GET", location, true)
+    request.open(data.method, data.url, true)
     request.setRequestHeader("X-Requested-With", "swup")
-    request.send(null)
+    request.send(data.data)
     return request
 }
