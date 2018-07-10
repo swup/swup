@@ -194,8 +194,9 @@ In case of `GET` method, swup serializes the data into url. In case of `POST` re
 
 **Note:** This feature is rather experimental and serves to enable submission of simple forms such as "search on website" form. 
 The response from the server must be a valid page with all elements that need to be replaced by swup.
+Feature might not play well with swup cache. When cache is enabled, swup does not visit same url twice, including `POST` requests with different data. Consider disabling cache or removing page from cache when necessary with `swup.cache.remove('/you-url')` (swup does this before form submission, so the submit goes through every time). 
 This method does not support submission of files, or other advanced features. 
-You can also refer to [API](#api) section, for using swup API for sending requests. 
+Please refer to [API](#api) section, for using swup API for sending requests. 
 
 
 ### Elements
@@ -354,6 +355,7 @@ document.addEventListener('swup:contentReplaced', event => {
 * **swup:scrollDone** - triggers when built in scroll is done
 * **swup:animationInDone** - triggers when transition of all animated elements is done (after content is replaced)
 * **swup:pageRetrievedFromCache** - triggers when page is retrieved from cache and no request is necessary
+* **swup:submitForm** - triggers when form is submitted trough swup (right before submission)
 * **swup:enabled** - triggers when swup instance is created or re-enabled after call of `destroy()`
 * **swup:disabled** - triggers on `destroy()`
 
@@ -408,14 +410,20 @@ or change options
 // enable cache
 swup.options.cache = true;
 ```
+or remove page from cache
+```javascript
+// enable cache
+swup.cache.remove('/you-url');
+```
+
 or use built in functions
 ```javascript
-// navigates to /someRoute with the animations and all...
+// navigates to /someRoute with the animations and all... (can be used to submit forms)
 swup.loadPage({
     url: "/someRoute", // route of request (defaults to current url)
     method: "GET", // method of request (defaults to "GET")
     data: data, // data passed into XMLHttpRequest send method
-}) 
+});
 ```
 **Note:** This built in function is used to submit forms with swup. For more information on submitting forms with `XMLHttpRequest`, refer to [Sending forms through JavaScript](https://developer.mozilla.org/en-US/docs/Learn/HTML/Forms/Sending_forms_through_JavaScript).
 

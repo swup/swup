@@ -810,6 +810,11 @@ var Cache = function () {
                 console.log('Cache cleared');
             }
         }
+    }, {
+        key: 'remove',
+        value: function remove(url) {
+            delete this.pages[url];
+        }
     }]);
 
     return Cache;
@@ -1360,6 +1365,9 @@ var Swup = function () {
                 link.setPath(form.action);
 
                 if (form.method.toLowerCase() != "get") {
+                    // remove page from cache
+                    this.cache.remove(link.getAddress());
+
                     // send data
                     this.loadPage({
                         url: link.getAddress(),
@@ -1389,6 +1397,9 @@ var Swup = function () {
 
                     // remove last "&"
                     url = url.slice(0, -1);
+
+                    // remove page from cache
+                    this.cache.remove(url);
 
                     // send data
                     this.loadPage({

@@ -42,4 +42,8 @@ export default class Cache {
             console.log('Cache cleared')
         }
     }
+
+    remove (url) {
+        delete this.pages[url]
+    }
 }

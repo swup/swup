@@ -328,6 +328,9 @@ export default class Swup {
             link.setPath(form.action)
 
             if(form.method.toLowerCase() != "get") {
+                // remove page from cache
+                this.cache.remove(link.getAddress())
+
                 // send data
                 this.loadPage({
                     url: link.getAddress(),
@@ -357,6 +360,9 @@ export default class Swup {
 
                 // remove last "&"
                 url = url.slice(0, -1)
+
+                // remove page from cache
+                this.cache.remove(url)
 
                 // send data
                 this.loadPage({
