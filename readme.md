@@ -194,7 +194,7 @@ In case of `GET` method, swup serializes the data into url. In case of `POST` re
 
 **Note:** This feature is rather experimental and serves to enable submission of simple forms such as "search on website" form. 
 The response from the server must be a valid page with all elements that need to be replaced by swup.
-Feature might not play well with swup cache. When cache is enabled, swup does not visit same url twice, including `POST` requests with different data. Consider disabling cache or removing page from cache when necessary with `swup.cache.remove('/you-url')` (swup does this before form submission, so the submit goes through every time). 
+Feature might not play well with swup cache. When cache is enabled, swup does not visit same url twice, including `POST` requests with different data. Consider disabling cache or removing page from cache when necessary with `swup.cache.remove('/your-url')` (swup does this before form submission, so the submit goes through every time). 
 This method does not support submission of files, or other advanced features. 
 Please refer to [API](#api) section, for using swup API for sending requests. 
 
@@ -413,7 +413,7 @@ swup.options.cache = true;
 or remove page from cache
 ```javascript
 // enable cache
-swup.cache.remove('/you-url');
+swup.cache.remove('/your-url');
 ```
 
 or use built in functions
