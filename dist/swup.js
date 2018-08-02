@@ -487,6 +487,9 @@ module.exports = function (page, popstate) {
 
     this.triggerEvent('contentReplaced');
     this.triggerEvent('pageView');
+    if (!this.options.cache) {
+        this.cache.empty(this.options.debugMode);
+    }
     setTimeout(function () {
         document.documentElement.classList.remove('is-animating');
     }, 10);
@@ -637,9 +640,6 @@ module.exports = function (data, popstate) {
 
     Promise.all(animationPromises.concat([xhrPromise])).then(function () {
         finalPage = _this.cache.getPage(data.url);
-        if (!_this.options.cache) {
-            _this.cache.empty(_this.options.debugMode);
-        }
         _this.renderPage(finalPage, popstate);
         _this.preloadPromise = null;
     });

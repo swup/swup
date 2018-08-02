@@ -20,6 +20,9 @@ module.exports = function (page, popstate) {
 
     this.triggerEvent('contentReplaced')
     this.triggerEvent('pageView')
+    if (!this.options.cache) {
+        this.cache.empty(this.options.debugMode)
+    }
     setTimeout(() => {
         document.documentElement.classList.remove('is-animating')
     }, 10)
