@@ -1364,6 +1364,10 @@ var Swup = function () {
                 var link = new _Link2.default();
                 link.setPath(form.action);
 
+                if (link.getHash() != '') {
+                    this.scrollToElement = link.getHash();
+                }
+
                 if (form.method.toLowerCase() != "get") {
                     // remove page from cache
                     this.cache.remove(link.getAddress());
