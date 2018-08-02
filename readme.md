@@ -410,6 +410,20 @@ window.ga('set', 'page', window.location.pathname + window.location.search);
 window.ga('send', 'pageview');
 ```
 
+### swupGtmPlugin
+Google Tag Manager Plugin triggers `VirtualPageview` event on `swup:contentReplaced` (on each page change) which can be associated with a page view within GTM.
+Event object also includes `virtualPageURL` holding the url of the page and `virtualPageTitle` holding the title of the page.
+Note that this event is not triggered at the first load, so the first page view must be triggered elsewhere.
+Simplified code run by this plugin on `swup:contentReplaced`:
+
+```javascript
+window.dataLayer.push({
+    'event': 'VirtualPageview',
+    'virtualPageURL': window.location.pathname + window.location.search,
+    'virtualPageTitle': document.title
+});
+```
+
 ## API
 The instance of the swup can be imported and used across your sites JavaScript to enable some additional features. When debug mode (see [options](#options) section) is enabled, instance is also available in `window` object as `window.swup`.
 We can access some of the information used by swup such as used options:
