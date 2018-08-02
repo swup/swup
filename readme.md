@@ -35,6 +35,8 @@
 [Plugins](#plugins)
 * [Plugin Installation](#plugin-installation)
 * [swupMergeHeadPlugin](#swupmergeheadplugin)
+* [swupGaPlugin](#swupgaplugin)
+* [swupGtmPlugin](#swupgtmplugin)
 
 [API](#api)
 
@@ -395,6 +397,18 @@ swup.usePlugin(pluginName, {option: "value of option"})
 Merge Head Plugin replaces the html tags in head on each content replace (`swup:contentReplaced` event).
 Plugin has one option `runScripts`. If the options is set to `true`, script tags placed into head are executed (code inside of the tag as well as linked by `src` attribute).
 Option defaults to `false`.
+
+### swupGaPlugin
+Google Analytics Plugin triggers `pageview` event on `swup:contentReplaced` (on each page change).
+Note that this event is not triggered at the first load, so the first page view must be triggered elsewhere.
+However, page view event is by default triggered in [Javascripts tracking snippet](https://developers.google.com/analytics/devguides/collection/analyticsjs/#the_javascript_tracking_snippet).
+Simplified code run by this plugin on `swup:contentReplaced`:
+
+```javascript
+window.ga('set', 'title', document.title);
+window.ga('set', 'page', window.location.pathname + window.location.search);
+window.ga('send', 'pageview');
+```
 
 ## API
 The instance of the swup can be imported and used across your sites JavaScript to enable some additional features. When debug mode (see [options](#options) section) is enabled, instance is also available in `window` object as `window.swup`.
