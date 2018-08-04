@@ -326,7 +326,7 @@ let options = {
 
 ## Events
 As we are replacing the native functionality of the browser, there may be some constraints related to that. For this purpose, swup emits bunch of events triggered on the document while working. We can use those events to enable our JavaScript, trigger some analytics, etc.
-```javascripts
+```javascript
 // trigger page view for GTM
 document.addEventListener('swup:pageView', event => {
     dataLayer.push({
