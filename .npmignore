@@ -2,3 +2,4 @@ src/
 dist/
 entry.js
 webpack.config.js
+.idea
