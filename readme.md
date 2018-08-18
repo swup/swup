@@ -108,11 +108,11 @@ in case you've included swup from a dist folder.
 
 Add the `swup` id to the main element in HTML so it is replaced with the main element of the loaded page. Also, add the class that handles animations of our faded element - `a-fade`.
 ```html
-    <div class="a-fade">
-        <main id="swup">
+    <main id="swup">
+        <div class="a-fade">
             ...
-        </main>
-    </div>
+        </div>
+    </main>
     <div class="loading">We are loading...</div>
 ```
 
