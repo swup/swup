@@ -5,6 +5,8 @@
 
 **Note:** In case you like to do your animations in JavaScript, you may also check out [swupjs](https://github.com/gmrchk/swupjs).
 
+**If you'd like to share your work using swup with me or others, please, drop me a link.**
+
 ## Table of contents
 [Introduction](#introduction)
 * [What it does](#what-it-does) 
@@ -39,6 +41,8 @@
 
 [API](#api)
 
+[Contributions](#contributions)
+
 ## Introduction
 Swup enables animated transitions between pages powered by CSS. All you need to do is define how your page looks in the transition state, and swup takes care of the rest. Here's a little [preview](https://gmrchk.github.io/swup/).
 
@@ -51,8 +55,6 @@ Swup enables animated transitions between pages powered by CSS. All you need to 
 * Swup never loads the same page twice (when cache option is enabled). Actually, once you've visited several pages of site, you can even disable your internet connection and continue browsing.
 * Swup doesn't wait for next page to be loaded to start the animation - it all happens at the same time. While a user is trying to process what is happening on screen, your request is being served. With preload option enabled it can even start loading your page before you click the link. But don't worry, swup won't start another request to the same page in case you click the link while it's being preloaded. At the same time, it won't spam your server with requests in case user hovers over a list of links of some sort - maximum number of requests being created/processed by swup at once is two. 
 * Swup works with any server-side rendered content and it doesn't require any setup on the server. However, it is possible to implement a transfer of only required data on the server based on `X-Requested-With` request header. In that case, swup can be easily modified based on your solution.
-
-**Note:** Swup is currently stable and production-ready. However, it is a "one-man show" and any contributions or suggestions are welcome.
 
 ## Installation
 ```shell
@@ -454,9 +456,8 @@ swup.destroy()
 ```
 Sky is the limit here...
 
-
-
-
+## Contributions
+Swup is currently stable and production-ready. However, it is a "one-man show" and any contributions or suggestions are more than welcome.
 
 
 
