@@ -41,7 +41,6 @@ export default class Swup {
 
             preload: true,
             support: true,
-            disableIE: false,
             plugins: [],
 
             skipPopStateHandling: function(event){
