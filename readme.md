@@ -25,7 +25,6 @@
 * [Page Class Prefix](#page-class-prefix)
 * [Scroll](#scroll)
 * [Support](#support)
-* [Disable IE](#disable-ie)
 * [Debug Mode](#debug-mode)
 * [Skip popState Handling](#skip-popstate-handling)
 * [Default values](#default-values)
@@ -270,12 +269,6 @@ Due to the use of promises, transitionEnd and pushState features of JavaScript, 
 However, as there may always be some exceptions for browsers or polyfills can be used on the page (that may or may not work), this support check can be disabled and you can use your own support check before creating the instance. Support option is enabled by default.
 ```javascript
 support: true
-```
-
-### Disable IE
-While swup itself should run without problem in IE Edge (or other IE with help of some polyfills), I have encountered multiple problems on IE (including Edge) in some particular situations, related to updating browser history, rendering large parts of page replaced with javascript or performance of animation on large elements. That's why swup allows to simply disable the whole thing in all IE browsers with `disableIE` option. This option is intended as a last resort to save your computer from physical damage caused by an angry developer. Swup is enabled in IE by default.
-```javasrripts
-disableIE: false
 ```
 
 ### Debug Mode
