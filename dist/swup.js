@@ -291,7 +291,6 @@ var Swup = function () {
 
             preload: true,
             support: true,
-            disableIE: false,
             plugins: [],
 
             skipPopStateHandling: function skipPopStateHandling(event) {
