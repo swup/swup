@@ -1120,13 +1120,11 @@ module.exports = function (page, popstate) {
     Promise.all(promises).then(function () {
         _this.triggerEvent('animationInDone');
         // remove "to-{page}" classes
-        document.documentElement.classList.forEach(function (classItem) {
-            if (classItem.startsWith('to-')) {
+        document.documentElement.className.split(' ').forEach(function (classItem) {
+            if (new RegExp("^to-").test(classItem) || classItem === "is-changing" || classItem === "is-rendering") {
                 document.documentElement.classList.remove(classItem);
             }
         });
-        document.documentElement.classList.remove('is-changing');
-        document.documentElement.classList.remove('is-rendering');
     });
 
     // update current url
