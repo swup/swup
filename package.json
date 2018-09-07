@@ -1,13 +1,13 @@
 {
   "name": "swup",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Animated page transitions with css.",
   "main": "lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "compile": "babel --presets es2015,stage-0 -d lib/ src/ && babel --presets es2015,stage-0 -d plugins/ src/plugins/",
     "build": "webpack-cli",
-    "prepublish": "npm run compile"
+    "prepublish": "npm run compile && npm run build"
   },
   "author": "Georgy Marchuk",
   "license": "MIT",
