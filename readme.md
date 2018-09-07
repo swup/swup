@@ -109,7 +109,7 @@ in case you've included swup from a dist folder.
 
 Add the `swup` id to the main element in HTML so it is replaced with the main element of the loaded page.
 Also, add the class that handles animations of our faded element - `a-fade`.
-**Note** that only the classes actually starting with "a-" are selected by default ("a-some-class another-class" ✔ - "another-class a-some-class" ✗).
+**Note** that only the elements with class attribute actually starting with "a-" are selected by default ("a-some-class another-class" ✔ - "another-class a-some-class" ✗).
 ```html
     <main id="swup">
         <div class="a-fade">
@@ -219,7 +219,7 @@ options = {
 
 ### Animation Selector
 As swup is built on animations, it is required to define the elements that are being animated. Usually, you would like to give the elements some common class or class prefix. By default option is set to `[class^='a-']`, which selects all elements with class attribute beginning with prefix `a-`.
-**Note** that only the classes actually starting with "a-" are selected by default ("a-some-class another-class" ✔ - "another-class a-some-class" ✗).
+**Note** that only the elements with class attribute actually starting with "a-" are selected by default ("a-some-class another-class" ✔ - "another-class a-some-class" ✗).
 ```javascript
 animationSelector: '[class^="a-"]'
 ```
