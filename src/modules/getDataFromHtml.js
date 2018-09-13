@@ -6,7 +6,8 @@ module.exports = function (html) {
 
     for (var i = 0; i < this.options.elements.length; i++) {
         if (fakeDom.querySelector(this.options.elements[i]) == null) {
-            console.warn(`Element ${this.options.elements[i]} is not found cached page.`)
+            console.warn(`Element ${this.options.elements[i]} is not found in cached page.`)
+            return null;
         } else {
             [].forEach.call(document.body.querySelectorAll(this.options.elements[i]), (item, index) => {
                 fakeDom.querySelectorAll(this.options.elements[i])[index].dataset.swup = blocks.length;

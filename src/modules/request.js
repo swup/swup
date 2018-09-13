@@ -16,8 +16,7 @@ module.exports = function(options, callback = false) {
         if (request.readyState === 4) {
             if (request.status !== 500) {
                 callback(request.responseText, request)
-            }
-            else {
+            } else {
                 callback(null, request)
             }
         }

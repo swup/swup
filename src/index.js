@@ -286,17 +286,23 @@ export default class Swup {
             var link = new Link()
             link.setPath(event.delegateTarget.href)
             if (link.getAddress() != this.currentUrl && !this.cache.exists(link.getAddress()) && this.preloadPromise == null) {
-                this.preloadPromise = new Promise(resolve => {
-                    this.getPage({ url: link.getAddress() }, response => {
-                        if (response === null) {
-                            console.warn('Server error.')
+                this.preloadPromise = new Promise((resolve, reject) => {
+                    this.getPage({ url: link.getAddress() },  (response, request) => {
+                        if (request.status === 500) {
                             this.triggerEvent('serverError')
+                            reject(link.getAddress())
+                            return;
                         } else {
                             // get json data
                             var page = this.getDataFromHtml(response)
-                            page.url = link.getAddress()
-                            this.cache.cacheUrl(page, this.options.debugMode)
-                            this.triggerEvent('pagePreloaded')
+                            if (page != null) {
+                                page.url = link.getAddress()
+                                this.cache.cacheUrl(page, this.options.debugMode)
+                                this.triggerEvent('pagePreloaded')
+                            } else {
+                                reject(link.getAddress())
+                                return;
+                            }
                         }
                         resolve()
                         this.preloadPromise = null
