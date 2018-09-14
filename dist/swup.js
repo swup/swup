@@ -1219,17 +1219,14 @@ module.exports = function (element, to) {
 
     var animatedScroll = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this.options.animateScroll;
 
-    var body = document.body;
-
-    var UP = -1;
-    var DOWN = 1;
-
     var friction = 1 - this.options.scrollFriction;
     var acceleration = this.options.scrollAcceleration;
 
-    var positionY = 100;
+    var positionY = 0;
     var velocityY = 0;
-    var targetPositionY = 400;
+    var targetPositionY = 0;
+    var targetPositionYWithOffset = 0;
+    var direction = 0;
 
     var raf = null;
 
@@ -1241,15 +1238,16 @@ module.exports = function (element, to) {
         var distance = update();
         render();
 
-        if (Math.abs(distance) > 0.1) {
+        if (direction === 1 && targetPositionY > positionY || direction === -1 && targetPositionY < positionY) {
             raf = requestAnimationFrame(animate);
         } else {
+            window.scrollTo(0, targetPositionY);
             _this.triggerEvent('scrollDone');
         }
     };
 
     function update() {
-        var distance = targetPositionY - positionY;
+        var distance = targetPositionYWithOffset - positionY;
         var attraction = distance * acceleration;
 
         applyForce(attraction);
@@ -1279,9 +1277,15 @@ module.exports = function (element, to) {
 
     var scrollTo = function scrollTo(offset, callback) {
         positionY = getScrollTop();
+        direction = positionY > offset ? -1 : 1;
+        targetPositionYWithOffset = offset + direction;
         targetPositionY = offset;
         velocityY = 0;
-        animate();
+        if (positionY != targetPositionY) {
+            animate();
+        } else {
+            _this.triggerEvent('scrollDone');
+        }
     };
 
     this.triggerEvent('scrollStart');
