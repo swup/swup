@@ -278,7 +278,7 @@ var Swup = function () {
         // default options
         var defaults = {
             cache: true,
-            animationSelector: '[class^="a-"]',
+            animationSelector: '[class*="transition-"]',
             elements: ['#swup'],
             pageClassPrefix: '',
             debugMode: false,
@@ -300,7 +300,7 @@ var Swup = function () {
                 return true;
             },
 
-            LINK_SELECTOR: 'a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup]), a[xlink\\:href]',
+            LINK_SELECTOR: 'a[href^="' + window.location.origin + '"]:not([data-no-swup]), a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup])',
             FORM_SELECTOR: 'form[data-swup-form]'
 
             /**
