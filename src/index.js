@@ -49,6 +49,7 @@ export default class Swup {
                 }
                 return true;
             },
+            animateHistoryBrowsing: false,
 
             LINK_SELECTOR: 'a[href^="' + window.location.origin + '"]:not([data-no-swup]), a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup])',
             FORM_SELECTOR: 'form[data-swup-form]',

@@ -10,7 +10,7 @@ module.exports = function (data, popstate) {
 
     let animationPromises = []
 
-    if (!popstate) {
+    if (!popstate || this.options.animateHistoryBrowsing) {
         // start animation
         document.documentElement.classList.add('is-changing')
         document.documentElement.classList.add('is-leaving')
@@ -43,7 +43,8 @@ module.exports = function (data, popstate) {
         } else {
             var pop = data.url;
         }
-        this.createState(pop)
+        if(!popstate)
+            this.createState(pop)
     } else {
         // proceed without animating
         this.triggerEvent('animationSkipped')
@@ -98,6 +99,7 @@ module.exports = function (data, popstate) {
             }
 
             // go back to the actual page were still at
-            window.history.go(-1)
+            if(!this.options.animateHistoryBrowsing)
+                window.history.go(-1)
         });
 }

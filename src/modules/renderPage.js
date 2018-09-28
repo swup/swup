@@ -4,7 +4,7 @@ module.exports = function (page, popstate) {
     document.documentElement.classList.remove('is-leaving')
 
     // only add for non-popstate transitions
-    if (!popstate) {
+    if (!popstate||this.options.animateHistoryBrowsing) {
         document.documentElement.classList.add('is-rendering')
     }
 
