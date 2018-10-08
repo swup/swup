@@ -15,6 +15,9 @@ module.exports = function (data, popstate) {
         document.documentElement.classList.add('is-changing')
         document.documentElement.classList.add('is-leaving')
         document.documentElement.classList.add('is-animating')
+        if (popstate) {
+            document.documentElement.classList.add('is-popstate')
+        }
         document.documentElement.classList.add('to-' + this.classify(data.url))
 
         // detect animation end

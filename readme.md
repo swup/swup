@@ -245,7 +245,7 @@ skipPopStateHandling: function(event){
 ```
 
 ### Animate History Browsing
-Option enables the animation on popstate events. 
+Option enables the animation on popstate events. Swup adds `is-popstate` class to html tag for the whole process of animation on back/forward browsing.
 
 Note that when this option is enabled, swup disables browser native scroll control (sets [scrollRestoration](https://developers.google.com/web/updates/2015/09/history-api-scroll-restoration) to `manual`) and takes over this task. 
 This means that position of scroll on previous page(s) is not preserved (but [can be implemented manually](https://github.com/gmrchk/swup/issues/48#issuecomment-423854819) based on use case).

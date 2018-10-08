@@ -985,6 +985,9 @@ module.exports = function (data, popstate) {
         document.documentElement.classList.add('is-changing');
         document.documentElement.classList.add('is-leaving');
         document.documentElement.classList.add('is-animating');
+        if (popstate) {
+            document.documentElement.classList.add('is-popstate');
+        }
         document.documentElement.classList.add('to-' + this.classify(data.url));
 
         // detect animation end
@@ -1150,7 +1153,7 @@ module.exports = function (page, popstate) {
         _this.triggerEvent('animationInDone');
         // remove "to-{page}" classes
         document.documentElement.className.split(' ').forEach(function (classItem) {
-            if (new RegExp("^to-").test(classItem) || classItem === "is-changing" || classItem === "is-rendering") {
+            if (new RegExp("^to-").test(classItem) || classItem === "is-changing" || classItem === "is-rendering" || classItem === "is-popstate") {
                 document.documentElement.classList.remove(classItem);
             }
         });
