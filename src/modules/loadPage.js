@@ -99,7 +99,6 @@ module.exports = function (data, popstate) {
             }
 
             // go back to the actual page were still at
-            if(!this.options.animateHistoryBrowsing)
-                window.history.go(-1)
+            window.history.go(-1)
         });
 }

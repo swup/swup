@@ -200,6 +200,13 @@ export default class Swup {
         );
 
         /**
+         * Disable browser scroll control on popstates when animateHistoryBrowsing option is enabled
+         */
+        if (this.options.animateHistoryBrowsing) {
+            window.history.scrollRestoration = "manual"
+        }
+
+        /**
          * trigger enabled event
          */
         this.triggerEvent('enabled')

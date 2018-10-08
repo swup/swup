@@ -299,6 +299,7 @@ var Swup = function () {
                 }
                 return true;
             },
+            animateHistoryBrowsing: false,
 
             LINK_SELECTOR: 'a[href^="' + window.location.origin + '"]:not([data-no-swup]), a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup])',
             FORM_SELECTOR: 'form[data-swup-form]'
@@ -445,6 +446,13 @@ var Swup = function () {
                 random: Math.random(),
                 source: "swup"
             }), document.title, window.location.href);
+
+            /**
+             * Disable browser scroll control on popstates when animateHistoryBrowsing option is enabled
+             */
+            if (this.options.animateHistoryBrowsing) {
+                window.history.scrollRestoration = "manual";
+            }
 
             /**
              * trigger enabled event
@@ -972,7 +980,7 @@ module.exports = function (data, popstate) {
 
     var animationPromises = [];
 
-    if (!popstate) {
+    if (!popstate || this.options.animateHistoryBrowsing) {
         // start animation
         document.documentElement.classList.add('is-changing');
         document.documentElement.classList.add('is-leaving');
@@ -1002,7 +1010,7 @@ module.exports = function (data, popstate) {
         } else {
             var pop = data.url;
         }
-        this.createState(pop);
+        if (!popstate) this.createState(pop);
     } else {
         // proceed without animating
         this.triggerEvent('animationSkipped');
@@ -1074,7 +1082,7 @@ module.exports = function (page, popstate) {
     document.documentElement.classList.remove('is-leaving');
 
     // only add for non-popstate transitions
-    if (!popstate) {
+    if (!popstate || this.options.animateHistoryBrowsing) {
         document.documentElement.classList.add('is-rendering');
     }
 
@@ -1324,18 +1332,16 @@ module.exports = function (text) {
 
 
 module.exports = function (popstate) {
-    if (this.options.scroll && !popstate) {
+    if (this.options.scroll && (!popstate || this.options.animateHistoryBrowsing)) {
         if (this.scrollToElement != null) {
-            var self = this;
-
-            var element = document.querySelector(self.scrollToElement);
+            var element = document.querySelector(this.scrollToElement);
             if (element != null) {
                 var top = element.getBoundingClientRect().top + window.pageYOffset;
-                self.scrollTo(document.body, top);
+                this.scrollTo(document.body, top);
             } else {
-                console.warn("Element for offset not found (" + self.scrollToElement + ")");
+                console.warn("Element for offset not found (" + this.scrollToElement + ")");
             }
-            self.scrollToElement = null;
+            this.scrollToElement = null;
         } else {
             this.scrollTo(document.body, 0);
         }
