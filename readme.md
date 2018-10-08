@@ -31,6 +31,7 @@
 * [Support](#support)
 * [Debug Mode](#debug-mode)
 * [Skip popState Handling](#skip-popstate-handling)
+* [Animate History Browsing](#animate-history-browsing)
 * [Default values](#default-values)
 
 [Events](#events)
@@ -243,6 +244,16 @@ skipPopStateHandling: function(event){
 }
 ```
 
+### Animate History Browsing
+Option enables the animation on popstate events. 
+
+Note that when this option is enabled, swup disables browser native scroll control (sets [scrollRestoration](https://developers.google.com/web/updates/2015/09/history-api-scroll-restoration) to `manual`) and takes over this task. 
+This means that position of scroll on previous page(s) is not preserved (but [can be implemented manually](https://github.com/gmrchk/swup/issues/48#issuecomment-423854819) based on use case).
+Otherwise swup scrolls to top/#element on popstate as it does with normal browsing. 
+```javascript
+animateHistoryBrowsing: false
+```
+
 ### Default values
 ```javascript
 let options = {
@@ -264,6 +275,7 @@ let options = {
         }
         return true;
     },
+    animateHistoryBrowsing: false,
 }
 ```
 
