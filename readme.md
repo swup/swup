@@ -404,7 +404,7 @@ swup.options.cache = true;
 
 or remove page from cache
 ```javascript
-// enable cache
+// remove page from cache
 swup.cache.remove('/your-url');
 ```
 
@@ -417,8 +417,8 @@ swup.loadPage({
     data: data, // data passed into XMLHttpRequest send method
 });
 
-// scroll page to some position (2000px form top in this example)
-swup.scrollTo(window, 2000);
+// scroll page to some position (2000px from top in this example)
+swup.scrollTo(document.body, 2000);
 ```
 **Note:** `loadPage` function is used to submit forms with swup.
 For more information on submitting forms with `XMLHttpRequest`, refer to [Sending forms through JavaScript](https://developer.mozilla.org/en-US/docs/Learn/HTML/Forms/Sending_forms_through_JavaScript).
