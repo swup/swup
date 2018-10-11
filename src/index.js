@@ -302,7 +302,7 @@ export default class Swup {
                             return;
                         } else {
                             // get json data
-                            var page = this.getDataFromHtml(response)
+                            var page = this.getDataFromHtml(response, request)
                             if (page != null) {
                                 page.url = link.getAddress()
                                 this.cache.cacheUrl(page, this.options.debugMode)

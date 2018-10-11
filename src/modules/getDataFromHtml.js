@@ -1,4 +1,4 @@
-module.exports = function (html) {
+module.exports = function (html, request) {
     let content = html.replace('<body', '<div id="swupBody"').replace('</body>', '</div>')
     let fakeDom = document.createElement('div')
     fakeDom.innerHTML = content
@@ -20,7 +20,8 @@ module.exports = function (html) {
         title: fakeDom.querySelector('title').innerText,
         pageClass:  fakeDom.querySelector('#swupBody').className,
         originalContent: html,
-        blocks: blocks
+        blocks: blocks,
+        responseURL: request != null ? request.responseURL : window.location.href,
     }
     return json;
 }

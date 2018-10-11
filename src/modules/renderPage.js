@@ -1,7 +1,23 @@
 const { forEach } = Array.prototype;
+import Link from '../Link';
 
 module.exports = function (page, popstate) {
     document.documentElement.classList.remove('is-leaving')
+
+    // replace state in case the url was redirected
+    let link = new Link()
+    link.setPath(page.responseURL)
+
+    if (window.location.pathname !== link.getPath()) {
+        window.history.replaceState({
+                url: link.getPath(),
+                random: Math.random(),
+                source: "swup",
+            },
+            document.title,
+            link.getPath(),
+        );
+    }
 
     // only add for non-popstate transitions
     if (!popstate || this.options.animateHistoryBrowsing) {
