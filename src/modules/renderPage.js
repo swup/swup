@@ -99,4 +99,6 @@ module.exports = function (page, popstate) {
 
     // update current url
     this.getUrl()
+    // reset scroll-to element
+    this.scrollToElement = null
 }

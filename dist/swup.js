@@ -509,7 +509,11 @@ var Swup = function () {
                                 var top = element.getBoundingClientRect().top + window.pageYOffset;
                                 this.scrollTo(document.body, top);
                             }
-                            history.replaceState(undefined, undefined, link.getHash());
+                            history.replaceState({
+                                url: link.getAddress() + link.getHash(),
+                                random: Math.random(),
+                                source: "swup"
+                            }, document.title, link.getAddress() + link.getHash());
                         } else {
                             console.warn('Element for offset not found (' + link.getHash() + ')');
                         }
@@ -647,6 +651,7 @@ var Swup = function () {
             } else {
                 event.preventDefault();
             }
+            console.log(event.state);
             this.triggerEvent('popState');
             this.loadPage({ url: link.getAddress() }, event);
         }
@@ -1180,6 +1185,8 @@ module.exports = function (page, popstate) {
 
     // update current url
     this.getUrl();
+    // reset scroll-to element
+    this.scrollToElement = null;
 };
 
 /***/ }),

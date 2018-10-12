@@ -259,7 +259,14 @@ export default class Swup {
                             let top = element.getBoundingClientRect().top + window.pageYOffset;
                             this.scrollTo(document.body, top)
                         }
-                        history.replaceState(undefined, undefined, link.getHash())
+                        history.replaceState({
+                                url: link.getAddress() + link.getHash(),
+                                random: Math.random(),
+                                source: "swup",
+                            },
+                            document.title,
+                            link.getAddress() + link.getHash()
+                        )
                     } else {
                         console.warn(`Element for offset not found (${link.getHash()})`)
                     }
@@ -392,6 +399,7 @@ export default class Swup {
         } else {
             event.preventDefault()
         }
+        console.log(event.state)
         this.triggerEvent('popState')
         this.loadPage({ url: link.getAddress() }, event)
     }
