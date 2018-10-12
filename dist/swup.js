@@ -651,7 +651,6 @@ var Swup = function () {
             } else {
                 event.preventDefault();
             }
-            console.log(event.state);
             this.triggerEvent('popState');
             this.loadPage({ url: link.getAddress() }, event);
         }
