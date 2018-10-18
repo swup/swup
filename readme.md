@@ -44,6 +44,8 @@
 
 [API](#api)
 
+[Request Header](#request-header)
+
 [Contributions](#contributions)
 
 ## Installation
@@ -428,6 +430,10 @@ For more information on submitting forms with `XMLHttpRequest`, refer to [Sendin
 swup.destroy();
 ```
 ...and much more. Sky is the limit here, explore swup or create an issue for some particular example!
+
+## Request Header
+
+If you're using swup to load dynamically generated pages, you can adjust what data is returned by examining the `X-Requested-With` request header. [When making requests](https://github.com/gmrchk/swup/blob/7af18e16e46613f4edf1d3565574af09929146ef/src/modules/request.js#L26) swup sets this header to `swup`.
 
 ## Contributions
 Swup is currently stable and production-ready. Any contributions or suggestions are more than welcome.
