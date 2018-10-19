@@ -1122,16 +1122,8 @@ module.exports = function (page, popstate) {
     // set title
     document.title = page.title;
 
-    this.triggerEvent('contentReplaced');
-    this.triggerEvent('pageView');
-    if (!this.options.cache) {
-        this.cache.empty(this.options.debugMode);
-    }
-    setTimeout(function () {
-        document.documentElement.classList.remove('is-animating');
-    }, 10);
-
     // handle classes after render
+    // remove
     if (this.options.pageClassPrefix !== false) {
         document.body.className.split(' ').forEach(function (className) {
             // empty string for page class
@@ -1140,8 +1132,7 @@ module.exports = function (page, popstate) {
             }
         });
     }
-
-    // empty string for page class
+    // add
     if (page.pageClass != "") {
         page.pageClass.split(' ').forEach(function (className) {
             if (className != "" && className.includes(_this.options.pageClassPrefix)) {
@@ -1149,6 +1140,15 @@ module.exports = function (page, popstate) {
             }
         });
     }
+
+    this.triggerEvent('contentReplaced');
+    this.triggerEvent('pageView');
+    if (!this.options.cache) {
+        this.cache.empty(this.options.debugMode);
+    }
+    setTimeout(function () {
+        document.documentElement.classList.remove('is-animating');
+    }, 10);
 
     // scrolling
     if (!this.options.doScrollingRightAway || this.scrollToElement) {
