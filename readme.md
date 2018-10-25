@@ -311,11 +311,13 @@ document.addEventListener('swup:contentReplaced', event => {
 * **swup:pageView** - similar as previous, except it is once triggered on load
 * **swup:hoverLink** - triggers when link is hovered
 * **swup:clickLink** - triggers when link is clicked
+* **swup:animationOutStart** - triggers when animation *OUT* starts (class `is-animating` is added to html tag)
 * **swup:animationOutDone** - triggers when transition of all animated elements is done (after click of link and before content is replaced)
 * **swup:pagePreloaded** - triggers when the preload of some page is done
 * **swup:pageLoaded** - triggers when loading of some page is done (differs from previous only by the source of event - hover/click)
 * **swup:scrollStart** - triggers when built in scroll is started
 * **swup:scrollDone** - triggers when built in scroll is done
+* **swup:animationInStart** - triggers when animation *IN* starts (class `is-animating` is removed from html tag)
 * **swup:animationInDone** - triggers when transition of all animated elements is done (after content is replaced)
 * **swup:pageRetrievedFromCache** - triggers when page is retrieved from cache and no request is necessary
 * **swup:submitForm** - triggers when form is submitted trough swup (right before submission)

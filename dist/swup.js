@@ -987,6 +987,7 @@ module.exports = function (data, popstate) {
 
     if (!popstate || this.options.animateHistoryBrowsing) {
         // start animation
+        this.triggerEvent('animationOutStart');
         document.documentElement.classList.add('is-changing');
         document.documentElement.classList.add('is-leaving');
         document.documentElement.classList.add('is-animating');
@@ -1147,6 +1148,7 @@ module.exports = function (page, popstate) {
         this.cache.empty(this.options.debugMode);
     }
     setTimeout(function () {
+        _this.triggerEvent('animationInStart');
         document.documentElement.classList.remove('is-animating');
     }, 10);
 

@@ -59,6 +59,7 @@ module.exports = function (page, popstate) {
         this.cache.empty(this.options.debugMode)
     }
     setTimeout(() => {
+        this.triggerEvent('animationInStart')
         document.documentElement.classList.remove('is-animating')
     }, 10)
 
