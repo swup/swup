@@ -1148,8 +1148,10 @@ module.exports = function (page, popstate) {
         this.cache.empty(this.options.debugMode);
     }
     setTimeout(function () {
-        _this.triggerEvent('animationInStart');
-        document.documentElement.classList.remove('is-animating');
+        if (!popstate || _this.options.animateHistoryBrowsing) {
+            _this.triggerEvent('animationInStart');
+            document.documentElement.classList.remove('is-animating');
+        }
     }, 10);
 
     // scrolling
@@ -1174,15 +1176,17 @@ module.exports = function (page, popstate) {
     //preload pages if possible
     this.preloadPages();
 
-    Promise.all(promises).then(function () {
-        _this.triggerEvent('animationInDone');
-        // remove "to-{page}" classes
-        document.documentElement.className.split(' ').forEach(function (classItem) {
-            if (new RegExp("^to-").test(classItem) || classItem === "is-changing" || classItem === "is-rendering" || classItem === "is-popstate") {
-                document.documentElement.classList.remove(classItem);
-            }
+    if (!popstate || this.options.animateHistoryBrowsing) {
+        Promise.all(promises).then(function () {
+            _this.triggerEvent('animationInDone');
+            // remove "to-{page}" classes
+            document.documentElement.className.split(' ').forEach(function (classItem) {
+                if (new RegExp("^to-").test(classItem) || classItem === "is-changing" || classItem === "is-rendering" || classItem === "is-popstate") {
+                    document.documentElement.classList.remove(classItem);
+                }
+            });
         });
-    });
+    }
 
     // update current url
     this.getUrl();
