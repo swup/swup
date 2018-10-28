@@ -68,8 +68,6 @@ export default class Swup {
         /**
          * helper variables
          */
-        // mobile detection variable
-        this.mobile = false
         // id of element to scroll to after render
         this.scrollToElement = null
         // promise used for preload, so no new loading of the same page starts while page is loading
@@ -103,13 +101,6 @@ export default class Swup {
         this.log = log
         this.enable = this.enable
         this.destroy = this.destroy
-
-        /**
-         * detect mobile devices
-         */
-        if (window.innerWidth <= 767) {
-            this.mobile = true
-        }
 
         // attach instance to window in debug mode
         if (this.options.debugMode) {
@@ -250,11 +241,15 @@ export default class Swup {
             var link = new Link()
             event.preventDefault()
             link.setPath(event.delegateTarget.href)
+
             if (link.getAddress() == this.currentUrl || link.getAddress() == '') {
+                // link to the same URL
                 if (link.getHash() != '') {
+                    // link to the same URL with hash
                     this.triggerEvent('samePageWithHash')
                     var element = document.querySelector(link.getHash())
                     if (element != null) {
+                        // referenced element found
                         if (this.options.scroll) {
                             let top = element.getBoundingClientRect().top + window.pageYOffset;
                             this.scrollTo(document.body, top)
@@ -268,29 +263,30 @@ export default class Swup {
                             link.getAddress() + link.getHash()
                         )
                     } else {
+                        // referenced element not found
                         console.warn(`Element for offset not found (${link.getHash()})`)
                     }
                 } else {
+                    // link to the same URL without hash
                     this.triggerEvent('samePage')
                     if (this.options.scroll) {
                         this.scrollTo(document.body, 0, 1)
                     }
                 }
             } else {
+                // link to different url
                 if (link.getHash() != '') {
                     this.scrollToElement = link.getHash()
                 }
-                // custom class fro dynamic pages
-                var swupClass = event.delegateTarget.dataset.swupClass
-                if (swupClass != null) {
-                    this.updateTransition(window.location.pathname, link.getAddress(), event.delegateTarget.dataset.swupClass)
-                    document.documentElement.classList.add(`to-${swupClass}`)
-                } else {
-                    this.updateTransition(window.location.pathname, link.getAddress())
-                }
-                this.loadPage({ url: link.getAddress() }, false)
+
+                // get custom transition from data
+                let customTransition = event.delegateTarget.dataset.swupTransition;
+
+                // load page
+                this.loadPage({ url: link.getAddress(), customTransition: customTransition }, false)
             }
         } else {
+            // open in new tab (do nothing)
             this.triggerEvent('openPageInNewTab')
         }
     }

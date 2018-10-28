@@ -1,14 +1,21 @@
 const { forEach } = Array.prototype;
 
 module.exports = function (data, popstate) {
-    var finalPage = null
-
     // scrolling
     if (this.options.doScrollingRightAway && !this.scrollToElement) {
         this.doScrolling(popstate)
     }
 
+    // create array for storing animation promises
     let animationPromises = []
+
+    // set transition object
+    if (data.customTransition != null) {
+        this.updateTransition(window.location.pathname, data.url, data.customTransition)
+        document.documentElement.classList.add(`to-${ this.classify(data.customTransition) }`)
+    } else {
+        this.updateTransition(window.location.pathname, data.url)
+    }
 
     if (!popstate || this.options.animateHistoryBrowsing) {
         // start animation
@@ -91,8 +98,8 @@ module.exports = function (data, popstate) {
     Promise
         .all(animationPromises.concat([xhrPromise]))
         .then(() => {
-            finalPage = this.cache.getPage(data.url)
-            this.renderPage(finalPage, popstate)
+            // render page
+            this.renderPage(this.cache.getPage(data.url), popstate)
             this.preloadPromise = null
         })
         .catch(errorUrl => {

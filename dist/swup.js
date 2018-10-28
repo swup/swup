@@ -500,11 +500,15 @@ var Swup = function () {
                 var link = new _Link2.default();
                 event.preventDefault();
                 link.setPath(event.delegateTarget.href);
+
                 if (link.getAddress() == this.currentUrl || link.getAddress() == '') {
+                    // link to the same URL
                     if (link.getHash() != '') {
+                        // link to the same URL with hash
                         this.triggerEvent('samePageWithHash');
                         var element = document.querySelector(link.getHash());
                         if (element != null) {
+                            // referenced element found
                             if (this.options.scroll) {
                                 var top = element.getBoundingClientRect().top + window.pageYOffset;
                                 this.scrollTo(document.body, top);
@@ -515,29 +519,30 @@ var Swup = function () {
                                 source: "swup"
                             }, document.title, link.getAddress() + link.getHash());
                         } else {
+                            // referenced element not found
                             console.warn('Element for offset not found (' + link.getHash() + ')');
                         }
                     } else {
+                        // link to the same URL without hash
                         this.triggerEvent('samePage');
                         if (this.options.scroll) {
                             this.scrollTo(document.body, 0, 1);
                         }
                     }
                 } else {
+                    // link to different url
                     if (link.getHash() != '') {
                         this.scrollToElement = link.getHash();
                     }
-                    // custom class fro dynamic pages
-                    var swupClass = event.delegateTarget.dataset.swupClass;
-                    if (swupClass != null) {
-                        this.updateTransition(window.location.pathname, link.getAddress(), event.delegateTarget.dataset.swupClass);
-                        document.documentElement.classList.add('to-' + swupClass);
-                    } else {
-                        this.updateTransition(window.location.pathname, link.getAddress());
-                    }
-                    this.loadPage({ url: link.getAddress() }, false);
+
+                    // get custom transition from data
+                    var customTransition = event.delegateTarget.dataset.swupTransition;
+
+                    // load page
+                    this.loadPage({ url: link.getAddress(), customTransition: customTransition }, false);
                 }
             } else {
+                // open in new tab (do nothing)
                 this.triggerEvent('openPageInNewTab');
             }
         }
@@ -976,14 +981,21 @@ var forEach = Array.prototype.forEach;
 module.exports = function (data, popstate) {
     var _this = this;
 
-    var finalPage = null;
-
     // scrolling
     if (this.options.doScrollingRightAway && !this.scrollToElement) {
         this.doScrolling(popstate);
     }
 
+    // create array for storing animation promises
     var animationPromises = [];
+
+    // set transition object
+    if (data.customTransition != null) {
+        this.updateTransition(window.location.pathname, data.url, data.customTransition);
+        document.documentElement.classList.add('to-' + this.classify(data.customTransition));
+    } else {
+        this.updateTransition(window.location.pathname, data.url);
+    }
 
     if (!popstate || this.options.animateHistoryBrowsing) {
         // start animation
@@ -1060,8 +1072,8 @@ module.exports = function (data, popstate) {
     }
 
     Promise.all(animationPromises.concat([xhrPromise])).then(function () {
-        finalPage = _this.cache.getPage(data.url);
-        _this.renderPage(finalPage, popstate);
+        // render page
+        _this.renderPage(_this.cache.getPage(data.url), popstate);
         _this.preloadPromise = null;
     }).catch(function (errorUrl) {
         // rewrite the skipPopStateHandling function to redirect manually when the history.go is processed
