@@ -10,7 +10,6 @@ import request from './modules/request'
 import getDataFromHtml from './modules/getDataFromHtml'
 import loadPage from './modules/loadPage'
 import renderPage from './modules/renderPage'
-import goBack from './modules/goBack'
 import createState from './modules/createState'
 import triggerEvent from './modules/triggerEvent'
 import getUrl from './modules/getUrl'
@@ -89,7 +88,6 @@ export default class Swup {
         this.scrollTo = scrollTo
         this.loadPage = loadPage
         this.renderPage = renderPage
-        this.goBack = goBack
         this.createState = createState
         this.triggerEvent = triggerEvent
         this.classify = classify

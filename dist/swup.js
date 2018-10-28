@@ -219,51 +219,47 @@ var _renderPage = __webpack_require__(10);
 
 var _renderPage2 = _interopRequireDefault(_renderPage);
 
-var _goBack = __webpack_require__(11);
-
-var _goBack2 = _interopRequireDefault(_goBack);
-
-var _createState = __webpack_require__(12);
+var _createState = __webpack_require__(11);
 
 var _createState2 = _interopRequireDefault(_createState);
 
-var _triggerEvent = __webpack_require__(13);
+var _triggerEvent = __webpack_require__(12);
 
 var _triggerEvent2 = _interopRequireDefault(_triggerEvent);
 
-var _getUrl = __webpack_require__(14);
+var _getUrl = __webpack_require__(13);
 
 var _getUrl2 = _interopRequireDefault(_getUrl);
 
-var _scrollTo = __webpack_require__(15);
+var _scrollTo = __webpack_require__(14);
 
 var _scrollTo2 = _interopRequireDefault(_scrollTo);
 
-var _classify = __webpack_require__(16);
+var _classify = __webpack_require__(15);
 
 var _classify2 = _interopRequireDefault(_classify);
 
-var _doScrolling = __webpack_require__(17);
+var _doScrolling = __webpack_require__(16);
 
 var _doScrolling2 = _interopRequireDefault(_doScrolling);
 
-var _markSwupElements = __webpack_require__(18);
+var _markSwupElements = __webpack_require__(17);
 
 var _markSwupElements2 = _interopRequireDefault(_markSwupElements);
 
-var _updateTransition = __webpack_require__(19);
+var _updateTransition = __webpack_require__(18);
 
 var _updateTransition2 = _interopRequireDefault(_updateTransition);
 
-var _preloadPages = __webpack_require__(20);
+var _preloadPages = __webpack_require__(19);
 
 var _preloadPages2 = _interopRequireDefault(_preloadPages);
 
-var _usePlugin = __webpack_require__(21);
+var _usePlugin = __webpack_require__(20);
 
 var _usePlugin2 = _interopRequireDefault(_usePlugin);
 
-var _log = __webpack_require__(22);
+var _log = __webpack_require__(21);
 
 var _log2 = _interopRequireDefault(_log);
 
@@ -314,8 +310,6 @@ var Swup = function () {
         /**
          * helper variables
          */
-        // mobile detection variable
-        this.mobile = false;
         // id of element to scroll to after render
         this.scrollToElement = null;
         // promise used for preload, so no new loading of the same page starts while page is loading
@@ -337,7 +331,6 @@ var Swup = function () {
         this.scrollTo = _scrollTo2.default;
         this.loadPage = _loadPage2.default;
         this.renderPage = _renderPage2.default;
-        this.goBack = _goBack2.default;
         this.createState = _createState2.default;
         this.triggerEvent = _triggerEvent2.default;
         this.classify = _classify2.default;
@@ -349,13 +342,6 @@ var Swup = function () {
         this.log = _log2.default;
         this.enable = this.enable;
         this.destroy = this.destroy;
-
-        /**
-         * detect mobile devices
-         */
-        if (window.innerWidth <= 767) {
-            this.mobile = true;
-        }
 
         // attach instance to window in debug mode
         if (this.options.debugMode) {
@@ -1213,20 +1199,6 @@ module.exports = function (page, popstate) {
 "use strict";
 
 
-module.exports = function (page, popstate) {
-    setTimeout(function () {
-        document.body.classList.remove('is-changing');
-        history.back();
-    }, 100);
-};
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
 module.exports = function (url) {
     window.history.pushState({
         url: url || window.location.href.split(window.location.hostname)[1],
@@ -1236,7 +1208,7 @@ module.exports = function (url) {
 };
 
 /***/ }),
-/* 13 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1251,7 +1223,7 @@ module.exports = function (eventName) {
 };
 
 /***/ }),
-/* 14 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1262,7 +1234,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 15 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1352,7 +1324,7 @@ module.exports = function (element, to) {
 };
 
 /***/ }),
-/* 16 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1371,7 +1343,7 @@ module.exports = function (text) {
 };
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1395,7 +1367,7 @@ module.exports = function (popstate) {
 };
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1419,7 +1391,7 @@ module.exports = function (element) {
 };
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1447,7 +1419,7 @@ module.exports = function (from, to, custom) {
 };
 
 /***/ }),
-/* 20 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1491,7 +1463,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 21 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1517,7 +1489,7 @@ module.exports = function (plugin, options) {
 };
 
 /***/ }),
-/* 22 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
