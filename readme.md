@@ -443,6 +443,9 @@ swup.loadPage({
     customTransition: "", // name of your transition used for adding custom class to html element and choosing custom animation in swupjs (as setting data-swup-transition attribute on link)
 });
 
+// makes request and saves page to cache
+swup.preloadPage('/page-url')
+
 // scroll page to some position (2000px from top in this example)
 swup.scrollTo(document.body, 2000);
 ```

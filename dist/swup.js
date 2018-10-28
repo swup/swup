@@ -259,15 +259,19 @@ var _updateTransition = __webpack_require__(20);
 
 var _updateTransition2 = _interopRequireDefault(_updateTransition);
 
-var _preloadPages = __webpack_require__(21);
+var _preloadPage = __webpack_require__(21);
+
+var _preloadPage2 = _interopRequireDefault(_preloadPage);
+
+var _preloadPages = __webpack_require__(22);
 
 var _preloadPages2 = _interopRequireDefault(_preloadPages);
 
-var _usePlugin = __webpack_require__(22);
+var _usePlugin = __webpack_require__(23);
 
 var _usePlugin2 = _interopRequireDefault(_usePlugin);
 
-var _log = __webpack_require__(23);
+var _log = __webpack_require__(24);
 
 var _log2 = _interopRequireDefault(_log);
 
@@ -372,6 +376,7 @@ var Swup = function () {
         this.on = _on2.default;
         this.off = _off2.default;
         this.updateTransition = _updateTransition2.default;
+        this.preloadPage = _preloadPage2.default;
         this.preloadPages = _preloadPages2.default;
         this.usePlugin = _usePlugin2.default;
         this.log = _log2.default;
@@ -1530,39 +1535,48 @@ var _Link2 = _interopRequireDefault(_Link);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-module.exports = function () {
+module.exports = function (pathname) {
     var _this = this;
 
-    if (this.options.preload) {
-        var preload = function preload(pathname) {
-            var link = new _Link2.default();
-            link.setPath(pathname);
-            if (link.getAddress() != _this.currentUrl && !_this.cache.exists(link.getAddress()) && _this.preloadPromise == null) {
-                _this.getPage({ url: link.getAddress() }, function (response, request) {
-                    if (request.status === 500) {
-                        _this.triggerEvent('serverError');
-                        return;
-                    } else {
-                        // get json data
-                        var page = _this.getDataFromHtml(response, request);
-                        if (page != null) {
-                            page.url = link.getAddress();
-                            _this.cache.cacheUrl(page, _this.options.debugMode);
-                            _this.triggerEvent('pagePreloaded');
-                        }
-                    }
-                });
+    var link = new _Link2.default();
+    link.setPath(pathname);
+    if (link.getAddress() != this.currentUrl && !this.cache.exists(link.getAddress()) && this.preloadPromise == null) {
+        this.getPage({ url: link.getAddress() }, function (response, request) {
+            if (request.status === 500) {
+                _this.triggerEvent('serverError');
+                return;
+            } else {
+                // get json data
+                var page = _this.getDataFromHtml(response, request);
+                if (page != null) {
+                    page.url = link.getAddress();
+                    _this.cache.cacheUrl(page, _this.options.debugMode);
+                    _this.triggerEvent('pagePreloaded');
+                }
             }
-        };
-
-        document.querySelectorAll('[data-swup-preload]').forEach(function (element) {
-            preload(element.href);
         });
     }
 };
 
 /***/ }),
 /* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = function () {
+    var _this = this;
+
+    if (this.options.preload) {
+        document.querySelectorAll('[data-swup-preload]').forEach(function (element) {
+            _this.preloadPage(element.href);
+        });
+    }
+};
+
+/***/ }),
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1588,7 +1602,7 @@ module.exports = function (plugin, options) {
 };
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

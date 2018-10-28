@@ -20,6 +20,7 @@ import markSwupElements from './modules/markSwupElements'
 import on from './modules/on'
 import off from './modules/off'
 import updateTransition from './modules/updateTransition'
+import preloadPage from './modules/preloadPage'
 import preloadPages from './modules/preloadPages'
 import usePlugin from './modules/usePlugin'
 import log from './modules/log'
@@ -123,6 +124,7 @@ export default class Swup {
         this.on = on
         this.off = off
         this.updateTransition = updateTransition
+        this.preloadPage = preloadPage
         this.preloadPages = preloadPages
         this.usePlugin = usePlugin
         this.log = log
