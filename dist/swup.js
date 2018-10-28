@@ -247,19 +247,27 @@ var _markSwupElements = __webpack_require__(17);
 
 var _markSwupElements2 = _interopRequireDefault(_markSwupElements);
 
-var _updateTransition = __webpack_require__(18);
+var _on = __webpack_require__(18);
+
+var _on2 = _interopRequireDefault(_on);
+
+var _off = __webpack_require__(19);
+
+var _off2 = _interopRequireDefault(_off);
+
+var _updateTransition = __webpack_require__(20);
 
 var _updateTransition2 = _interopRequireDefault(_updateTransition);
 
-var _preloadPages = __webpack_require__(19);
+var _preloadPages = __webpack_require__(21);
 
 var _preloadPages2 = _interopRequireDefault(_preloadPages);
 
-var _usePlugin = __webpack_require__(20);
+var _usePlugin = __webpack_require__(22);
 
 var _usePlugin2 = _interopRequireDefault(_usePlugin);
 
-var _log = __webpack_require__(21);
+var _log = __webpack_require__(23);
 
 var _log2 = _interopRequireDefault(_log);
 
@@ -310,6 +318,31 @@ var Swup = function () {
         /**
          * helper variables
          */
+        this._handlers = {
+            willReplaceContent: [],
+            contentReplaced: [],
+            pageView: [],
+            hoverLink: [],
+            clickLink: [],
+            samePageWithHash: [],
+            animationOutStart: [],
+            animationOutDone: [],
+            animationSkipped: [],
+            pagePreloaded: [],
+            pageLoaded: [],
+            scrollStart: [],
+            scrollDone: [],
+            animationInStart: [],
+            animationInDone: [],
+            pageRetrievedFromCache: [],
+            submitForm: [],
+            enabled: [],
+            disabled: []
+        };
+
+        /**
+         * helper variables
+         */
         // id of element to scroll to after render
         this.scrollToElement = null;
         // promise used for preload, so no new loading of the same page starts while page is loading
@@ -336,6 +369,8 @@ var Swup = function () {
         this.classify = _classify2.default;
         this.doScrolling = _doScrolling2.default;
         this.markSwupElements = _markSwupElements2.default;
+        this.on = _on2.default;
+        this.off = _off2.default;
         this.updateTransition = _updateTransition2.default;
         this.preloadPages = _preloadPages2.default;
         this.usePlugin = _usePlugin2.default;
@@ -474,6 +509,9 @@ var Swup = function () {
                 delete element.dataset.swup;
             });
 
+            // remove handlers
+            this.off();
+
             this.triggerEvent('disabled');
             document.documentElement.classList.remove('swup-enabled');
         }
@@ -482,7 +520,7 @@ var Swup = function () {
         value: function linkClickHandler(event) {
             // no control key pressed
             if (!event.metaKey) {
-                this.triggerEvent('clickLink');
+                this.triggerEvent('clickLink', event);
                 var link = new _Link2.default();
                 event.preventDefault();
                 link.setPath(event.delegateTarget.href);
@@ -491,7 +529,7 @@ var Swup = function () {
                     // link to the same URL
                     if (link.getHash() != '') {
                         // link to the same URL with hash
-                        this.triggerEvent('samePageWithHash');
+                        this.triggerEvent('samePageWithHash', event);
                         var element = document.querySelector(link.getHash());
                         if (element != null) {
                             // referenced element found
@@ -510,7 +548,7 @@ var Swup = function () {
                         }
                     } else {
                         // link to the same URL without hash
-                        this.triggerEvent('samePage');
+                        this.triggerEvent('samePage', event);
                         if (this.options.scroll) {
                             this.scrollTo(document.body, 0, 1);
                         }
@@ -529,7 +567,7 @@ var Swup = function () {
                 }
             } else {
                 // open in new tab (do nothing)
-                this.triggerEvent('openPageInNewTab');
+                this.triggerEvent('openPageInNewTab', event);
             }
         }
     }, {
@@ -537,7 +575,7 @@ var Swup = function () {
         value: function linkMouseoverHandler(event) {
             var _this2 = this;
 
-            this.triggerEvent('hoverLink');
+            this.triggerEvent('hoverLink', event);
             if (this.options.preload) {
                 var link = new _Link2.default();
                 link.setPath(event.delegateTarget.href);
@@ -545,7 +583,7 @@ var Swup = function () {
                     this.preloadPromise = new Promise(function (resolve, reject) {
                         _this2.getPage({ url: link.getAddress() }, function (response, request) {
                             if (request.status === 500) {
-                                _this2.triggerEvent('serverError');
+                                _this2.triggerEvent('serverError', event);
                                 reject(link.getAddress());
                                 return;
                             } else {
@@ -554,7 +592,7 @@ var Swup = function () {
                                 if (page != null) {
                                     page.url = link.getAddress();
                                     _this2.cache.cacheUrl(page, _this2.options.debugMode);
-                                    _this2.triggerEvent('pagePreloaded');
+                                    _this2.triggerEvent('pagePreloaded', event);
                                 } else {
                                     reject(link.getAddress());
                                     return;
@@ -573,7 +611,7 @@ var Swup = function () {
         value: function formSubmitHandler(event) {
             // no control key pressed
             if (!event.metaKey) {
-                this.triggerEvent('submitForm');
+                this.triggerEvent('submitForm', event);
                 event.preventDefault();
                 var form = event.target;
                 var formData = new FormData(form);
@@ -628,7 +666,7 @@ var Swup = function () {
                     });
                 }
             } else {
-                this.triggerEvent('openFormSubmitInNewTab');
+                this.triggerEvent('openFormSubmitInNewTab', event);
             }
         }
     }, {
@@ -642,7 +680,7 @@ var Swup = function () {
             } else {
                 event.preventDefault();
             }
-            this.triggerEvent('popState');
+            this.triggerEvent('popState', event);
             this.loadPage({ url: link.getAddress() }, event);
         }
     }]);
@@ -1214,10 +1252,21 @@ module.exports = function (url) {
 "use strict";
 
 
-module.exports = function (eventName) {
-    if (this.options.debugMode) {
+module.exports = function (eventName, originalEvent) {
+    if (this.options.debugMode && originalEvent) {
+        console.groupCollapsed('%cswup:' + '%c' + eventName, 'color: #343434', 'color: #009ACD');
+        console.log(originalEvent);
+        console.groupEnd();
+    } else if (this.options.debugMode) {
         console.log('%cswup:' + '%c' + eventName, 'color: #343434', 'color: #009ACD');
     }
+
+    // call saved handlers with "on" method and pass originalEvent object if available
+    this._handlers[eventName].forEach(function (handler) {
+        return handler(originalEvent);
+    });
+
+    // trigger event on document with prefix "swup:"
     var event = new CustomEvent('swup:' + eventName, { detail: eventName });
     document.dispatchEvent(event);
 };
@@ -1397,6 +1446,56 @@ module.exports = function (element) {
 "use strict";
 
 
+module.exports = function on(event, handler) {
+    if (this._handlers[event]) {
+        this._handlers[event].push(handler);
+    } else {
+        console.warn("Unsupported event " + event + ".");
+    }
+};
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = function off(event, handler) {
+    var _this = this;
+
+    if (event != null) {
+        if (handler != null) {
+            if (this._handlers[event] && this._handlers[event].filter(function (savedHandler) {
+                return savedHandler === handler;
+            }).length) {
+                var toRemove = this._handlers[event].filter(function (savedHandler) {
+                    return savedHandler === handler;
+                })[0];
+                var index = this._handlers[event].indexOf(toRemove);
+                if (index > -1) {
+                    this._handlers[event].splice(index, 1);
+                }
+            } else {
+                console.warn("Handler for event '" + event + "' no found.");
+            }
+        } else {
+            this._handlers[event] = [];
+        }
+    } else {
+        Object.keys(this._handlers).forEach(function (keys) {
+            _this._handlers[keys] = [];
+        });
+    }
+};
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 module.exports = function (from, to, custom) {
 
     // homepage case
@@ -1419,7 +1518,7 @@ module.exports = function (from, to, custom) {
 };
 
 /***/ }),
-/* 19 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1463,7 +1562,7 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 20 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1489,7 +1588,7 @@ module.exports = function (plugin, options) {
 };
 
 /***/ }),
-/* 21 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

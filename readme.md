@@ -282,12 +282,18 @@ let options = {
 ```
 
 ## Events
-As we are replacing the native functionality of the browser, there is a need for a lifecycle that would replace the standard browser page lifecycle (*load page* and *leave page*).
-For this purpose, swup emits bunch of events triggered on the `document` while working.
-We can use those events to enable our JavaScript, trigger some analytics, and much more.
+As we are replacing the native functionality of the browser, 
+there is a need for a lifecycle that would replace the standard browser page lifecycle (*load page* and *leave page*).
+Swup emits bunch of events, that we can use to enable JavaScript, trigger analytics, and much more. 
+Handlers are registered and unregistered with swups `on` and `off` methods. 
+
+When possible, swup also passes original event into the handler (for events such as clickLink, hoverLink, etc.), 
+where `delegateTarget` property is the actual target of the delegated event. 
+This event is also displayed in console in debug mode.
+
 ```javascript
 // trigger page view for GTM
-document.addEventListener('swup:pageView', event => {
+swup.on('pageView', function () {
     dataLayer.push({
         'event': 'VirtualPageview',
         'virtualPageURL': window.location.pathname,
@@ -295,34 +301,49 @@ document.addEventListener('swup:pageView', event => {
     });
 });
 
-// load scripts for replaced elements
-document.addEventListener('swup:contentReplaced', event => {
+swup.on('contentReplaced', function () {
     swup.options.elements.forEach((selector) => {
         // load scripts for all elements with 'selector'
     })
 });
 ```
 
+```javascript
+swup.off('pageView', handler); // removes single handler of 'pageView' event
+swup.off('pageView'); // removes all handlers for 'pageView' event
+swup.off(); // removes all handlers for all events
+```
+
 **Note:** example with enabling scripts above assumes using component based approach, like the one used by [Gia framework](https://github.com/giantcz/gia).
 
 ### List of all events
-* **swup:willReplaceContent** - triggers right before the content of page is replaced
-* **swup:contentReplaced** - triggers right after the content of page is replaced
-* **swup:pageView** - similar as previous, except it is once triggered on load
-* **swup:hoverLink** - triggers when link is hovered
-* **swup:clickLink** - triggers when link is clicked
-* **swup:animationOutStart** - triggers when animation *OUT* starts (class `is-animating` is added to html tag)
-* **swup:animationOutDone** - triggers when transition of all animated elements is done (after click of link and before content is replaced)
-* **swup:pagePreloaded** - triggers when the preload of some page is done
-* **swup:pageLoaded** - triggers when loading of some page is done (differs from previous only by the source of event - hover/click)
-* **swup:scrollStart** - triggers when built in scroll is started
-* **swup:scrollDone** - triggers when built in scroll is done
-* **swup:animationInStart** - triggers when animation *IN* starts (class `is-animating` is removed from html tag)
-* **swup:animationInDone** - triggers when transition of all animated elements is done (after content is replaced)
-* **swup:pageRetrievedFromCache** - triggers when page is retrieved from cache and no request is necessary
-* **swup:submitForm** - triggers when form is submitted trough swup (right before submission)
-* **swup:enabled** - triggers when swup instance is created or re-enabled after call of `destroy()`
-* **swup:disabled** - triggers on `destroy()`
+* **willReplaceContent** - triggers right before the content of page is replaced
+* **contentReplaced** - triggers right after the content of page is replaced
+* **pageView** - similar as previous, except it is once triggered on load
+* **hoverLink** - triggers when link is hovered
+* **clickLink** - triggers when link is clicked
+* **samePageWithHash** - triggers when link leading to the same page with `#someElement` in the href attribute is clicked
+* **animationOutStart** - triggers when animation *OUT* starts (class `is-animating` is added to html tag)
+* **animationOutDone** - triggers when transition of all animated elements is done (after click of link and before content is replaced)
+* **animationSkipped** - triggers when transition is skipped (on back/forward buttons)
+* **pagePreloaded** - triggers when the preload of some page is done
+* **pageLoaded** - triggers when loading of some page is done (differs from previous only by the source of event - hover/click)
+* **scrollStart** - triggers when built in scroll is started
+* **scrollDone** - triggers when built in scroll is done
+* **animationInStart** - triggers when animation *IN* starts (class `is-animating` is removed from html tag)
+* **animationInDone** - triggers when transition of all animated elements is done (after content is replaced)
+* **pageRetrievedFromCache** - triggers when page is retrieved from cache and no request is necessary
+* **submitForm** - triggers when form is submitted trough swup (right before submission)
+* **enabled** - triggers when swup instance is created or re-enabled after call of `destroy()`
+* **disabled** - triggers on `destroy()`
+
+For backward compatibility, all events are also triggered on the `document` with **swup:** prefix.
+
+```javascript
+document.addEventListener('swup:contentReplaced', event => {
+    // do something when content is replaced
+});
+```
 
 ## Plugins
 Some functionality is only necessary in certain projects.
@@ -427,6 +448,13 @@ swup.scrollTo(document.body, 2000);
 ```
 **Note:** `loadPage` function is used to submit forms with swup.
 For more information on submitting forms with `XMLHttpRequest`, refer to [Sending forms through JavaScript](https://developer.mozilla.org/en-US/docs/Learn/HTML/Forms/Sending_forms_through_JavaScript).
+
+```javascript
+// register event handler
+swup.on("clickLink", function(event) {
+    console.log(event);
+});
+```
 
 ```javascript
 // disable swup

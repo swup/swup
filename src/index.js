@@ -17,6 +17,8 @@ import scrollTo from './modules/scrollTo'
 import classify from './modules/classify'
 import doScrolling from './modules/doScrolling'
 import markSwupElements from './modules/markSwupElements'
+import on from './modules/on'
+import off from './modules/off'
 import updateTransition from './modules/updateTransition'
 import preloadPages from './modules/preloadPages'
 import usePlugin from './modules/usePlugin'
@@ -67,6 +69,31 @@ export default class Swup {
         /**
          * helper variables
          */
+        this._handlers = {
+            willReplaceContent: [],
+            contentReplaced: [],
+            pageView: [],
+            hoverLink: [],
+            clickLink: [],
+            samePageWithHash: [],
+            animationOutStart: [],
+            animationOutDone: [],
+            animationSkipped: [],
+            pagePreloaded: [],
+            pageLoaded: [],
+            scrollStart: [],
+            scrollDone: [],
+            animationInStart: [],
+            animationInDone: [],
+            pageRetrievedFromCache: [],
+            submitForm: [],
+            enabled: [],
+            disabled: [],
+        };
+
+        /**
+         * helper variables
+         */
         // id of element to scroll to after render
         this.scrollToElement = null
         // promise used for preload, so no new loading of the same page starts while page is loading
@@ -93,6 +120,8 @@ export default class Swup {
         this.classify = classify
         this.doScrolling = doScrolling
         this.markSwupElements = markSwupElements
+        this.on = on
+        this.off = off
         this.updateTransition = updateTransition
         this.preloadPages = preloadPages
         this.usePlugin = usePlugin
@@ -228,14 +257,18 @@ export default class Swup {
             delete element.dataset.swup
         })
 
+        // remove handlers
+        this.off();
+
         this.triggerEvent('disabled')
         document.documentElement.classList.remove('swup-enabled')
+
     }
 
     linkClickHandler (event) {
         // no control key pressed
         if (!event.metaKey) {
-            this.triggerEvent('clickLink')
+            this.triggerEvent('clickLink', event)
             var link = new Link()
             event.preventDefault()
             link.setPath(event.delegateTarget.href)
@@ -244,7 +277,7 @@ export default class Swup {
                 // link to the same URL
                 if (link.getHash() != '') {
                     // link to the same URL with hash
-                    this.triggerEvent('samePageWithHash')
+                    this.triggerEvent('samePageWithHash', event)
                     var element = document.querySelector(link.getHash())
                     if (element != null) {
                         // referenced element found
@@ -266,7 +299,7 @@ export default class Swup {
                     }
                 } else {
                     // link to the same URL without hash
-                    this.triggerEvent('samePage')
+                    this.triggerEvent('samePage', event)
                     if (this.options.scroll) {
                         this.scrollTo(document.body, 0, 1)
                     }
@@ -285,12 +318,12 @@ export default class Swup {
             }
         } else {
             // open in new tab (do nothing)
-            this.triggerEvent('openPageInNewTab')
+            this.triggerEvent('openPageInNewTab', event)
         }
     }
 
     linkMouseoverHandler (event) {
-        this.triggerEvent('hoverLink')
+        this.triggerEvent('hoverLink', event)
         if (this.options.preload) {
             var link = new Link()
             link.setPath(event.delegateTarget.href)
@@ -298,7 +331,7 @@ export default class Swup {
                 this.preloadPromise = new Promise((resolve, reject) => {
                     this.getPage({ url: link.getAddress() },  (response, request) => {
                         if (request.status === 500) {
-                            this.triggerEvent('serverError')
+                            this.triggerEvent('serverError', event)
                             reject(link.getAddress())
                             return;
                         } else {
@@ -307,7 +340,7 @@ export default class Swup {
                             if (page != null) {
                                 page.url = link.getAddress()
                                 this.cache.cacheUrl(page, this.options.debugMode)
-                                this.triggerEvent('pagePreloaded')
+                                this.triggerEvent('pagePreloaded', event)
                             } else {
                                 reject(link.getAddress())
                                 return;
@@ -325,7 +358,7 @@ export default class Swup {
     formSubmitHandler (event) {
         // no control key pressed
         if (!event.metaKey) {
-            this.triggerEvent('submitForm')
+            this.triggerEvent('submitForm', event)
             event.preventDefault()
             let form = event.target
             let formData  = new FormData(form)
@@ -380,7 +413,7 @@ export default class Swup {
                 })
             }
         } else {
-            this.triggerEvent('openFormSubmitInNewTab')
+            this.triggerEvent('openFormSubmitInNewTab', event)
         }
     }
 
@@ -393,7 +426,7 @@ export default class Swup {
         } else {
             event.preventDefault()
         }
-        this.triggerEvent('popState')
+        this.triggerEvent('popState', event)
         this.loadPage({ url: link.getAddress() }, event)
     }
 }
