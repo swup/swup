@@ -112,7 +112,7 @@ For the animations based on CSS to be possible, swup uses several classes that a
 * `is-leaving` - Assigned once a link is clicked and removed right before the content is replaced. (can be used in together with `is-animating` to create different animation for *IN* and *OUT*)
 * `is-rendering` - Assigned right before the content is replaced and removed when the whole process of transition of pages is done. (same as above)
 * `to-[route of next page in URL friendly form]` - Assigned once a link is clicked and removed when the whole process of transition of pages is done.
-Custom class can be also added by adding `data-swup-class` to the link, where `to-[content of data-swup-class attribute]` is added to html. (used to change animation for different URLs)
+Custom class can be also added by adding `data-swup-transition` to the link, where `to-[content of data-swup-transition attribute]` is added to html. (used to change animation for different URLs)
 
 ## Options
 Swup has a several options that can be passed into a constructor as an object.
@@ -419,6 +419,7 @@ swup.loadPage({
     url: "/someRoute", // route of request (defaults to current url)
     method: "GET", // method of request (defaults to "GET")
     data: data, // data passed into XMLHttpRequest send method
+    customTransition: "", // name of your transition used for adding custom class to html element and choosing custom animation in swupjs (as setting data-swup-transition attribute on link)
 });
 
 // scroll page to some position (2000px from top in this example)
