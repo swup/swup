@@ -76,6 +76,7 @@ export default class Swup {
             pageView: [],
             hoverLink: [],
             clickLink: [],
+            samePage: [],
             samePageWithHash: [],
             animationOutStart: [],
             animationOutDone: [],

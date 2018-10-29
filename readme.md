@@ -322,6 +322,7 @@ swup.off(); // removes all handlers for all events
 * **pageView** - similar as previous, except it is once triggered on load
 * **hoverLink** - triggers when link is hovered
 * **clickLink** - triggers when link is clicked
+* **samePage** - triggers when link leading to the same page is clicked
 * **samePageWithHash** - triggers when link leading to the same page with `#someElement` in the href attribute is clicked
 * **animationOutStart** - triggers when animation *OUT* starts (class `is-animating` is added to html tag)
 * **animationOutDone** - triggers when transition of all animated elements is done (after click of link and before content is replaced)

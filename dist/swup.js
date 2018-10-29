@@ -328,6 +328,7 @@ var Swup = function () {
             pageView: [],
             hoverLink: [],
             clickLink: [],
+            samePage: [],
             samePageWithHash: [],
             animationOutStart: [],
             animationOutDone: [],
