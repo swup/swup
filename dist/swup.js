@@ -526,7 +526,7 @@ var Swup = function () {
         key: 'linkClickHandler',
         value: function linkClickHandler(event) {
             // no control key pressed
-            if (!event.metaKey) {
+            if (!event.metaKey && !ev.which == 3) {
                 this.triggerEvent('clickLink', event);
                 var link = new _Link2.default();
                 event.preventDefault();
