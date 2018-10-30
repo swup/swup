@@ -335,6 +335,7 @@ swup.off(); // removes all handlers for all events
 * **animationInDone** - triggers when transition of all animated elements is done (after content is replaced)
 * **pageRetrievedFromCache** - triggers when page is retrieved from cache and no request is necessary
 * **submitForm** - triggers when form is submitted trough swup (right before submission)
+* **popState** - triggers on popstate events (back forward button)
 * **enabled** - triggers when swup instance is created or re-enabled after call of `destroy()`
 * **disabled** - triggers on `destroy()`
 

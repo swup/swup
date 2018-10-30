@@ -68,7 +68,7 @@ export default class Swup {
         }
 
         /**
-         * helper variables
+         * handler arrays
          */
         this._handlers = {
             willReplaceContent: [],
@@ -88,6 +88,7 @@ export default class Swup {
             animationInStart: [],
             animationInDone: [],
             pageRetrievedFromCache: [],
+            popState: [],
             submitForm: [],
             enabled: [],
             disabled: [],
