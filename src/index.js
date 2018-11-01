@@ -89,6 +89,7 @@ export default class Swup {
             animationInDone: [],
             pageRetrievedFromCache: [],
             popState: [],
+            openPageInNewTab: [],
             submitForm: [],
             enabled: [],
             disabled: [],

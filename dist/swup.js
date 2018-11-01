@@ -341,6 +341,7 @@ var Swup = function () {
             animationInDone: [],
             pageRetrievedFromCache: [],
             popState: [],
+            openPageInNewTab: [],
             submitForm: [],
             enabled: [],
             disabled: []
