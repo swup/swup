@@ -272,53 +272,55 @@ export default class Swup {
     linkClickHandler (event) {
         // no control key pressed
         if (!event.metaKey) {
-            this.triggerEvent('clickLink', event)
-            var link = new Link()
-            event.preventDefault()
-            link.setPath(event.delegateTarget.href)
+            if (event.button === 0) {
+                this.triggerEvent('clickLink', event)
+                var link = new Link()
+                event.preventDefault()
+                link.setPath(event.delegateTarget.href)
 
-            if (link.getAddress() == this.currentUrl || link.getAddress() == '') {
-                // link to the same URL
-                if (link.getHash() != '') {
-                    // link to the same URL with hash
-                    this.triggerEvent('samePageWithHash', event)
-                    var element = document.querySelector(link.getHash())
-                    if (element != null) {
-                        // referenced element found
-                        if (this.options.scroll) {
-                            let top = element.getBoundingClientRect().top + window.pageYOffset;
-                            this.scrollTo(document.body, top)
+                if (link.getAddress() == this.currentUrl || link.getAddress() == '') {
+                    // link to the same URL
+                    if (link.getHash() != '') {
+                        // link to the same URL with hash
+                        this.triggerEvent('samePageWithHash', event)
+                        var element = document.querySelector(link.getHash())
+                        if (element != null) {
+                            // referenced element found
+                            if (this.options.scroll) {
+                                let top = element.getBoundingClientRect().top + window.pageYOffset;
+                                this.scrollTo(document.body, top)
+                            }
+                            history.replaceState({
+                                    url: link.getAddress() + link.getHash(),
+                                    random: Math.random(),
+                                    source: "swup",
+                                },
+                                document.title,
+                                link.getAddress() + link.getHash()
+                            )
+                        } else {
+                            // referenced element not found
+                            console.warn(`Element for offset not found (${link.getHash()})`)
                         }
-                        history.replaceState({
-                                url: link.getAddress() + link.getHash(),
-                                random: Math.random(),
-                                source: "swup",
-                            },
-                            document.title,
-                            link.getAddress() + link.getHash()
-                        )
                     } else {
-                        // referenced element not found
-                        console.warn(`Element for offset not found (${link.getHash()})`)
+                        // link to the same URL without hash
+                        this.triggerEvent('samePage', event)
+                        if (this.options.scroll) {
+                            this.scrollTo(document.body, 0, 1)
+                        }
                     }
                 } else {
-                    // link to the same URL without hash
-                    this.triggerEvent('samePage', event)
-                    if (this.options.scroll) {
-                        this.scrollTo(document.body, 0, 1)
+                    // link to different url
+                    if (link.getHash() != '') {
+                        this.scrollToElement = link.getHash()
                     }
-                }
-            } else {
-                // link to different url
-                if (link.getHash() != '') {
-                    this.scrollToElement = link.getHash()
-                }
 
-                // get custom transition from data
-                let customTransition = event.delegateTarget.dataset.swupTransition;
+                    // get custom transition from data
+                    let customTransition = event.delegateTarget.dataset.swupTransition;
 
-                // load page
-                this.loadPage({ url: link.getAddress(), customTransition: customTransition }, false)
+                    // load page
+                    this.loadPage({ url: link.getAddress(), customTransition: customTransition }, false)
+                }
             }
         } else {
             // open in new tab (do nothing)
