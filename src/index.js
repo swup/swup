@@ -273,6 +273,7 @@ export default class Swup {
     linkClickHandler (event) {
         // no control key pressed
         if (!event.metaKey) {
+            // index of pressed button needs to be checked because Firefox triggers click on all mouse buttons
             if (event.button === 0) {
                 this.triggerEvent('clickLink', event)
                 var link = new Link()
