@@ -1,9 +1,14 @@
 # swup
-**Animated page transitions with css.**
+
+Complete, flexible, easy to use page transition library.
+
+[![npm version](https://img.shields.io/npm/v/swup.svg)](https://www.npmjs.com/package/swup)
+[![Gzip Size](https://img.shields.io/bundlephobia/minzip/swup.svg)](https://github.com/gmrchk/swup/blob/master/dist/swup.min.js)
+[![License](https://img.shields.io/github/license/gmrchk/swup.svg)](https://github.com/gmrchk/swup/blob/master/LICENSE)
+[![npm downloads](https://img.shields.io/npm/dt/swup.svg)](https://www.npmjs.com/package/swup)
 
 ![Transition examples](https://user-images.githubusercontent.com/9338324/39842661-9ec5d41a-53e7-11e8-87de-963b4da4a952.gif)
 
-**Note:** In case you like to do your animations in JavaScript, you may also check out [swupjs](https://github.com/gmrchk/swupjs).
 
 ## About swup
 * It's just ridiculously [easy to use](#example), even for beginners.
@@ -12,6 +17,10 @@
 * Forget about timing. swup [detects the end of your animations](#animation-selector) and controls the whole lifecycle of transition automatically.
 * Don't worry about browser history… swup takes care of it, changes the url when it's needed and preserves browser native behavior on popState events.
 * Has some cool additional features for even better experience like [cache](#cache), smart [preload](#preload) without DDOSing your server, badass smooth "acceleration based" [scroll](#scroll) control, helpful [debug mode](#debug-mode), or support for [forms](#form-selector).
+
+Here is a little [demo](https://gmrchk.github.io/swup-gia-demo/about-gia.html) to fork.
+
+In case you like to do your animations in JavaScript, you may also check out [swupjs](https://github.com/gmrchk/swupjs).
 
 [Installation](#installation)
 
@@ -46,7 +55,9 @@
 
 [Request Header](#request-header)
 
-[Contributions](#contributions)
+[License and Contributions](#license-and-contributions)
+
+[Websites using swup](#websites-using-swup)
 
 ## Installation
 ```shell
@@ -317,28 +328,28 @@ swup.off(); // removes all handlers for all events
 **Note:** example with enabling scripts above assumes using component based approach, like the one used by [Gia framework](https://github.com/giantcz/gia).
 
 ### List of all events
-* **willReplaceContent** - triggers right before the content of page is replaced
-* **contentReplaced** - triggers right after the content of page is replaced
-* **pageView** - similar as previous, except it is once triggered on load
-* **hoverLink** - triggers when link is hovered
+* **animationInDone** - triggers when transition of all animated elements is done (after content is replaced)
+* **animationInStart** - triggers when animation *IN* starts (class `is-animating` is removed from html tag)
+* **animationOutDone** - triggers when transition of all animated elements is done (after click of link and before content is replaced)
+* **animationOutStart** - triggers when animation *OUT* starts (class `is-animating` is added to html tag)
+* **animationSkipped** - triggers when transition is skipped (on back/forward buttons)
 * **clickLink** - triggers when link is clicked
+* **contentReplaced** - triggers right after the content of page is replaced
+* **disabled** - triggers on `destroy()`
+* **enabled** - triggers when swup instance is created or re-enabled after call of `destroy()`
+* **hoverLink** - triggers when link is hovered
+* **openPageInNewTab** - triggers when page is opened to new tab (link clicked when control key is pressed)
+* **pageLoaded** - triggers when loading of some page is done 
+* **pagePreloaded** - triggers when the preload of some page is done (differs from **pageLoaded** only by the source of event - hover/click)
+* **pageRetrievedFromCache** - triggers when page is retrieved from cache and no request is necessary
+* **pageView** - similar to **contentReplaced**, except it is once triggered on load
+* **popState** - triggers on popstate events (back forward button)
 * **samePage** - triggers when link leading to the same page is clicked
 * **samePageWithHash** - triggers when link leading to the same page with `#someElement` in the href attribute is clicked
-* **animationOutStart** - triggers when animation *OUT* starts (class `is-animating` is added to html tag)
-* **animationOutDone** - triggers when transition of all animated elements is done (after click of link and before content is replaced)
-* **animationSkipped** - triggers when transition is skipped (on back/forward buttons)
-* **pagePreloaded** - triggers when the preload of some page is done
-* **pageLoaded** - triggers when loading of some page is done (differs from previous only by the source of event - hover/click)
-* **scrollStart** - triggers when built in scroll is started
 * **scrollDone** - triggers when built in scroll is done
-* **animationInStart** - triggers when animation *IN* starts (class `is-animating` is removed from html tag)
-* **animationInDone** - triggers when transition of all animated elements is done (after content is replaced)
-* **pageRetrievedFromCache** - triggers when page is retrieved from cache and no request is necessary
+* **scrollStart** - triggers when built in scroll is started
 * **submitForm** - triggers when form is submitted trough swup (right before submission)
-* **popState** - triggers on popstate events (back forward button)
-* **openPageInNewTab** - triggers when page is opened to new tab (link clicked when control key is pressed)
-* **enabled** - triggers when swup instance is created or re-enabled after call of `destroy()`
-* **disabled** - triggers on `destroy()`
+* **willReplaceContent** - triggers right before the content of page is replaced
 
 For backward compatibility, all events are also triggered on the `document` with **swup:** prefix.
 
@@ -475,12 +486,18 @@ Keep in mind that order of blocks in such layout less response must be the same 
 The response can take other forms, like JSON. 
 In that case, swups [getDataFromHtml](https://github.com/gmrchk/swup/blob/master/src/modules/getDataFromHtml.js) method must be modified to fit your needs and return the same information for swup to save in cache. 
 
-## Contributions
-Swup is currently stable and production-ready. Any contributions or suggestions are more than welcome.
+## License and Contributions
+Swup is released under [MIT license](https://github.com/gmrchk/swup/blob/master/LICENSE).  
+Any contributions or suggestions are more than welcome.  
+If you just can't get your head around how much swup makes your life easier, you can [buy me a beer](https://www.paypal.me/gmrchk).  
+If you'd like to share your work utilizing swup with me or others, please, drop me a link at <a href="mailto:gmarcuk@gmail.com?subject=My awesome project using swup">gmarcuk@gmail.com</a>.
 
-**If you'd like to share your work using swup with me or others, please, drop me a link at <a href="mailto:gmarcuk@gmail.com">gmarcuk@gmail.com</a>.**
+## Websites using swup
+* [Plan-k | KPMG](https://www.plan-k.cz/)
+* [25 let | RSTS](https://www.rsts.cz/25let/)
+* [Dělej, co tě baví | Decathlon](http://delejcotebavi.decathlon.cz/)
 
-
+...and many more. 
 
 
 
