@@ -391,7 +391,7 @@ export default class Swup {
             } else {
                 // create base url
                 let url = link.getAddress() || window.location.href
-                let inputs = form.querySelectorAll('input')
+                let inputs = form.querySelectorAll('input, select')
                 if(url.indexOf('?') == -1) {
                     url += "?"
                 } else {

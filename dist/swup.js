@@ -528,6 +528,7 @@ var Swup = function () {
         value: function linkClickHandler(event) {
             // no control key pressed
             if (!event.metaKey) {
+                // index of pressed button needs to be checked because Firefox triggers click on all mouse buttons
                 if (event.button === 0) {
                     this.triggerEvent('clickLink', event);
                     var link = new _Link2.default();
@@ -646,7 +647,7 @@ var Swup = function () {
                 } else {
                     // create base url
                     var url = link.getAddress() || window.location.href;
-                    var inputs = form.querySelectorAll('input');
+                    var inputs = form.querySelectorAll('input, select');
                     if (url.indexOf('?') == -1) {
                         url += "?";
                     } else {
