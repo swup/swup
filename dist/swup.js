@@ -323,28 +323,29 @@ var Swup = function () {
          * handler arrays
          */
         this._handlers = {
-            willReplaceContent: [],
-            contentReplaced: [],
-            pageView: [],
-            hoverLink: [],
+            animationInDone: [],
+            animationInStart: [],
+            animationOutDone: [],
+            animationOutStart: [],
+            animationSkipped: [],
             clickLink: [],
+            contentReplaced: [],
+            disabled: [],
+            enabled: [],
+            hoverLink: [],
+            openPageInNewTab: [],
+            pageLoaded: [],
+            pagePreloaded: [],
+            pageRetrievedFromCache: [],
+            pageView: [],
+            popState: [],
             samePage: [],
             samePageWithHash: [],
-            animationOutStart: [],
-            animationOutDone: [],
-            animationSkipped: [],
-            pagePreloaded: [],
-            pageLoaded: [],
-            scrollStart: [],
             scrollDone: [],
-            animationInStart: [],
-            animationInDone: [],
-            pageRetrievedFromCache: [],
-            popState: [],
-            openPageInNewTab: [],
+            scrollStart: [],
+            serverError: [],
             submitForm: [],
-            enabled: [],
-            disabled: []
+            willReplaceContent: []
         };
 
         /**
