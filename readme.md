@@ -22,6 +22,8 @@ Here is a little [demo](https://gmrchk.github.io/swup-gia-demo/about-gia.html) t
 
 In case you like to do your animations in JavaScript, you may also check out [swupjs](https://github.com/gmrchk/swupjs).
 
+## Table of Contents
+
 [Installation](#installation)
 
 [Example](#example)
