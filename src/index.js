@@ -85,6 +85,7 @@ export default class Swup {
             pageLoaded: [],
             scrollStart: [],
             scrollDone: [],
+            serverError: [],
             animationInStart: [],
             animationInDone: [],
             pageRetrievedFromCache: [],
