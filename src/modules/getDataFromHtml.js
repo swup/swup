@@ -1,3 +1,5 @@
+import { queryAll } from "./utils";
+
 module.exports = function (html, request) {
     let content = html.replace('<body', '<div id="swupBody"').replace('</body>', '</div>')
     let fakeDom = document.createElement('div')
@@ -9,9 +11,9 @@ module.exports = function (html, request) {
             console.warn(`Element ${this.options.elements[i]} is not found in cached page.`)
             return null;
         } else {
-            [].forEach.call(document.body.querySelectorAll(this.options.elements[i]), (item, index) => {
-                fakeDom.querySelectorAll(this.options.elements[i])[index].dataset.swup = blocks.length;
-                blocks.push(fakeDom.querySelectorAll(this.options.elements[i])[index].outerHTML)
+            queryAll(this.options.elements[i]).forEach((item, index) => {
+                queryAll(this.options.elements[i], fakeDom)[index].dataset.swup = blocks.length;
+                blocks.push(queryAll(this.options.elements[i], fakeDom)[index].outerHTML)
             })
         }
     }

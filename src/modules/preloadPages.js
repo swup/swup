@@ -1,6 +1,8 @@
+import {queryAll} from "./utils";
+
 module.exports = function () {
     if (this.options.preload) {
-        document.querySelectorAll('[data-swup-preload]').forEach(element => {
+        queryAll('[data-swup-preload]').forEach(element => {
             this.preloadPage(element.href)
         })
     }

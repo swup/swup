@@ -1,5 +1,7 @@
-const { forEach } = Array.prototype;
+import { queryAll } from "./utils";
 import Link from '../Link';
+
+const { forEach } = Array.prototype;
 
 module.exports = function (page, popstate) {
     document.documentElement.classList.remove('is-leaving')
@@ -71,7 +73,7 @@ module.exports = function (page, popstate) {
     }
 
     // detect animation end
-    let animatedElements = document.querySelectorAll(this.options.animationSelector)
+    let animatedElements = queryAll(this.options.animationSelector)
     let promises = [];
     animatedElements
         ::forEach(element => {

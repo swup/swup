@@ -1,3 +1,4 @@
+import { queryAll } from "./utils";
 const { forEach } = Array.prototype;
 
 module.exports = function (data, popstate) {
@@ -29,7 +30,7 @@ module.exports = function (data, popstate) {
         document.documentElement.classList.add('to-' + this.classify(data.url))
 
         // detect animation end
-        let animatedElements = document.querySelectorAll(this.options.animationSelector)
+        let animatedElements = queryAll(this.options.animationSelector)
         animatedElements
             ::forEach(element => {
             var promise = new Promise(resolve => {
