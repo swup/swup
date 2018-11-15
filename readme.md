@@ -240,7 +240,7 @@ support: true
 Debug mode is useful for integrating swup into your site.
 When enabled, swup displays emitted events (see [events](#events) section) in the console, as well as contents of the cache when changed.
 Swup instance is also accessible globally as `window.swup` in debug mode. Option defaults to false.
-```javasrripts
+```javascript
 debugMode: false
 ```
 
