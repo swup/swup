@@ -190,7 +190,7 @@ When enabled, swup starts loading the page on hover of the link and does not wai
 In case the page is not loaded at the time of clicking on the link, swup simply waits for the request to finish and does not create new request.
 Also, swup only creates one preload request at the time, so your server won't be overwhelmed by people just passing their cursor through some grid of links.
 If cache is disabled, swup still preloads pages on hovered links, but the content of cache is removed after each page transition.
-In case you want to preload some page automatically without any trigger by the user, `data-swup-preload` on the link will do the trick.
+In case you want to preload some page automatically without any trigger by the user, `data-swup-preload` on the link will do the trick. By default, preload is set to `true`.
 ```javascript
 preload: true
 ```
@@ -264,7 +264,7 @@ Option enables the animation on popstate events. Swup adds `is-popstate` class t
 
 Note that when this option is enabled, swup disables browser native scroll control (sets [scrollRestoration](https://developers.google.com/web/updates/2015/09/history-api-scroll-restoration) to `manual`) and takes over this task. 
 This means that position of scroll on previous page(s) is not preserved (but [can be implemented manually](https://github.com/gmrchk/swup/issues/48#issuecomment-423854819) based on use case).
-Otherwise swup scrolls to top/#element on popstate as it does with normal browsing. 
+Otherwise swup scrolls to top/#element on popstate as it does with normal browsing. Default value is `false`.
 ```javascript
 animateHistoryBrowsing: false
 ```
