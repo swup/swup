@@ -18,7 +18,7 @@ Complete, flexible, easy to use page transition library.
 * Don't worry about browser history… swup takes care of it, changes the url when it's needed and preserves browser native behavior on popState events.
 * Has some cool additional features for even better experience like [cache](#cache), smart [preload](#preload) without DDOSing your server, badass smooth "acceleration based" [scroll](#scroll) control, helpful [debug mode](#debug-mode), or support for [forms](#form-selector).
 
-Here is a little [demo](https://gmrchk.github.io/swup-gia-demo/about-gia.html) to fork.
+Here is a little [demo](https://gmrchk.github.io/swup-gia-demo/index.html) to fork.
 
 In case you like to do your animations in JavaScript, you may also check out [swupjs](https://github.com/gmrchk/swupjs).
 
