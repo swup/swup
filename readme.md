@@ -1,14 +1,13 @@
-# swup
-
+<p align="center"><img width="420" alt="swup" src="https://gmrchk.github.io/swup/swup.svg"></p>
+<p align="center">
 Complete, flexible, easy to use page transition library.
-
-[![npm version](https://img.shields.io/npm/v/swup.svg)](https://www.npmjs.com/package/swup)
-[![Gzip Size](https://img.shields.io/bundlephobia/minzip/swup.svg)](https://github.com/gmrchk/swup/blob/master/dist/swup.min.js)
-[![License](https://img.shields.io/github/license/gmrchk/swup.svg)](https://github.com/gmrchk/swup/blob/master/LICENSE)
-[![npm downloads](https://img.shields.io/npm/dt/swup.svg)](https://www.npmjs.com/package/swup)
-
-![Transition examples](https://user-images.githubusercontent.com/9338324/39842661-9ec5d41a-53e7-11e8-87de-963b4da4a952.gif)
-
+</p>
+<p align="center">
+    <a href="https://www.npmjs.com/package/swup"><img src="https://img.shields.io/npm/v/swup.svg" alt="npm version"></a>
+    <img src="https://img.shields.io/bundlephobia/minzip/swup.svg" alt="Gzip Size">
+    <a href="https://github.com/gmrchk/swup/blob/master/LICENSE"><img src="https://img.shields.io/github/license/gmrchk/swup.svg" alt="License"></a>
+    <a href="https://www.npmjs.com/package/swup"><img src="https://img.shields.io/npm/dt/swup.svg" alt="npm downloads"></a>
+</p>
 
 ## About swup
 * It's just ridiculously [easy to use](#example), even for beginners.
@@ -21,6 +20,8 @@ Complete, flexible, easy to use page transition library.
 Here is a little [demo](https://gmrchk.github.io/swup-gia-demo/index.html) to fork.
 
 In case you like to do your animations in JavaScript, you may also check out [swupjs](https://github.com/gmrchk/swupjs).
+
+<img src="https://user-images.githubusercontent.com/9338324/49190360-50125480-f372-11e8-89e9-d2fb091a2240.gif" width="100%">
 
 ## Table of Contents
 
@@ -489,14 +490,16 @@ The response can take other forms, like JSON.
 In that case, swups [getDataFromHtml](https://github.com/gmrchk/swup/blob/master/src/modules/getDataFromHtml.js) method must be modified to fit your needs and return the same information for swup to save in cache. 
 
 ## License and Contributions
+Logo by [Honza Jura](https://twitter.com/honzajura).   
 Swup is released under [MIT license](https://github.com/gmrchk/swup/blob/master/LICENSE).  
 Any contributions or suggestions are more than welcome.  
 If you just can't get your head around how much swup makes your life easier, you can [buy me a beer](https://www.paypal.me/gmrchk).  
 If you'd like to share your work utilizing swup with me or others, please, drop me a link at <a href="mailto:gmarcuk@gmail.com?subject=My awesome project using swup">gmarcuk@gmail.com</a>.
 
 ## Websites using swup
+* [Tvoříme lepší svět | Panasonic](https://plzen.cz.panasonic.com/)
+* [25 let | Raiffeisen stavební spořitelna](https://www.rsts.cz/25let/)
 * [Plan-k | KPMG](https://www.plan-k.cz/)
-* [25 let | RSTS](https://www.rsts.cz/25let/)
 * [Dělej, co tě baví | Decathlon](http://delejcotebavi.decathlon.cz/)
 
 ...and many more. 
