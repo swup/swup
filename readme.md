@@ -19,7 +19,9 @@ Complete, flexible, easy to use page transition library.
 
 Here is a little [demo](https://gmrchk.github.io/swup-gia-demo/index.html) to fork.
 
-In case you like to do your animations in JavaScript, you may also check out [swupjs](https://github.com/gmrchk/swupjs).
+In case you like to do your animations in JavaScript, you may also check out **[swupjs](https://github.com/gmrchk/swupjs)**.
+
+If you're having trouble implementing swup, checkout [Common Issues](https://github.com/gmrchk/swup/wiki/Common-Issues), [Closed Issues](https://github.com/gmrchk/swup/issues?q=is%3Aissue+is%3Aclosed) or open a [new one](https://github.com/gmrchk/swup/issues/new).
 
 <img src="https://user-images.githubusercontent.com/9338324/49190360-50125480-f372-11e8-89e9-d2fb091a2240.gif" width="100%">
 
