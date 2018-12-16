@@ -1313,7 +1313,11 @@ module.exports = function (eventName, originalEvent) {
 
     // call saved handlers with "on" method and pass originalEvent object if available
     this._handlers[eventName].forEach(function (handler) {
-        return handler(originalEvent);
+        try {
+            handler(originalEvent);
+        } catch (error) {
+            console.error(error);
+        }
     });
 
     // trigger event on document with prefix "swup:"

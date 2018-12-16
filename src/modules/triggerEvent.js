@@ -8,7 +8,13 @@ module.exports = function (eventName, originalEvent) {
     }
 
     // call saved handlers with "on" method and pass originalEvent object if available
-    this._handlers[eventName].forEach(handler => handler(originalEvent));
+    this._handlers[eventName].forEach(handler => {
+        try {
+            handler(originalEvent)
+        } catch(error) {
+            console.error(error);
+        }
+    });
 
     // trigger event on document with prefix "swup:"
     var event = new CustomEvent('swup:' + eventName, { detail : eventName })
