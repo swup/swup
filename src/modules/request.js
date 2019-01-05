@@ -24,6 +24,7 @@ module.exports = function(options, callback = false) {
 
     request.open(data.method, data.url, true)
     request.setRequestHeader("X-Requested-With", "swup")
+    request.setRequestHeader("Accept", "text/html, application/xhtml+xml")
     request.send(data.data)
     return request
 }
