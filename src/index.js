@@ -24,6 +24,7 @@ import preloadPage from './modules/preloadPage'
 import preloadPages from './modules/preloadPages'
 import usePlugin from './modules/usePlugin'
 import log from './modules/log'
+import { queryAll } from './modules/utils'
 
 export default class Swup {
     constructor(setOptions) {
@@ -259,7 +260,7 @@ export default class Swup {
         this.cache.empty()
 
         // remove swup data atributes from blocks
-        document.querySelectorAll('[data-swup]').forEach(element => {
+        queryAll('[data-swup]').forEach(element => {
             delete element.dataset.swup
         })
 
@@ -392,7 +393,7 @@ export default class Swup {
             } else {
                 // create base url
                 let url = link.getAddress() || window.location.href
-                let inputs = form.querySelectorAll('input, select')
+                let inputs = queryAll('input, select', form)
                 if(url.indexOf('?') == -1) {
                     url += "?"
                 } else {

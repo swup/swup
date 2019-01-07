@@ -307,6 +307,8 @@ var _log = __webpack_require__(25);
 
 var _log2 = _interopRequireDefault(_log);
 
+var _utils = __webpack_require__(0);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -546,7 +548,7 @@ var Swup = function () {
             this.cache.empty();
 
             // remove swup data atributes from blocks
-            document.querySelectorAll('[data-swup]').forEach(function (element) {
+            (0, _utils.queryAll)('[data-swup]').forEach(function (element) {
                 delete element.dataset.swup;
             });
 
@@ -680,7 +682,7 @@ var Swup = function () {
                 } else {
                     // create base url
                     var url = link.getAddress() || window.location.href;
-                    var inputs = form.querySelectorAll('input, select');
+                    var inputs = (0, _utils.queryAll)('input, select', form);
                     if (url.indexOf('?') == -1) {
                         url += "?";
                     } else {
