@@ -1559,22 +1559,27 @@ module.exports = function (pathname) {
 
     var link = new _Link2.default();
     link.setPath(pathname);
-    if (link.getAddress() != this.currentUrl && !this.cache.exists(link.getAddress()) && this.preloadPromise == null) {
-        this.getPage({ url: link.getAddress() }, function (response, request) {
-            if (request.status === 500) {
-                _this.triggerEvent('serverError');
-                return;
-            } else {
-                // get json data
-                var page = _this.getDataFromHtml(response, request);
-                if (page != null) {
-                    page.url = link.getAddress();
-                    _this.cache.cacheUrl(page, _this.options.debugMode);
-                    _this.triggerEvent('pagePreloaded');
+    return new Promise(function (resolve, reject) {
+        if (link.getAddress() != _this.currentUrl && !_this.cache.exists(link.getAddress())) {
+            _this.getPage({ url: link.getAddress() }, function (response, request) {
+                if (request.status === 500) {
+                    _this.triggerEvent('serverError');
+                    reject();
+                } else {
+                    // get json data
+                    var page = _this.getDataFromHtml(response, request);
+                    if (page != null) {
+                        page.url = link.getAddress();
+                        _this.cache.cacheUrl(page, _this.options.debugMode);
+                        _this.triggerEvent('pagePreloaded');
+                    }
+                    resolve(_this.cache.getPage(link.getAddress()));
                 }
-            }
-        });
-    }
+            });
+        } else {
+            resolve(_this.cache.getPage(link.getAddress()));
+        }
+    });
 };
 
 /***/ }),
