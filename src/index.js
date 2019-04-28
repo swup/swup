@@ -135,7 +135,6 @@ export default class Swup {
 			window.swup = this;
 		}
 
-		this.getUrl();
 		this.enable();
 	}
 
