@@ -1,6 +1,6 @@
-import { queryAll } from './utils';
+import { queryAll } from '../utils';
 
-module.exports = function(element) {
+const markSwupElements = (element) => {
 	let blocks = 0;
 
 	for (let i = 0; i < this.options.elements.length; i++) {
@@ -14,3 +14,5 @@ module.exports = function(element) {
 		}
 	}
 };
+
+export default markSwupElements;

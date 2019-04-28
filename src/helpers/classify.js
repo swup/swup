@@ -1,4 +1,4 @@
-module.exports = function(text) {
+const classify = (text) => {
 	let output = text
 		.toString()
 		.toLowerCase()
@@ -12,3 +12,5 @@ module.exports = function(text) {
 	if (output === '') output = 'homepage';
 	return output;
 };
+
+export default classify;

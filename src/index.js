@@ -2,21 +2,13 @@ import delegate from 'delegate';
 
 // helpers
 import Cache from './Cache';
-import Link from './Link';
-import transitionEnd from './transitionEnd';
 
 // modules
-import request from './modules/request';
-import getDataFromHtml from './modules/getDataFromHtml';
 import loadPage from './modules/loadPage';
 import renderPage from './modules/renderPage';
-import createState from './modules/createState';
 import triggerEvent from './modules/triggerEvent';
-import getUrl from './modules/getUrl';
 import scrollTo from './modules/scrollTo';
-import classify from './modules/classify';
 import doScrolling from './modules/doScrolling';
-import markSwupElements from './modules/markSwupElements';
 import on from './modules/on';
 import off from './modules/off';
 import updateTransition from './modules/updateTransition';
@@ -24,7 +16,15 @@ import preloadPage from './modules/preloadPage';
 import preloadPages from './modules/preloadPages';
 import usePlugin from './modules/usePlugin';
 import log from './modules/log';
-import { queryAll } from './modules/utils';
+import { queryAll } from './utils';
+import {
+	getDataFromHTML,
+	fetch,
+	transitionEnd,
+	getCurrentUrl,
+	markSwupElements,
+	Link
+} from './helpers';
 
 export default class Swup {
 	constructor(setOptions) {
@@ -117,18 +117,11 @@ export default class Swup {
 		 */
 		this.getUrl = getUrl;
 		this.cache = new Cache();
-		this.link = new Link();
-		this.transitionEndEvent = transitionEnd();
-		this.getDataFromHtml = getDataFromHtml;
-		this.getPage = request;
 		this.scrollTo = scrollTo;
 		this.loadPage = loadPage;
 		this.renderPage = renderPage;
-		this.createState = createState;
 		this.triggerEvent = triggerEvent;
-		this.classify = classify;
 		this.doScrolling = doScrolling;
-		this.markSwupElements = markSwupElements;
 		this.on = on;
 		this.off = off;
 		this.updateTransition = updateTransition;
@@ -159,9 +152,7 @@ export default class Swup {
 				return;
 			}
 			// check transitionEnd support
-			if (transitionEnd()) {
-				this.transitionEndEvent = transitionEnd();
-			} else {
+			if (!transitionEnd()) {
 				console.warn('transitionEnd detection is not supported');
 				return;
 			}
@@ -216,8 +207,8 @@ export default class Swup {
 		/**
 		 * initial save to cache
 		 */
-		let page = this.getDataFromHtml(document.documentElement.outerHTML);
-		page.url = this.currentUrl;
+		let page = getDataFromHTML(document.documentElement.outerHTML);
+		page.url = getCurrentUrl();
 		if (this.options.cache) {
 			this.cache.cacheUrl(page, this.options.debugMode);
 		}
@@ -225,7 +216,7 @@ export default class Swup {
 		/**
 		 * mark swup blocks in html
 		 */
-		this.markSwupElements(document.documentElement);
+		markSwupElements(document.documentElement);
 
 		/**
 		 * enable plugins from options
@@ -298,11 +289,9 @@ export default class Swup {
 			// index of pressed button needs to be checked because Firefox triggers click on all mouse buttons
 			if (event.button === 0) {
 				this.triggerEvent('clickLink', event);
-				const link = new Link();
 				event.preventDefault();
-				link.setPath(event.delegateTarget.href);
-
-				if (link.getAddress() == this.currentUrl || link.getAddress() == '') {
+				const link = new Link(event.delegateTarget);
+				if (link.getAddress() == getCurrentUrl() || link.getAddress() == '') {
 					// link to the same URL
 					if (link.getHash() != '') {
 						// link to the same URL with hash
@@ -359,22 +348,21 @@ export default class Swup {
 	linkMouseoverHandler(event) {
 		this.triggerEvent('hoverLink', event);
 		if (this.options.preload) {
-			const link = new Link();
-			link.setPath(event.delegateTarget.href);
+			const link = new Link(event.delegateTarget);
 			if (
-				link.getAddress() !== this.currentUrl &&
+				link.getAddress() !== getCurrentUrl() &&
 				!this.cache.exists(link.getAddress()) &&
 				this.preloadPromise == null
 			) {
 				this.preloadPromise = new Promise((resolve, reject) => {
-					this.getPage({ url: link.getAddress() }, (response, request) => {
+					fetch({ url: link.getAddress() }, (response, request) => {
 						if (request.status === 500) {
 							this.triggerEvent('serverError', event);
 							reject(link.getAddress());
 							return;
 						} else {
 							// get json data
-							let page = this.getDataFromHtml(response, request);
+							let page = getDataFromHTML(response, request);
 							if (page != null) {
 								page.url = link.getAddress();
 								this.cache.cacheUrl(page, this.options.debugMode);
@@ -401,8 +389,7 @@ export default class Swup {
 			let form = event.target;
 			let formData = new FormData(form);
 
-			let link = new Link();
-			link.setPath(form.action);
+			let link = new Link(form.action);
 
 			if (link.getHash() != '') {
 				this.scrollToElement = link.getHash();
@@ -464,9 +451,8 @@ export default class Swup {
 	}
 
 	popStateHandler(event) {
-		const link = new Link();
 		if (this.options.skipPopStateHandling(event)) return;
-		link.setPath(event.state ? event.state.url : window.location.pathname);
+		const link = new Link(event.state ? event.state.url : window.location.pathname);
 		if (link.getHash() !== '') {
 			this.scrollToElement = link.getHash();
 		} else {

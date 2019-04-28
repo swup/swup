@@ -1,4 +1,4 @@
-module.exports = function transitionEnd() {
+const transitionEnd = () => {
 	const el = document.createElement('div');
 
 	const transEndEventNames = {
@@ -16,3 +16,5 @@ module.exports = function transitionEnd() {
 
 	return false;
 };
+
+export default transitionEnd;

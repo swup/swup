@@ -1,4 +1,4 @@
-import { queryAll } from './utils';
+import { queryAll } from '../utils';
 
 module.exports = function() {
 	if (this.options.preload) {

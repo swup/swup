@@ -1,5 +1,5 @@
-import { queryAll } from './utils';
-const { forEach } = Array.prototype;
+import { queryAll } from '../utils';
+import { classify, createHistoryRecord, getDataFromHTML, fetch, transitionEnd } from '../helpers';
 
 module.exports = function(data, popstate) {
 	// scrolling
@@ -13,7 +13,7 @@ module.exports = function(data, popstate) {
 	// set transition object
 	if (data.customTransition != null) {
 		this.updateTransition(window.location.pathname, data.url, data.customTransition);
-		document.documentElement.classList.add(`to-${this.classify(data.customTransition)}`);
+		document.documentElement.classList.add(`to-${classify(data.customTransition)}`);
 	} else {
 		this.updateTransition(window.location.pathname, data.url);
 	}
@@ -27,13 +27,13 @@ module.exports = function(data, popstate) {
 		if (popstate) {
 			document.documentElement.classList.add('is-popstate');
 		}
-		document.documentElement.classList.add('to-' + this.classify(data.url));
+		document.documentElement.classList.add('to-' + classify(data.url));
 
 		// detect animation end
 		let animatedElements = queryAll(this.options.animationSelector);
 		animatedElements::forEach((element) => {
 			const promise = new Promise((resolve) => {
-				element.addEventListener(this.transitionEndEvent, (event) => {
+				element.addEventListener(transitionEnd(), (event) => {
 					if (element == event.target) {
 						resolve();
 					}
@@ -47,12 +47,13 @@ module.exports = function(data, popstate) {
 		});
 
 		// create pop element with or without anchor
+		let pop;
 		if (this.scrollToElement != null) {
-			const pop = data.url + this.scrollToElement;
+			pop = data.url + this.scrollToElement;
 		} else {
-			const pop = data.url;
+			pop = data.url;
 		}
-		if (!popstate) this.createState(pop);
+		if (!popstate) createHistoryRecord(pop);
 	} else {
 		// proceed without animating
 		this.triggerEvent('animationSkipped');
@@ -66,14 +67,14 @@ module.exports = function(data, popstate) {
 	} else {
 		if (!this.preloadPromise || this.preloadPromise.route != data.url) {
 			const xhrPromise = new Promise((resolve, reject) => {
-				this.getPage(data, (response, request) => {
+				fetch(data, (response, request) => {
 					if (request.status === 500) {
 						this.triggerEvent('serverError');
 						reject(data.url);
 						return;
 					} else {
 						// get json data
-						let page = this.getDataFromHtml(response, request);
+						let page = getDataFromHTML(response, request);
 						if (page != null) {
 							page.url = data.url;
 						} else {

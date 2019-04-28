@@ -1,14 +1,11 @@
-import { queryAll } from './utils';
-import Link from '../Link';
-
-const { forEach } = Array.prototype;
+import { queryAll } from '../utils';
+import { transitionEnd, Link } from '../helpers';
 
 module.exports = function(page, popstate) {
 	document.documentElement.classList.remove('is-leaving');
 
 	// replace state in case the url was redirected
-	let link = new Link();
-	link.setPath(page.responseURL);
+	let link = new Link(page.responseURL);
 
 	if (window.location.pathname !== link.getPath()) {
 		window.history.replaceState(
@@ -78,7 +75,7 @@ module.exports = function(page, popstate) {
 	let promises = [];
 	animatedElements::forEach((element) => {
 		const promise = new Promise((resolve) => {
-			element.addEventListener(this.transitionEndEvent, (event) => {
+			element.addEventListener(transitionEnd(), (event) => {
 				if (element == event.target) {
 					resolve();
 				}

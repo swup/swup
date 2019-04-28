@@ -1,4 +1,4 @@
-module.exports = function(options, callback = false) {
+const fetch = (options, callback = false) => {
 	let defaults = {
 		url: window.location.pathname + window.location.search,
 		method: 'GET',
@@ -27,3 +27,5 @@ module.exports = function(options, callback = false) {
 	request.send(data.data);
 	return request;
 };
+
+export default fetch;

@@ -1,4 +1,4 @@
-module.exports = function(url) {
+const createHistoryRecord = (url) => {
 	window.history.pushState(
 		{
 			url: url || window.location.href.split(window.location.hostname)[1],
@@ -9,3 +9,5 @@ module.exports = function(url) {
 		url || window.location.href.split(window.location.hostname)[1]
 	);
 };
+
+export default createHistoryRecord;

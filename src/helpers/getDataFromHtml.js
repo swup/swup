@@ -1,6 +1,6 @@
-import { queryAll } from './utils';
+import { queryAll } from '../utils';
 
-module.exports = function(html, request) {
+const getDataFromHTML = (html, request) => {
 	let content = html.replace('<body', '<div id="swupBody"').replace('</body>', '</div>');
 	let fakeDom = document.createElement('div');
 	fakeDom.innerHTML = content;
@@ -27,3 +27,5 @@ module.exports = function(html, request) {
 	};
 	return json;
 };
+
+export default getDataFromHTML;
