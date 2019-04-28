@@ -1,7 +1,7 @@
 module.exports = function(popstate) {
 	if (this.options.scroll && (!popstate || this.options.animateHistoryBrowsing)) {
 		if (this.scrollToElement != null) {
-			var element = document.querySelector(this.scrollToElement);
+			const element = document.querySelector(this.scrollToElement);
 			if (element != null) {
 				let top = element.getBoundingClientRect().top + window.pageYOffset;
 				this.scrollTo(document.body, top);

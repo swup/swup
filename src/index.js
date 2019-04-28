@@ -216,7 +216,7 @@ export default class Swup {
 		/**
 		 * initial save to cache
 		 */
-		var page = this.getDataFromHtml(document.documentElement.outerHTML);
+		let page = this.getDataFromHtml(document.documentElement.outerHTML);
 		page.url = this.currentUrl;
 		if (this.options.cache) {
 			this.cache.cacheUrl(page, this.options.debugMode);
@@ -298,7 +298,7 @@ export default class Swup {
 			// index of pressed button needs to be checked because Firefox triggers click on all mouse buttons
 			if (event.button === 0) {
 				this.triggerEvent('clickLink', event);
-				var link = new Link();
+				const link = new Link();
 				event.preventDefault();
 				link.setPath(event.delegateTarget.href);
 
@@ -307,7 +307,7 @@ export default class Swup {
 					if (link.getHash() != '') {
 						// link to the same URL with hash
 						this.triggerEvent('samePageWithHash', event);
-						var element = document.querySelector(link.getHash());
+						const element = document.querySelector(link.getHash());
 						if (element != null) {
 							// referenced element found
 							if (this.options.scroll) {
@@ -359,7 +359,7 @@ export default class Swup {
 	linkMouseoverHandler(event) {
 		this.triggerEvent('hoverLink', event);
 		if (this.options.preload) {
-			var link = new Link();
+			const link = new Link();
 			link.setPath(event.delegateTarget.href);
 			if (
 				link.getAddress() !== this.currentUrl &&
@@ -374,7 +374,7 @@ export default class Swup {
 							return;
 						} else {
 							// get json data
-							var page = this.getDataFromHtml(response, request);
+							let page = this.getDataFromHtml(response, request);
 							if (page != null) {
 								page.url = link.getAddress();
 								this.cache.cacheUrl(page, this.options.debugMode);
@@ -464,7 +464,7 @@ export default class Swup {
 	}
 
 	popStateHandler(event) {
-		var link = new Link();
+		const link = new Link();
 		if (this.options.skipPopStateHandling(event)) return;
 		link.setPath(event.state ? event.state.url : window.location.pathname);
 		if (link.getHash() !== '') {

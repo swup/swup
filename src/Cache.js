@@ -22,7 +22,7 @@ export default class Cache {
 
 	displayCache() {
 		console.groupCollapsed(`Cache (${Object.keys(this.pages).length})`);
-		for (var key in this.pages) {
+		for (let key in this.pages) {
 			console.log(this.pages[key]);
 		}
 		console.groupEnd();

@@ -1,5 +1,5 @@
 module.exports = function(text) {
-	var output = text
+	let output = text
 		.toString()
 		.toLowerCase()
 		.replace(/\s+/g, '-') // Replace spaces with -

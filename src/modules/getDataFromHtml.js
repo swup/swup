@@ -6,7 +6,7 @@ module.exports = function(html, request) {
 	fakeDom.innerHTML = content;
 	let blocks = [];
 
-	for (var i = 0; i < this.options.elements.length; i++) {
+	for (let i = 0; i < this.options.elements.length; i++) {
 		if (fakeDom.querySelector(this.options.elements[i]) == null) {
 			console.warn(`Element ${this.options.elements[i]} is not found in cached page.`);
 			return null;
@@ -18,7 +18,7 @@ module.exports = function(html, request) {
 		}
 	}
 
-	var json = {
+	const json = {
 		title: fakeDom.querySelector('title').innerText,
 		pageClass: fakeDom.querySelector('#swupBody').className,
 		originalContent: html,

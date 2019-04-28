@@ -8,7 +8,7 @@ export default class Link {
 	}
 
 	getPath() {
-		var path = this.link.pathname;
+		let path = this.link.pathname;
 		if (path[0] !== '/') {
 			path = '/' + path;
 		}
@@ -16,7 +16,7 @@ export default class Link {
 	}
 
 	getAddress() {
-		var path = this.link.pathname + this.link.search;
+		let path = this.link.pathname + this.link.search;
 		if (path[0] !== '/') {
 			path = '/' + path;
 		}

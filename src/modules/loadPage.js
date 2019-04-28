@@ -32,7 +32,7 @@ module.exports = function(data, popstate) {
 		// detect animation end
 		let animatedElements = queryAll(this.options.animationSelector);
 		animatedElements::forEach((element) => {
-			var promise = new Promise((resolve) => {
+			const promise = new Promise((resolve) => {
 				element.addEventListener(this.transitionEndEvent, (event) => {
 					if (element == event.target) {
 						resolve();
@@ -48,9 +48,9 @@ module.exports = function(data, popstate) {
 
 		// create pop element with or without anchor
 		if (this.scrollToElement != null) {
-			var pop = data.url + this.scrollToElement;
+			const pop = data.url + this.scrollToElement;
 		} else {
-			var pop = data.url;
+			const pop = data.url;
 		}
 		if (!popstate) this.createState(pop);
 	} else {
@@ -59,13 +59,13 @@ module.exports = function(data, popstate) {
 	}
 
 	if (this.cache.exists(data.url)) {
-		var xhrPromise = new Promise((resolve) => {
+		const xhrPromise = new Promise((resolve) => {
 			resolve();
 		});
 		this.triggerEvent('pageRetrievedFromCache');
 	} else {
 		if (!this.preloadPromise || this.preloadPromise.route != data.url) {
-			var xhrPromise = new Promise((resolve, reject) => {
+			const xhrPromise = new Promise((resolve, reject) => {
 				this.getPage(data, (response, request) => {
 					if (request.status === 500) {
 						this.triggerEvent('serverError');
@@ -73,7 +73,7 @@ module.exports = function(data, popstate) {
 						return;
 					} else {
 						// get json data
-						var page = this.getDataFromHtml(response, request);
+						let page = this.getDataFromHtml(response, request);
 						if (page != null) {
 							page.url = data.url;
 						} else {
@@ -88,7 +88,7 @@ module.exports = function(data, popstate) {
 				});
 			});
 		} else {
-			var xhrPromise = this.preloadPromise;
+			const xhrPromise = this.preloadPromise;
 		}
 	}
 

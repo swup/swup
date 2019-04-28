@@ -11,7 +11,7 @@ module.exports = function(pathname) {
 					reject();
 				} else {
 					// get json data
-					var page = this.getDataFromHtml(response, request);
+					let page = this.getDataFromHtml(response, request);
 					if (page != null) {
 						page.url = link.getAddress();
 						this.cache.cacheUrl(page, this.options.debugMode);

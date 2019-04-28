@@ -17,6 +17,6 @@ module.exports = function(eventName, originalEvent) {
 	});
 
 	// trigger event on document with prefix "swup:"
-	var event = new CustomEvent('swup:' + eventName, { detail: eventName });
+	const event = new CustomEvent('swup:' + eventName, { detail: eventName });
 	document.dispatchEvent(event);
 };

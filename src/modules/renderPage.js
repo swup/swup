@@ -30,7 +30,7 @@ module.exports = function(page, popstate) {
 	this.triggerEvent('willReplaceContent');
 
 	// replace blocks
-	for (var i = 0; i < page.blocks.length; i++) {
+	for (let i = 0; i < page.blocks.length; i++) {
 		document.body.querySelector(`[data-swup="${i}"]`).outerHTML = page.blocks[i];
 	}
 
@@ -77,7 +77,7 @@ module.exports = function(page, popstate) {
 	let animatedElements = queryAll(this.options.animationSelector);
 	let promises = [];
 	animatedElements::forEach((element) => {
-		var promise = new Promise((resolve) => {
+		const promise = new Promise((resolve) => {
 			element.addEventListener(this.transitionEndEvent, (event) => {
 				if (element == event.target) {
 					resolve();
