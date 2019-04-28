@@ -223,7 +223,8 @@ export default class Swup {
 			}
 
 			this.plugins.push(plugin);
-			plugin.mount(options, this);
+			plugin.swup = this;
+			plugin.mount(options);
 		});
 
 		/**
