@@ -1,14 +1,14 @@
 import { queryAll } from '../utils';
 
-const markSwupElements = (element) => {
+const markSwupElements = (element, containers) => {
 	let blocks = 0;
 
-	for (let i = 0; i < this.options.elements.length; i++) {
-		if (element.querySelector(this.options.elements[i]) == null) {
-			console.warn(`Element ${this.options.elements[i]} is not in current page.`);
+	for (let i = 0; i < containers.length; i++) {
+		if (element.querySelector(containers[i]) == null) {
+			console.warn(`Element ${containers[i]} is not in current page.`);
 		} else {
-			queryAll(this.options.elements[i]).forEach((item, index) => {
-				queryAll(this.options.elements[i], element)[index].dataset.swup = blocks;
+			queryAll(containers[i]).forEach((item, index) => {
+				queryAll(containers[i], element)[index].dataset.swup = blocks;
 				blocks++;
 			});
 		}

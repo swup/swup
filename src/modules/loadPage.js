@@ -1,7 +1,7 @@
 import { queryAll } from '../utils';
 import { classify, createHistoryRecord, getDataFromHTML, fetch, transitionEnd } from '../helpers';
 
-module.exports = function(data, popstate) {
+const loadPage = function(data, popstate) {
 	// scrolling
 	if (this.options.doScrollingRightAway && !this.scrollToElement) {
 		this.doScrolling(popstate);
@@ -31,7 +31,7 @@ module.exports = function(data, popstate) {
 
 		// detect animation end
 		let animatedElements = queryAll(this.options.animationSelector);
-		animatedElements::forEach((element) => {
+		animatedElements.forEach((element) => {
 			const promise = new Promise((resolve) => {
 				element.addEventListener(transitionEnd(), (event) => {
 					if (element == event.target) {
@@ -59,14 +59,15 @@ module.exports = function(data, popstate) {
 		this.triggerEvent('animationSkipped');
 	}
 
+	let xhrPromise;
 	if (this.cache.exists(data.url)) {
-		const xhrPromise = new Promise((resolve) => {
+		xhrPromise = new Promise((resolve) => {
 			resolve();
 		});
 		this.triggerEvent('pageRetrievedFromCache');
 	} else {
 		if (!this.preloadPromise || this.preloadPromise.route != data.url) {
-			const xhrPromise = new Promise((resolve, reject) => {
+			xhrPromise = new Promise((resolve, reject) => {
 				fetch(data, (response, request) => {
 					if (request.status === 500) {
 						this.triggerEvent('serverError');
@@ -74,7 +75,7 @@ module.exports = function(data, popstate) {
 						return;
 					} else {
 						// get json data
-						let page = getDataFromHTML(response, request);
+						let page = getDataFromHTML(response, request, this.options.elements);
 						if (page != null) {
 							page.url = data.url;
 						} else {
@@ -89,7 +90,7 @@ module.exports = function(data, popstate) {
 				});
 			});
 		} else {
-			const xhrPromise = this.preloadPromise;
+			xhrPromise = this.preloadPromise;
 		}
 	}
 
@@ -110,3 +111,5 @@ module.exports = function(data, popstate) {
 			window.history.go(-1);
 		});
 };
+
+export default loadPage;

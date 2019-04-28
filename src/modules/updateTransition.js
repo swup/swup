@@ -1,4 +1,4 @@
-module.exports = function(from, to, custom) {
+const updateTransition = function(from, to, custom) {
 	// homepage case
 	if (from == '/') {
 		from = '/homepage';
@@ -17,3 +17,5 @@ module.exports = function(from, to, custom) {
 		this.transition.custom = custom;
 	}
 };
+
+export default updateTransition;

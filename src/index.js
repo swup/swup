@@ -202,7 +202,7 @@ export default class Swup {
 		/**
 		 * initial save to cache
 		 */
-		let page = getDataFromHTML(document.documentElement.outerHTML);
+		let page = getDataFromHTML(document.documentElement.outerHTML, null, this.options.elements);
 		page.url = getCurrentUrl();
 		if (this.options.cache) {
 			this.cache.cacheUrl(page, this.options.debugMode);
@@ -211,7 +211,7 @@ export default class Swup {
 		/**
 		 * mark swup blocks in html
 		 */
-		markSwupElements(document.documentElement);
+		markSwupElements(document.documentElement, this.options.elements, this.options.elements);
 
 		/**
 		 * mount plugins
@@ -373,7 +373,7 @@ export default class Swup {
 							return;
 						} else {
 							// get json data
-							let page = getDataFromHTML(response, request);
+							let page = getDataFromHTML(response, request, this.options.elements);
 							if (page != null) {
 								page.url = link.getAddress();
 								this.cache.cacheUrl(page, this.options.debugMode);

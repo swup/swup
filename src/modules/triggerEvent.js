@@ -1,4 +1,4 @@
-module.exports = function(eventName, originalEvent) {
+const triggerEvent = function(eventName, originalEvent) {
 	if (this.options.debugMode && originalEvent) {
 		console.groupCollapsed('%cswup:' + '%c' + eventName, 'color: #343434', 'color: #009ACD');
 		console.log(originalEvent);
@@ -20,3 +20,5 @@ module.exports = function(eventName, originalEvent) {
 	const event = new CustomEvent('swup:' + eventName, { detail: eventName });
 	document.dispatchEvent(event);
 };
+
+export default triggerEvent;

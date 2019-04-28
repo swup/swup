@@ -1,4 +1,4 @@
-module.exports = function(popstate) {
+const doScrolling = function(popstate) {
 	if (this.options.scroll && (!popstate || this.options.animateHistoryBrowsing)) {
 		if (this.scrollToElement != null) {
 			const element = document.querySelector(this.scrollToElement);
@@ -14,3 +14,5 @@ module.exports = function(popstate) {
 		}
 	}
 };
+
+export default doScrolling;

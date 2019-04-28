@@ -1,9 +1,12 @@
 import { queryAll } from '../utils';
+import preloadPage from './preloadPage';
 
-module.exports = function() {
+export const preloadPages = function() {
 	if (this.options.preload) {
 		queryAll('[data-swup-preload]').forEach((element) => {
 			this.preloadPage(element.href);
 		});
 	}
 };
+
+export default preloadPages;

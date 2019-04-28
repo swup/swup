@@ -1,4 +1,4 @@
-module.exports = function(element, to, animatedScroll = this.options.animateScroll) {
+const scrollTo = function(element, to, animatedScroll = this.options.animateScroll) {
 	let friction = 1 - this.options.scrollFriction;
 	let acceleration = this.options.scrollAcceleration;
 
@@ -83,3 +83,5 @@ module.exports = function(element, to, animatedScroll = this.options.animateScro
 		scrollTo(to);
 	}
 };
+
+export default scrollTo;

@@ -1,4 +1,4 @@
-module.exports = function off(event, handler) {
+const off = function off(event, handler) {
 	if (event != null) {
 		if (handler != null) {
 			if (
@@ -24,3 +24,5 @@ module.exports = function off(event, handler) {
 		});
 	}
 };
+
+export default off;

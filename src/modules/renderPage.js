@@ -1,7 +1,7 @@
 import { queryAll } from '../utils';
 import { transitionEnd, Link } from '../helpers';
 
-module.exports = function(page, popstate) {
+const renderPage = function(page, popstate) {
 	document.documentElement.classList.remove('is-leaving');
 
 	// replace state in case the url was redirected
@@ -73,7 +73,7 @@ module.exports = function(page, popstate) {
 	// detect animation end
 	let animatedElements = queryAll(this.options.animationSelector);
 	let promises = [];
-	animatedElements::forEach((element) => {
+	animatedElements.forEach((element) => {
 		const promise = new Promise((resolve) => {
 			element.addEventListener(transitionEnd(), (event) => {
 				if (element == event.target) {
@@ -107,3 +107,5 @@ module.exports = function(page, popstate) {
 	// reset scroll-to element
 	this.scrollToElement = null;
 };
+
+export default renderPage;

@@ -1,6 +1,6 @@
 import { getDataFromHTML, fetch, getCurrentUrl, Link } from '../helpers';
 
-module.exports = function(pathname) {
+const preloadPage = function(pathname) {
 	let link = new Link(pathname);
 	return new Promise((resolve, reject) => {
 		if (link.getAddress() != getCurrentUrl() && !this.cache.exists(link.getAddress())) {
@@ -10,7 +10,7 @@ module.exports = function(pathname) {
 					reject();
 				} else {
 					// get json data
-					let page = getDataFromHTML(response, request);
+					let page = getDataFromHTML(response, request, this.options.elements);
 					if (page != null) {
 						page.url = link.getAddress();
 						this.cache.cacheUrl(page, this.options.debugMode);
@@ -24,3 +24,5 @@ module.exports = function(pathname) {
 		}
 	});
 };
+
+export default preloadPage;
