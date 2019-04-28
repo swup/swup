@@ -20,6 +20,10 @@ export class Cache {
 		return this.pages[url];
 	}
 
+	getCurrentPage() {
+		return this.getPage(window.location.pathname + window.location.search);
+	}
+
 	displayCache() {
 		console.groupCollapsed(`Cache (${Object.keys(this.pages).length})`);
 		for (let key in this.pages) {
