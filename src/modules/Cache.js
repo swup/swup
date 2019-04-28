@@ -1,4 +1,4 @@
-export default class Cache {
+export class Cache {
 	constructor() {
 		this.pages = {};
 		this.count = 0;
@@ -45,3 +45,5 @@ export default class Cache {
 		delete this.pages[url];
 	}
 }
+
+export default Cache;

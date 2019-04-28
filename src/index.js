@@ -1,9 +1,7 @@
 import delegate from 'delegate';
 
-// helpers
-import Cache from './Cache';
-
 // modules
+import Cache from './modules/cache';
 import loadPage from './modules/loadPage';
 import renderPage from './modules/renderPage';
 import triggerEvent from './modules/triggerEvent';
@@ -16,6 +14,7 @@ import preloadPage from './modules/preloadPage';
 import preloadPages from './modules/preloadPages';
 import usePlugin from './modules/usePlugin';
 import log from './modules/log';
+
 import { queryAll } from './utils';
 import {
 	getDataFromHTML,
@@ -115,7 +114,6 @@ export default class Swup {
 		/**
 		 * make modules accessible in instance
 		 */
-		this.getUrl = getUrl;
 		this.cache = new Cache();
 		this.scrollTo = scrollTo;
 		this.loadPage = loadPage;
