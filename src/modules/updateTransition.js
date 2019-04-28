@@ -1,20 +1,19 @@
-module.exports = function (from, to, custom) {
+module.exports = function(from, to, custom) {
+	// homepage case
+	if (from == '/') {
+		from = '/homepage';
+	}
+	if (to == '/') {
+		to = '/homepage';
+	}
 
-    // homepage case
-    if (from == "/") {
-        from = "/homepage"
-    }
-    if (to == "/") {
-        to = "/homepage"
-    }
+	// transition routes
+	this.transition = {
+		from: from.replace('/', ''),
+		to: to.replace('/', '')
+	};
 
-    // transition routes
-    this.transition = {
-        from: from.replace('/', ''),
-        to: to.replace('/', '')
-    }
-
-    if (custom) {
-        this.transition.custom = custom
-    }
-}
+	if (custom) {
+		this.transition.custom = custom;
+	}
+};
