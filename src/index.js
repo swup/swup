@@ -55,8 +55,7 @@ export default class Swup {
 			LINK_SELECTOR:
 				'a[href^="' +
 				window.location.origin +
-				'"]:not([data-no-swup]), a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup])',
-			FORM_SELECTOR: 'form[data-swup-form]'
+				'"]:not([data-no-swup]), a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup])'
 		};
 
 		/**
@@ -94,7 +93,6 @@ export default class Swup {
 			scrollDone: [],
 			scrollStart: [],
 			serverError: [],
-			submitForm: [],
 			willReplaceContent: []
 		};
 
@@ -185,16 +183,6 @@ export default class Swup {
 		);
 
 		/**
-		 * form submit handler
-		 */
-		this.delegatedListeners.formSubmit = delegate(
-			document,
-			this.options.FORM_SELECTOR,
-			'submit',
-			this.formSubmitHandler.bind(this)
-		);
-
-		/**
 		 * popstate handler
 		 */
 		window.addEventListener('popstate', this.popStateHandler.bind(this));
@@ -224,7 +212,7 @@ export default class Swup {
 
 			this.plugins.push(plugin);
 			plugin.swup = this;
-			plugin.mount(options);
+			plugin.mount();
 		});
 
 		/**
@@ -390,75 +378,6 @@ export default class Swup {
 				});
 				this.preloadPromise.route = link.getAddress();
 			}
-		}
-	}
-
-	formSubmitHandler(event) {
-		// no control key pressed
-		if (!event.metaKey) {
-			this.triggerEvent('submitForm', event);
-			event.preventDefault();
-			let form = event.target;
-			let formData = new FormData(form);
-
-			let link = new Link(form.action);
-
-			if (link.getHash() != '') {
-				this.scrollToElement = link.getHash();
-			}
-
-			if (form.method.toLowerCase() != 'get') {
-				// remove page from cache
-				this.cache.remove(link.getAddress());
-
-				// send data
-				this.loadPage({
-					url: link.getAddress(),
-					method: form.method,
-					data: formData
-				});
-			} else {
-				// create base url
-				let url = link.getAddress() || window.location.href;
-				let inputs = queryAll('input, select', form);
-				if (url.indexOf('?') == -1) {
-					url += '?';
-				} else {
-					url += '&';
-				}
-
-				// add form data to url
-				inputs.forEach((input) => {
-					if (input.type == 'checkbox' || input.type == 'radio') {
-						if (input.checked) {
-							url +=
-								encodeURIComponent(input.name) +
-								'=' +
-								encodeURIComponent(input.value) +
-								'&';
-						}
-					} else {
-						url +=
-							encodeURIComponent(input.name) +
-							'=' +
-							encodeURIComponent(input.value) +
-							'&';
-					}
-				});
-
-				// remove last "&"
-				url = url.slice(0, -1);
-
-				// remove page from cache
-				this.cache.remove(url);
-
-				// send data
-				this.loadPage({
-					url: url
-				});
-			}
-		} else {
-			this.triggerEvent('openFormSubmitInNewTab', event);
 		}
 	}
 
