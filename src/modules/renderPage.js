@@ -79,9 +79,6 @@ const renderPage = function(page, popstate) {
 		promises.push(promise);
 	});
 
-	//preload pages if possible
-	this.preloadPages();
-
 	if (!popstate || this.options.animateHistoryBrowsing) {
 		Promise.all(promises).then(() => {
 			this.triggerEvent('animationInDone');

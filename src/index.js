@@ -8,8 +8,6 @@ import triggerEvent from './modules/triggerEvent';
 import on from './modules/on';
 import off from './modules/off';
 import updateTransition from './modules/updateTransition';
-import preloadPage from './modules/preloadPage';
-import preloadPages from './modules/preloadPages';
 import log from './modules/log';
 import { usePlugin, removePlugin, findPlugin } from './modules/plugins';
 
@@ -33,7 +31,6 @@ export default class Swup {
 			pageClassPrefix: '',
 			debugMode: false,
 
-			preload: true,
 			support: true,
 			plugins: [],
 
@@ -77,7 +74,6 @@ export default class Swup {
 			hoverLink: [],
 			openPageInNewTab: [],
 			pageLoaded: [],
-			pagePreloaded: [],
 			pageRetrievedFromCache: [],
 			pageView: [],
 			popState: [],
@@ -111,8 +107,6 @@ export default class Swup {
 		this.on = on;
 		this.off = off;
 		this.updateTransition = updateTransition;
-		this.preloadPage = preloadPage;
-		this.preloadPages = preloadPages;
 		this.log = log;
 		this.usePlugin = usePlugin;
 		this.removePlugin = removePlugin;
@@ -167,16 +161,6 @@ export default class Swup {
 		);
 
 		/**
-		 * link mouseover handler (preload)
-		 */
-		this.delegatedListeners.mouseover = delegate(
-			document.body,
-			this.options.LINK_SELECTOR,
-			'mouseover',
-			this.linkMouseoverHandler.bind(this)
-		);
-
-		/**
 		 * popstate handler
 		 */
 		window.addEventListener('popstate', this.popStateHandler.bind(this));
@@ -225,11 +209,6 @@ export default class Swup {
 		 * trigger page view event
 		 */
 		this.triggerEvent('pageView');
-
-		/**
-		 * preload pages if possible
-		 */
-		this.preloadPages();
 	}
 
 	destroy() {
@@ -313,42 +292,6 @@ export default class Swup {
 		} else {
 			// open in new tab (do nothing)
 			this.triggerEvent('openPageInNewTab', event);
-		}
-	}
-
-	linkMouseoverHandler(event) {
-		this.triggerEvent('hoverLink', event);
-		if (this.options.preload) {
-			const link = new Link(event.delegateTarget);
-			if (
-				link.getAddress() !== getCurrentUrl() &&
-				!this.cache.exists(link.getAddress()) &&
-				this.preloadPromise == null
-			) {
-				this.preloadPromise = new Promise((resolve, reject) => {
-					fetch({ url: link.getAddress() }, (response, request) => {
-						if (request.status === 500) {
-							this.triggerEvent('serverError', event);
-							reject(link.getAddress());
-							return;
-						} else {
-							// get json data
-							let page = getDataFromHTML(response, request, this.options.elements);
-							if (page != null) {
-								page.url = link.getAddress();
-								this.cache.cacheUrl(page, this.options.debugMode);
-								this.triggerEvent('pagePreloaded', event);
-							} else {
-								reject(link.getAddress());
-								return;
-							}
-						}
-						resolve();
-						this.preloadPromise = null;
-					});
-				});
-				this.preloadPromise.route = link.getAddress();
-			}
 		}
 	}
 
