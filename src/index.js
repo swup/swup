@@ -5,8 +5,6 @@ import Cache from './modules/cache';
 import loadPage from './modules/loadPage';
 import renderPage from './modules/renderPage';
 import triggerEvent from './modules/triggerEvent';
-import scrollTo from './modules/scrollTo';
-import doScrolling from './modules/doScrolling';
 import on from './modules/on';
 import off from './modules/off';
 import updateTransition from './modules/updateTransition';
@@ -33,12 +31,6 @@ export default class Swup {
 			elements: ['#swup'],
 			pageClassPrefix: '',
 			debugMode: false,
-			scroll: true,
-
-			doScrollingRightAway: false,
-			animateScroll: true,
-			scrollFriction: 0.3,
-			scrollAcceleration: 0.04,
 
 			preload: true,
 			support: true,
@@ -90,9 +82,9 @@ export default class Swup {
 			popState: [],
 			samePage: [],
 			samePageWithHash: [],
-			scrollDone: [],
-			scrollStart: [],
 			serverError: [],
+			transitionStart: [],
+			transitionEnd: [],
 			willReplaceContent: []
 		};
 
@@ -112,11 +104,9 @@ export default class Swup {
 		 * make modules accessible in instance
 		 */
 		this.cache = new Cache();
-		this.scrollTo = scrollTo;
 		this.loadPage = loadPage;
 		this.renderPage = renderPage;
 		this.triggerEvent = triggerEvent;
-		this.doScrolling = doScrolling;
 		this.on = on;
 		this.off = off;
 		this.updateTransition = updateTransition;
@@ -229,13 +219,6 @@ export default class Swup {
 		);
 
 		/**
-		 * Disable browser scroll control on popstates when animateHistoryBrowsing option is enabled
-		 */
-		if (this.options.animateHistoryBrowsing) {
-			window.history.scrollRestoration = 'manual';
-		}
-
-		/**
 		 * trigger enabled event
 		 */
 		this.triggerEvent('enabled');
@@ -298,11 +281,6 @@ export default class Swup {
 						this.triggerEvent('samePageWithHash', event);
 						const element = document.querySelector(link.getHash());
 						if (element != null) {
-							// referenced element found
-							if (this.options.scroll) {
-								let top = element.getBoundingClientRect().top + window.pageYOffset;
-								this.scrollTo(document.body, top);
-							}
 							history.replaceState(
 								{
 									url: link.getAddress() + link.getHash(),
@@ -319,9 +297,6 @@ export default class Swup {
 					} else {
 						// link to the same URL without hash
 						this.triggerEvent('samePage', event);
-						if (this.options.scroll) {
-							this.scrollTo(document.body, 0, 1);
-						}
 					}
 				} else {
 					// link to different url

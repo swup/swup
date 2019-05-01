@@ -24,7 +24,7 @@ const renderPage = function(page, popstate) {
 		document.documentElement.classList.add('is-rendering');
 	}
 
-	this.triggerEvent('willReplaceContent');
+	this.triggerEvent('willReplaceContent', popstate);
 
 	// replace blocks
 	for (let i = 0; i < page.blocks.length; i++) {
@@ -53,8 +53,8 @@ const renderPage = function(page, popstate) {
 		});
 	}
 
-	this.triggerEvent('contentReplaced');
-	this.triggerEvent('pageView');
+	this.triggerEvent('contentReplaced', popstate);
+	this.triggerEvent('pageView', popstate);
 	if (!this.options.cache) {
 		this.cache.empty(this.options.debugMode);
 	}
@@ -64,11 +64,6 @@ const renderPage = function(page, popstate) {
 			document.documentElement.classList.remove('is-animating');
 		}
 	}, 10);
-
-	// scrolling
-	if (!this.options.doScrollingRightAway || this.scrollToElement) {
-		this.doScrolling(popstate);
-	}
 
 	// detect animation end
 	let animatedElements = queryAll(this.options.animationSelector);
@@ -90,6 +85,7 @@ const renderPage = function(page, popstate) {
 	if (!popstate || this.options.animateHistoryBrowsing) {
 		Promise.all(promises).then(() => {
 			this.triggerEvent('animationInDone');
+			this.triggerEvent('transitionEnd', popstate);
 			// remove "to-{page}" classes
 			document.documentElement.className.split(' ').forEach((classItem) => {
 				if (
@@ -102,6 +98,8 @@ const renderPage = function(page, popstate) {
 				}
 			});
 		});
+	} else {
+		this.triggerEvent('transitionEnd', popstate);
 	}
 
 	// reset scroll-to element

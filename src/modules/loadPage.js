@@ -2,13 +2,10 @@ import { queryAll } from '../utils';
 import { classify, createHistoryRecord, getDataFromHTML, fetch, transitionEnd } from '../helpers';
 
 const loadPage = function(data, popstate) {
-	// scrolling
-	if (this.options.doScrollingRightAway && !this.scrollToElement) {
-		this.doScrolling(popstate);
-	}
-
 	// create array for storing animation promises
 	let animationPromises = [];
+
+	this.triggerEvent('transitionStart', popstate);
 
 	// set transition object
 	if (data.customTransition != null) {
