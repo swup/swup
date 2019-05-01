@@ -3,9 +3,9 @@ import { classify, createHistoryRecord, getDataFromHTML, fetch, transitionEnd } 
 
 const loadPage = function(data, popstate) {
 	// create array for storing animation promises
-	let animationPromises = [];
-
 	this.triggerEvent('transitionStart', popstate);
+
+	let animationPromises = [];
 
 	// set transition object
 	if (data.customTransition != null) {
@@ -26,19 +26,7 @@ const loadPage = function(data, popstate) {
 		}
 		document.documentElement.classList.add('to-' + classify(data.url));
 
-		// detect animation end
-		let animatedElements = queryAll(this.options.animationSelector);
-		animatedElements.forEach((element) => {
-			const promise = new Promise((resolve) => {
-				element.addEventListener(transitionEnd(), (event) => {
-					if (element == event.target) {
-						resolve();
-					}
-				});
-			});
-			animationPromises.push(promise);
-		});
-
+		animationPromises = this.getAnimationPromises();
 		Promise.all(animationPromises).then(() => {
 			this.triggerEvent('animationOutDone');
 		});
@@ -80,7 +68,7 @@ const loadPage = function(data, popstate) {
 							return;
 						}
 						// render page
-						this.cache.cacheUrl(page, this.options.debugMode);
+						this.cache.cacheUrl(page);
 						this.triggerEvent('pageLoaded');
 					}
 					resolve();

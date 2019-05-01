@@ -56,7 +56,7 @@ const renderPage = function(page, popstate) {
 	this.triggerEvent('contentReplaced', popstate);
 	this.triggerEvent('pageView', popstate);
 	if (!this.options.cache) {
-		this.cache.empty(this.options.debugMode);
+		this.cache.empty();
 	}
 	setTimeout(() => {
 		if (!popstate || this.options.animateHistoryBrowsing) {
@@ -65,22 +65,10 @@ const renderPage = function(page, popstate) {
 		}
 	}, 10);
 
-	// detect animation end
-	let animatedElements = queryAll(this.options.animationSelector);
-	let promises = [];
-	animatedElements.forEach((element) => {
-		const promise = new Promise((resolve) => {
-			element.addEventListener(transitionEnd(), (event) => {
-				if (element == event.target) {
-					resolve();
-				}
-			});
-		});
-		promises.push(promise);
-	});
+	const animationPromises = this.getAnimationPromises();
 
 	if (!popstate || this.options.animateHistoryBrowsing) {
-		Promise.all(promises).then(() => {
+		Promise.all(animationPromises).then(() => {
 			this.triggerEvent('animationInDone');
 			this.triggerEvent('transitionEnd', popstate);
 			// remove "to-{page}" classes

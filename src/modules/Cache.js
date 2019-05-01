@@ -5,15 +5,13 @@ export class Cache {
 		this.last = null;
 	}
 
-	cacheUrl(page, displayCache) {
+	cacheUrl(page) {
 		this.count++;
 		if (page.url in this.pages === false) {
 			this.pages[page.url] = page;
 		}
 		this.last = this.pages[page.url];
-		if (displayCache) {
-			this.displayCache();
-		}
+		this.swup.log(`Cache (${Object.keys(this.pages).length})`, this.pages);
 	}
 
 	getPage(url) {
@@ -24,25 +22,15 @@ export class Cache {
 		return this.getPage(window.location.pathname + window.location.search);
 	}
 
-	displayCache() {
-		console.groupCollapsed(`Cache (${Object.keys(this.pages).length})`);
-		for (let key in this.pages) {
-			console.log(this.pages[key]);
-		}
-		console.groupEnd();
-	}
-
 	exists(url) {
 		return url in this.pages;
 	}
 
-	empty(showLog) {
+	empty() {
 		this.pages = {};
 		this.count = 0;
 		this.last = null;
-		if (showLog) {
-			console.log('Cache cleared');
-		}
+		this.swup.log('Cache cleared');
 	}
 
 	remove(url) {

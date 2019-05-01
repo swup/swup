@@ -8,7 +8,7 @@ import triggerEvent from './modules/triggerEvent';
 import on from './modules/on';
 import off from './modules/off';
 import updateTransition from './modules/updateTransition';
-import log from './modules/log';
+import getAnimationPromises from './modules/getAnimationPromises';
 import { usePlugin, removePlugin, findPlugin } from './modules/plugins';
 
 import { queryAll } from './utils';
@@ -29,7 +29,6 @@ export default class Swup {
 			animationSelector: '[class*="transition-"]',
 			elements: ['#swup'],
 			pageClassPrefix: '',
-			debugMode: false,
 
 			support: true,
 			plugins: [],
@@ -100,23 +99,20 @@ export default class Swup {
 		 * make modules accessible in instance
 		 */
 		this.cache = new Cache();
+		this.cache.swup = this;
 		this.loadPage = loadPage;
 		this.renderPage = renderPage;
 		this.triggerEvent = triggerEvent;
 		this.on = on;
 		this.off = off;
 		this.updateTransition = updateTransition;
-		this.log = log;
+		this.getAnimationPromises = getAnimationPromises;
+		this.log = () => {}; // here so it can be used by plugins
 		this.usePlugin = usePlugin;
 		this.removePlugin = removePlugin;
 		this.findPlugin = findPlugin;
 		this.enable = this.enable;
 		this.destroy = this.destroy;
-
-		// attach instance to window in debug mode
-		if (this.options.debugMode) {
-			window.swup = this;
-		}
 
 		this.enable();
 	}
@@ -170,7 +166,7 @@ export default class Swup {
 		let page = getDataFromHTML(document.documentElement.outerHTML, null, this.options.elements);
 		page.url = getCurrentUrl();
 		if (this.options.cache) {
-			this.cache.cacheUrl(page, this.options.debugMode);
+			this.cache.cacheUrl(page);
 		}
 
 		/**
