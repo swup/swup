@@ -11,6 +11,7 @@ import updateTransition from './modules/updateTransition';
 import preloadPage from './modules/preloadPage';
 import preloadPages from './modules/preloadPages';
 import log from './modules/log';
+import { usePlugin, removePlugin, findPlugin } from './modules/plugins';
 
 import { queryAll } from './utils';
 import {
@@ -113,6 +114,9 @@ export default class Swup {
 		this.preloadPage = preloadPage;
 		this.preloadPages = preloadPages;
 		this.log = log;
+		this.usePlugin = usePlugin;
+		this.removePlugin = removePlugin;
+		this.findPlugin = findPlugin;
 		this.enable = this.enable;
 		this.destroy = this.destroy;
 
@@ -195,14 +199,7 @@ export default class Swup {
 		 * mount plugins
 		 */
 		this.options.plugins.forEach((plugin) => {
-			if (!plugin.isSwupPlugin) {
-				console.warn(`Not a swup plugin instance ${plugin}.`);
-				return;
-			}
-
-			this.plugins.push(plugin);
-			plugin.swup = this;
-			plugin.mount();
+			this.usePlugin(plugin);
 		});
 
 		/**
@@ -250,9 +247,8 @@ export default class Swup {
 		 * unmount plugins
 		 */
 		this.options.plugins.forEach((plugin) => {
-			plugin.unmount(options, this);
+			this.removePlugin(plugin);
 		});
-		this.plugins = [];
 
 		// remove swup data atributes from blocks
 		queryAll('[data-swup]').forEach((element) => {
