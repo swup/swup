@@ -71,7 +71,6 @@ export default class Swup {
 			contentReplaced: [],
 			disabled: [],
 			enabled: [],
-			hoverLink: [],
 			openPageInNewTab: [],
 			pageLoaded: [],
 			pageRetrievedFromCache: [],
