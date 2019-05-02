@@ -26,7 +26,7 @@ const loadPage = function(data, popstate) {
 		}
 		document.documentElement.classList.add('to-' + classify(data.url));
 
-		animationPromises = this.getAnimationPromises();
+		animationPromises = this.getAnimationPromises('out');
 		Promise.all(animationPromises).then(() => {
 			this.triggerEvent('animationOutDone');
 		});

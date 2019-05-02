@@ -65,7 +65,7 @@ const renderPage = function(page, popstate) {
 		}
 	}, 10);
 
-	const animationPromises = this.getAnimationPromises();
+	const animationPromises = this.getAnimationPromises('in');
 
 	if (!popstate || this.options.animateHistoryBrowsing) {
 		Promise.all(animationPromises).then(() => {
