@@ -1,4 +1,4 @@
-export const usePlugin = function(plugin) {
+export const use = function(plugin) {
 	if (!plugin.isSwupPlugin) {
 		console.warn(`Not swup plugin instance ${plugin}.`);
 		return;
@@ -6,12 +6,15 @@ export const usePlugin = function(plugin) {
 
 	this.plugins.push(plugin);
 	plugin.swup = this;
+	if (typeof plugin._beforeMount === 'function') {
+		plugin._beforeMount();
+	}
 	plugin.mount();
 
 	return this.plugins;
 };
 
-export const removePlugin = function(plugin) {
+export const unuse = function(plugin) {
 	let pluginReference;
 
 	if (typeof plugin === 'string') {
@@ -21,6 +24,9 @@ export const removePlugin = function(plugin) {
 	}
 
 	pluginReference.unmount();
+	if (typeof plugin._afterUnmount === 'function') {
+		plugin._afterUnmount();
+	}
 	const index = this.plugins.indexOf(pluginReference);
 	this.plugins.splice(index, 1);
 

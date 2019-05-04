@@ -9,17 +9,10 @@ import on from './modules/on';
 import off from './modules/off';
 import updateTransition from './modules/updateTransition';
 import getAnimationPromises from './modules/getAnimationPromises';
-import { usePlugin, removePlugin, findPlugin } from './modules/plugins';
+import { use, unuse, findPlugin } from './modules/plugins';
 
 import { queryAll } from './utils';
-import {
-	getDataFromHTML,
-	fetch,
-	transitionEnd,
-	getCurrentUrl,
-	markSwupElements,
-	Link
-} from './helpers';
+import { getDataFromHTML, transitionEnd, getCurrentUrl, markSwupElements, Link } from './helpers';
 
 export default class Swup {
 	constructor(setOptions) {
@@ -108,8 +101,8 @@ export default class Swup {
 		this.updateTransition = updateTransition;
 		this.getAnimationPromises = getAnimationPromises;
 		this.log = () => {}; // here so it can be used by plugins
-		this.usePlugin = usePlugin;
-		this.removePlugin = removePlugin;
+		this.use = use;
+		this.unuse = unuse;
 		this.findPlugin = findPlugin;
 		this.enable = this.enable;
 		this.destroy = this.destroy;
@@ -178,7 +171,7 @@ export default class Swup {
 		 * mount plugins
 		 */
 		this.options.plugins.forEach((plugin) => {
-			this.usePlugin(plugin);
+			this.use(plugin);
 		});
 
 		/**
@@ -221,7 +214,7 @@ export default class Swup {
 		 * unmount plugins
 		 */
 		this.options.plugins.forEach((plugin) => {
-			this.removePlugin(plugin);
+			this.unuse(plugin);
 		});
 
 		// remove swup data atributes from blocks
