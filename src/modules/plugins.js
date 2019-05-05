@@ -23,10 +23,17 @@ export const unuse = function(plugin) {
 		pluginReference = plugin;
 	}
 
-	pluginReference.unmount();
-	if (typeof plugin._afterUnmount === 'function') {
-		plugin._afterUnmount();
+	if (!pluginReference) {
+		console.warn('No such plugin.');
+		return;
 	}
+
+	pluginReference.unmount();
+
+	if (typeof pluginReference._afterUnmount === 'function') {
+		pluginReference._afterUnmount();
+	}
+
 	const index = this.plugins.indexOf(pluginReference);
 	this.plugins.splice(index, 1);
 
