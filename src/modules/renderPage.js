@@ -34,25 +34,6 @@ const renderPage = function(page, popstate) {
 	// set title
 	document.title = page.title;
 
-	// handle classes after render
-	// remove
-	if (this.options.pageClassPrefix !== false) {
-		document.body.className.split(' ').forEach((className) => {
-			// empty string for page class
-			if (className != '' && className.includes(this.options.pageClassPrefix)) {
-				document.body.classList.remove(className);
-			}
-		});
-	}
-	// add
-	if (page.pageClass != '') {
-		page.pageClass.split(' ').forEach((className) => {
-			if (className != '' && className.includes(this.options.pageClassPrefix)) {
-				document.body.classList.add(className);
-			}
-		});
-	}
-
 	this.triggerEvent('contentReplaced', popstate);
 	this.triggerEvent('pageView', popstate);
 	if (!this.options.cache) {

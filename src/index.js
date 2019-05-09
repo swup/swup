@@ -21,7 +21,6 @@ export default class Swup {
 			cache: true,
 			animationSelector: '[class*="transition-"]',
 			elements: ['#swup'],
-			pageClassPrefix: '',
 
 			support: true,
 			plugins: [],
