@@ -19,8 +19,13 @@ export default class Swup {
 	constructor(setOptions) {
 		// default options
 		let defaults = {
-			cache: true,
+			animateHistoryBrowsing: false,
 			animationSelector: '[class*="transition-"]',
+			linkSelector:
+				'a[href^="' +
+				window.location.origin +
+				'"]:not([data-no-swup]), a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup])',
+			cache: true,
 			containers: ['#swup'],
 			plugins: [],
 			skipPopStateHandling: function(event) {
@@ -28,12 +33,7 @@ export default class Swup {
 					return false;
 				}
 				return true;
-			},
-			animateHistoryBrowsing: false,
-			linkSelector:
-				'a[href^="' +
-				window.location.origin +
-				'"]:not([data-no-swup]), a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup])'
+			}
 		};
 
 		// merge options
