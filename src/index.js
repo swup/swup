@@ -22,7 +22,6 @@ export default class Swup {
 			animationSelector: '[class*="transition-"]',
 			elements: ['#swup'],
 
-			support: true,
 			plugins: [],
 
 			skipPopStateHandling: function(event) {
@@ -110,28 +109,10 @@ export default class Swup {
 	}
 
 	enable() {
-		/**
-		 * support check
-		 */
-		if (this.options.support) {
-			// check pushState support
-			if (!('pushState' in window.history)) {
-				console.warn('pushState is not supported');
-				return;
-			}
-			// check transitionEnd support
-			if (!transitionEnd()) {
-				console.warn('transitionEnd detection is not supported');
-				return;
-			}
-			// check Promise support
-			if (
-				typeof Promise === 'undefined' ||
-				Promise.toString().indexOf('[native code]') === -1
-			) {
-				console.warn('Promise is not supported');
-				return;
-			}
+		// check for Promise support
+		if (typeof Promise === 'undefined') {
+			console.warn('Promise is not supported');
+			return;
 		}
 
 		// variable to keep event listeners from "delegate"
