@@ -37,7 +37,7 @@ export default class Swup {
 		};
 
 		// merge options
-		let options = {
+		const options = {
 			...defaults,
 			...setOptions
 		};
