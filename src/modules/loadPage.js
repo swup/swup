@@ -1,5 +1,4 @@
-import { queryAll } from '../utils';
-import { classify, createHistoryRecord, getDataFromHTML, fetch } from '../helpers';
+import { classify, createHistoryRecord, fetch } from '../helpers';
 
 const loadPage = function(data, popstate) {
 	// create array for storing animation promises
@@ -70,7 +69,7 @@ const loadPage = function(data, popstate) {
 						return;
 					} else {
 						// get json data
-						let page = getDataFromHTML(response, request, this.options.elements);
+						let page = this.getPageData(response, request);
 						if (page != null) {
 							page.url = data.url;
 						} else {

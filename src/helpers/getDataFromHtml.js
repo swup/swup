@@ -1,6 +1,6 @@
 import { queryAll } from '../utils';
 
-const getDataFromHTML = (html, request, containers) => {
+const getDataFromHTML = (html, containers) => {
 	let content = html.replace('<body', '<div id="swupBody"').replace('</body>', '</div>');
 	let fakeDom = document.createElement('div');
 	fakeDom.innerHTML = content;
@@ -8,11 +8,11 @@ const getDataFromHTML = (html, request, containers) => {
 
 	for (let i = 0; i < containers.length; i++) {
 		if (fakeDom.querySelector(containers[i]) == null) {
-			console.warn(`Element ${containers[i]} is not found in cached page.`);
+			// page in invalid
 			return null;
 		} else {
 			queryAll(containers[i]).forEach((item, index) => {
-				queryAll(containers[i], fakeDom)[index].dataset.swup = blocks.length;
+				queryAll(containers[i], fakeDom)[index].dataset.swup = blocks.length; // marks element with data-swup
 				blocks.push(queryAll(containers[i], fakeDom)[index].outerHTML);
 			});
 		}
@@ -22,8 +22,7 @@ const getDataFromHTML = (html, request, containers) => {
 		title: fakeDom.querySelector('title').innerText,
 		pageClass: fakeDom.querySelector('#swupBody').className,
 		originalContent: html,
-		blocks: blocks,
-		responseURL: request != null ? request.responseURL : window.location.href
+		blocks: blocks
 	};
 	return json;
 };

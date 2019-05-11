@@ -9,6 +9,7 @@ import on from './modules/on';
 import off from './modules/off';
 import updateTransition from './modules/updateTransition';
 import getAnimationPromises from './modules/getAnimationPromises';
+import getPageData from './modules/getPageData';
 import { use, unuse, findPlugin } from './modules/plugins';
 
 import { queryAll } from './utils';
@@ -20,7 +21,7 @@ export default class Swup {
 		let defaults = {
 			cache: true,
 			animationSelector: '[class*="transition-"]',
-			elements: ['#swup'],
+			containers: ['#swup'],
 			plugins: [],
 			skipPopStateHandling: function(event) {
 				if (event.state && event.state.source == 'swup') {
@@ -88,6 +89,7 @@ export default class Swup {
 		this.off = off;
 		this.updateTransition = updateTransition;
 		this.getAnimationPromises = getAnimationPromises;
+		this.getPageData = getPageData;
 		this.log = () => {}; // here so it can be used by plugins
 		this.use = use;
 		this.unuse = unuse;
@@ -114,14 +116,14 @@ export default class Swup {
 		window.addEventListener('popstate', this.popStateHandler.bind(this));
 
 		// initial save to cache
-		let page = getDataFromHTML(document.documentElement.outerHTML, null, this.options.elements);
-		page.url = getCurrentUrl();
+		let page = getDataFromHTML(document.documentElement.outerHTML, this.options.containers);
+		page.url = page.responseURL = getCurrentUrl();
 		if (this.options.cache) {
 			this.cache.cacheUrl(page);
 		}
 
 		// mark swup blocks in html
-		markSwupElements(document.documentElement, this.options.elements, this.options.elements);
+		markSwupElements(document.documentElement, this.options.containers);
 
 		// mount plugins
 		this.options.plugins.forEach((plugin) => {
