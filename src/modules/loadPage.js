@@ -1,11 +1,43 @@
 import { queryAll } from '../utils';
-import { classify, createHistoryRecord, getDataFromHTML, fetch, transitionEnd } from '../helpers';
+import { classify, createHistoryRecord, getDataFromHTML, fetch } from '../helpers';
 
 const loadPage = function(data, popstate) {
 	// create array for storing animation promises
-	this.triggerEvent('transitionStart', popstate);
+	let animationPromises = [],
+		xhrPromise;
+	const animateOut = () => {
+		this.triggerEvent('animationOutStart');
 
-	let animationPromises = [];
+		// handle classes
+		document.documentElement.classList.add('is-changing');
+		document.documentElement.classList.add('is-leaving');
+		document.documentElement.classList.add('is-animating');
+		if (popstate) {
+			document.documentElement.classList.add('is-popstate');
+		}
+		document.documentElement.classList.add('to-' + classify(data.url));
+
+		// animation promise stuff
+		animationPromises = this.getAnimationPromises('out');
+		Promise.all(animationPromises).then(() => {
+			this.triggerEvent('animationOutDone');
+		});
+
+		// create history record if this is not a popstate call
+		if (!popstate) {
+			// create pop element with or without anchor
+			let state;
+			if (this.scrollToElement != null) {
+				state = data.url + this.scrollToElement;
+			} else {
+				state = data.url;
+			}
+
+			createHistoryRecord(state);
+		}
+	};
+
+	this.triggerEvent('transitionStart', popstate);
 
 	// set transition object
 	if (data.customTransition != null) {
@@ -15,36 +47,14 @@ const loadPage = function(data, popstate) {
 		this.updateTransition(window.location.pathname, data.url);
 	}
 
+	// start/skip animation
 	if (!popstate || this.options.animateHistoryBrowsing) {
-		// start animation
-		this.triggerEvent('animationOutStart');
-		document.documentElement.classList.add('is-changing');
-		document.documentElement.classList.add('is-leaving');
-		document.documentElement.classList.add('is-animating');
-		if (popstate) {
-			document.documentElement.classList.add('is-popstate');
-		}
-		document.documentElement.classList.add('to-' + classify(data.url));
-
-		animationPromises = this.getAnimationPromises('out');
-		Promise.all(animationPromises).then(() => {
-			this.triggerEvent('animationOutDone');
-		});
-
-		// create pop element with or without anchor
-		let pop;
-		if (this.scrollToElement != null) {
-			pop = data.url + this.scrollToElement;
-		} else {
-			pop = data.url;
-		}
-		if (!popstate) createHistoryRecord(pop);
+		animateOut();
 	} else {
-		// proceed without animating
 		this.triggerEvent('animationSkipped');
 	}
 
-	let xhrPromise;
+	// start/skip loading of page
 	if (this.cache.exists(data.url)) {
 		xhrPromise = new Promise((resolve) => {
 			resolve();
@@ -79,6 +89,7 @@ const loadPage = function(data, popstate) {
 		}
 	}
 
+	// when everything is ready, handle the outcome
 	Promise.all(animationPromises.concat([xhrPromise]))
 		.then(() => {
 			// render page

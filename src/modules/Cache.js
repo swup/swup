@@ -1,12 +1,10 @@
 export class Cache {
 	constructor() {
 		this.pages = {};
-		this.count = 0;
 		this.last = null;
 	}
 
 	cacheUrl(page) {
-		this.count++;
 		if (page.url in this.pages === false) {
 			this.pages[page.url] = page;
 		}
@@ -28,7 +26,6 @@ export class Cache {
 
 	empty() {
 		this.pages = {};
-		this.count = 0;
 		this.last = null;
 		this.swup.log('Cache cleared');
 	}

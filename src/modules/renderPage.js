@@ -6,7 +6,6 @@ const renderPage = function(page, popstate) {
 
 	// replace state in case the url was redirected
 	let link = new Link(page.responseURL);
-
 	if (window.location.pathname !== link.getPath()) {
 		window.history.replaceState(
 			{
@@ -36,9 +35,13 @@ const renderPage = function(page, popstate) {
 
 	this.triggerEvent('contentReplaced', popstate);
 	this.triggerEvent('pageView', popstate);
+
+	// empty cache if it's disabled (because pages could be preloaded and stuff)
 	if (!this.options.cache) {
 		this.cache.empty();
 	}
+
+	// start animation IN
 	setTimeout(() => {
 		if (!popstate || this.options.animateHistoryBrowsing) {
 			this.triggerEvent('animationInStart');
@@ -46,8 +49,8 @@ const renderPage = function(page, popstate) {
 		}
 	}, 10);
 
+	// handle end of animation
 	const animationPromises = this.getAnimationPromises('in');
-
 	if (!popstate || this.options.animateHistoryBrowsing) {
 		Promise.all(animationPromises).then(() => {
 			this.triggerEvent('animationInDone');

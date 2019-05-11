@@ -12,7 +12,7 @@ import getAnimationPromises from './modules/getAnimationPromises';
 import { use, unuse, findPlugin } from './modules/plugins';
 
 import { queryAll } from './utils';
-import { getDataFromHTML, transitionEnd, getCurrentUrl, markSwupElements, Link } from './helpers';
+import { getDataFromHTML, getCurrentUrl, markSwupElements, Link } from './helpers';
 
 export default class Swup {
 	constructor(setOptions) {
@@ -21,9 +21,7 @@ export default class Swup {
 			cache: true,
 			animationSelector: '[class*="transition-"]',
 			elements: ['#swup'],
-
 			plugins: [],
-
 			skipPopStateHandling: function(event) {
 				if (event.state && event.state.source == 'swup') {
 					return false;
@@ -31,26 +29,19 @@ export default class Swup {
 				return true;
 			},
 			animateHistoryBrowsing: false,
-
 			linkSelector:
 				'a[href^="' +
 				window.location.origin +
 				'"]:not([data-no-swup]), a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup])'
 		};
 
-		/**
-		 * current transition object
-		 */
-		this.transition = {};
-
+		// merge options
 		let options = {
 			...defaults,
 			...setOptions
 		};
 
-		/**
-		 * handler arrays
-		 */
+		// handler arrays
 		this._handlers = {
 			animationInDone: [],
 			animationInStart: [],
@@ -74,21 +65,20 @@ export default class Swup {
 			willReplaceContent: []
 		};
 
-		/**
-		 * helper variables
-		 */
-		// id of element to scroll to after render
+		// variable for id of element to scroll to after render
 		this.scrollToElement = null;
-		// promise used for preload, so no new loading of the same page starts while page is loading
+		// variable for promise used for preload, so no new loading of the same page starts while page is loading
 		this.preloadPromise = null;
-		// save options
+		// variable for save options
 		this.options = options;
-		// plugins array
+		// variable for plugins array
 		this.plugins = [];
+		// variable for current transition object
+		this.transition = {};
+		// variable for keeping event listeners from "delegate"
+		this.delegatedListeners = {};
 
-		/**
-		 * make modules accessible in instance
-		 */
+		// make modules accessible in instance
 		this.cache = new Cache();
 		this.cache.swup = this;
 		this.loadPage = loadPage;
@@ -102,9 +92,8 @@ export default class Swup {
 		this.use = use;
 		this.unuse = unuse;
 		this.findPlugin = findPlugin;
-		this.enable = this.enable;
-		this.destroy = this.destroy;
 
+		// enable swup
 		this.enable();
 	}
 
@@ -115,48 +104,31 @@ export default class Swup {
 			return;
 		}
 
-		// variable to keep event listeners from "delegate"
-		this.delegatedListeners = {};
-
-		/**
-		 * link click handler
-		 */
+		// add event listeners
 		this.delegatedListeners.click = delegate(
 			document,
 			this.options.LINK_SELECTOR,
 			'click',
 			this.linkClickHandler.bind(this)
 		);
-
-		/**
-		 * popstate handler
-		 */
 		window.addEventListener('popstate', this.popStateHandler.bind(this));
 
-		/**
-		 * initial save to cache
-		 */
+		// initial save to cache
 		let page = getDataFromHTML(document.documentElement.outerHTML, null, this.options.elements);
 		page.url = getCurrentUrl();
 		if (this.options.cache) {
 			this.cache.cacheUrl(page);
 		}
 
-		/**
-		 * mark swup blocks in html
-		 */
+		// mark swup blocks in html
 		markSwupElements(document.documentElement, this.options.elements, this.options.elements);
 
-		/**
-		 * mount plugins
-		 */
+		// mount plugins
 		this.options.plugins.forEach((plugin) => {
 			this.use(plugin);
 		});
 
-		/**
-		 * modify initial history record
-		 */
+		// modify initial history record
 		window.history.replaceState(
 			Object.assign({}, window.history.state, {
 				url: window.location.href,
@@ -167,15 +139,13 @@ export default class Swup {
 			window.location.href
 		);
 
-		/**
-		 * trigger enabled event
-		 */
+		// trigger enabled event
 		this.triggerEvent('enabled');
+
+		// add swup-enabled class to html tag
 		document.documentElement.classList.add('swup-enabled');
 
-		/**
-		 * trigger page view event
-		 */
+		// trigger page view event
 		this.triggerEvent('pageView');
 	}
 
@@ -190,9 +160,7 @@ export default class Swup {
 		// empty cache
 		this.cache.empty();
 
-		/**
-		 * unmount plugins
-		 */
+		// unmount plugins
 		this.options.plugins.forEach((plugin) => {
 			this.unuse(plugin);
 		});
@@ -205,7 +173,10 @@ export default class Swup {
 		// remove handlers
 		this.off();
 
+		// trigger disable event
 		this.triggerEvent('disabled');
+
+		// remove swup-enabled class from html tag
 		document.documentElement.classList.remove('swup-enabled');
 	}
 
