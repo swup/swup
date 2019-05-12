@@ -15,9 +15,9 @@ const fetch = (options, callback = false) => {
 	request.onreadystatechange = function() {
 		if (request.readyState === 4) {
 			if (request.status !== 500) {
-				callback(request.responseText, request);
+				callback(request);
 			} else {
-				callback(null, request);
+				callback(request);
 			}
 		}
 	};

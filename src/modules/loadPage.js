@@ -62,14 +62,14 @@ const loadPage = function(data, popstate) {
 	} else {
 		if (!this.preloadPromise || this.preloadPromise.route != data.url) {
 			xhrPromise = new Promise((resolve, reject) => {
-				fetch(data, (response, request) => {
-					if (request.status === 500) {
+				fetch(data, (response) => {
+					if (response.status === 500) {
 						this.triggerEvent('serverError');
 						reject(data.url);
 						return;
 					} else {
 						// get json data
-						let page = this.getPageData(response, request);
+						let page = this.getPageData(response);
 						if (page != null) {
 							page.url = data.url;
 						} else {
