@@ -1,13 +1,14 @@
-const fetch = (options, callback = false) => {
+const fetch = (setOptions, callback = false) => {
 	let defaults = {
 		url: window.location.pathname + window.location.search,
 		method: 'GET',
-		data: null
+		data: null,
+		headers: {}
 	};
 
-	let data = {
+	let options = {
 		...defaults,
-		...options
+		...setOptions
 	};
 
 	let request = new XMLHttpRequest();
@@ -22,9 +23,11 @@ const fetch = (options, callback = false) => {
 		}
 	};
 
-	request.open(data.method, data.url, true);
-	request.setRequestHeader('X-Requested-With', 'swup');
-	request.send(data.data);
+	request.open(options.method, options.url, true);
+	Object.keys(options.headers).forEach((key) => {
+		request.setRequestHeader(key, options.headers[key]);
+	});
+	request.send(options.data);
 	return request;
 };
 

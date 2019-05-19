@@ -21,18 +21,18 @@ export default class Swup {
 		let defaults = {
 			animateHistoryBrowsing: false,
 			animationSelector: '[class*="transition-"]',
-			linkSelector:
-				'a[href^="' +
-				window.location.origin +
-				'"]:not([data-no-swup]), a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup])',
+			linkSelector: `a[href^="${
+				window.location.origin
+			}"]:not([data-no-swup]), a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup])`,
 			cache: true,
 			containers: ['#swup'],
+			requestHeaders: {
+				'X-Requested-With': 'swup',
+				Accept: 'text/html, application/xhtml+xml'
+			},
 			plugins: [],
 			skipPopStateHandling: function(event) {
-				if (event.state && event.state.source == 'swup') {
-					return false;
-				}
-				return true;
+				return !(event.state && event.state.source === 'swup');
 			}
 		};
 

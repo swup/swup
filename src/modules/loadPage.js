@@ -62,7 +62,7 @@ const loadPage = function(data, popstate) {
 	} else {
 		if (!this.preloadPromise || this.preloadPromise.route != data.url) {
 			xhrPromise = new Promise((resolve, reject) => {
-				fetch(data, (response) => {
+				fetch({ ...data, headers: this.options.requestHeaders }, (response) => {
 					if (response.status === 500) {
 						this.triggerEvent('serverError');
 						reject(data.url);
