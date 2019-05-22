@@ -1,21 +1,10 @@
 const updateTransition = function(from, to, custom) {
-	// homepage case
-	if (from == '/') {
-		from = '/homepage';
-	}
-	if (to == '/') {
-		to = '/homepage';
-	}
-
 	// transition routes
 	this.transition = {
-		from: from.replace('/', ''),
-		to: to.replace('/', '')
+		from: from,
+		to: to,
+		custom: custom
 	};
-
-	if (custom) {
-		this.transition.custom = custom;
-	}
 };
 
 export default updateTransition;
