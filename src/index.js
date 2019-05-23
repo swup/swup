@@ -109,7 +109,7 @@ export default class Swup {
 		// add event listeners
 		this.delegatedListeners.click = delegate(
 			document,
-			this.options.LINK_SELECTOR,
+			this.options.linkSelector,
 			'click',
 			this.linkClickHandler.bind(this)
 		);
