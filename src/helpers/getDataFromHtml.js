@@ -24,6 +24,11 @@ const getDataFromHTML = (html, containers) => {
 		originalContent: html,
 		blocks: blocks
 	};
+
+	// to prevent memory leaks
+	fakeDom.innerHTML = '';
+	fakeDom = null;
+
 	return json;
 };
 
