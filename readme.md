@@ -1,4 +1,4 @@
-<p align="center"><img width="420" alt="swup" src="https://gmrchk.github.io/swup/swup.svg"></p>
+<p align="center"><img width="420" alt="swup" src="https://swup.js.org/assets/images/swup-logo.svg"></p>
 <p align="center">
 Complete, flexible, extensible and easy to use page transition library for your web.
 </p>

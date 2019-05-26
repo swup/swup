@@ -1,7 +1,7 @@
 {
   "name": "swup",
-  "version": "1.9.0",
-  "description": "Complete, flexible, easy to use page transition library.",
+  "version": "2.0.1",
+  "description": "Complete, flexible, extensible and easy to use page transition library for your web.",
   "main": "lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
