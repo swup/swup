@@ -9,7 +9,7 @@ Complete, flexible, extensible and easy to use page transition library for your 
     <a href="https://www.npmjs.com/package/swup"><img src="https://img.shields.io/npm/dt/swup.svg" alt="npm downloads"></a>
 </p>
 
-Looking for **what's new in v2**? Head over [here](#TODO).  
+Looking for **what's new in v2**? Head over [here](https://medium.com/@gmarcuk/introducing-swup-v2-814e40316dee).  
 Still wanna check v1? Get it from npm with `npm install swup@1.9.0` or check old docs [here](#TODO).
 
 - [Getting started](https://swup.js.org/getting-started)
@@ -26,5 +26,7 @@ Still wanna check v1? Get it from npm with `npm install swup@1.9.0` or check old
 If you're having trouble implementing swup, checkout [Common Issues](https://swup.js.org/common-issues), [Closed Issues](https://github.com/gmrchk/swup/issues?q=is%3Aissue+is%3Aclosed) or open a [new one](https://github.com/gmrchk/swup/issues/new).
 
 Bugs are expected. Thank you for reporting!
+
+Don't forget to **star a plugin** if you use it, so everyone knows it's actively used and deserves more attention/updates.
 
 <img src="https://user-images.githubusercontent.com/9338324/49190360-50125480-f372-11e8-89e9-d2fb091a2240.gif" width="100%">
