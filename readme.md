@@ -10,7 +10,7 @@ Complete, flexible, extensible and easy to use page transition library for your 
 </p>
 
 Looking for **what's new in v2**? Head over [here](https://medium.com/@gmarcuk/introducing-swup-v2-814e40316dee).  
-Still wanna check v1? Get it from npm with `npm install swup@1.9.0` or check old docs [here](#TODO).
+Still wanna check v1? Get it from npm with `npm install swup@1.9.0` or check old docs [here](https://github.com/swup/swup/tree/33367a1072f8b5ebc646d7e0ca338a811b53a41d).
 
 - [Docs](https://swup.js.org/getting-started)
   - [Example](https://swup.js.org/getting-started/example)
