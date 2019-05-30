@@ -1,6 +1,6 @@
 import { queryAll } from '../utils';
 
-const getDataFromHTML = (html, containers) => {
+const getDataFromHtml = (html, containers) => {
 	let content = html.replace('<body', '<div id="swupBody"').replace('</body>', '</div>');
 	let fakeDom = document.createElement('div');
 	fakeDom.innerHTML = content;
@@ -32,4 +32,4 @@ const getDataFromHTML = (html, containers) => {
 	return json;
 };
 
-export default getDataFromHTML;
+export default getDataFromHtml;

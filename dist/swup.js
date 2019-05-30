@@ -104,7 +104,7 @@ return /******/ (function(modules) { // webpackBootstrap
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Link = exports.markSwupElements = exports.getCurrentUrl = exports.transitionEnd = exports.fetch = exports.getDataFromHTML = exports.createHistoryRecord = exports.classify = undefined;
+exports.Link = exports.markSwupElements = exports.getCurrentUrl = exports.transitionEnd = exports.fetch = exports.getDataFromHtml = exports.createHistoryRecord = exports.classify = undefined;
 
 var _classify = __webpack_require__(8);
 
@@ -114,9 +114,9 @@ var _createHistoryRecord = __webpack_require__(9);
 
 var _createHistoryRecord2 = _interopRequireDefault(_createHistoryRecord);
 
-var _getDataFromHTML = __webpack_require__(10);
+var _getDataFromHtml = __webpack_require__(10);
 
-var _getDataFromHTML2 = _interopRequireDefault(_getDataFromHTML);
+var _getDataFromHtml2 = _interopRequireDefault(_getDataFromHtml);
 
 var _fetch = __webpack_require__(11);
 
@@ -142,7 +142,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var classify = exports.classify = _classify2.default;
 var createHistoryRecord = exports.createHistoryRecord = _createHistoryRecord2.default;
-var getDataFromHTML = exports.getDataFromHTML = _getDataFromHTML2.default;
+var getDataFromHtml = exports.getDataFromHtml = _getDataFromHtml2.default;
 var fetch = exports.fetch = _fetch2.default;
 var transitionEnd = exports.transitionEnd = _transitionEnd2.default;
 var getCurrentUrl = exports.getCurrentUrl = _getCurrentUrl2.default;
@@ -216,9 +216,9 @@ var _delegate = __webpack_require__(4);
 
 var _delegate2 = _interopRequireDefault(_delegate);
 
-var _cache = __webpack_require__(6);
+var _Cache = __webpack_require__(6);
 
-var _cache2 = _interopRequireDefault(_cache);
+var _Cache2 = _interopRequireDefault(_Cache);
 
 var _loadPage = __webpack_require__(7);
 
@@ -324,7 +324,7 @@ var Swup = function () {
 		this.delegatedListeners = {};
 
 		// make modules accessible in instance
-		this.cache = new _cache2.default();
+		this.cache = new _Cache2.default();
 		this.cache.swup = this;
 		this.loadPage = _loadPage2.default;
 		this.renderPage = _renderPage2.default;
@@ -359,7 +359,7 @@ var Swup = function () {
 			window.addEventListener('popstate', this.popStateHandler.bind(this));
 
 			// initial save to cache
-			var page = (0, _helpers.getDataFromHTML)(document.documentElement.outerHTML, this.options.containers);
+			var page = (0, _helpers.getDataFromHtml)(document.documentElement.outerHTML, this.options.containers);
 			page.url = page.responseURL = (0, _helpers.getCurrentUrl)();
 			if (this.options.cache) {
 				this.cache.cacheUrl(page);
@@ -829,7 +829,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _utils = __webpack_require__(1);
 
-var getDataFromHTML = function getDataFromHTML(html, containers) {
+var getDataFromHtml = function getDataFromHtml(html, containers) {
 	var content = html.replace('<body', '<div id="swupBody"').replace('</body>', '</div>');
 	var fakeDom = document.createElement('div');
 	fakeDom.innerHTML = content;
@@ -869,7 +869,7 @@ var getDataFromHTML = function getDataFromHTML(html, containers) {
 	return json;
 };
 
-exports.default = getDataFromHTML;
+exports.default = getDataFromHtml;
 
 /***/ }),
 /* 11 */
@@ -1309,7 +1309,7 @@ var getPageData = function getPageData(request) {
 	// this function should always return {title, pageClass, originalContent, blocks, responseURL}
 	// in case page has invalid structure - return null
 	var html = request.responseText;
-	var pageObject = (0, _helpers.getDataFromHTML)(html, this.options.containers);
+	var pageObject = (0, _helpers.getDataFromHtml)(html, this.options.containers);
 
 	if (pageObject) {
 		pageObject.responseURL = request.responseURL ? request.responseURL : window.location.href;

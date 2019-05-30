@@ -1,7 +1,7 @@
 import delegate from 'delegate';
 
 // modules
-import Cache from './modules/cache';
+import Cache from './modules/Cache';
 import loadPage from './modules/loadPage';
 import renderPage from './modules/renderPage';
 import triggerEvent from './modules/triggerEvent';
@@ -13,7 +13,7 @@ import getPageData from './modules/getPageData';
 import { use, unuse, findPlugin } from './modules/plugins';
 
 import { queryAll } from './utils';
-import { getDataFromHTML, getCurrentUrl, markSwupElements, Link } from './helpers';
+import { getDataFromHtml, getCurrentUrl, markSwupElements, Link } from './helpers';
 
 export default class Swup {
 	constructor(setOptions) {
@@ -116,7 +116,7 @@ export default class Swup {
 		window.addEventListener('popstate', this.popStateHandler.bind(this));
 
 		// initial save to cache
-		let page = getDataFromHTML(document.documentElement.outerHTML, this.options.containers);
+		let page = getDataFromHtml(document.documentElement.outerHTML, this.options.containers);
 		page.url = page.responseURL = getCurrentUrl();
 		if (this.options.cache) {
 			this.cache.cacheUrl(page);
