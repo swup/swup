@@ -29,4 +29,6 @@ Bugs are expected. Thank you for reporting!
 
 Don't forget to **star a plugin** if you use it, so everyone knows it's actively used and deserves more attention/updates.
 
+In case you'd like to checkout some of the code, all the repositories can be found under [swup organization](https://github.com/swup).
+
 <img src="https://user-images.githubusercontent.com/9338324/49190360-50125480-f372-11e8-89e9-d2fb091a2240.gif" width="100%">
