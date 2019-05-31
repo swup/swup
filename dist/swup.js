@@ -411,7 +411,7 @@ var Swup = function () {
 
 			// remove swup data atributes from blocks
 			(0, _utils.queryAll)('[data-swup]').forEach(function (element) {
-				delete element.dataset.swup;
+				element.removeAttribute("data-swup");
 			});
 
 			// remove handlers
@@ -460,7 +460,7 @@ var Swup = function () {
 						}
 
 						// get custom transition from data
-						var customTransition = event.delegateTarget.dataset.swupTransition;
+						var customTransition = event.delegateTarget.getAttribute("data-swup-transition");
 
 						// load page
 						this.loadPage({ url: link.getAddress(), customTransition: customTransition }, false);
@@ -507,7 +507,7 @@ var closest = __webpack_require__(5);
  * @param {Boolean} useCapture
  * @return {Object}
  */
-function delegate(element, selector, type, callback, useCapture) {
+function _delegate(element, selector, type, callback, useCapture) {
     var listenerFn = listener.apply(this, arguments);
 
     element.addEventListener(type, listenerFn, useCapture);
@@ -517,6 +517,40 @@ function delegate(element, selector, type, callback, useCapture) {
             element.removeEventListener(type, listenerFn, useCapture);
         }
     }
+}
+
+/**
+ * Delegates event to a selector.
+ *
+ * @param {Element|String|Array} [elements]
+ * @param {String} selector
+ * @param {String} type
+ * @param {Function} callback
+ * @param {Boolean} useCapture
+ * @return {Object}
+ */
+function delegate(elements, selector, type, callback, useCapture) {
+    // Handle the regular Element usage
+    if (typeof elements.addEventListener === 'function') {
+        return _delegate.apply(null, arguments);
+    }
+
+    // Handle Element-less usage, it defaults to global delegation
+    if (typeof type === 'function') {
+        // Use `document` as the first parameter, then apply arguments
+        // This is a short way to .unshift `arguments` without running into deoptimizations
+        return _delegate.bind(null, document).apply(null, arguments);
+    }
+
+    // Handle Selector-based usage
+    if (typeof elements === 'string') {
+        elements = document.querySelectorAll(elements);
+    }
+
+    // Handle Array-like based usage
+    return Array.prototype.map.call(elements, function (element) {
+        return _delegate(element, selector, type, callback, useCapture);
+    });
 }
 
 /**
@@ -843,7 +877,7 @@ var getDataFromHtml = function getDataFromHtml(html, containers) {
 			};
 		} else {
 			(0, _utils.queryAll)(containers[i]).forEach(function (item, index) {
-				(0, _utils.queryAll)(containers[i], fakeDom)[index].dataset.swup = blocks.length; // marks element with data-swup
+				(0, _utils.queryAll)(containers[i], fakeDom)[index].setAttribute("data-swup", blocks.length); // marks element with data-swup
 				blocks.push((0, _utils.queryAll)(containers[i], fakeDom)[index].outerHTML);
 			});
 		}
@@ -983,10 +1017,10 @@ var markSwupElements = function markSwupElements(element, containers) {
 
 	var _loop = function _loop(i) {
 		if (element.querySelector(containers[i]) == null) {
-			console.warn('Element ' + containers[i] + ' is not in current page.');
+			console.warn("Element " + containers[i] + " is not in current page.");
 		} else {
 			(0, _utils.queryAll)(containers[i]).forEach(function (item, index) {
-				(0, _utils.queryAll)(containers[i], element)[index].dataset.swup = blocks;
+				(0, _utils.queryAll)(containers[i], element)[index].setAttribute("data-swup", blocks);
 				blocks++;
 			});
 		}

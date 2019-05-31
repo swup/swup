@@ -8,7 +8,7 @@ const markSwupElements = (element, containers) => {
 			console.warn(`Element ${containers[i]} is not in current page.`);
 		} else {
 			queryAll(containers[i]).forEach((item, index) => {
-				queryAll(containers[i], element)[index].dataset.swup = blocks;
+				queryAll(containers[i], element)[index].setAttribute("data-swup", blocks);
 				blocks++;
 			});
 		}
