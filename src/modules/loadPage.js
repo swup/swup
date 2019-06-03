@@ -78,7 +78,7 @@ const loadPage = function(data, popstate) {
 						}
 						// render page
 						this.cache.cacheUrl(page);
-						this.triggerEvent('pageLoaded');
+						this.triggerEvent('pageLoaded', page);
 					}
 					resolve();
 				});
