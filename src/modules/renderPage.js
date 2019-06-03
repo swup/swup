@@ -30,7 +30,7 @@ const renderPage = function(page, popstate) {
 
 	// replace blocks
 	for (let i = 0; i < page.blocks.length; i++) {
-		document.body.querySelector(`[data-swup="${i}"]`).outerHTML = page.blocks[i];
+		document.querySelector(`[data-swup="${i}"]`).outerHTML = page.blocks[i];
 	}
 
 	// set title
