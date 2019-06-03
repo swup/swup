@@ -33,7 +33,8 @@ const renderPage = function(page, popstate) {
 		document.querySelector(`[data-swup="${i}"]`).outerHTML = page.blocks[i];
 	}
 
-	// Removed empty <head> injected if the container is <body>
+	// FIXME : Removed empty <head> injected if the container is <body>
+	// https://stackoverflow.com/questions/52888347/setting-document-body-outerhtml-creates-empty-heads-why
 	if (document.getElementsByTagName('head').length > 1) {
 		let emptyHead = document.getElementsByTagName('head')[1]
 		emptyHead.parentNode.removeChild(emptyHead)
