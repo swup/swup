@@ -33,6 +33,12 @@ const renderPage = function(page, popstate) {
 		document.querySelector(`[data-swup="${i}"]`).outerHTML = page.blocks[i];
 	}
 
+	// Removed empty <head> injected if the container is <body>
+	if (document.getElementsByTagName('head').length > 1) {
+		let emptyHead = document.getElementsByTagName('head')[1]
+		emptyHead.parentNode.removeChild(emptyHead)
+	}
+
 	// set title
 	document.title = page.title;
 
