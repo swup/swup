@@ -411,7 +411,7 @@ var Swup = function () {
 
 			// remove swup data atributes from blocks
 			(0, _utils.queryAll)('[data-swup]').forEach(function (element) {
-				delete element.dataset.swup;
+				element.removeAttribute('data-swup');
 			});
 
 			// remove handlers
@@ -460,7 +460,7 @@ var Swup = function () {
 						}
 
 						// get custom transition from data
-						var customTransition = event.delegateTarget.dataset.swupTransition;
+						var customTransition = event.delegateTarget.getAttribute('data-swup-transition');
 
 						// load page
 						this.loadPage({ url: link.getAddress(), customTransition: customTransition }, false);
@@ -843,7 +843,7 @@ var getDataFromHtml = function getDataFromHtml(html, containers) {
 			};
 		} else {
 			(0, _utils.queryAll)(containers[i]).forEach(function (item, index) {
-				(0, _utils.queryAll)(containers[i], fakeDom)[index].dataset.swup = blocks.length; // marks element with data-swup
+				(0, _utils.queryAll)(containers[i], fakeDom)[index].setAttribute('data-swup', blocks.length); // marks element with data-swup
 				blocks.push((0, _utils.queryAll)(containers[i], fakeDom)[index].outerHTML);
 			});
 		}
@@ -986,7 +986,7 @@ var markSwupElements = function markSwupElements(element, containers) {
 			console.warn('Element ' + containers[i] + ' is not in current page.');
 		} else {
 			(0, _utils.queryAll)(containers[i]).forEach(function (item, index) {
-				(0, _utils.queryAll)(containers[i], element)[index].dataset.swup = blocks;
+				(0, _utils.queryAll)(containers[i], element)[index].setAttribute('data-swup', blocks);
 				blocks++;
 			});
 		}
