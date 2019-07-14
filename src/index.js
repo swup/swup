@@ -169,7 +169,7 @@ export default class Swup {
 
 		// remove swup data atributes from blocks
 		queryAll('[data-swup]').forEach((element) => {
-			delete element.dataset.swup;
+			element.removeAttribute("data-swup");
 		});
 
 		// remove handlers
@@ -221,7 +221,7 @@ export default class Swup {
 					}
 
 					// get custom transition from data
-					let customTransition = event.delegateTarget.dataset.swupTransition;
+					let customTransition = event.delegateTarget.getAttribute("data-swup-transition");
 
 					// load page
 					this.loadPage(
