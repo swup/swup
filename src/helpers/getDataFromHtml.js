@@ -12,7 +12,7 @@ const getDataFromHtml = (html, containers) => {
 			return null;
 		} else {
 			queryAll(containers[i]).forEach((item, index) => {
-				queryAll(containers[i], fakeDom)[index].setAttribute("data-swup", blocks.length); // marks element with data-swup
+				queryAll(containers[i], fakeDom)[index].setAttribute('data-swup', blocks.length); // marks element with data-swup
 				blocks.push(queryAll(containers[i], fakeDom)[index].outerHTML);
 			});
 		}
