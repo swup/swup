@@ -25,10 +25,14 @@ Still wanna check v1? Get it from npm with `npm install swup@1.9.0` or check old
 
 If you're having trouble implementing swup, checkout [Common Issues](https://swup.js.org/common-issues), [Closed Issues](https://github.com/gmrchk/swup/issues?q=is%3Aissue+is%3Aclosed) or open a [new one](https://github.com/gmrchk/swup/issues/new).
 
-Bugs are expected. Thank you for reporting!
-
-Don't forget to **star a plugin** if you use it, so everyone knows it's actively used and deserves more attention/updates.
-
 In case you'd like to checkout some of the code, all the repositories can be found under [swup organization](https://github.com/swup).
+
+[Become a backer or sponsor on Open Collective](https://opencollective.com/swup)
+
+<p>
+   <a href="https://opencollective.com/swup/donate">
+      <img src="https://opencollective.com/swup/donate/button@2x.png?color=blue" width=300 />
+    </a>
+</p>
 
 <img src="https://user-images.githubusercontent.com/9338324/49190360-50125480-f372-11e8-89e9-d2fb091a2240.gif" width="100%">
