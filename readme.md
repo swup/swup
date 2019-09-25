@@ -7,6 +7,7 @@ Complete, flexible, extensible and easy to use page transition library for your 
     <img src="https://img.shields.io/bundlephobia/minzip/swup.svg" alt="Gzip Size">
     <a href="https://github.com/gmrchk/swup/blob/master/LICENSE"><img src="https://img.shields.io/github/license/gmrchk/swup.svg" alt="License"></a>
     <a href="https://www.npmjs.com/package/swup"><img src="https://img.shields.io/npm/dt/swup.svg" alt="npm downloads"></a>
+    <a href="https://opencollective.com/swup"> <img src="https://opencollective.com/swup/all/badge.svg?label=financial+contributors" alt="Financial Contributors on Open Collective"></a>
 </p>
 
 Looking for **what's new in v2**? Head over [here](https://medium.com/@gmarcuk/introducing-swup-v2-814e40316dee).  
@@ -36,3 +37,25 @@ In case you'd like to checkout some of the code, all the repositories can be fou
 </p>
 
 <img src="https://user-images.githubusercontent.com/9338324/49190360-50125480-f372-11e8-89e9-d2fb091a2240.gif" width="100%">
+
+## Contributors
+
+### Code Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+
+<a href="https://github.com/swup/swup/graphs/contributors"><img src="https://opencollective.com/swup/contributors.svg?width=890&button=false" /></a>
+
+### Financial Contributors
+
+Become a financial contributor and help us sustain our community. [[Contribute](https://opencollective.com/swup/contribute)]
+
+#### Individuals
+
+<a href="https://opencollective.com/swup"><img src="https://opencollective.com/swup/individuals.svg?width=890"></a>
+
+#### Organizations
+
+Support this project with your organization. Your logo will show up here with a link to your website. [[Contribute](https://opencollective.com/swup/contribute)]
+
+<a href="https://opencollective.com/swup/organization/0/website"><img src="https://opencollective.com/swup/organization/0/avatar.svg"></a>
