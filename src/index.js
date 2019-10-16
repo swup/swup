@@ -23,7 +23,7 @@ export default class Swup {
 			animationSelector: '[class*="transition-"]',
 			linkSelector: `a[href^="${
 				window.location.origin
-			}"]:not([data-no-swup]), a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup])`,
+				}"]:not([data-no-swup]), a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup])`,
 			cache: true,
 			containers: ['#swup'],
 			requestHeaders: {
@@ -31,7 +31,7 @@ export default class Swup {
 				Accept: 'text/html, application/xhtml+xml'
 			},
 			plugins: [],
-			skipPopStateHandling: function(event) {
+			skipPopStateHandling: function (event) {
 				return !(event.state && event.state.source === 'swup');
 			}
 		};
@@ -90,7 +90,7 @@ export default class Swup {
 		this.updateTransition = updateTransition;
 		this.getAnimationPromises = getAnimationPromises;
 		this.getPageData = getPageData;
-		this.log = () => {}; // here so it can be used by plugins
+		this.log = () => { }; // here so it can be used by plugins
 		this.use = use;
 		this.unuse = unuse;
 		this.findPlugin = findPlugin;
@@ -146,6 +146,9 @@ export default class Swup {
 
 		// add swup-enabled class to html tag
 		document.documentElement.classList.add('swup-enabled');
+
+		// add ARIA live region to body to alert screen readers when content is updated
+		document.body.setAttribute('aria-live', 'polite');
 
 		// trigger page view event
 		this.triggerEvent('pageView');
