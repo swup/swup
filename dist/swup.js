@@ -830,9 +830,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 var _utils = __webpack_require__(1);
 
 var getDataFromHtml = function getDataFromHtml(html, containers) {
-	var content = html.replace('<body', '<div id="swupBody"').replace('</body>', '</div>');
-	var fakeDom = document.createElement('div');
-	fakeDom.innerHTML = content;
+	var fakeDom = document.createElement('html');
+	fakeDom.innerHTML = html;
 	var blocks = [];
 
 	var _loop = function _loop(i) {
@@ -857,7 +856,7 @@ var getDataFromHtml = function getDataFromHtml(html, containers) {
 
 	var json = {
 		title: fakeDom.querySelector('title').innerText,
-		pageClass: fakeDom.querySelector('#swupBody').className,
+		pageClass: fakeDom.querySelector('body').className,
 		originalContent: html,
 		blocks: blocks
 	};
