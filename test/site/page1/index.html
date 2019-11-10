@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page 1</title>
+    <link rel="stylesheet" href="/assets/main.css">
+
+    <script src="/swup.js"></script>
+    <script src="https://unpkg.com/@swup/scroll-plugin@latest/dist/SwupScrollPlugin.js"></script>
+    <script src="https://unpkg.com/@swup/scripts-plugin@latest/dist/SwupScriptsPlugin.js"></script>
+    <script src="https://unpkg.com/@swup/head-plugin@latest/dist/SwupHeadPlugin.js"></script>
+    <script src="https://unpkg.com/@swup/preload-plugin@latest/dist/SwupPreloadPlugin.js"></script>
+    <script src="https://unpkg.com/@swup/forms-plugin@latest/dist/SwupFormsPlugin.js"></script>
+    <script src="https://unpkg.com/@swup/debug-plugin@latest/dist/SwupDebugPlugin.js"></script>
+    <script src="https://unpkg.com/@swup/js-plugin@latest/dist/SwupJsPlugin.js"></script>
+    <script src="https://unpkg.com/@swup/gia-plugin@latest/dist/SwupGiaPlugin.js"></script>
+    <script src="https://unpkg.com/@swup/body-class-plugin@latest/dist/SwupBodyClassPlugin.js"></script>
+    <script src="https://unpkg.com/@swup/fade-theme@latest/dist/SwupFadeTheme.js"></script>
+</head>
+<body>
+    <header class="header">
+        <ul>
+            <li><a href="/page1/">Page 1</a></li>
+            <li><a href="/page1/#hash">Page 1 with hash</a></li>
+            <li><a href="/page2/">Page 2</a></li>
+            <li><a href="/page3/">Page 3</a></li>
+        </ul>
+    </header>
+    <main class="wrapper transition-fade" id="swup">
+        <h1>Page 1</h1>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias assumenda consectetur consequatur enim esse incidunt iusto, magnam maxime molestias nisi perferendis perspiciatis quibusdam quos repellat, vel veniam vero voluptate voluptatem.
+        <div id="hash" class="hash">Scroll element</div>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias assumenda consectetur consequatur enim esse incidunt iusto, magnam maxime molestias nisi perferendis perspiciatis quibusdam quos repellat, vel veniam vero voluptate voluptatem.
+    </main>
+    <script>
+        const swup = new Swup({
+            plugins: [
+                new SwupScrollPlugin(),
+                // new SwupScriptsPlugin(),
+                new SwupHeadPlugin(),
+                new SwupPreloadPlugin(),
+                new SwupFormsPlugin(),
+                new SwupDebugPlugin(),
+                // new SwupJsPlugin(),
+                new SwupGiaPlugin(),
+                new SwupBodyClassPlugin(),
+                new SwupFadeTheme(),
+            ]
+        });
+    </script>
+</body>
+</html>
