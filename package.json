@@ -12,7 +12,7 @@
     "test": "npm run build && npm run test:instrument-swup && start-server-and-test test:server http://localhost:8080 test:run",
     "test:instrument-swup": "nyc instrument --compact=false dist test/site",
     "test:server": "http-server test/site",
-    "test:run": "cypress run"
+    "test:run": "cypress run --record --key 44e634fd-b8d9-487b-84dc-c6ac5d759aad"
   },
   "author": "Georgy Marchuk",
   "license": "MIT",
