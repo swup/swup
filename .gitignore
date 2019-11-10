@@ -15,3 +15,5 @@ wiki-wishlist
 .idea
 lib
 /plugins
+.nyc_output
+coverage

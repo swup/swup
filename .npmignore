@@ -3,3 +3,8 @@ entry.js
 webpack.config.js
 prettier.config.js
 .idea
+.nyc_output
+coverage
+test
+cypress
+cypress.json
