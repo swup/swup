@@ -7,7 +7,7 @@ Complete, flexible, extensible and easy to use page transition library for your 
     <img src="https://img.shields.io/bundlephobia/minzip/swup.svg" alt="Gzip Size">
     <a href="https://github.com/gmrchk/swup/blob/master/LICENSE"><img src="https://img.shields.io/github/license/gmrchk/swup.svg" alt="License"></a>
     <a href="https://www.npmjs.com/package/swup"><img src="https://img.shields.io/npm/dt/swup.svg" alt="npm downloads"></a>
-    [![CircleCI](https://circleci.com/gh/swup/swup.svg?style=svg)](https://circleci.com/gh/swup/swup)
+    <a href="https://circleci.com/gh/swup/swup"><img src="https://circleci.com/gh/swup/swup.svg?style=svg" alt="CircleCI"></a>
 </p>
 
 Looking for **what's new in v2**? Head over [here](https://medium.com/@gmarcuk/introducing-swup-v2-814e40316dee).  
