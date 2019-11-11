@@ -51,7 +51,8 @@ context('Window', () => {
         cy.navigateWithSwup('/page1/#hash');
         cy.wait(3000);
         cy.window().then(window => {
-            expect(window.pageYOffset).equal(1201);
+            // maybe some missing font? anyway, value is different in different envs
+            expect(window.pageYOffset).to.be.within(1180,1220);
         });
 
         cy.navigateWithSwup('/page1/');
@@ -95,7 +96,8 @@ context('Window', () => {
         cy.shouldBeAtPage('/page1/#hash');
         cy.titleIs('Page 1');
         cy.window().then(window => {
-            expect(window.pageYOffset).equal(1201);
+            // maybe some missing font? anyway, value is different in different envs
+            expect(window.pageYOffset).to.be.within(1180,1220);
         });
     });
 
