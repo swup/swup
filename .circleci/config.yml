@@ -39,5 +39,9 @@ jobs:
             - ~/.npm
             - ~/.cache
 
+      - run:
+          name: Build swup
+          command: npm run compile && npm run build
+
       # run tests!
       - run: npm run test
