@@ -8,6 +8,9 @@ jobs:
     docker:
       # specify the version you desire here
       - image: cypress/base:8
+        environment:
+          ## this enables colors in the output
+          TERM: xterm
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -22,16 +25,19 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
+            - v1-deps-{{ .Branch }}-{{ checksum "package.json" }}
+            - v1-deps-{{ .Branch }}
+            - v1-deps
 
-      - run: npm install
+      - run:
+          name: Install Dependencies
+          command: npm ci
 
       - save_cache:
+          key: v1-deps-{{ .Branch }}-{{ checksum "package.json" }}
           paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+            - ~/.npm
+            - ~/.cache
 
       # run tests!
       - run: npm run test
