@@ -322,6 +322,8 @@ var Swup = function () {
 		this.transition = {};
 		// variable for keeping event listeners from "delegate"
 		this.delegatedListeners = {};
+		// so we are able to remove the listener
+		this.boundPopStateHandler = this.popStateHandler.bind(this);
 
 		// make modules accessible in instance
 		this.cache = new _Cache2.default();
@@ -356,7 +358,7 @@ var Swup = function () {
 
 			// add event listeners
 			this.delegatedListeners.click = (0, _delegate2.default)(document, this.options.linkSelector, 'click', this.linkClickHandler.bind(this));
-			window.addEventListener('popstate', this.popStateHandler.bind(this));
+			window.addEventListener('popstate', this.boundPopStateHandler);
 
 			// initial save to cache
 			var page = (0, _helpers.getDataFromHtml)(document.documentElement.outerHTML, this.options.containers);
@@ -396,10 +398,9 @@ var Swup = function () {
 
 			// remove delegated listeners
 			this.delegatedListeners.click.destroy();
-			this.delegatedListeners.mouseover.destroy();
 
 			// remove popstate listener
-			window.removeEventListener('popstate', this.popStateHandler.bind(this));
+			window.removeEventListener('popstate', this.boundPopStateHandler);
 
 			// empty cache
 			this.cache.empty();
