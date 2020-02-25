@@ -156,7 +156,6 @@ export default class Swup {
 	destroy() {
 		// remove delegated listeners
 		this.delegatedListeners.click.destroy();
-		this.delegatedListeners.mouseover.destroy();
 
 		// remove popstate listener
 		window.removeEventListener('popstate', this.boundPopStateHandler);
