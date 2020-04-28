@@ -759,9 +759,16 @@ var loadPage = function loadPage(data, popstate) {
 		_this.preloadPromise = null;
 	}).catch(function (errorUrl) {
 		// rewrite the skipPopStateHandling function to redirect manually when the history.go is processed
-		_this.options.skipPopStateHandling = function () {
-			window.location = errorUrl;
-			return true;
+		_this.options.skipPopStateHandling = function (event) {
+			if (event.state.source != "browser") {
+				// Change the source from swup to browser so future back buttons
+				// won't retrigger the error condition
+				event.state.source = "browser";
+				window.location = errorUrl;
+			} else {
+				// From now on, let the browser work traditionally
+				window.location = window.location.href;
+			}
 		};
 
 		// go back to the actual page were still at
