@@ -101,7 +101,7 @@ const loadPage = function(data, popstate) {
 				if (event.state.source != "browser") {
 					// Change the source from swup to browser so future back buttons
 					// won't retrigger the error condition
-					event.state.source = "browser"
+					event.state.source = "browser";
 					window.location = errorUrl;
 				} else {
 					// From now on, let the browser work traditionally
