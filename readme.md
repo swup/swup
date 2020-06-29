@@ -10,10 +10,9 @@ Complete, flexible, extensible and easy to use page transition library for your 
     <a href="https://circleci.com/gh/swup/swup"><img src="https://circleci.com/gh/swup/swup.svg?style=svg" alt="CircleCI"></a>
 </p>
 
-Looking for **what's new in v2**? Head over [here](https://medium.com/@gmarcuk/introducing-swup-v2-814e40316dee).  
-Still wanna check v1? Get it from npm with `npm install swup@1.9.0` or check old docs [here](https://github.com/swup/swup/tree/33367a1072f8b5ebc646d7e0ca338a811b53a41d).
+Looking for **what's new in v2**? Head over [here](https://medium.com/@gmarcuk/introducing-swup-v2-814e40316dee), check [changelog](https://swup.js.org/changelog) for recent changes, or see all [swup repositories](https://github.com/swup/).
 
-- [Docs](https://swup.js.org/getting-started)
+- [Getting started](https://swup.js.org/getting-started)
   - [Example](https://swup.js.org/getting-started/example)
   - [Demo](https://swup.js.org/getting-started/demo)
   - [Reloading javascript](https://swup.js.org/getting-started/reloading-javascript)
@@ -22,11 +21,11 @@ Still wanna check v1? Get it from npm with `npm install swup@1.9.0` or check old
 - [Plugins](https://swup.js.org/plugins)
 - [Themes](https://swup.js.org/themes)
 - [CLI](https://swup.js.org/cli)
+- [CI/CD](https://swup.js.org/ci-cd)
+- [Changelog](https://swup.js.org/changelog)
 - [Contributions](https://swup.js.org/contributions)
 
 If you're having trouble implementing swup, checkout [Common Issues](https://swup.js.org/common-issues), [Closed Issues](https://github.com/gmrchk/swup/issues?q=is%3Aissue+is%3Aclosed) or open a [new one](https://github.com/gmrchk/swup/issues/new).
-
-In case you'd like to checkout some of the code, all the repositories can be found under [swup organization](https://github.com/swup).
 
 [Become a backer or sponsor on Open Collective](https://opencollective.com/swup)
 
