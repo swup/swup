@@ -1128,8 +1128,8 @@ var renderPage = function renderPage(page, popstate) {
 	}, 10);
 
 	// handle end of animation
-	var animationPromises = this.getAnimationPromises('in');
 	if (!popstate || this.options.animateHistoryBrowsing) {
+		var animationPromises = this.getAnimationPromises('in');
 		Promise.all(animationPromises).then(function () {
 			_this.triggerEvent('animationInDone');
 			_this.triggerEvent('transitionEnd', popstate);
