@@ -7,6 +7,10 @@ assignees: ''
 
 ---
 
+**Important:** If you're having trouble reloading JavaScript code after swup transitions, please refer to [this page](https://swup.js.org/getting-started/reloading-javascript). For any further support for your particular use case, please direct your issues to StackOverflow or similar platforms, which are designed for that. 
+
+---
+
 **Describe your issue**:
 Describe your issue here...
 
