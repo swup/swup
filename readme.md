@@ -10,7 +10,7 @@ Complete, flexible, extensible and easy to use page transition library for your 
     <a href="https://circleci.com/gh/swup/swup"><img src="https://circleci.com/gh/swup/swup.svg?style=svg" alt="CircleCI"></a>
 </p>
 
-Looking for **what's new in v2**? Head over [here](https://medium.com/@gmarcuk/introducing-swup-v2-814e40316dee), check [changelog](https://swup.js.org/changelog) for recent changes, or see all [swup repositories](https://github.com/swup/).
+Looking for **what's new in v2**? Head over [here](https://medium.com/@gmarcuk/introducing-swup-v2-814e40316dee), check [changelog](https://swup.js.org/other/changelog) for recent changes, or see all [swup repositories](https://github.com/swup/).
 
 - [Getting started](https://swup.js.org/getting-started)
   - [Example](https://swup.js.org/getting-started/example)
@@ -22,8 +22,8 @@ Looking for **what's new in v2**? Head over [here](https://medium.com/@gmarcuk/i
 - [Themes](https://swup.js.org/themes)
 - [CLI](https://swup.js.org/cli)
 - [CI/CD](https://swup.js.org/ci-cd)
-- [Changelog](https://swup.js.org/changelog)
-- [Contributions](https://swup.js.org/contributions)
+- [Changelog](https://swup.js.org//other/changelog)
+- [Contributions](https://swup.js.org/other/contributions)
 
 If you're having trouble implementing swup, checkout [Common Issues](https://swup.js.org/common-issues), [Closed Issues](https://github.com/gmrchk/swup/issues?q=is%3Aissue+is%3Aclosed) or open a [new one](https://github.com/gmrchk/swup/issues/new).
 
