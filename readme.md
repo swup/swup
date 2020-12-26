@@ -33,7 +33,7 @@ Complete, flexible, extensible and easy to use page transition library for your 
     - [Repositories](https://github.com/swup)
     - [Sites using swup](https://github.com/swup/swup/discussions/333)
 
-If you're having trouble implementing swup, checkout [Common Issues](https://swup.js.org/common-issues), [Closed Issues](https://github.com/gmrchk/swup/issues?q=is%3Aissue+is%3Aclosed) or open a [new one](https://github.com/gmrchk/swup/issues/new).
+If you're having trouble implementing swup, checkout [Common Issues](https://swup.js.org/other/common-issues), [Closed Issues](https://github.com/gmrchk/swup/issues?q=is%3Aissue+is%3Aclosed) or open a [new one](https://github.com/gmrchk/swup/issues/new).
 
 [Become a backer or sponsor on Open Collective](https://opencollective.com/swup) or support swup through [GitHub sponsors](https://github.com/sponsors/gmrchk). 
 
