@@ -1631,7 +1631,7 @@ var cov_lvhh8p8kb = function () {
   return coverage[path] = coverageData;
 }();
 
-import delegate from 'delegate'; // modules
+import delegate from 'delegate-it'; // modules
 
 import Cache from './modules/Cache';
 import loadPage from './modules/loadPage';
