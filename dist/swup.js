@@ -106,35 +106,35 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Link = exports.markSwupElements = exports.getCurrentUrl = exports.transitionEnd = exports.fetch = exports.getDataFromHtml = exports.createHistoryRecord = exports.classify = undefined;
 
-var _classify = __webpack_require__(8);
+var _classify = __webpack_require__(7);
 
 var _classify2 = _interopRequireDefault(_classify);
 
-var _createHistoryRecord = __webpack_require__(9);
+var _createHistoryRecord = __webpack_require__(8);
 
 var _createHistoryRecord2 = _interopRequireDefault(_createHistoryRecord);
 
-var _getDataFromHtml = __webpack_require__(10);
+var _getDataFromHtml = __webpack_require__(9);
 
 var _getDataFromHtml2 = _interopRequireDefault(_getDataFromHtml);
 
-var _fetch = __webpack_require__(11);
+var _fetch = __webpack_require__(10);
 
 var _fetch2 = _interopRequireDefault(_fetch);
 
-var _transitionEnd = __webpack_require__(12);
+var _transitionEnd = __webpack_require__(11);
 
 var _transitionEnd2 = _interopRequireDefault(_transitionEnd);
 
-var _getCurrentUrl = __webpack_require__(13);
+var _getCurrentUrl = __webpack_require__(12);
 
 var _getCurrentUrl2 = _interopRequireDefault(_getCurrentUrl);
 
-var _markSwupElements = __webpack_require__(14);
+var _markSwupElements = __webpack_require__(13);
 
 var _markSwupElements2 = _interopRequireDefault(_markSwupElements);
 
-var _Link = __webpack_require__(15);
+var _Link = __webpack_require__(14);
 
 var _Link2 = _interopRequireDefault(_Link);
 
@@ -212,47 +212,47 @@ var _createClass = function () { function defineProperties(target, props) { for 
 // modules
 
 
-var _delegate = __webpack_require__(4);
+var _delegateIt = __webpack_require__(4);
 
-var _delegate2 = _interopRequireDefault(_delegate);
+var _delegateIt2 = _interopRequireDefault(_delegateIt);
 
-var _Cache = __webpack_require__(6);
+var _Cache = __webpack_require__(5);
 
 var _Cache2 = _interopRequireDefault(_Cache);
 
-var _loadPage = __webpack_require__(7);
+var _loadPage = __webpack_require__(6);
 
 var _loadPage2 = _interopRequireDefault(_loadPage);
 
-var _renderPage = __webpack_require__(16);
+var _renderPage = __webpack_require__(15);
 
 var _renderPage2 = _interopRequireDefault(_renderPage);
 
-var _triggerEvent = __webpack_require__(17);
+var _triggerEvent = __webpack_require__(16);
 
 var _triggerEvent2 = _interopRequireDefault(_triggerEvent);
 
-var _on = __webpack_require__(18);
+var _on = __webpack_require__(17);
 
 var _on2 = _interopRequireDefault(_on);
 
-var _off = __webpack_require__(19);
+var _off = __webpack_require__(18);
 
 var _off2 = _interopRequireDefault(_off);
 
-var _updateTransition = __webpack_require__(20);
+var _updateTransition = __webpack_require__(19);
 
 var _updateTransition2 = _interopRequireDefault(_updateTransition);
 
-var _getAnimationPromises = __webpack_require__(21);
+var _getAnimationPromises = __webpack_require__(20);
 
 var _getAnimationPromises2 = _interopRequireDefault(_getAnimationPromises);
 
-var _getPageData = __webpack_require__(22);
+var _getPageData = __webpack_require__(21);
 
 var _getPageData2 = _interopRequireDefault(_getPageData);
 
-var _plugins = __webpack_require__(23);
+var _plugins = __webpack_require__(22);
 
 var _utils = __webpack_require__(1);
 
@@ -357,7 +357,7 @@ var Swup = function () {
 			}
 
 			// add event listeners
-			this.delegatedListeners.click = (0, _delegate2.default)(document, this.options.linkSelector, 'click', this.linkClickHandler.bind(this));
+			this.delegatedListeners.click = (0, _delegateIt2.default)(document, this.options.linkSelector, 'click', this.linkClickHandler.bind(this));
 			window.addEventListener('popstate', this.boundPopStateHandler);
 
 			// initial save to cache
@@ -494,95 +494,97 @@ exports.default = Swup;
 
 /***/ }),
 /* 4 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-var closest = __webpack_require__(5);
-
-/**
- * Delegates event to a selector.
- *
- * @param {Element} element
- * @param {String} selector
- * @param {String} type
- * @param {Function} callback
- * @param {Boolean} useCapture
- * @return {Object}
- */
-function delegate(element, selector, type, callback, useCapture) {
-    var listenerFn = listener.apply(this, arguments);
-
-    element.addEventListener(type, listenerFn, useCapture);
-
-    return {
-        destroy: function() {
-            element.removeEventListener(type, listenerFn, useCapture);
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/** Keeps track of raw listeners added to the base elements to avoid duplication */
+const ledger = new WeakMap();
+function editLedger(wanted, baseElement, callback, setup) {
+    var _a, _b;
+    if (!wanted && !ledger.has(baseElement)) {
+        return false;
+    }
+    const elementMap = (_a = ledger.get(baseElement)) !== null && _a !== void 0 ? _a : new WeakMap();
+    ledger.set(baseElement, elementMap);
+    if (!wanted && !ledger.has(baseElement)) {
+        return false;
+    }
+    const setups = (_b = elementMap.get(callback)) !== null && _b !== void 0 ? _b : new Set();
+    elementMap.set(callback, setups);
+    const existed = setups.has(setup);
+    if (wanted) {
+        setups.add(setup);
+    }
+    else {
+        setups.delete(setup);
+    }
+    return existed && wanted;
+}
+function isEventTarget(elements) {
+    return typeof elements.addEventListener === 'function';
+}
+function safeClosest(event, selector) {
+    let target = event.target;
+    if (target instanceof Text) {
+        target = target.parentElement;
+    }
+    if (target instanceof Element && event.currentTarget instanceof Element) {
+        // `.closest()` may match ancestors of `currentTarget` but we only need its children
+        const closest = target.closest(selector);
+        if (closest && event.currentTarget.contains(closest)) {
+            return closest;
         }
     }
 }
-
-/**
- * Finds closest match and invokes callback.
- *
- * @param {Element} element
- * @param {String} selector
- * @param {String} type
- * @param {Function} callback
- * @return {Function}
- */
-function listener(element, selector, type, callback) {
-    return function(e) {
-        e.delegateTarget = closest(e.target, selector);
-
-        if (e.delegateTarget) {
-            callback.call(element, e);
-        }
+// This type isn't exported as a declaration, so it needs to be duplicated above
+function delegate(base, selector, type, callback, options) {
+    // Handle Selector-based usage
+    if (typeof base === 'string') {
+        base = document.querySelectorAll(base);
     }
+    // Handle Array-like based usage
+    if (!isEventTarget(base)) {
+        const subscriptions = Array.prototype.map.call(base, (element) => {
+            return delegate(element, selector, type, callback, options);
+        });
+        return {
+            destroy() {
+                for (const subscription of subscriptions) {
+                    subscription.destroy();
+                }
+            }
+        };
+    }
+    // `document` should never be the base, it's just an easy way to define "global event listeners"
+    const baseElement = base instanceof Document ? base.documentElement : base;
+    // Handle the regular Element usage
+    const capture = Boolean(typeof options === 'object' ? options.capture : options);
+    const listenerFn = (event) => {
+        const delegateTarget = safeClosest(event, selector);
+        if (delegateTarget) {
+            event.delegateTarget = delegateTarget;
+            callback.call(baseElement, event);
+        }
+    };
+    const setup = JSON.stringify({ selector, type, capture });
+    const isAlreadyListening = editLedger(true, baseElement, callback, setup);
+    const delegateSubscription = {
+        destroy() {
+            baseElement.removeEventListener(type, listenerFn, options);
+            editLedger(false, baseElement, callback, setup);
+        }
+    };
+    if (!isAlreadyListening) {
+        baseElement.addEventListener(type, listenerFn, options);
+    }
+    return delegateSubscription;
 }
-
-module.exports = delegate;
+/* harmony default export */ __webpack_exports__["default"] = (delegate);
 
 
 /***/ }),
 /* 5 */
-/***/ (function(module, exports) {
-
-var DOCUMENT_NODE_TYPE = 9;
-
-/**
- * A polyfill for Element.matches()
- */
-if (typeof Element !== 'undefined' && !Element.prototype.matches) {
-    var proto = Element.prototype;
-
-    proto.matches = proto.matchesSelector ||
-                    proto.mozMatchesSelector ||
-                    proto.msMatchesSelector ||
-                    proto.oMatchesSelector ||
-                    proto.webkitMatchesSelector;
-}
-
-/**
- * Finds the closest parent that matches a selector.
- *
- * @param {Element} element
- * @param {String} selector
- * @return {Function}
- */
-function closest (element, selector) {
-    while (element && element.nodeType !== DOCUMENT_NODE_TYPE) {
-        if (typeof element.matches === 'function' &&
-            element.matches(selector)) {
-          return element;
-        }
-        element = element.parentNode;
-    }
-}
-
-module.exports = closest;
-
-
-/***/ }),
-/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -648,7 +650,7 @@ var Cache = exports.Cache = function () {
 exports.default = Cache;
 
 /***/ }),
-/* 7 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -772,7 +774,7 @@ var loadPage = function loadPage(data, popstate) {
 exports.default = loadPage;
 
 /***/ }),
-/* 8 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -796,7 +798,7 @@ var classify = function classify(text) {
 exports.default = classify;
 
 /***/ }),
-/* 9 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -816,7 +818,7 @@ var createHistoryRecord = function createHistoryRecord(url) {
 exports.default = createHistoryRecord;
 
 /***/ }),
-/* 10 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -872,7 +874,7 @@ var getDataFromHtml = function getDataFromHtml(html, containers) {
 exports.default = getDataFromHtml;
 
 /***/ }),
-/* 11 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -919,7 +921,7 @@ var fetch = function fetch(setOptions) {
 exports.default = fetch;
 
 /***/ }),
-/* 12 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -950,7 +952,7 @@ var transitionEnd = function transitionEnd() {
 exports.default = transitionEnd;
 
 /***/ }),
-/* 13 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -966,7 +968,7 @@ var getCurrentUrl = function getCurrentUrl() {
 exports.default = getCurrentUrl;
 
 /***/ }),
-/* 14 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1000,7 +1002,7 @@ var markSwupElements = function markSwupElements(element, containers) {
 exports.default = markSwupElements;
 
 /***/ }),
-/* 15 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1062,7 +1064,7 @@ var Link = function () {
 exports.default = Link;
 
 /***/ }),
-/* 16 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1151,7 +1153,7 @@ var renderPage = function renderPage(page, popstate) {
 exports.default = renderPage;
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1178,7 +1180,7 @@ var triggerEvent = function triggerEvent(eventName, originalEvent) {
 exports.default = triggerEvent;
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1198,7 +1200,7 @@ var on = function on(event, handler) {
 exports.default = on;
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1238,7 +1240,7 @@ var off = function off(event, handler) {
 exports.default = off;
 
 /***/ }),
-/* 20 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1259,7 +1261,7 @@ var updateTransition = function updateTransition(from, to, custom) {
 exports.default = updateTransition;
 
 /***/ }),
-/* 21 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1292,7 +1294,7 @@ var getAnimationPromises = function getAnimationPromises() {
 exports.default = getAnimationPromises;
 
 /***/ }),
-/* 22 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1324,7 +1326,7 @@ var getPageData = function getPageData(request) {
 exports.default = getPageData;
 
 /***/ }),
-/* 23 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
