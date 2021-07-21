@@ -196,7 +196,7 @@ export default class Swup {
 					if (link.getHash() != '') {
 						// link to the same URL with hash
 						this.triggerEvent('samePageWithHash', event);
-						const element = document.querySelector(link.getHash());
+						const element = document.getElementById(link.getHash().substring(1));
 						if (element != null) {
 							history.replaceState(
 								{

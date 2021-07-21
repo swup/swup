@@ -439,7 +439,7 @@ var Swup = function () {
 						if (link.getHash() != '') {
 							// link to the same URL with hash
 							this.triggerEvent('samePageWithHash', event);
-							var element = document.querySelector(link.getHash());
+							var element = document.getElementById(link.getHash().substring(1));
 							if (element != null) {
 								history.replaceState({
 									url: link.getAddress() + link.getHash(),
