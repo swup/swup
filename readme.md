@@ -1,3 +1,7 @@
+<h3 align="center"><a href="https://github.com/swup/swup/discussions/424">We're looking for maintainers!</a></h3>
+
+---
+
 <p align="center"><img width="420" alt="swup" src="https://swup.js.org/assets/images/swup-logo.svg"></p>
 <p align="center">
 Complete, flexible, extensible and easy to use page transition library for your static web.
