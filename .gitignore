@@ -17,3 +17,4 @@ lib
 /plugins
 .nyc_output
 coverage
+/test/site/swup
