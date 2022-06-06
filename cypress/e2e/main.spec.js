@@ -61,6 +61,7 @@ context('Window', () => {
 
     it('should ignore clicks when meta key pressed', () => {
         cy.triggerClickOnLink('/page2/', { metaKey: true });
+        cy.wait(500);
         cy.shouldBeAtPage('/page1/');
         cy.shouldHaveH1('Page 1');
     });
