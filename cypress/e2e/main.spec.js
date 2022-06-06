@@ -53,6 +53,12 @@ context('Window', () => {
         cy.shouldHaveH1('Page 3');
     });
 
+    it('should ignore links with data-no-swup attr', () => {
+        cy.shouldNativelyLoadPageAfterAction('/page4/', () => {
+            cy.get(`a[data-no-swup]`).first().click();
+        });
+    });
+
     it('should ignore clicks when meta key pressed', () => {
         cy.triggerClickOnLink('/page2/', { metaKey: true });
         cy.shouldBeAtPage('/page1/');
