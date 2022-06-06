@@ -10,6 +10,23 @@ context('Window', () => {
         cy.shouldHaveH1('Page 1');
     });
 
+    it('should prevent the default click event', () => {
+        let triggered = false;
+        let prevented = false;
+        cy.document().then((doc) => {
+            doc.documentElement.addEventListener('click', (event) => {
+                triggered = true
+                prevented = event.defaultPrevented
+            });
+        });
+        cy.triggerClickOnLink('/page2/');
+        cy.wait(100);
+        cy.window().then(() => {
+            expect(triggered, 'event was not triggered').to.be.true;
+            expect(prevented, 'preventDefault() was not called').to.be.true;
+        });
+    });
+
     it('should trigger a custom click event', () => {
         cy.triggerClickOnLink('/page2/');
         cy.get('#test').should('have.attr', 'data-clicked');

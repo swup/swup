@@ -24,8 +24,8 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
-Cypress.Commands.add("triggerClickOnLink", (buttonHref) => {
-    cy.get(`a[href="${ buttonHref }"]`).click();
+Cypress.Commands.add("triggerClickOnLink", (buttonHref, options = {}) => {
+    cy.get(`a[href="${ buttonHref }"]`).first().click(options);
 });
 
 Cypress.Commands.add("shouldBeAtPage", (href) => {
