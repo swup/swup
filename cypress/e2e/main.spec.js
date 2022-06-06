@@ -5,7 +5,7 @@ context('Window', () => {
         cy.visit('/page1/');
     });
 
-    it('html tag should have a class swup-enabled', () => {
+    it('should add swup class to html element', () => {
         cy.get('html').should('have.class', 'swup-enabled');
         cy.shouldHaveH1('Page 1');
     });
@@ -113,14 +113,14 @@ context('Window', () => {
         });
     });
 
-    it('should remove swup class form html tag', () => {
+    it('should remove swup class from html tag', () => {
         cy.window().then(window => {
             window.swup.destroy();
             cy.get('html').should('not.have.class', 'swup-enabled');
         });
     });
 
-    it('page should transition an scroll on link with hash', () => {
+    it('should transition page and scroll on link with hash', () => {
         // go to page2 first
         cy.triggerClickOnLink('/page2/');
         cy.wait(1000);
@@ -136,7 +136,7 @@ context('Window', () => {
         });
     });
 
-    it('page should transition using swup API', () => {
+    it('should transition to pages using swup API', () => {
         cy.window().then(window => {
             window.swup.loadPage({
                url: '/page2'
