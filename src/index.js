@@ -1,4 +1,4 @@
-import delegate from 'delegate';
+import delegate from 'delegate-it';
 
 // modules
 import Cache from './modules/Cache';
