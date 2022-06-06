@@ -7,21 +7,21 @@ context('Window', () => {
 
     it('html tag should have a class swup-enabled', () => {
         cy.get('html').should('have.class', 'swup-enabled');
-        cy.get('h1').should('contain', 'Page 1');
+        cy.shouldHaveH1('Page 1');
     });
 
     it('page should transition to other pages', () => {
         cy.navigateWithSwup('/page2/');
         cy.wait(1000);
         cy.shouldBeAtPage('/page2/');
-        cy.titleIs('Page 2');
+        cy.shouldHaveH1('Page 2');
 
         cy.wait(1000);
 
         cy.navigateWithSwup('/page3/');
         cy.wait(1000);
         cy.shouldBeAtPage('/page3/');
-        cy.titleIs('Page 3');
+        cy.shouldHaveH1('Page 3');
     });
 
     it('should transition back to page 1 on popstate', () => {
@@ -31,7 +31,7 @@ context('Window', () => {
         cy.window().then(window => {
             window.history.back();
             cy.shouldBeAtPage('/page1/');
-            cy.titleIs('Page 1');
+            cy.shouldHaveH1('Page 1');
         });
     });
 
@@ -43,7 +43,7 @@ context('Window', () => {
             window.history.back();
             window.history.forward();
             cy.shouldBeAtPage('/page2/');
-            cy.titleIs('Page 2');
+            cy.shouldHaveH1('Page 2');
         });
     });
 
@@ -65,11 +65,11 @@ context('Window', () => {
     it('should process transition classes', () => {
         cy.navigateWithSwup('/page2/');
         cy.wait(300);
-        cy.hasLeavingClasses('page2');
+        cy.shouldHaveTransitionLeaveClasses('page2');
         cy.wait(300);
-        cy.hasEnteringClasses('page2');
+        cy.shouldHaveTransitionEnterClasses('page2');
         cy.wait(300);
-        cy.hasNoTransitionClasses('page2');
+        cy.shouldNotHaveTransitionClasses('page2');
     });
 
     it('should return plugin instance', () => {
@@ -94,7 +94,7 @@ context('Window', () => {
         cy.wait(3000);
 
         cy.shouldBeAtPage('/page1/#hash');
-        cy.titleIs('Page 1');
+        cy.shouldHaveH1('Page 1');
         cy.window().then(window => {
             // maybe some missing font? anyway, value is different in different envs
             expect(window.pageYOffset).to.be.within(1180,1220);
@@ -110,7 +110,7 @@ context('Window', () => {
             cy.wait(1000);
 
             cy.shouldBeAtPage('/page2/');
-            cy.titleIs('Page 2');
+            cy.shouldHaveH1('Page 2');
         });
     });
 });

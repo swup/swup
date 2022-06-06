@@ -23,6 +23,7 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
 Cypress.Commands.add("navigateWithSwup", (buttonHref) => {
     cy.get(`a[href="${ buttonHref }"]`).click();
 });
@@ -33,24 +34,24 @@ Cypress.Commands.add("shouldBeAtPage", (href) => {
     });
 });
 
-Cypress.Commands.add("titleIs", (str) => {
+Cypress.Commands.add("shouldHaveH1", (str) => {
     cy.get('h1').should('contain',  str);
 });
 
-Cypress.Commands.add("hasLeavingClasses", (page) => {
+Cypress.Commands.add("shouldHaveTransitionLeaveClasses", (page) => {
     cy.get('html').should('have.class', 'is-changing');
     cy.get('html').should('have.class', 'is-leaving');
     cy.get('html').should('have.class', `to-${page}`);
 });
 
-Cypress.Commands.add("hasEnteringClasses", (page) => {
+Cypress.Commands.add("shouldHaveTransitionEnterClasses", (page) => {
     cy.get('html').should('have.class', 'is-changing');
     cy.get('html').should('have.class', 'is-rendering');
     cy.get('html').should('not.have.class', 'is-leaving');
     cy.get('html').should('have.class', `to-${page}`);
 });
 
-Cypress.Commands.add("hasNoTransitionClasses", (page) => {
+Cypress.Commands.add("shouldNotHaveTransitionClasses", (page) => {
     cy.get('html').should('not.have.class', 'is-changing');
     cy.get('html').should('not.have.class', 'is-rendering');
     cy.get('html').should('not.have.class', 'is-leaving');
