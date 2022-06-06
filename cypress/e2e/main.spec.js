@@ -24,6 +24,12 @@ context('Window', () => {
         cy.shouldHaveH1('Page 3');
     });
 
+    it('should ignore clicks when meta key pressed', () => {
+        cy.triggerClickOnLink('/page2/', { metaKey: true });
+        cy.shouldBeAtPage('/page1/');
+        cy.shouldHaveH1('Page 1');
+    });
+
     it('should transition back to page 1 on popstate', () => {
         cy.triggerClickOnLink('/page2/');
         cy.wait(1000);
