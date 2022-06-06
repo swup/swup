@@ -34,7 +34,9 @@
         <div id="hash" class="hash">Scroll element</div>
         Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias assumenda consectetur consequatur enim esse incidunt iusto, magnam maxime molestias nisi perferendis perspiciatis quibusdam quos repellat, vel veniam vero voluptate voluptatem.
     </main>
+    <div id="test"></div>
     <script>
+        const test = document.querySelector('#test');
         const swup = new Swup({
             plugins: [
                 new SwupScrollPlugin(),
@@ -49,6 +51,7 @@
                 new SwupFadeTheme(),
             ]
         });
+        swup.on('clickLink', () => test.dataset.clicked = true);
     </script>
 </body>
 </html>

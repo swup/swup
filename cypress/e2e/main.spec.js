@@ -10,7 +10,12 @@ context('Window', () => {
         cy.shouldHaveH1('Page 1');
     });
 
-    it('page should transition to other pages', () => {
+    it('should trigger a custom click event', () => {
+        cy.triggerClickOnLink('/page2/');
+        cy.get('#test').should('have.attr', 'data-clicked');
+    });
+
+    it('should transition to other pages', () => {
         cy.triggerClickOnLink('/page2/');
         cy.wait(1000);
         cy.shouldBeAtPage('/page2/');
