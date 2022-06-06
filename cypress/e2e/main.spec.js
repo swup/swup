@@ -13,8 +13,8 @@ context('Window', () => {
     it('should prevent the default click event', () => {
         let triggered = false;
         let prevented = false;
-        cy.document().then((doc) => {
-            doc.documentElement.addEventListener('click', (event) => {
+        cy.document().then(document => {
+            document.documentElement.addEventListener('click', (event) => {
                 triggered = true
                 prevented = event.defaultPrevented
             });
@@ -28,8 +28,15 @@ context('Window', () => {
     });
 
     it('should trigger a custom click event', () => {
+        let triggered = false;
+        cy.window().then(window => {
+            window.swup.on('clickLink', () => triggered = true);
+        });
         cy.triggerClickOnLink('/page2/');
-        cy.get('#test').should('have.attr', 'data-clicked');
+        cy.wait(100);
+        cy.window().then(() => {
+            expect(triggered, 'event was not triggered').to.be.true;
+        });
     });
 
     it('should transition to other pages', () => {
