@@ -11,21 +11,21 @@ context('Window', () => {
     });
 
     it('page should transition to other pages', () => {
-        cy.navigateWithSwup('/page2/');
+        cy.triggerClickOnLink('/page2/');
         cy.wait(1000);
         cy.shouldBeAtPage('/page2/');
         cy.shouldHaveH1('Page 2');
 
         cy.wait(1000);
 
-        cy.navigateWithSwup('/page3/');
+        cy.triggerClickOnLink('/page3/');
         cy.wait(1000);
         cy.shouldBeAtPage('/page3/');
         cy.shouldHaveH1('Page 3');
     });
 
     it('should transition back to page 1 on popstate', () => {
-        cy.navigateWithSwup('/page2/');
+        cy.triggerClickOnLink('/page2/');
         cy.wait(1000);
 
         cy.window().then(window => {
@@ -36,7 +36,7 @@ context('Window', () => {
     });
 
     it('should transition forward to page 2 on popstate', () => {
-        cy.navigateWithSwup('/page2/');
+        cy.triggerClickOnLink('/page2/');
         cy.wait(1000);
 
         cy.window().then(window => {
@@ -48,14 +48,14 @@ context('Window', () => {
     });
 
     it('should scroll to hash element and back to top', () => {
-        cy.navigateWithSwup('/page1/#hash');
+        cy.triggerClickOnLink('/page1/#hash');
         cy.wait(3000);
         cy.window().then(window => {
             // maybe some missing font? anyway, value is different in different envs
             expect(window.pageYOffset).to.be.within(1180,1220);
         });
 
-        cy.navigateWithSwup('/page1/');
+        cy.triggerClickOnLink('/page1/');
         cy.wait(3000);
         cy.window().then(window => {
             expect(window.pageYOffset).equal(0);
@@ -63,7 +63,7 @@ context('Window', () => {
     });
 
     it('should process transition classes', () => {
-        cy.navigateWithSwup('/page2/');
+        cy.triggerClickOnLink('/page2/');
         cy.wait(300);
         cy.shouldHaveTransitionLeaveClasses('page2');
         cy.wait(300);
@@ -87,10 +87,10 @@ context('Window', () => {
 
     it('page should transition an scroll on link with hash', () => {
         // go to page2 first
-        cy.navigateWithSwup('/page2/');
+        cy.triggerClickOnLink('/page2/');
         cy.wait(1000);
 
-        cy.navigateWithSwup('/page1/#hash');
+        cy.triggerClickOnLink('/page1/#hash');
         cy.wait(3000);
 
         cy.shouldBeAtPage('/page1/#hash');
