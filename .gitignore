@@ -13,7 +13,9 @@ wiki-wishlist
 *.sublime-workspace
 .editorconfig
 .idea
+.vscode
 lib
 /plugins
 .nyc_output
 coverage
+/test/site/swup
