@@ -13,7 +13,7 @@ import getPageData from './modules/getPageData';
 import { use, unuse, findPlugin } from './modules/plugins';
 
 import { queryAll } from './utils';
-import { getDataFromHtml, getCurrentUrl, markSwupElements, Link } from './helpers';
+import { getDataFromHtml, getAnchorElement, getCurrentUrl, markSwupElements, Link } from './helpers';
 
 export default class Swup {
 	constructor(setOptions) {
@@ -66,7 +66,7 @@ export default class Swup {
 			willReplaceContent: []
 		};
 
-		// variable for id of element to scroll to after render
+		// variable for anchor to scroll to after render
 		this.scrollToElement = null;
 		// variable for promise used for preload, so no new loading of the same page starts while page is loading
 		this.preloadPromise = null;
@@ -92,6 +92,7 @@ export default class Swup {
 		this.updateTransition = updateTransition;
 		this.getAnimationPromises = getAnimationPromises;
 		this.getPageData = getPageData;
+		this.getAnchorElement = getAnchorElement;
 		this.log = () => { }; // here so it can be used by plugins
 		this.use = use;
 		this.unuse = unuse;
@@ -196,7 +197,7 @@ export default class Swup {
 					if (link.getHash() != '') {
 						// link to the same URL with hash
 						this.triggerEvent('samePageWithHash', event);
-						const element = document.getElementById(link.getHash().substring(1));
+						const element = getAnchorElement(link.getHash());
 						if (element != null) {
 							history.replaceState(
 								{

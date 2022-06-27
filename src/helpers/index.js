@@ -1,5 +1,6 @@
 import classifyHelper from './classify';
 import createHistoryRecordHelper from './createHistoryRecord';
+import getAnchorElementHelper from './getAnchorElement';
 import getDataFromHtmlHelper from './getDataFromHtml';
 import fetchHelper from './fetch';
 import transitionEndHelper from './transitionEnd';
@@ -9,6 +10,7 @@ import LinkHelper from './Link';
 
 export const classify = classifyHelper;
 export const createHistoryRecord = createHistoryRecordHelper;
+export const getAnchorElement = getAnchorElementHelper;
 export const getDataFromHtml = getDataFromHtmlHelper;
 export const fetch = fetchHelper;
 export const transitionEnd = transitionEndHelper;
