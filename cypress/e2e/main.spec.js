@@ -90,18 +90,18 @@ context('Window', () => {
     });
 
     it('should scroll to hash element and back to top', () => {
-        cy.triggerClickOnLink('/page1/#hash');
-        cy.wait(3000);
-        cy.window().then(window => {
-            // maybe some missing font? anyway, value is different in different envs
-            expect(window.pageYOffset).to.be.within(1180,1220);
-        });
+        cy.get('[data-cy=nav-to-anchor]').click();
+        cy.shouldHaveElementInViewport('[data-cy=anchor]');
 
         cy.triggerClickOnLink('/page1/');
-        cy.wait(3000);
-        cy.window().then(window => {
-            expect(window.pageYOffset).equal(0);
+        cy.window().should(window => {
+            expect(window.scrollY).equal(0);
         });
+    });
+
+    it('should scroll to id-based anchor', () => {
+        cy.get('[data-cy=link-to-anchor-by-id]').click();
+        cy.shouldHaveElementInViewport('[data-cy=anchor-by-id]');
     });
 
     it('should process transition classes', () => {
@@ -132,14 +132,14 @@ context('Window', () => {
         cy.triggerClickOnLink('/page2/');
         cy.wait(1000);
 
-        cy.triggerClickOnLink('/page1/#hash');
+        cy.triggerClickOnLink('/page1/#anchor');
         cy.wait(3000);
 
-        cy.shouldBeAtPage('/page1/#hash');
+        cy.shouldBeAtPage('/page1/#anchor');
         cy.shouldHaveH1('Page 1');
         cy.window().then(window => {
             // maybe some missing font? anyway, value is different in different envs
-            expect(window.pageYOffset).to.be.within(1180,1220);
+            expect(window.scrollY).to.be.within(1180,1220);
         });
     });
 
