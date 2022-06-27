@@ -43,7 +43,7 @@ Cypress.Commands.add("shouldNativelyLoadPageAfterAction", (url, action) => {
 });
 
 Cypress.Commands.add("shouldHaveH1", (str) => {
-    cy.get('h1').should('contain',  str);
+    cy.get('h1').should('contain', str);
 });
 
 Cypress.Commands.add("shouldHaveTransitionLeaveClasses", (page) => {

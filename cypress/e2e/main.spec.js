@@ -20,8 +20,7 @@ context('Window', () => {
             });
         });
         cy.triggerClickOnLink('/page2/');
-        cy.wait(100);
-        cy.window().then(() => {
+        cy.window().should(() => {
             expect(triggered, 'event was not triggered').to.be.true;
             expect(prevented, 'preventDefault() was not called').to.be.true;
         });
@@ -33,22 +32,18 @@ context('Window', () => {
             window.swup.on('clickLink', () => triggered = true);
         });
         cy.triggerClickOnLink('/page2/');
-        cy.wait(100);
-        cy.window().then(() => {
+        cy.window().should(() => {
             expect(triggered, 'event was not triggered').to.be.true;
         });
     });
 
     it('should transition to other pages', () => {
         cy.triggerClickOnLink('/page2/');
-        cy.wait(1000);
         cy.shouldBeAtPage('/page2/');
         cy.shouldHaveH1('Page 2');
 
-        cy.wait(1000);
-
+        cy.wait(500); // Wait for transition finish
         cy.triggerClickOnLink('/page3/');
-        cy.wait(1000);
         cy.shouldBeAtPage('/page3/');
         cy.shouldHaveH1('Page 3');
     });
@@ -68,8 +63,8 @@ context('Window', () => {
 
     it('should transition back to page 1 on popstate', () => {
         cy.triggerClickOnLink('/page2/');
-        cy.wait(1000);
 
+        cy.wait(1000); // Wait for transition finish
         cy.window().then(window => {
             window.history.back();
             cy.shouldBeAtPage('/page1/');
@@ -79,8 +74,8 @@ context('Window', () => {
 
     it('should transition forward to page 2 on popstate', () => {
         cy.triggerClickOnLink('/page2/');
-        cy.wait(1000);
 
+        cy.wait(1000); // Wait for transition finish
         cy.window().then(window => {
             window.history.back();
             window.history.forward();
@@ -142,27 +137,18 @@ context('Window', () => {
     it('should transition page and scroll on link with hash', () => {
         // go to page2 first
         cy.triggerClickOnLink('/page2/');
-        cy.wait(1000);
+        cy.shouldBeAtPage('/page2/');
 
+        cy.wait(500); // Wait for transition finish
         cy.triggerClickOnLink('/page1/#anchor');
-        cy.wait(3000);
-
         cy.shouldBeAtPage('/page1/#anchor');
         cy.shouldHaveH1('Page 1');
-        cy.window().then(window => {
-            // maybe some missing font? anyway, value is different in different envs
-            expect(window.scrollY).to.be.within(1180,1220);
-        });
+        cy.shouldHaveElementInViewport('[data-cy=anchor]');
     });
 
     it('should transition to pages using swup API', () => {
         cy.window().then(window => {
-            window.swup.loadPage({
-               url: '/page2'
-            });
-
-            cy.wait(1000);
-
+            window.swup.loadPage({ url: '/page2' });
             cy.shouldBeAtPage('/page2/');
             cy.shouldHaveH1('Page 2');
         });
