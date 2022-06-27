@@ -12,7 +12,8 @@ const getAnchorElement = (hash = '') => {
 	hash = decodeURIComponent(hash);
 	hash = escapeCssIdentifier(hash);
 
-	return document.querySelector(`a[name='${hash}'], #${hash}`);
+	// https://html.spec.whatwg.org/#find-a-potential-indicated-element
+	return document.querySelector(`#${hash}, a[name='${hash}']`);
 };
 
 export default getAnchorElement;

@@ -862,7 +862,8 @@ var getAnchorElement = function getAnchorElement() {
 	hash = decodeURIComponent(hash);
 	hash = (0, _utils.escapeCssIdentifier)(hash);
 
-	return document.querySelector('a[name=\'' + hash + '\'], #' + hash);
+	// https://html.spec.whatwg.org/#find-a-potential-indicated-element
+	return document.querySelector('#' + hash + ', a[name=\'' + hash + '\']');
 };
 
 exports.default = getAnchorElement;
