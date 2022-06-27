@@ -104,6 +104,18 @@ context('Window', () => {
         cy.shouldHaveElementInViewport('[data-cy=anchor-by-id]');
     });
 
+    it('should scroll to name-based anchor', () => {
+        cy.get('[data-cy=link-to-anchor-by-name]').click();
+        cy.shouldHaveElementInViewport('[data-cy=anchor-by-name]');
+    });
+
+    it('should scroll to anchor with special characters', () => {
+        cy.get('[data-cy=link-to-anchor-with-colon]').click();
+        cy.shouldHaveElementInViewport('[data-cy=anchor-with-colon]');
+        cy.get('[data-cy=link-to-anchor-with-unicode]').click();
+        cy.shouldHaveElementInViewport('[data-cy=anchor-with-unicode]');
+    });
+
     it('should process transition classes', () => {
         cy.triggerClickOnLink('/page2/');
         cy.wait(300);
