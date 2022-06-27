@@ -102,61 +102,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Link = exports.markSwupElements = exports.getCurrentUrl = exports.transitionEnd = exports.fetch = exports.getDataFromHtml = exports.createHistoryRecord = exports.classify = undefined;
-
-var _classify = __webpack_require__(7);
-
-var _classify2 = _interopRequireDefault(_classify);
-
-var _createHistoryRecord = __webpack_require__(8);
-
-var _createHistoryRecord2 = _interopRequireDefault(_createHistoryRecord);
-
-var _getDataFromHtml = __webpack_require__(9);
-
-var _getDataFromHtml2 = _interopRequireDefault(_getDataFromHtml);
-
-var _fetch = __webpack_require__(10);
-
-var _fetch2 = _interopRequireDefault(_fetch);
-
-var _transitionEnd = __webpack_require__(11);
-
-var _transitionEnd2 = _interopRequireDefault(_transitionEnd);
-
-var _getCurrentUrl = __webpack_require__(12);
-
-var _getCurrentUrl2 = _interopRequireDefault(_getCurrentUrl);
-
-var _markSwupElements = __webpack_require__(13);
-
-var _markSwupElements2 = _interopRequireDefault(_markSwupElements);
-
-var _Link = __webpack_require__(14);
-
-var _Link2 = _interopRequireDefault(_Link);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var classify = exports.classify = _classify2.default;
-var createHistoryRecord = exports.createHistoryRecord = _createHistoryRecord2.default;
-var getDataFromHtml = exports.getDataFromHtml = _getDataFromHtml2.default;
-var fetch = exports.fetch = _fetch2.default;
-var transitionEnd = exports.transitionEnd = _transitionEnd2.default;
-var getCurrentUrl = exports.getCurrentUrl = _getCurrentUrl2.default;
-var markSwupElements = exports.markSwupElements = _markSwupElements2.default;
-var Link = exports.Link = _Link2.default;
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 var query = exports.query = function query(selector) {
@@ -178,6 +123,76 @@ var queryAll = exports.queryAll = function queryAll(selector) {
 
 	return Array.prototype.slice.call(context.querySelectorAll(selector));
 };
+
+var escapeCssRegex = /(^[^_a-zA-Z\u00a0-\uffff]|[^-_a-zA-Z0-9\u00a0-\uffff])/g;
+
+var escapeCssIdentifier = exports.escapeCssIdentifier = function escapeCssIdentifier(ident) {
+	if (window.CSS && window.CSS.escape) {
+		return CSS.escape(ident);
+	} else {
+		return ident.replace(escapeCssRegex, "\\$1");
+	}
+};
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Link = exports.markSwupElements = exports.getCurrentUrl = exports.transitionEnd = exports.fetch = exports.getDataFromHtml = exports.getAnchorElement = exports.createHistoryRecord = exports.classify = undefined;
+
+var _classify = __webpack_require__(7);
+
+var _classify2 = _interopRequireDefault(_classify);
+
+var _createHistoryRecord = __webpack_require__(8);
+
+var _createHistoryRecord2 = _interopRequireDefault(_createHistoryRecord);
+
+var _getAnchorElement = __webpack_require__(9);
+
+var _getAnchorElement2 = _interopRequireDefault(_getAnchorElement);
+
+var _getDataFromHtml = __webpack_require__(10);
+
+var _getDataFromHtml2 = _interopRequireDefault(_getDataFromHtml);
+
+var _fetch = __webpack_require__(11);
+
+var _fetch2 = _interopRequireDefault(_fetch);
+
+var _transitionEnd = __webpack_require__(12);
+
+var _transitionEnd2 = _interopRequireDefault(_transitionEnd);
+
+var _getCurrentUrl = __webpack_require__(13);
+
+var _getCurrentUrl2 = _interopRequireDefault(_getCurrentUrl);
+
+var _markSwupElements = __webpack_require__(14);
+
+var _markSwupElements2 = _interopRequireDefault(_markSwupElements);
+
+var _Link = __webpack_require__(15);
+
+var _Link2 = _interopRequireDefault(_Link);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var classify = exports.classify = _classify2.default;
+var createHistoryRecord = exports.createHistoryRecord = _createHistoryRecord2.default;
+var getAnchorElement = exports.getAnchorElement = _getAnchorElement2.default;
+var getDataFromHtml = exports.getDataFromHtml = _getDataFromHtml2.default;
+var fetch = exports.fetch = _fetch2.default;
+var transitionEnd = exports.transitionEnd = _transitionEnd2.default;
+var getCurrentUrl = exports.getCurrentUrl = _getCurrentUrl2.default;
+var markSwupElements = exports.markSwupElements = _markSwupElements2.default;
+var Link = exports.Link = _Link2.default;
 
 /***/ }),
 /* 2 */
@@ -224,39 +239,39 @@ var _loadPage = __webpack_require__(6);
 
 var _loadPage2 = _interopRequireDefault(_loadPage);
 
-var _renderPage = __webpack_require__(15);
+var _renderPage = __webpack_require__(16);
 
 var _renderPage2 = _interopRequireDefault(_renderPage);
 
-var _triggerEvent = __webpack_require__(16);
+var _triggerEvent = __webpack_require__(17);
 
 var _triggerEvent2 = _interopRequireDefault(_triggerEvent);
 
-var _on = __webpack_require__(17);
+var _on = __webpack_require__(18);
 
 var _on2 = _interopRequireDefault(_on);
 
-var _off = __webpack_require__(18);
+var _off = __webpack_require__(19);
 
 var _off2 = _interopRequireDefault(_off);
 
-var _updateTransition = __webpack_require__(19);
+var _updateTransition = __webpack_require__(20);
 
 var _updateTransition2 = _interopRequireDefault(_updateTransition);
 
-var _getAnimationPromises = __webpack_require__(20);
+var _getAnimationPromises = __webpack_require__(21);
 
 var _getAnimationPromises2 = _interopRequireDefault(_getAnimationPromises);
 
-var _getPageData = __webpack_require__(21);
+var _getPageData = __webpack_require__(22);
 
 var _getPageData2 = _interopRequireDefault(_getPageData);
 
-var _plugins = __webpack_require__(22);
+var _plugins = __webpack_require__(23);
 
-var _utils = __webpack_require__(1);
+var _utils = __webpack_require__(0);
 
-var _helpers = __webpack_require__(0);
+var _helpers = __webpack_require__(1);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -310,7 +325,7 @@ var Swup = function () {
 			willReplaceContent: []
 		};
 
-		// variable for id of element to scroll to after render
+		// variable for anchor to scroll to after render
 		this.scrollToElement = null;
 		// variable for promise used for preload, so no new loading of the same page starts while page is loading
 		this.preloadPromise = null;
@@ -336,6 +351,7 @@ var Swup = function () {
 		this.updateTransition = _updateTransition2.default;
 		this.getAnimationPromises = _getAnimationPromises2.default;
 		this.getPageData = _getPageData2.default;
+		this.getAnchorElement = _helpers.getAnchorElement;
 		this.log = function () {}; // here so it can be used by plugins
 		this.use = _plugins.use;
 		this.unuse = _plugins.unuse;
@@ -439,7 +455,7 @@ var Swup = function () {
 						if (link.getHash() != '') {
 							// link to the same URL with hash
 							this.triggerEvent('samePageWithHash', event);
-							var element = document.getElementById(link.getHash().substring(1));
+							var element = (0, _helpers.getAnchorElement)(link.getHash());
 							if (element != null) {
 								history.replaceState({
 									url: link.getAddress() + link.getHash(),
@@ -664,7 +680,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _helpers = __webpack_require__(0);
+var _helpers = __webpack_require__(1);
 
 var loadPage = function loadPage(data, popstate) {
 	var _this = this;
@@ -830,9 +846,41 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
+var _utils = __webpack_require__(0);
+
+var getAnchorElement = function getAnchorElement() {
+	var hash = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
+	if (!hash) {
+		return null;
+	}
+
+	if (hash.charAt(0) === '#') {
+		hash = hash.substring(1);
+	}
+
+	hash = decodeURIComponent(hash);
+	hash = (0, _utils.escapeCssIdentifier)(hash);
+
+	return document.querySelector('a[name=\'' + hash + '\'], #' + hash);
+};
+
+exports.default = getAnchorElement;
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _utils = __webpack_require__(1);
+var _utils = __webpack_require__(0);
 
 var getDataFromHtml = function getDataFromHtml(html, containers) {
 	var fakeDom = document.createElement('html');
@@ -876,7 +924,7 @@ var getDataFromHtml = function getDataFromHtml(html, containers) {
 exports.default = getDataFromHtml;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -923,7 +971,7 @@ var fetch = function fetch(setOptions) {
 exports.default = fetch;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -954,7 +1002,7 @@ var transitionEnd = function transitionEnd() {
 exports.default = transitionEnd;
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -970,7 +1018,7 @@ var getCurrentUrl = function getCurrentUrl() {
 exports.default = getCurrentUrl;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -980,7 +1028,7 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _utils = __webpack_require__(1);
+var _utils = __webpack_require__(0);
 
 var markSwupElements = function markSwupElements(element, containers) {
 	var blocks = 0;
@@ -1004,7 +1052,7 @@ var markSwupElements = function markSwupElements(element, containers) {
 exports.default = markSwupElements;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1066,7 +1114,7 @@ var Link = function () {
 exports.default = Link;
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1078,9 +1126,9 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _utils = __webpack_require__(1);
+var _utils = __webpack_require__(0);
 
-var _helpers = __webpack_require__(0);
+var _helpers = __webpack_require__(1);
 
 var renderPage = function renderPage(page, popstate) {
 	var _this = this;
@@ -1155,7 +1203,7 @@ var renderPage = function renderPage(page, popstate) {
 exports.default = renderPage;
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1182,7 +1230,7 @@ var triggerEvent = function triggerEvent(eventName, originalEvent) {
 exports.default = triggerEvent;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1202,7 +1250,7 @@ var on = function on(event, handler) {
 exports.default = on;
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1242,7 +1290,7 @@ var off = function off(event, handler) {
 exports.default = off;
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1263,7 +1311,7 @@ var updateTransition = function updateTransition(from, to, custom) {
 exports.default = updateTransition;
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1273,9 +1321,9 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _utils = __webpack_require__(1);
+var _utils = __webpack_require__(0);
 
-var _helpers = __webpack_require__(0);
+var _helpers = __webpack_require__(1);
 
 var getAnimationPromises = function getAnimationPromises() {
 	var promises = [];
@@ -1296,7 +1344,7 @@ var getAnimationPromises = function getAnimationPromises() {
 exports.default = getAnimationPromises;
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1306,7 +1354,7 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _helpers = __webpack_require__(0);
+var _helpers = __webpack_require__(1);
 
 var getPageData = function getPageData(request) {
 	// this method can be replaced in case other content than html is expected to be received from server
@@ -1328,7 +1376,7 @@ var getPageData = function getPageData(request) {
 exports.default = getPageData;
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
