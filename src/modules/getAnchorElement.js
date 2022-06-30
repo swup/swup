@@ -1,6 +1,6 @@
 import { escapeCssIdentifier } from '../utils';
 
-const getAnchorElement = (hash = '') => {
+const getAnchorElement = (hash) => {
 	if (!hash) {
 		return null;
 	}

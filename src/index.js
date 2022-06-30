@@ -8,12 +8,13 @@ import triggerEvent from './modules/triggerEvent';
 import on from './modules/on';
 import off from './modules/off';
 import updateTransition from './modules/updateTransition';
+import getAnchorElement from './modules/getAnchorElement';
 import getAnimationPromises from './modules/getAnimationPromises';
 import getPageData from './modules/getPageData';
 import { use, unuse, findPlugin } from './modules/plugins';
 
 import { queryAll } from './utils';
-import { getDataFromHtml, getAnchorElement, getCurrentUrl, markSwupElements, Link } from './helpers';
+import { getDataFromHtml, getCurrentUrl, markSwupElements, Link } from './helpers';
 
 export default class Swup {
 	constructor(setOptions) {
