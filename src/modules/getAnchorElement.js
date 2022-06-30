@@ -1,4 +1,4 @@
-import { escapeCssIdentifier } from '../utils';
+import { escapeCssIdentifier, query } from '../utils';
 
 const getAnchorElement = (hash) => {
 	if (!hash) {
@@ -13,7 +13,7 @@ const getAnchorElement = (hash) => {
 	hash = escapeCssIdentifier(hash);
 
 	// https://html.spec.whatwg.org/#find-a-potential-indicated-element
-	return document.querySelector(`#${hash}, a[name='${hash}']`);
+	return query(`#${hash}`) || query(` a[name='${hash}']`);
 };
 
 export default getAnchorElement;
