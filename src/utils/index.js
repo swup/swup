@@ -13,3 +13,11 @@ export const queryAll = (selector, context = document) => {
 
 	return Array.prototype.slice.call(context.querySelectorAll(selector));
 };
+
+export const escapeCssIdentifier = (ident) => {
+	if (window.CSS && window.CSS.escape) {
+		return CSS.escape(ident);
+	} else {
+		return ident;
+	}
+};

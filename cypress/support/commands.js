@@ -25,7 +25,7 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
 Cypress.Commands.add("triggerClickOnLink", (buttonHref, options = {}) => {
-    cy.get(`a[href="${ buttonHref }"]`).first().click(options);
+    cy.get(`a[href="${ CSS.escape(buttonHref) }"]`).first().click(options);
 });
 
 Cypress.Commands.add("shouldBeAtPage", (href) => {
@@ -43,7 +43,7 @@ Cypress.Commands.add("shouldNativelyLoadPageAfterAction", (url, action) => {
 });
 
 Cypress.Commands.add("shouldHaveH1", (str) => {
-    cy.get('h1').should('contain',  str);
+    cy.get('h1').should('contain', str);
 });
 
 Cypress.Commands.add("shouldHaveTransitionLeaveClasses", (page) => {
@@ -65,3 +65,14 @@ Cypress.Commands.add("shouldNotHaveTransitionClasses", (page) => {
     cy.get('html').should('not.have.class', 'is-leaving');
     cy.get('html').should('not.have.class', `to-${page}`);
 });
+
+Cypress.Commands.add('shouldHaveElementInViewport', (element) => {
+    cy.get(element).should($el => {
+        const bottom = Cypress.$(cy.state('window')).height();
+        const rect = $el[0].getBoundingClientRect();
+
+        expect(rect.top).to.be.at.least(0, 'element top above viewport');
+        expect(rect.top).not.to.be.greaterThan(bottom);
+        expect(rect.bottom).not.to.be.greaterThan(bottom);
+    })
+})

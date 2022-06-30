@@ -23,7 +23,7 @@
     <header class="header">
         <ul>
             <li><a href="/page1/">Page 1</a></li>
-            <li><a href="/page1/#hash">Page 1 with hash</a></li>
+            <li><a href="/page1/#anchor" data-cy="nav-to-anchor">Page 1 with anchor</a></li>
             <li><a href="/page2/">Page 2</a></li>
             <li><a href="/page3/">Page 3</a></li>
             <li><a href="/page4/" data-no-swup>Page 4 with ignore attr</a></li>
@@ -31,9 +31,42 @@
     </header>
     <main class="wrapper transition-fade" id="swup">
         <h1>Page 1</h1>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias assumenda consectetur consequatur enim esse incidunt iusto, magnam maxime molestias nisi perferendis perspiciatis quibusdam quos repellat, vel veniam vero voluptate voluptatem.
-        <div id="hash" class="hash">Scroll element</div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias assumenda consectetur consequatur enim esse incidunt iusto, magnam maxime molestias nisi perferendis perspiciatis quibusdam quos repellat, vel veniam vero voluptate voluptatem.
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+        Alias assumenda consectetur consequatur enim esse incidunt iusto, magnam
+        maxime molestias nisi perferendis perspiciatis quibusdam quos repellat,
+        vel veniam vero voluptate voluptatem.
+
+        <div class="scroll-anchors">
+            <div id="anchor" data-cy="anchor">Anchor</div>
+            <div id="anchor-by-id" data-cy="anchor-by-id">Anchor by id</div>
+            <a name="anchor-by-name" data-cy="anchor-by-name">Anchor by name</a>
+            <div id="anchor:with:colon" data-cy="anchor-with-colon">Anchor with colon</div>
+            <div id="anchor-with-unicode-テスト" data-cy="anchor-with-unicode">Anchor with unicode</div>
+        </div>
+
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias
+        assumenda consectetur consequatur enim esse incidunt iusto, magnam
+        maxime molestias nisi perferendis perspiciatis quibusdam quos repellat,
+        vel veniam vero voluptate voluptatem.
+
+        <h2>Anchors</h2>
+        <ul>
+            <li>
+                <a href="#anchor" data-cy="link-to-anchor">Link to anchor</a>
+            </li>
+            <li>
+                <a href="#anchor-by-id" data-cy="link-to-anchor-by-id">Link to anchor by id</a>
+            </li>
+            <li>
+                <a href="#anchor-by-name" data-cy="link-to-anchor-by-name">Link to anchor by name</a>
+            </li>
+            <li>
+                <a href="#anchor:with:colon" data-cy="link-to-anchor-with-colon">Link to anchor with colon</a>
+            </li>
+            <li>
+                <a href="#anchor-with-unicode-テスト" data-cy="link-to-anchor-with-unicode">Link to anchor with unicode</a>
+            </li>
+        </ul>
     </main>
     <script>
         const swup = new Swup({

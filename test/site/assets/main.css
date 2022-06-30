@@ -98,10 +98,7 @@ html.is-animating .transition-fade {
 }
 .wrapper {
   width: 100%;
-  height: 3000px;
   text-align: center;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -288,6 +285,7 @@ html.is-animating .button--fade {
   }
 }
 
-.hash {
+.scroll-anchors > * {
+  display: block;
   margin: 1000px 0;
 }
