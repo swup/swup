@@ -13,7 +13,7 @@ const getAnchorElement = (hash) => {
 	hash = escapeCssIdentifier(hash);
 
 	// https://html.spec.whatwg.org/#find-a-potential-indicated-element
-	return query(`#${hash}`) || query(` a[name='${hash}']`);
+	return query(`#${hash}`) || query(`a[name='${hash}']`);
 };
 
 export default getAnchorElement;

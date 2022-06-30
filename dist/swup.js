@@ -1301,7 +1301,7 @@ var getAnchorElement = function getAnchorElement(hash) {
 	hash = (0, _utils.escapeCssIdentifier)(hash);
 
 	// https://html.spec.whatwg.org/#find-a-potential-indicated-element
-	return (0, _utils.query)('#' + hash) || (0, _utils.query)(' a[name=\'' + hash + '\']');
+	return (0, _utils.query)('#' + hash) || (0, _utils.query)('a[name=\'' + hash + '\']');
 };
 
 exports.default = getAnchorElement;
