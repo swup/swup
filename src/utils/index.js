@@ -14,12 +14,10 @@ export const queryAll = (selector, context = document) => {
 	return Array.prototype.slice.call(context.querySelectorAll(selector));
 };
 
-const escapeCssRegex = /(^[^_a-zA-Z\u00a0-\uffff]|[^-_a-zA-Z0-9\u00a0-\uffff])/g;
-
 export const escapeCssIdentifier = (ident) => {
 	if (window.CSS && window.CSS.escape) {
 		return CSS.escape(ident);
 	} else {
-		return ident.replace(escapeCssRegex, "\\$1");
+		return ident;
 	}
 };
