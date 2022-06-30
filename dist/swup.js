@@ -124,13 +124,11 @@ var queryAll = exports.queryAll = function queryAll(selector) {
 	return Array.prototype.slice.call(context.querySelectorAll(selector));
 };
 
-var escapeCssRegex = /(^[^_a-zA-Z\u00a0-\uffff]|[^-_a-zA-Z0-9\u00a0-\uffff])/g;
-
 var escapeCssIdentifier = exports.escapeCssIdentifier = function escapeCssIdentifier(ident) {
 	if (window.CSS && window.CSS.escape) {
 		return CSS.escape(ident);
 	} else {
-		return ident.replace(escapeCssRegex, "\\$1");
+		return ident;
 	}
 };
 
@@ -144,7 +142,7 @@ var escapeCssIdentifier = exports.escapeCssIdentifier = function escapeCssIdenti
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Link = exports.markSwupElements = exports.getCurrentUrl = exports.transitionEnd = exports.fetch = exports.getDataFromHtml = exports.getAnchorElement = exports.createHistoryRecord = exports.classify = undefined;
+exports.Link = exports.markSwupElements = exports.getCurrentUrl = exports.transitionEnd = exports.fetch = exports.getDataFromHtml = exports.createHistoryRecord = exports.classify = undefined;
 
 var _classify = __webpack_require__(7);
 
@@ -154,31 +152,27 @@ var _createHistoryRecord = __webpack_require__(8);
 
 var _createHistoryRecord2 = _interopRequireDefault(_createHistoryRecord);
 
-var _getAnchorElement = __webpack_require__(9);
-
-var _getAnchorElement2 = _interopRequireDefault(_getAnchorElement);
-
-var _getDataFromHtml = __webpack_require__(10);
+var _getDataFromHtml = __webpack_require__(9);
 
 var _getDataFromHtml2 = _interopRequireDefault(_getDataFromHtml);
 
-var _fetch = __webpack_require__(11);
+var _fetch = __webpack_require__(10);
 
 var _fetch2 = _interopRequireDefault(_fetch);
 
-var _transitionEnd = __webpack_require__(12);
+var _transitionEnd = __webpack_require__(11);
 
 var _transitionEnd2 = _interopRequireDefault(_transitionEnd);
 
-var _getCurrentUrl = __webpack_require__(13);
+var _getCurrentUrl = __webpack_require__(12);
 
 var _getCurrentUrl2 = _interopRequireDefault(_getCurrentUrl);
 
-var _markSwupElements = __webpack_require__(14);
+var _markSwupElements = __webpack_require__(13);
 
 var _markSwupElements2 = _interopRequireDefault(_markSwupElements);
 
-var _Link = __webpack_require__(15);
+var _Link = __webpack_require__(14);
 
 var _Link2 = _interopRequireDefault(_Link);
 
@@ -186,7 +180,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var classify = exports.classify = _classify2.default;
 var createHistoryRecord = exports.createHistoryRecord = _createHistoryRecord2.default;
-var getAnchorElement = exports.getAnchorElement = _getAnchorElement2.default;
 var getDataFromHtml = exports.getDataFromHtml = _getDataFromHtml2.default;
 var fetch = exports.fetch = _fetch2.default;
 var transitionEnd = exports.transitionEnd = _transitionEnd2.default;
@@ -239,25 +232,29 @@ var _loadPage = __webpack_require__(6);
 
 var _loadPage2 = _interopRequireDefault(_loadPage);
 
-var _renderPage = __webpack_require__(16);
+var _renderPage = __webpack_require__(15);
 
 var _renderPage2 = _interopRequireDefault(_renderPage);
 
-var _triggerEvent = __webpack_require__(17);
+var _triggerEvent = __webpack_require__(16);
 
 var _triggerEvent2 = _interopRequireDefault(_triggerEvent);
 
-var _on = __webpack_require__(18);
+var _on = __webpack_require__(17);
 
 var _on2 = _interopRequireDefault(_on);
 
-var _off = __webpack_require__(19);
+var _off = __webpack_require__(18);
 
 var _off2 = _interopRequireDefault(_off);
 
-var _updateTransition = __webpack_require__(20);
+var _updateTransition = __webpack_require__(19);
 
 var _updateTransition2 = _interopRequireDefault(_updateTransition);
+
+var _getAnchorElement = __webpack_require__(20);
+
+var _getAnchorElement2 = _interopRequireDefault(_getAnchorElement);
 
 var _getAnimationPromises = __webpack_require__(21);
 
@@ -351,7 +348,7 @@ var Swup = function () {
 		this.updateTransition = _updateTransition2.default;
 		this.getAnimationPromises = _getAnimationPromises2.default;
 		this.getPageData = _getPageData2.default;
-		this.getAnchorElement = _helpers.getAnchorElement;
+		this.getAnchorElement = _getAnchorElement2.default;
 		this.log = function () {}; // here so it can be used by plugins
 		this.use = _plugins.use;
 		this.unuse = _plugins.unuse;
@@ -455,7 +452,7 @@ var Swup = function () {
 						if (link.getHash() != '') {
 							// link to the same URL with hash
 							this.triggerEvent('samePageWithHash', event);
-							var element = (0, _helpers.getAnchorElement)(link.getHash());
+							var element = (0, _getAnchorElement2.default)(link.getHash());
 							if (element != null) {
 								history.replaceState({
 									url: link.getAddress() + link.getHash(),
@@ -846,39 +843,6 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _utils = __webpack_require__(0);
-
-var getAnchorElement = function getAnchorElement() {
-	var hash = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-
-	if (!hash) {
-		return null;
-	}
-
-	if (hash.charAt(0) === '#') {
-		hash = hash.substring(1);
-	}
-
-	hash = decodeURIComponent(hash);
-	hash = (0, _utils.escapeCssIdentifier)(hash);
-
-	// https://html.spec.whatwg.org/#find-a-potential-indicated-element
-	return document.querySelector('#' + hash + ', a[name=\'' + hash + '\']');
-};
-
-exports.default = getAnchorElement;
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _utils = __webpack_require__(0);
@@ -925,7 +889,7 @@ var getDataFromHtml = function getDataFromHtml(html, containers) {
 exports.default = getDataFromHtml;
 
 /***/ }),
-/* 11 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -972,7 +936,7 @@ var fetch = function fetch(setOptions) {
 exports.default = fetch;
 
 /***/ }),
-/* 12 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1003,7 +967,7 @@ var transitionEnd = function transitionEnd() {
 exports.default = transitionEnd;
 
 /***/ }),
-/* 13 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1019,7 +983,7 @@ var getCurrentUrl = function getCurrentUrl() {
 exports.default = getCurrentUrl;
 
 /***/ }),
-/* 14 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1053,7 +1017,7 @@ var markSwupElements = function markSwupElements(element, containers) {
 exports.default = markSwupElements;
 
 /***/ }),
-/* 15 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1115,7 +1079,7 @@ var Link = function () {
 exports.default = Link;
 
 /***/ }),
-/* 16 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1204,7 +1168,7 @@ var renderPage = function renderPage(page, popstate) {
 exports.default = renderPage;
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1231,7 +1195,7 @@ var triggerEvent = function triggerEvent(eventName, originalEvent) {
 exports.default = triggerEvent;
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1251,7 +1215,7 @@ var on = function on(event, handler) {
 exports.default = on;
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1291,7 +1255,7 @@ var off = function off(event, handler) {
 exports.default = off;
 
 /***/ }),
-/* 20 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1310,6 +1274,37 @@ var updateTransition = function updateTransition(from, to, custom) {
 };
 
 exports.default = updateTransition;
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _utils = __webpack_require__(0);
+
+var getAnchorElement = function getAnchorElement(hash) {
+	if (!hash) {
+		return null;
+	}
+
+	if (hash.charAt(0) === '#') {
+		hash = hash.substring(1);
+	}
+
+	hash = decodeURIComponent(hash);
+	hash = (0, _utils.escapeCssIdentifier)(hash);
+
+	// https://html.spec.whatwg.org/#find-a-potential-indicated-element
+	return document.querySelector('#' + hash + ', a[name=\'' + hash + '\']');
+};
+
+exports.default = getAnchorElement;
 
 /***/ }),
 /* 21 */
