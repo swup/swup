@@ -10,6 +10,9 @@ const getDataFromHtml = (html, containers) => {
 			console.error(`Container ${selector} not found on page.`);
 			return null;
 		} else {
+			if (queryAll(selector).length !== queryAll(selector, fakeDom).length) {
+				console.warn(`Mismatched number of containers found on new page.`);
+			}
 			queryAll(selector).forEach((item, index) => {
 				queryAll(selector, fakeDom)[index].setAttribute('data-swup', blocks.length);
 				blocks.push(queryAll(selector, fakeDom)[index].outerHTML);
