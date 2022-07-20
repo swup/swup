@@ -91,7 +91,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -104,7 +104,7 @@ return /******/ (function(modules) { // webpackBootstrap
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Link = exports.markSwupElements = exports.getCurrentUrl = exports.transitionEnd = exports.fetch = exports.getDataFromHtml = exports.createHistoryRecord = exports.classify = undefined;
+exports.Link = exports.markSwupElements = exports.normalizeUrl = exports.getCurrentUrl = exports.transitionEnd = exports.fetch = exports.getDataFromHtml = exports.createHistoryRecord = exports.classify = undefined;
 
 var _classify = __webpack_require__(7);
 
@@ -130,11 +130,15 @@ var _getCurrentUrl = __webpack_require__(12);
 
 var _getCurrentUrl2 = _interopRequireDefault(_getCurrentUrl);
 
-var _markSwupElements = __webpack_require__(13);
+var _normalizeUrl = __webpack_require__(13);
+
+var _normalizeUrl2 = _interopRequireDefault(_normalizeUrl);
+
+var _markSwupElements = __webpack_require__(14);
 
 var _markSwupElements2 = _interopRequireDefault(_markSwupElements);
 
-var _Link = __webpack_require__(14);
+var _Link = __webpack_require__(2);
 
 var _Link2 = _interopRequireDefault(_Link);
 
@@ -146,6 +150,7 @@ var getDataFromHtml = exports.getDataFromHtml = _getDataFromHtml2.default;
 var fetch = exports.fetch = _fetch2.default;
 var transitionEnd = exports.transitionEnd = _transitionEnd2.default;
 var getCurrentUrl = exports.getCurrentUrl = _getCurrentUrl2.default;
+var normalizeUrl = exports.normalizeUrl = _normalizeUrl2.default;
 var markSwupElements = exports.markSwupElements = _markSwupElements2.default;
 var Link = exports.Link = _Link2.default;
 
@@ -194,7 +199,69 @@ var escapeCssIdentifier = exports.escapeCssIdentifier = function escapeCssIdenti
 "use strict";
 
 
-var _index = __webpack_require__(3);
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Link = function () {
+	function Link(elementOrUrl) {
+		_classCallCheck(this, Link);
+
+		if (elementOrUrl instanceof Element || elementOrUrl instanceof SVGElement) {
+			this.link = elementOrUrl;
+		} else {
+			this.link = document.createElement('a');
+			this.link.href = elementOrUrl;
+		}
+	}
+
+	_createClass(Link, [{
+		key: 'getPath',
+		value: function getPath() {
+			var path = this.link.pathname;
+			if (path[0] !== '/') {
+				path = '/' + path;
+			}
+			return path;
+		}
+	}, {
+		key: 'getAddress',
+		value: function getAddress() {
+			var path = this.link.pathname + this.link.search;
+
+			if (this.link.getAttribute('xlink:href')) {
+				path = this.link.getAttribute('xlink:href');
+			}
+
+			if (path[0] !== '/') {
+				path = '/' + path;
+			}
+			return path;
+		}
+	}, {
+		key: 'getHash',
+		value: function getHash() {
+			return this.link.hash;
+		}
+	}]);
+
+	return Link;
+}();
+
+exports.default = Link;
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _index = __webpack_require__(4);
 
 var _index2 = _interopRequireDefault(_index);
 
@@ -203,7 +270,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 module.exports = _index2.default; // this is here for webpack to expose Swup as window.Swup
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -220,51 +287,51 @@ var _createClass = function () { function defineProperties(target, props) { for 
 // modules
 
 
-var _delegateIt = __webpack_require__(4);
+var _delegateIt = __webpack_require__(5);
 
 var _delegateIt2 = _interopRequireDefault(_delegateIt);
 
-var _Cache = __webpack_require__(5);
+var _Cache = __webpack_require__(6);
 
 var _Cache2 = _interopRequireDefault(_Cache);
 
-var _loadPage = __webpack_require__(6);
+var _loadPage = __webpack_require__(15);
 
 var _loadPage2 = _interopRequireDefault(_loadPage);
 
-var _renderPage = __webpack_require__(15);
+var _renderPage = __webpack_require__(16);
 
 var _renderPage2 = _interopRequireDefault(_renderPage);
 
-var _triggerEvent = __webpack_require__(16);
+var _triggerEvent = __webpack_require__(17);
 
 var _triggerEvent2 = _interopRequireDefault(_triggerEvent);
 
-var _on = __webpack_require__(17);
+var _on = __webpack_require__(18);
 
 var _on2 = _interopRequireDefault(_on);
 
-var _off = __webpack_require__(18);
+var _off = __webpack_require__(19);
 
 var _off2 = _interopRequireDefault(_off);
 
-var _updateTransition = __webpack_require__(19);
+var _updateTransition = __webpack_require__(20);
 
 var _updateTransition2 = _interopRequireDefault(_updateTransition);
 
-var _getAnchorElement = __webpack_require__(20);
+var _getAnchorElement = __webpack_require__(21);
 
 var _getAnchorElement2 = _interopRequireDefault(_getAnchorElement);
 
-var _getAnimationPromises = __webpack_require__(21);
+var _getAnimationPromises = __webpack_require__(22);
 
 var _getAnimationPromises2 = _interopRequireDefault(_getAnimationPromises);
 
-var _getPageData = __webpack_require__(22);
+var _getPageData = __webpack_require__(23);
 
 var _getPageData2 = _interopRequireDefault(_getPageData);
 
-var _plugins = __webpack_require__(23);
+var _plugins = __webpack_require__(24);
 
 var _utils = __webpack_require__(1);
 
@@ -506,7 +573,7 @@ var Swup = function () {
 exports.default = Swup;
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -599,7 +666,7 @@ function delegate(base, selector, type, callback, options) {
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -608,8 +675,11 @@ function delegate(base, selector, type, callback, options) {
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
+exports.Cache = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _helpers = __webpack_require__(0);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -624,6 +694,7 @@ var Cache = exports.Cache = function () {
 	_createClass(Cache, [{
 		key: 'cacheUrl',
 		value: function cacheUrl(page) {
+			page.url = (0, _helpers.normalizeUrl)(page.url);
 			if (page.url in this.pages === false) {
 				this.pages[page.url] = page;
 			}
@@ -633,16 +704,18 @@ var Cache = exports.Cache = function () {
 	}, {
 		key: 'getPage',
 		value: function getPage(url) {
+			url = (0, _helpers.normalizeUrl)(url);
 			return this.pages[url];
 		}
 	}, {
 		key: 'getCurrentPage',
 		value: function getCurrentPage() {
-			return this.getPage(window.location.pathname + window.location.search);
+			return this.getPage((0, _helpers.getCurrentUrl)());
 		}
 	}, {
 		key: 'exists',
 		value: function exists(url) {
+			url = (0, _helpers.normalizeUrl)(url);
 			return url in this.pages;
 		}
 	}, {
@@ -663,130 +736,6 @@ var Cache = exports.Cache = function () {
 }();
 
 exports.default = Cache;
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _helpers = __webpack_require__(0);
-
-var loadPage = function loadPage(data, popstate) {
-	var _this = this;
-
-	// create array for storing animation promises
-	var animationPromises = [],
-	    xhrPromise = void 0;
-	var animateOut = function animateOut() {
-		_this.triggerEvent('animationOutStart');
-
-		// handle classes
-		document.documentElement.classList.add('is-changing');
-		document.documentElement.classList.add('is-leaving');
-		document.documentElement.classList.add('is-animating');
-		if (popstate) {
-			document.documentElement.classList.add('is-popstate');
-		}
-		document.documentElement.classList.add('to-' + (0, _helpers.classify)(data.url));
-
-		// animation promise stuff
-		animationPromises = _this.getAnimationPromises('out');
-		Promise.all(animationPromises).then(function () {
-			_this.triggerEvent('animationOutDone');
-		});
-
-		// create history record if this is not a popstate call
-		if (!popstate) {
-			// create pop element with or without anchor
-			var state = void 0;
-			if (_this.scrollToElement != null) {
-				state = data.url + _this.scrollToElement;
-			} else {
-				state = data.url;
-			}
-
-			(0, _helpers.createHistoryRecord)(state);
-		}
-	};
-
-	this.triggerEvent('transitionStart', popstate);
-
-	// set transition object
-	if (data.customTransition != null) {
-		this.updateTransition(window.location.pathname, data.url, data.customTransition);
-		document.documentElement.classList.add('to-' + (0, _helpers.classify)(data.customTransition));
-	} else {
-		this.updateTransition(window.location.pathname, data.url);
-	}
-
-	// start/skip animation
-	if (!popstate || this.options.animateHistoryBrowsing) {
-		animateOut();
-	} else {
-		this.triggerEvent('animationSkipped');
-	}
-
-	// start/skip loading of page
-	if (this.cache.exists(data.url)) {
-		xhrPromise = new Promise(function (resolve) {
-			resolve();
-		});
-		this.triggerEvent('pageRetrievedFromCache');
-	} else {
-		if (!this.preloadPromise || this.preloadPromise.route != data.url) {
-			xhrPromise = new Promise(function (resolve, reject) {
-				(0, _helpers.fetch)(_extends({}, data, { headers: _this.options.requestHeaders }), function (response) {
-					if (response.status === 500) {
-						_this.triggerEvent('serverError');
-						reject(data.url);
-						return;
-					} else {
-						// get json data
-						var page = _this.getPageData(response);
-						if (page != null) {
-							page.url = data.url;
-						} else {
-							reject(data.url);
-							return;
-						}
-						// render page
-						_this.cache.cacheUrl(page);
-						_this.triggerEvent('pageLoaded');
-					}
-					resolve();
-				});
-			});
-		} else {
-			xhrPromise = this.preloadPromise;
-		}
-	}
-
-	// when everything is ready, handle the outcome
-	Promise.all(animationPromises.concat([xhrPromise])).then(function () {
-		// render page
-		_this.renderPage(_this.cache.getPage(data.url), popstate);
-		_this.preloadPromise = null;
-	}).catch(function (errorUrl) {
-		// rewrite the skipPopStateHandling function to redirect manually when the history.go is processed
-		_this.options.skipPopStateHandling = function () {
-			window.location = errorUrl;
-			return true;
-		};
-
-		// go back to the actual page were still at
-		window.history.go(-1);
-	});
-};
-
-exports.default = loadPage;
 
 /***/ }),
 /* 7 */
@@ -986,6 +935,29 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
+var _Link = __webpack_require__(2);
+
+var _Link2 = _interopRequireDefault(_Link);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var normalizeUrl = function normalizeUrl(url) {
+	return new _Link2.default(url).getAddress();
+};
+
+exports.default = normalizeUrl;
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
 var _utils = __webpack_require__(1);
 
 var markSwupElements = function markSwupElements(element, containers) {
@@ -1006,7 +978,7 @@ var markSwupElements = function markSwupElements(element, containers) {
 exports.default = markSwupElements;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1016,59 +988,121 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var _helpers = __webpack_require__(0);
 
-var Link = function () {
-	function Link(elementOrUrl) {
-		_classCallCheck(this, Link);
+var loadPage = function loadPage(data, popstate) {
+	var _this = this;
 
-		if (elementOrUrl instanceof Element || elementOrUrl instanceof SVGElement) {
-			this.link = elementOrUrl;
+	// create array for storing animation promises
+	var animationPromises = [],
+	    xhrPromise = void 0;
+	var animateOut = function animateOut() {
+		_this.triggerEvent('animationOutStart');
+
+		// handle classes
+		document.documentElement.classList.add('is-changing');
+		document.documentElement.classList.add('is-leaving');
+		document.documentElement.classList.add('is-animating');
+		if (popstate) {
+			document.documentElement.classList.add('is-popstate');
+		}
+		document.documentElement.classList.add('to-' + (0, _helpers.classify)(data.url));
+
+		// animation promise stuff
+		animationPromises = _this.getAnimationPromises('out');
+		Promise.all(animationPromises).then(function () {
+			_this.triggerEvent('animationOutDone');
+		});
+
+		// create history record if this is not a popstate call
+		if (!popstate) {
+			// create pop element with or without anchor
+			var state = void 0;
+			if (_this.scrollToElement != null) {
+				state = data.url + _this.scrollToElement;
+			} else {
+				state = data.url;
+			}
+
+			(0, _helpers.createHistoryRecord)(state);
+		}
+	};
+
+	this.triggerEvent('transitionStart', popstate);
+
+	// set transition object
+	if (data.customTransition != null) {
+		this.updateTransition(window.location.pathname, data.url, data.customTransition);
+		document.documentElement.classList.add('to-' + (0, _helpers.classify)(data.customTransition));
+	} else {
+		this.updateTransition(window.location.pathname, data.url);
+	}
+
+	// start/skip animation
+	if (!popstate || this.options.animateHistoryBrowsing) {
+		animateOut();
+	} else {
+		this.triggerEvent('animationSkipped');
+	}
+
+	// start/skip loading of page
+	if (this.cache.exists(data.url)) {
+		xhrPromise = new Promise(function (resolve) {
+			resolve();
+		});
+		this.triggerEvent('pageRetrievedFromCache');
+	} else {
+		if (!this.preloadPromise || this.preloadPromise.route != data.url) {
+			xhrPromise = new Promise(function (resolve, reject) {
+				(0, _helpers.fetch)(_extends({}, data, { headers: _this.options.requestHeaders }), function (response) {
+					if (response.status === 500) {
+						_this.triggerEvent('serverError');
+						reject(data.url);
+						return;
+					} else {
+						// get json data
+						var page = _this.getPageData(response);
+						if (page != null) {
+							page.url = data.url;
+						} else {
+							reject(data.url);
+							return;
+						}
+						// render page
+						_this.cache.cacheUrl(page);
+						_this.triggerEvent('pageLoaded');
+					}
+					resolve();
+				});
+			});
 		} else {
-			this.link = document.createElement('a');
-			this.link.href = elementOrUrl;
+			xhrPromise = this.preloadPromise;
 		}
 	}
 
-	_createClass(Link, [{
-		key: 'getPath',
-		value: function getPath() {
-			var path = this.link.pathname;
-			if (path[0] !== '/') {
-				path = '/' + path;
-			}
-			return path;
-		}
-	}, {
-		key: 'getAddress',
-		value: function getAddress() {
-			var path = this.link.pathname + this.link.search;
+	// when everything is ready, handle the outcome
+	Promise.all(animationPromises.concat([xhrPromise])).then(function () {
+		// render page
+		_this.renderPage(_this.cache.getPage(data.url), popstate);
+		_this.preloadPromise = null;
+	}).catch(function (errorUrl) {
+		// rewrite the skipPopStateHandling function to redirect manually when the history.go is processed
+		_this.options.skipPopStateHandling = function () {
+			window.location = errorUrl;
+			return true;
+		};
 
-			if (this.link.getAttribute('xlink:href')) {
-				path = this.link.getAttribute('xlink:href');
-			}
+		// go back to the actual page were still at
+		window.history.go(-1);
+	});
+};
 
-			if (path[0] !== '/') {
-				path = '/' + path;
-			}
-			return path;
-		}
-	}, {
-		key: 'getHash',
-		value: function getHash() {
-			return this.link.hash;
-		}
-	}]);
-
-	return Link;
-}();
-
-exports.default = Link;
+exports.default = loadPage;
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1155,7 +1189,7 @@ var renderPage = function renderPage(page, popstate) {
 exports.default = renderPage;
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1182,7 +1216,7 @@ var triggerEvent = function triggerEvent(eventName, originalEvent) {
 exports.default = triggerEvent;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1202,7 +1236,7 @@ var on = function on(event, handler) {
 exports.default = on;
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1242,7 +1276,7 @@ var off = function off(event, handler) {
 exports.default = off;
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1263,7 +1297,7 @@ var updateTransition = function updateTransition(from, to, custom) {
 exports.default = updateTransition;
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1294,7 +1328,7 @@ var getAnchorElement = function getAnchorElement(hash) {
 exports.default = getAnchorElement;
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1327,7 +1361,7 @@ var getAnimationPromises = function getAnimationPromises() {
 exports.default = getAnimationPromises;
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1359,7 +1393,7 @@ var getPageData = function getPageData(request) {
 exports.default = getPageData;
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
