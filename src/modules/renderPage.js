@@ -4,20 +4,20 @@ const renderPage = function(page, popstate) {
 	document.documentElement.classList.remove('is-leaving');
 
 	// replace state in case the url was redirected
-	let link = new Link(page.responseURL);
-	if (window.location.pathname !== link.getPath()) {
+	const url = new Link(page.responseURL).getPath();
+	if (window.location.pathname !== url) {
 		window.history.replaceState(
 			{
-				url: link.getPath(),
+				url,
 				random: Math.random(),
 				source: 'swup'
 			},
 			document.title,
-			link.getPath()
+			url
 		);
 
 		// save new record for redirected url
-		this.cache.cacheUrl({ ...page, url: link.getPath() });
+		this.cache.cacheUrl({ ...page, url });
 	}
 
 	// only add for non-popstate transitions
