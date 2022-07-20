@@ -7,7 +7,7 @@ const getDataFromHtml = (html, containers) => {
 
 	for (let i = 0; i < containers.length; i++) {
 		if (fakeDom.querySelector(containers[i]) == null) {
-			// page in invalid
+			console.error(`Container ${containers[i]} not found on page.`);
 			return null;
 		} else {
 			queryAll(containers[i]).forEach((item, index) => {
