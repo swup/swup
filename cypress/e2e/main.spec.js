@@ -175,4 +175,14 @@ context('Window', () => {
             });
         });
     });
+
+    it('should cache pages from absolute URLs', () => {
+        cy.window().then(window => {
+            window.swup.loadPage({ url: 'http://localhost:8080/page2/' });
+            cy.shouldBeAtPage('/page2/');
+            cy.window().should(() => {
+                expect(window.swup.cache.getCurrentPage()).not.to.be.undefined;
+            });
+        });
+    });
 });
