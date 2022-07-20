@@ -1,5 +1,4 @@
-import { queryAll } from '../utils';
-import { transitionEnd, Link } from '../helpers';
+import { Link } from '../helpers';
 
 const renderPage = function(page, popstate) {
 	document.documentElement.classList.remove('is-leaving');
