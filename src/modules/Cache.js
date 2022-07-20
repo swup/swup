@@ -1,3 +1,5 @@
+import { getCurrentUrl } from './../helpers';
+
 export class Cache {
 	constructor() {
 		this.pages = {};
@@ -17,7 +19,7 @@ export class Cache {
 	}
 
 	getCurrentPage() {
-		return this.getPage(window.location.pathname + window.location.search);
+		return this.getPage(getCurrentUrl());
 	}
 
 	exists(url) {
