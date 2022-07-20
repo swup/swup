@@ -152,7 +152,7 @@ context('Window', () => {
 
     it('should transition to pages using swup API', () => {
         cy.window().then(window => {
-            window.swup.loadPage({ url: '/page2' });
+            window.swup.loadPage({ url: '/page2/' });
             cy.shouldBeAtPage('/page2/');
             cy.shouldHaveH1('Page 2');
         });
@@ -163,6 +163,16 @@ context('Window', () => {
             window.swup.loadPage({ url: '/page2/' });
             cy.get('body').should('have.class', 'body2');
             cy.get('body').should('not.have.class', 'body1');
+        });
+    });
+
+    it('should cache pages', () => {
+        cy.window().then(window => {
+            window.swup.loadPage({ url: '/page2/' });
+            cy.shouldBeAtPage('/page2/');
+            cy.window().should(() => {
+                expect(window.swup.cache.getCurrentPage()).not.to.be.undefined;
+            });
         });
     });
 });
