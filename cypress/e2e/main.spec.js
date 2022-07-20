@@ -157,4 +157,12 @@ context('Window', () => {
             cy.shouldHaveH1('Page 2');
         });
     });
+
+    it('should update the body class', () => {
+        cy.window().then(window => {
+            window.swup.loadPage({ url: '/page2/' });
+            cy.get('body').should('have.class', 'body2');
+            cy.get('body').should('not.have.class', 'body1');
+        });
+    });
 });
