@@ -1,4 +1,4 @@
-# This workflow upgrades the package.json version and creates a PR
+# This workflow bumps the package.json version and creates a PR
 
 name: Update package version
 
