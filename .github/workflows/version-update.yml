@@ -13,10 +13,9 @@ on:
         - major
         - minor
         - patch
-  push: -- force-active action on branch
 
 jobs:
-  upgrade-packages:
+  update-version:
     name: Update package version
     runs-on: ubuntu-latest
     steps:
