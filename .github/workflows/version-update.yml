@@ -29,6 +29,7 @@ jobs:
         run: npm --no-git-tag-version version ${{ inputs.segment }}
       - uses: peter-evans/create-pull-request@v4
         with:
+          base: 'master'
           branch: 'version/automated'
           title: 'Update package version (automated)'
           commit-message: 'Update package version'
