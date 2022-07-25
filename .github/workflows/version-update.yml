@@ -5,10 +5,11 @@ name: Update package version
 on:
   workflow_dispatch:
     inputs:
-      semver:
-        type: choice
-        description: Which semver segment to update
+      segment:
+        description: 'Semver segment to update'
         required: true
+        default: 'patch'
+        type: choice
         options:
         - major
         - minor
@@ -23,11 +24,12 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 16
+      - run: echo "Updating ${{ inputs.segment }} version"
       - name: Update version
-        run: npm --no-git-tag-version version ${{ github.event.inputs.semver }}
+        run: npm --no-git-tag-version version ${{ inputs.segment }}
       - uses: peter-evans/create-pull-request@v4
         with:
           branch: 'version/automated'
           title: 'Update package version (automated)'
           commit-message: 'Update package version'
-          body: ''
+          body: 'Automated update to ${{ inputs.segment }} version'
