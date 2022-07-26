@@ -1,5 +1,5 @@
 import { queryAll } from '../utils';
-import { transitionEnd } from '../helpers';
+import { transitionEnd, transitionProperty } from '../helpers';
 
 const getAnimationPromises = function() {
 	const promises = [];
@@ -9,7 +9,15 @@ const getAnimationPromises = function() {
 		console.error(`No animated elements found by selector ${this.options.animationSelector}`);
 		return [Promise.resolve()];
 	}
+
 	animatedElements.forEach((element) => {
+		const transitionDuration = window.getComputedStyle(element)[`${transitionProperty()}Duration`];
+		// Resolve immediately if no transition defined
+		if (!transitionDuration || transitionDuration == '0s') {
+			console.error(`No CSS transition defined for element of selector ${this.options.animationSelector}`);
+			promises.push(Promise.resolve());
+			return;
+		}
 		const promise = new Promise((resolve) => {
 			element.addEventListener(transitionEnd(), (event) => {
 				if (element == event.target) {
@@ -19,6 +27,7 @@ const getAnimationPromises = function() {
 		});
 		promises.push(promise);
 	});
+
 	return promises;
 };
 
