@@ -142,7 +142,7 @@ var escapeCssIdentifier = exports.escapeCssIdentifier = function escapeCssIdenti
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Link = exports.markSwupElements = exports.getCurrentUrl = exports.transitionEnd = exports.fetch = exports.getDataFromHtml = exports.createHistoryRecord = exports.classify = undefined;
+exports.Link = exports.markSwupElements = exports.getCurrentUrl = exports.transitionProperty = exports.transitionEnd = exports.fetch = exports.getDataFromHtml = exports.createHistoryRecord = exports.classify = undefined;
 
 var _classify = __webpack_require__(7);
 
@@ -164,15 +164,19 @@ var _transitionEnd = __webpack_require__(11);
 
 var _transitionEnd2 = _interopRequireDefault(_transitionEnd);
 
-var _getCurrentUrl = __webpack_require__(12);
+var _transitionProperty = __webpack_require__(12);
+
+var _transitionProperty2 = _interopRequireDefault(_transitionProperty);
+
+var _getCurrentUrl = __webpack_require__(13);
 
 var _getCurrentUrl2 = _interopRequireDefault(_getCurrentUrl);
 
-var _markSwupElements = __webpack_require__(13);
+var _markSwupElements = __webpack_require__(14);
 
 var _markSwupElements2 = _interopRequireDefault(_markSwupElements);
 
-var _Link = __webpack_require__(14);
+var _Link = __webpack_require__(15);
 
 var _Link2 = _interopRequireDefault(_Link);
 
@@ -183,6 +187,7 @@ var createHistoryRecord = exports.createHistoryRecord = _createHistoryRecord2.de
 var getDataFromHtml = exports.getDataFromHtml = _getDataFromHtml2.default;
 var fetch = exports.fetch = _fetch2.default;
 var transitionEnd = exports.transitionEnd = _transitionEnd2.default;
+var transitionProperty = exports.transitionProperty = _transitionProperty2.default;
 var getCurrentUrl = exports.getCurrentUrl = _getCurrentUrl2.default;
 var markSwupElements = exports.markSwupElements = _markSwupElements2.default;
 var Link = exports.Link = _Link2.default;
@@ -232,39 +237,39 @@ var _loadPage = __webpack_require__(6);
 
 var _loadPage2 = _interopRequireDefault(_loadPage);
 
-var _renderPage = __webpack_require__(15);
+var _renderPage = __webpack_require__(16);
 
 var _renderPage2 = _interopRequireDefault(_renderPage);
 
-var _triggerEvent = __webpack_require__(16);
+var _triggerEvent = __webpack_require__(17);
 
 var _triggerEvent2 = _interopRequireDefault(_triggerEvent);
 
-var _on = __webpack_require__(17);
+var _on = __webpack_require__(18);
 
 var _on2 = _interopRequireDefault(_on);
 
-var _off = __webpack_require__(18);
+var _off = __webpack_require__(19);
 
 var _off2 = _interopRequireDefault(_off);
 
-var _updateTransition = __webpack_require__(19);
+var _updateTransition = __webpack_require__(20);
 
 var _updateTransition2 = _interopRequireDefault(_updateTransition);
 
-var _getAnchorElement = __webpack_require__(20);
+var _getAnchorElement = __webpack_require__(21);
 
 var _getAnchorElement2 = _interopRequireDefault(_getAnchorElement);
 
-var _getAnimationPromises = __webpack_require__(21);
+var _getAnimationPromises = __webpack_require__(22);
 
 var _getAnimationPromises2 = _interopRequireDefault(_getAnimationPromises);
 
-var _getPageData = __webpack_require__(22);
+var _getPageData = __webpack_require__(23);
 
 var _getPageData2 = _interopRequireDefault(_getPageData);
 
-var _plugins = __webpack_require__(23);
+var _plugins = __webpack_require__(24);
 
 var _utils = __webpack_require__(0);
 
@@ -946,28 +951,37 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 var transitionEnd = function transitionEnd() {
-	var el = document.createElement('div');
-
-	var transEndEventNames = {
-		WebkitTransition: 'webkitTransitionEnd',
-		MozTransition: 'transitionend',
-		OTransition: 'oTransitionEnd otransitionend',
-		transition: 'transitionend'
-	};
-
-	for (var name in transEndEventNames) {
-		if (el.style[name] !== undefined) {
-			return transEndEventNames[name];
-		}
+	if (window.ontransitionend === undefined && window.onwebkittransitionend !== undefined) {
+		return 'webkitTransitionEnd';
+	} else {
+		return 'transitionend';
 	}
-
-	return false;
 };
 
 exports.default = transitionEnd;
 
 /***/ }),
 /* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+var transitionProperty = function transitionProperty() {
+	if (window.ontransitionend === undefined && window.onwebkittransitionend !== undefined) {
+		return 'WebkitTransition';
+	} else {
+		return 'transition';
+	}
+};
+
+exports.default = transitionProperty;
+
+/***/ }),
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -983,7 +997,7 @@ var getCurrentUrl = function getCurrentUrl() {
 exports.default = getCurrentUrl;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1017,7 +1031,7 @@ var markSwupElements = function markSwupElements(element, containers) {
 exports.default = markSwupElements;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1079,7 +1093,7 @@ var Link = function () {
 exports.default = Link;
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1168,7 +1182,7 @@ var renderPage = function renderPage(page, popstate) {
 exports.default = renderPage;
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1195,7 +1209,7 @@ var triggerEvent = function triggerEvent(eventName, originalEvent) {
 exports.default = triggerEvent;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1215,7 +1229,7 @@ var on = function on(event, handler) {
 exports.default = on;
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1255,7 +1269,7 @@ var off = function off(event, handler) {
 exports.default = off;
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1276,7 +1290,7 @@ var updateTransition = function updateTransition(from, to, custom) {
 exports.default = updateTransition;
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1307,7 +1321,7 @@ var getAnchorElement = function getAnchorElement(hash) {
 exports.default = getAnchorElement;
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1322,9 +1336,24 @@ var _utils = __webpack_require__(0);
 var _helpers = __webpack_require__(1);
 
 var getAnimationPromises = function getAnimationPromises() {
+	var _this = this;
+
 	var promises = [];
-	var animatedElements = (0, _utils.queryAll)(this.options.animationSelector);
+	var animatedElements = (0, _utils.queryAll)(this.options.animationSelector, document.body);
+
+	if (!animatedElements.length) {
+		console.error('No animated elements found by selector ' + this.options.animationSelector);
+		return [Promise.resolve()];
+	}
+
 	animatedElements.forEach(function (element) {
+		var transitionDuration = window.getComputedStyle(element)[(0, _helpers.transitionProperty)() + 'Duration'];
+		// Resolve immediately if no transition defined
+		if (!transitionDuration || transitionDuration == '0s') {
+			console.error('No CSS transition defined for element of selector ' + _this.options.animationSelector);
+			promises.push(Promise.resolve());
+			return;
+		}
 		var promise = new Promise(function (resolve) {
 			element.addEventListener((0, _helpers.transitionEnd)(), function (event) {
 				if (element == event.target) {
@@ -1334,13 +1363,14 @@ var getAnimationPromises = function getAnimationPromises() {
 		});
 		promises.push(promise);
 	});
+
 	return promises;
 };
 
 exports.default = getAnimationPromises;
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1372,7 +1402,7 @@ var getPageData = function getPageData(request) {
 exports.default = getPageData;
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
