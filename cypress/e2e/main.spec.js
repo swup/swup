@@ -48,6 +48,15 @@ context('Window', () => {
         cy.shouldHaveH1('Page 3');
     });
 
+    it('should transition if no CSS transition is defined', () => {
+        cy.window().then(window => {
+            window.document.body.classList.add('no-transitions');
+        });
+        cy.triggerClickOnLink('/page2/');
+        cy.shouldBeAtPage('/page2/');
+        cy.shouldHaveH1('Page 2');
+    });
+
     it('should ignore links with data-no-swup attr', () => {
         cy.shouldNativelyLoadPageAfterAction('/page4/', () => {
             cy.get(`a[data-no-swup]`).first().click();
