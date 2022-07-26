@@ -50,7 +50,7 @@ context('Window', () => {
 
     it('should transition if no CSS transition is defined', () => {
         cy.window().then(window => {
-            window.document.body.classList.add('no-transitions');
+            window.document.documentElement.classList.add('no-transitions');
         });
         cy.triggerClickOnLink('/page2/');
         cy.shouldBeAtPage('/page2/');
