@@ -1,20 +1,9 @@
 const transitionEnd = () => {
-	const el = document.createElement('div');
-
-	const transEndEventNames = {
-		WebkitTransition: 'webkitTransitionEnd',
-		MozTransition: 'transitionend',
-		OTransition: 'oTransitionEnd otransitionend',
-		transition: 'transitionend'
-	};
-
-	for (let name in transEndEventNames) {
-		if (el.style[name] !== undefined) {
-			return transEndEventNames[name];
-		}
+	if (window.ontransitionend === undefined && window.onwebkittransitionend !== undefined) {
+		return 'webkitTransitionEnd'
+	} else {
+		return 'transitionend'
 	}
-
-	return false;
 };
 
 export default transitionEnd;

@@ -289,3 +289,7 @@ html.is-animating .button--fade {
   display: block;
   margin: 1000px 0;
 }
+
+.no-transitions * {
+  transition: none !important;
+}
