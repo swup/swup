@@ -14,7 +14,7 @@ const getAnimationPromises = function() {
 		const transitionDuration = window.getComputedStyle(element)[`${transitionProperty()}Duration`];
 		// Resolve immediately if no transition defined
 		if (!transitionDuration || transitionDuration == '0s') {
-			console.error(`No CSS transition defined for element of selector ${this.options.animationSelector}`);
+			console.error(`No CSS transition duration defined for element of selector ${this.options.animationSelector}`);
 			promises.push(Promise.resolve());
 			return;
 		}
