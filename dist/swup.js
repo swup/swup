@@ -102,44 +102,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-var query = exports.query = function query(selector) {
-	var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
-
-	if (typeof selector !== 'string') {
-		return selector;
-	}
-
-	return context.querySelector(selector);
-};
-
-var queryAll = exports.queryAll = function queryAll(selector) {
-	var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
-
-	if (typeof selector !== 'string') {
-		return selector;
-	}
-
-	return Array.prototype.slice.call(context.querySelectorAll(selector));
-};
-
-var escapeCssIdentifier = exports.escapeCssIdentifier = function escapeCssIdentifier(ident) {
-	if (window.CSS && window.CSS.escape) {
-		return CSS.escape(ident);
-	} else {
-		return ident;
-	}
-};
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.Link = exports.markSwupElements = exports.getCurrentUrl = exports.transitionProperty = exports.transitionEnd = exports.fetch = exports.getDataFromHtml = exports.createHistoryRecord = exports.classify = undefined;
@@ -191,6 +153,44 @@ var transitionProperty = exports.transitionProperty = _transitionProperty2.defau
 var getCurrentUrl = exports.getCurrentUrl = _getCurrentUrl2.default;
 var markSwupElements = exports.markSwupElements = _markSwupElements2.default;
 var Link = exports.Link = _Link2.default;
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+var query = exports.query = function query(selector) {
+	var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
+
+	if (typeof selector !== 'string') {
+		return selector;
+	}
+
+	return context.querySelector(selector);
+};
+
+var queryAll = exports.queryAll = function queryAll(selector) {
+	var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
+
+	if (typeof selector !== 'string') {
+		return selector;
+	}
+
+	return Array.prototype.slice.call(context.querySelectorAll(selector));
+};
+
+var escapeCssIdentifier = exports.escapeCssIdentifier = function escapeCssIdentifier(ident) {
+	if (window.CSS && window.CSS.escape) {
+		return CSS.escape(ident);
+	} else {
+		return ident;
+	}
+};
 
 /***/ }),
 /* 2 */
@@ -271,9 +271,9 @@ var _getPageData2 = _interopRequireDefault(_getPageData);
 
 var _plugins = __webpack_require__(24);
 
-var _utils = __webpack_require__(0);
+var _utils = __webpack_require__(1);
 
-var _helpers = __webpack_require__(1);
+var _helpers = __webpack_require__(0);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -379,9 +379,9 @@ var Swup = function () {
 			window.addEventListener('popstate', this.boundPopStateHandler);
 
 			// initial save to cache
-			var page = (0, _helpers.getDataFromHtml)(document.documentElement.outerHTML, this.options.containers);
-			page.url = page.responseURL = (0, _helpers.getCurrentUrl)();
 			if (this.options.cache) {
+				var page = (0, _helpers.getDataFromHtml)(document.documentElement.outerHTML, this.options.containers);
+				page.url = page.responseURL = (0, _helpers.getCurrentUrl)();
 				this.cache.cacheUrl(page);
 			}
 
@@ -682,7 +682,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _helpers = __webpack_require__(1);
+var _helpers = __webpack_require__(0);
 
 var loadPage = function loadPage(data, popstate) {
 	var _this = this;
@@ -848,34 +848,27 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var _utils = __webpack_require__(0);
+var _utils = __webpack_require__(1);
 
 var getDataFromHtml = function getDataFromHtml(html, containers) {
 	var fakeDom = document.createElement('html');
 	fakeDom.innerHTML = html;
 	var blocks = [];
 
-	var _loop = function _loop(i) {
-		if (fakeDom.querySelector(containers[i]) == null) {
-			// page in invalid
-			return {
-				v: null
-			};
+	containers.forEach(function (selector) {
+		if ((0, _utils.query)(selector, fakeDom) == null) {
+			console.error('Container ' + selector + ' not found on page.');
+			return null;
 		} else {
-			(0, _utils.queryAll)(containers[i]).forEach(function (item, index) {
-				(0, _utils.queryAll)(containers[i], fakeDom)[index].setAttribute('data-swup', blocks.length); // marks element with data-swup
-				blocks.push((0, _utils.queryAll)(containers[i], fakeDom)[index].outerHTML);
+			if ((0, _utils.queryAll)(selector).length !== (0, _utils.queryAll)(selector, fakeDom).length) {
+				console.warn('Mismatched number of containers found on new page.');
+			}
+			(0, _utils.queryAll)(selector).forEach(function (item, index) {
+				(0, _utils.queryAll)(selector, fakeDom)[index].setAttribute('data-swup', blocks.length);
+				blocks.push((0, _utils.queryAll)(selector, fakeDom)[index].outerHTML);
 			});
 		}
-	};
-
-	for (var i = 0; i < containers.length; i++) {
-		var _ret = _loop(i);
-
-		if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
-	}
+	});
 
 	var json = {
 		title: fakeDom.querySelector('title').innerText,
@@ -1007,25 +1000,21 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _utils = __webpack_require__(0);
+var _utils = __webpack_require__(1);
 
 var markSwupElements = function markSwupElements(element, containers) {
 	var blocks = 0;
 
-	var _loop = function _loop(i) {
-		if (element.querySelector(containers[i]) == null) {
-			console.warn('Element ' + containers[i] + ' is not in current page.');
+	containers.forEach(function (selector) {
+		if ((0, _utils.query)(selector, element) == null) {
+			console.error('Container ' + selector + ' not found on page.');
 		} else {
-			(0, _utils.queryAll)(containers[i]).forEach(function (item, index) {
-				(0, _utils.queryAll)(containers[i], element)[index].setAttribute('data-swup', blocks);
+			(0, _utils.queryAll)(selector).forEach(function (item, index) {
+				(0, _utils.queryAll)(selector, element)[index].setAttribute('data-swup', blocks);
 				blocks++;
 			});
 		}
-	};
-
-	for (var i = 0; i < containers.length; i++) {
-		_loop(i);
-	}
+	});
 };
 
 exports.default = markSwupElements;
@@ -1105,9 +1094,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _utils = __webpack_require__(0);
-
-var _helpers = __webpack_require__(1);
+var _helpers = __webpack_require__(0);
 
 var renderPage = function renderPage(page, popstate) {
 	var _this = this;
@@ -1115,16 +1102,16 @@ var renderPage = function renderPage(page, popstate) {
 	document.documentElement.classList.remove('is-leaving');
 
 	// replace state in case the url was redirected
-	var link = new _helpers.Link(page.responseURL);
-	if (window.location.pathname !== link.getPath()) {
+	var url = new _helpers.Link(page.responseURL).getPath();
+	if (window.location.pathname !== url) {
 		window.history.replaceState({
-			url: link.getPath(),
+			url: url,
 			random: Math.random(),
 			source: 'swup'
-		}, document.title, link.getPath());
+		}, document.title, url);
 
 		// save new record for redirected url
-		this.cache.cacheUrl(_extends({}, page, { url: link.getPath() }));
+		this.cache.cacheUrl(_extends({}, page, { url: url }));
 	}
 
 	// only add for non-popstate transitions
@@ -1300,7 +1287,7 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _utils = __webpack_require__(0);
+var _utils = __webpack_require__(1);
 
 var getAnchorElement = function getAnchorElement(hash) {
 	if (!hash) {
@@ -1331,9 +1318,9 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _utils = __webpack_require__(0);
+var _utils = __webpack_require__(1);
 
-var _helpers = __webpack_require__(1);
+var _helpers = __webpack_require__(0);
 
 var getAnimationPromises = function getAnimationPromises() {
 	var _this = this;
@@ -1380,7 +1367,7 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _helpers = __webpack_require__(1);
+var _helpers = __webpack_require__(0);
 
 var getPageData = function getPageData(request) {
 	// this method can be replaced in case other content than html is expected to be received from server

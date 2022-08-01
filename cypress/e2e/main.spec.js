@@ -10,6 +10,10 @@ context('Window', () => {
         cy.shouldHaveH1('Page 1');
     });
 
+    it('should add data-swup attr to containers', () => {
+        cy.get('[data-cy=container]').should('have.attr', 'data-swup', '0');
+    });
+
     it('should prevent the default click event', () => {
         let triggered = false;
         let prevented = false;

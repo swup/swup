@@ -1,0 +1,35 @@
+# This workflow bumps the package.json version and creates a PR
+
+name: Update package version
+
+on:
+  workflow_dispatch:
+    inputs:
+      segment:
+        description: 'Semver segment to update'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+        - minor
+        - patch
+
+jobs:
+  update-version:
+    name: Update package version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - run: echo "Updating ${{ inputs.segment }} version"
+      - name: Update version
+        run: npm --no-git-tag-version version ${{ inputs.segment }}
+      - uses: peter-evans/create-pull-request@v4
+        with:
+          base: 'master'
+          branch: 'version/automated'
+          title: 'Update package version (automated)'
+          commit-message: 'Update package version'
+          body: 'Automated update to ${{ inputs.segment }} version'
