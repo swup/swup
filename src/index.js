@@ -120,9 +120,9 @@ export default class Swup {
 		window.addEventListener('popstate', this.boundPopStateHandler);
 
 		// initial save to cache
-		let page = getDataFromHtml(document.documentElement.outerHTML, this.options.containers);
-		page.url = page.responseURL = getCurrentUrl();
 		if (this.options.cache) {
+			const page = getDataFromHtml(document.documentElement.outerHTML, this.options.containers);
+			page.url = page.responseURL = getCurrentUrl();
 			this.cache.cacheUrl(page);
 		}
 

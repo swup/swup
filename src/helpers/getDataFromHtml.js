@@ -1,21 +1,24 @@
-import { queryAll } from '../utils';
+import { query, queryAll } from '../utils';
 
 const getDataFromHtml = (html, containers) => {
 	let fakeDom = document.createElement('html');
 	fakeDom.innerHTML = html;
 	let blocks = [];
 
-	for (let i = 0; i < containers.length; i++) {
-		if (fakeDom.querySelector(containers[i]) == null) {
-			// page in invalid
+	containers.forEach((selector) => {
+		if (query(selector, fakeDom) == null) {
+			console.error(`Container ${selector} not found on page.`);
 			return null;
 		} else {
-			queryAll(containers[i]).forEach((item, index) => {
-				queryAll(containers[i], fakeDom)[index].setAttribute('data-swup', blocks.length); // marks element with data-swup
-				blocks.push(queryAll(containers[i], fakeDom)[index].outerHTML);
+			if (queryAll(selector).length !== queryAll(selector, fakeDom).length) {
+				console.warn(`Mismatched number of containers found on new page.`);
+			}
+			queryAll(selector).forEach((item, index) => {
+				queryAll(selector, fakeDom)[index].setAttribute('data-swup', blocks.length);
+				blocks.push(queryAll(selector, fakeDom)[index].outerHTML);
 			});
 		}
-	}
+	});
 
 	const json = {
 		title: fakeDom.querySelector('title').innerText,
