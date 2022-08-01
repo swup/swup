@@ -1,4 +1,4 @@
-import { getCurrentUrl, normalizeUrl } from './../helpers';
+import { getCurrentUrl, normalizeUrl } from '../helpers';
 
 export class Cache {
 	constructor() {
