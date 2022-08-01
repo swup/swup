@@ -1,3 +1,5 @@
+import { getCurrentUrl, normalizeUrl } from '../helpers';
+
 export class Cache {
 	constructor() {
 		this.pages = {};
@@ -5,6 +7,7 @@ export class Cache {
 	}
 
 	cacheUrl(page) {
+		page.url = normalizeUrl(page.url);
 		if (page.url in this.pages === false) {
 			this.pages[page.url] = page;
 		}
@@ -13,14 +16,16 @@ export class Cache {
 	}
 
 	getPage(url) {
+		url = normalizeUrl(url);
 		return this.pages[url];
 	}
 
 	getCurrentPage() {
-		return this.getPage(window.location.pathname + window.location.search);
+		return this.getPage(getCurrentUrl());
 	}
 
 	exists(url) {
+		url = normalizeUrl(url);
 		return url in this.pages;
 	}
 
