@@ -3,6 +3,7 @@
   "version": "2.0.18",
   "description": "Complete, flexible, extensible and easy to use page transition library for your web.",
   "main": "lib/index.js",
+  "type": "module",
   "scripts": {
     "cy:open": "cypress open",
     "compile": "babel --presets es2015,stage-0 -d lib/ src/",
