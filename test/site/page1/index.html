@@ -69,13 +69,13 @@
         </ul>
     </main>
     <script>
-        const swup = new Swup({
+        window._swup = new Swup({
             plugins: [
                 new SwupScrollPlugin(),
                 // new SwupScriptsPlugin(),
                 new SwupHeadPlugin(),
                 new SwupPreloadPlugin(),
-                new SwupFormsPlugin(),
+                // new SwupFormsPlugin(),
                 new SwupDebugPlugin(),
                 // new SwupJsPlugin(),
                 new SwupGiaPlugin(),
@@ -83,6 +83,9 @@
                 new SwupFadeTheme(),
             ]
         });
+
+        // Make sure no plugin relies on global swup instance
+        window.swup = null;
     </script>
 </body>
 </html>
