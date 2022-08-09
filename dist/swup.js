@@ -1222,7 +1222,7 @@ var renderPage = function renderPage(page, popstate) {
     Promise.all(animationPromises).then(function () {
       _this.triggerEvent('animationInDone');
       _this.triggerEvent('transitionEnd', popstate);
-      cleanupAnimationClasses();
+      _this.cleanupAnimationClasses();
     });
   } else {
     this.triggerEvent('transitionEnd', popstate);
