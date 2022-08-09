@@ -14,7 +14,7 @@ import getPageData from './modules/getPageData';
 import { use, unuse, findPlugin } from './modules/plugins';
 
 import { queryAll } from './utils';
-import { getDataFromHtml, getCurrentUrl, markSwupElements, Link } from './helpers';
+import { getDataFromHtml, getCurrentUrl, markSwupElements, Link, cleanupAnimationClasses } from './helpers';
 
 export default class Swup {
 	constructor(setOptions) {
@@ -81,6 +81,7 @@ export default class Swup {
 		this.delegatedListeners = {};
 		// so we are able to remove the listener
 		this.boundPopStateHandler = this.popStateHandler.bind(this);
+    
 
 		// make modules accessible in instance
 		this.cache = new Cache();
@@ -98,6 +99,8 @@ export default class Swup {
 		this.use = use;
 		this.unuse = unuse;
 		this.findPlugin = findPlugin;
+    this.getCurrentUrl = getCurrentUrl;
+    this.cleanupAnimationClasses = cleanupAnimationClasses;
 
 		// enable swup
 		this.enable();
@@ -250,6 +253,12 @@ export default class Swup {
 			event.preventDefault();
 		}
 		this.triggerEvent('popState', event);
+    
+    if( !this.options.animateHistoryBrowsing ) {
+      document.documentElement.classList.remove('is-animating');
+      cleanupAnimationClasses();
+    }
+
 		this.loadPage({ url: link.getAddress() }, event);
 	}
 }
