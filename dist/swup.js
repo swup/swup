@@ -104,7 +104,7 @@ return /******/ (function(modules) { // webpackBootstrap
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Link = exports.markSwupElements = exports.normalizeUrl = exports.getCurrentUrl = exports.transitionProperty = exports.transitionEnd = exports.fetch = exports.getDataFromHtml = exports.createHistoryRecord = exports.classify = undefined;
+exports.cleanupAnimationClasses = exports.Link = exports.markSwupElements = exports.normalizeUrl = exports.getCurrentUrl = exports.transitionProperty = exports.transitionEnd = exports.fetch = exports.getDataFromHtml = exports.createHistoryRecord = exports.classify = undefined;
 
 var _classify = __webpack_require__(7);
 
@@ -146,6 +146,10 @@ var _Link = __webpack_require__(2);
 
 var _Link2 = _interopRequireDefault(_Link);
 
+var _cleanupAnimationClasses = __webpack_require__(16);
+
+var _cleanupAnimationClasses2 = _interopRequireDefault(_cleanupAnimationClasses);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var classify = exports.classify = _classify2.default;
@@ -158,6 +162,7 @@ var getCurrentUrl = exports.getCurrentUrl = _getCurrentUrl2.default;
 var normalizeUrl = exports.normalizeUrl = _normalizeUrl2.default;
 var markSwupElements = exports.markSwupElements = _markSwupElements2.default;
 var Link = exports.Link = _Link2.default;
+var cleanupAnimationClasses = exports.cleanupAnimationClasses = _cleanupAnimationClasses2.default;
 
 /***/ }),
 /* 1 */
@@ -300,43 +305,43 @@ var _Cache = __webpack_require__(6);
 
 var _Cache2 = _interopRequireDefault(_Cache);
 
-var _loadPage = __webpack_require__(16);
+var _loadPage = __webpack_require__(17);
 
 var _loadPage2 = _interopRequireDefault(_loadPage);
 
-var _renderPage = __webpack_require__(17);
+var _renderPage = __webpack_require__(18);
 
 var _renderPage2 = _interopRequireDefault(_renderPage);
 
-var _triggerEvent = __webpack_require__(18);
+var _triggerEvent = __webpack_require__(19);
 
 var _triggerEvent2 = _interopRequireDefault(_triggerEvent);
 
-var _on = __webpack_require__(19);
+var _on = __webpack_require__(20);
 
 var _on2 = _interopRequireDefault(_on);
 
-var _off = __webpack_require__(20);
+var _off = __webpack_require__(21);
 
 var _off2 = _interopRequireDefault(_off);
 
-var _updateTransition = __webpack_require__(21);
+var _updateTransition = __webpack_require__(22);
 
 var _updateTransition2 = _interopRequireDefault(_updateTransition);
 
-var _getAnchorElement = __webpack_require__(22);
+var _getAnchorElement = __webpack_require__(23);
 
 var _getAnchorElement2 = _interopRequireDefault(_getAnchorElement);
 
-var _getAnimationPromises = __webpack_require__(23);
+var _getAnimationPromises = __webpack_require__(24);
 
 var _getAnimationPromises2 = _interopRequireDefault(_getAnimationPromises);
 
-var _getPageData = __webpack_require__(24);
+var _getPageData = __webpack_require__(25);
 
 var _getPageData2 = _interopRequireDefault(_getPageData);
 
-var _plugins = __webpack_require__(25);
+var _plugins = __webpack_require__(26);
 
 var _utils = __webpack_require__(1);
 
@@ -425,6 +430,8 @@ var Swup = function () {
 		this.use = _plugins.use;
 		this.unuse = _plugins.unuse;
 		this.findPlugin = _plugins.findPlugin;
+		this.getCurrentUrl = _helpers.getCurrentUrl;
+		this.cleanupAnimationClasses = _helpers.cleanupAnimationClasses;
 
 		// enable swup
 		this.enable();
@@ -568,6 +575,12 @@ var Swup = function () {
 				event.preventDefault();
 			}
 			this.triggerEvent('popState', event);
+
+			if (!this.options.animateHistoryBrowsing) {
+				document.documentElement.classList.remove('is-animating');
+				(0, _helpers.cleanupAnimationClasses)();
+			}
+
 			this.loadPage({ url: link.getAddress() }, event);
 		}
 	}]);
@@ -999,6 +1012,30 @@ exports.default = markSwupElements;
 
 
 Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var cleanupAnimationClasses = function cleanupAnimationClasses() {
+  document.documentElement.className.split(' ').forEach(function (classItem) {
+    if (
+    // remove "to-{page}" classes
+    new RegExp('^to-').test(classItem) ||
+    // remove all other classes
+    classItem === 'is-changing' || classItem === 'is-rendering' || classItem === 'is-popstate') {
+      document.documentElement.classList.remove(classItem);
+    }
+  });
+};
+
+exports.default = cleanupAnimationClasses;
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
@@ -1116,14 +1153,14 @@ var loadPage = function loadPage(data, popstate) {
 exports.default = loadPage;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 Object.defineProperty(exports, "__esModule", {
-	value: true
+  value: true
 });
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -1131,79 +1168,74 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 var _helpers = __webpack_require__(0);
 
 var renderPage = function renderPage(page, popstate) {
-	var _this = this;
+  var _this = this;
 
-	document.documentElement.classList.remove('is-leaving');
+  document.documentElement.classList.remove('is-leaving');
 
-	// replace state in case the url was redirected
-	var url = new _helpers.Link(page.responseURL).getPath();
-	if (window.location.pathname !== url) {
-		window.history.replaceState({
-			url: url,
-			random: Math.random(),
-			source: 'swup'
-		}, document.title, url);
+  var isCurrentPage = this.getCurrentUrl() === page.url;
+  if (!isCurrentPage) return;
 
-		// save new record for redirected url
-		this.cache.cacheUrl(_extends({}, page, { url: url }));
-	}
+  // replace state in case the url was redirected
+  var url = new _helpers.Link(page.responseURL).getPath();
+  if (window.location.pathname !== url) {
+    window.history.replaceState({
+      url: url,
+      random: Math.random(),
+      source: 'swup'
+    }, document.title, url);
 
-	// only add for non-popstate transitions
-	if (!popstate || this.options.animateHistoryBrowsing) {
-		document.documentElement.classList.add('is-rendering');
-	}
+    // save new record for redirected url
+    this.cache.cacheUrl(_extends({}, page, { url: url }));
+  }
 
-	this.triggerEvent('willReplaceContent', popstate);
+  // only add for non-popstate transitions
+  if (!popstate || this.options.animateHistoryBrowsing) {
+    document.documentElement.classList.add('is-rendering');
+  }
 
-	// replace blocks
-	for (var i = 0; i < page.blocks.length; i++) {
-		document.body.querySelector('[data-swup="' + i + '"]').outerHTML = page.blocks[i];
-	}
+  this.triggerEvent('willReplaceContent', popstate);
+  // replace blocks
+  for (var i = 0; i < page.blocks.length; i++) {
+    document.body.querySelector('[data-swup="' + i + '"]').outerHTML = page.blocks[i];
+  }
+  // set title
+  document.title = page.title;
+  this.triggerEvent('contentReplaced', popstate);
+  this.triggerEvent('pageView', popstate);
 
-	// set title
-	document.title = page.title;
+  // empty cache if it's disabled (because pages could be preloaded and stuff)
+  if (!this.options.cache) {
+    this.cache.empty();
+  }
 
-	this.triggerEvent('contentReplaced', popstate);
-	this.triggerEvent('pageView', popstate);
+  // start animation IN
+  setTimeout(function () {
+    if (!popstate || _this.options.animateHistoryBrowsing) {
+      _this.triggerEvent('animationInStart');
+      document.documentElement.classList.remove('is-animating');
+    }
+  }, 10);
 
-	// empty cache if it's disabled (because pages could be preloaded and stuff)
-	if (!this.options.cache) {
-		this.cache.empty();
-	}
+  // handle end of animation
+  if (!popstate || this.options.animateHistoryBrowsing) {
+    var animationPromises = this.getAnimationPromises('in');
+    Promise.all(animationPromises).then(function () {
+      _this.triggerEvent('animationInDone');
+      _this.triggerEvent('transitionEnd', popstate);
+      cleanupAnimationClasses();
+    });
+  } else {
+    this.triggerEvent('transitionEnd', popstate);
+  }
 
-	// start animation IN
-	setTimeout(function () {
-		if (!popstate || _this.options.animateHistoryBrowsing) {
-			_this.triggerEvent('animationInStart');
-			document.documentElement.classList.remove('is-animating');
-		}
-	}, 10);
-
-	// handle end of animation
-	if (!popstate || this.options.animateHistoryBrowsing) {
-		var animationPromises = this.getAnimationPromises('in');
-		Promise.all(animationPromises).then(function () {
-			_this.triggerEvent('animationInDone');
-			_this.triggerEvent('transitionEnd', popstate);
-			// remove "to-{page}" classes
-			document.documentElement.className.split(' ').forEach(function (classItem) {
-				if (new RegExp('^to-').test(classItem) || classItem === 'is-changing' || classItem === 'is-rendering' || classItem === 'is-popstate') {
-					document.documentElement.classList.remove(classItem);
-				}
-			});
-		});
-	} else {
-		this.triggerEvent('transitionEnd', popstate);
-	}
-
-	// reset scroll-to element
-	this.scrollToElement = null;
+  // reset scroll-to element
+  this.scrollToElement = null;
 };
 
 exports.default = renderPage;
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1230,7 +1262,7 @@ var triggerEvent = function triggerEvent(eventName, originalEvent) {
 exports.default = triggerEvent;
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1250,7 +1282,7 @@ var on = function on(event, handler) {
 exports.default = on;
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1290,7 +1322,7 @@ var off = function off(event, handler) {
 exports.default = off;
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1311,7 +1343,7 @@ var updateTransition = function updateTransition(from, to, custom) {
 exports.default = updateTransition;
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1342,7 +1374,7 @@ var getAnchorElement = function getAnchorElement(hash) {
 exports.default = getAnchorElement;
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1391,7 +1423,7 @@ var getAnimationPromises = function getAnimationPromises() {
 exports.default = getAnimationPromises;
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1423,7 +1455,7 @@ var getPageData = function getPageData(request) {
 exports.default = getPageData;
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
