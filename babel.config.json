@@ -1,0 +1,11 @@
+{
+    "babelrc": false,
+    "sourceType": "unambiguous",
+    "presets": [
+        ["@babel/preset-env", { "targets": "defaults" }]
+    ],
+    "overrides": [{
+        "test": "./node_modules",
+        "sourceType": "unambiguous"
+    }]
+}

@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "cy:open": "cypress open",
-    "compile": "babel --presets es2015,stage-0 -d lib/ src/",
+    "compile": "babel -d lib/ src/",
     "build": "webpack-cli",
     "prepublish": "npm run compile && npm run build",
     "postinstall": "opencollective-postinstall || true",
