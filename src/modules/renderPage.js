@@ -58,7 +58,7 @@ const renderPage = function(page, popstate) {
 		Promise.all(animationPromises).then(() => {
 			this.triggerEvent('animationInDone');
 			this.triggerEvent('transitionEnd', popstate);
-			cleanupAnimationClasses();
+			this.cleanupAnimationClasses();
 		});
 	} else {
 		this.triggerEvent('transitionEnd', popstate);
