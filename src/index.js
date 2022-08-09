@@ -14,7 +14,13 @@ import getPageData from './modules/getPageData';
 import { use, unuse, findPlugin } from './modules/plugins';
 
 import { queryAll } from './utils';
-import { getDataFromHtml, getCurrentUrl, markSwupElements, Link, cleanupAnimationClasses } from './helpers';
+import {
+	getDataFromHtml,
+	getCurrentUrl,
+	markSwupElements,
+	Link,
+	cleanupAnimationClasses
+} from './helpers';
 
 export default class Swup {
 	constructor(setOptions) {
@@ -24,7 +30,7 @@ export default class Swup {
 			animationSelector: '[class*="transition-"]',
 			linkSelector: `a[href^="${
 				window.location.origin
-				}"]:not([data-no-swup]), a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup])`,
+			}"]:not([data-no-swup]), a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup])`,
 			cache: true,
 			containers: ['#swup'],
 			requestHeaders: {
@@ -32,7 +38,7 @@ export default class Swup {
 				Accept: 'text/html, application/xhtml+xml'
 			},
 			plugins: [],
-			skipPopStateHandling: function (event) {
+			skipPopStateHandling: function(event) {
 				return !(event.state && event.state.source === 'swup');
 			}
 		};
@@ -81,7 +87,6 @@ export default class Swup {
 		this.delegatedListeners = {};
 		// so we are able to remove the listener
 		this.boundPopStateHandler = this.popStateHandler.bind(this);
-    
 
 		// make modules accessible in instance
 		this.cache = new Cache();
@@ -95,12 +100,12 @@ export default class Swup {
 		this.getAnimationPromises = getAnimationPromises;
 		this.getPageData = getPageData;
 		this.getAnchorElement = getAnchorElement;
-		this.log = () => { }; // here so it can be used by plugins
+		this.log = () => {}; // here so it can be used by plugins
 		this.use = use;
 		this.unuse = unuse;
 		this.findPlugin = findPlugin;
-    this.getCurrentUrl = getCurrentUrl;
-    this.cleanupAnimationClasses = cleanupAnimationClasses;
+		this.getCurrentUrl = getCurrentUrl;
+		this.cleanupAnimationClasses = cleanupAnimationClasses;
 
 		// enable swup
 		this.enable();
@@ -124,7 +129,10 @@ export default class Swup {
 
 		// initial save to cache
 		if (this.options.cache) {
-			const page = getDataFromHtml(document.documentElement.outerHTML, this.options.containers);
+			const page = getDataFromHtml(
+				document.documentElement.outerHTML,
+				this.options.containers
+			);
 			page.url = page.responseURL = getCurrentUrl();
 			this.cache.cacheUrl(page);
 		}
@@ -253,11 +261,11 @@ export default class Swup {
 			event.preventDefault();
 		}
 		this.triggerEvent('popState', event);
-    
-    if( !this.options.animateHistoryBrowsing ) {
-      document.documentElement.classList.remove('is-animating');
-      cleanupAnimationClasses();
-    }
+
+		if (!this.options.animateHistoryBrowsing) {
+			document.documentElement.classList.remove('is-animating');
+			cleanupAnimationClasses();
+		}
 
 		this.loadPage({ url: link.getAddress() }, event);
 	}
