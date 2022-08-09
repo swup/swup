@@ -1160,7 +1160,7 @@ exports.default = loadPage;
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+	value: true
 });
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -1168,68 +1168,68 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 var _helpers = __webpack_require__(0);
 
 var renderPage = function renderPage(page, popstate) {
-  var _this = this;
+	var _this = this;
 
-  document.documentElement.classList.remove('is-leaving');
+	document.documentElement.classList.remove('is-leaving');
 
-  var isCurrentPage = this.getCurrentUrl() === page.url;
-  if (!isCurrentPage) return;
+	var isCurrentPage = this.getCurrentUrl() === page.url;
+	if (!isCurrentPage) return;
 
-  // replace state in case the url was redirected
-  var url = new _helpers.Link(page.responseURL).getPath();
-  if (window.location.pathname !== url) {
-    window.history.replaceState({
-      url: url,
-      random: Math.random(),
-      source: 'swup'
-    }, document.title, url);
+	// replace state in case the url was redirected
+	var url = new _helpers.Link(page.responseURL).getPath();
+	if (window.location.pathname !== url) {
+		window.history.replaceState({
+			url: url,
+			random: Math.random(),
+			source: 'swup'
+		}, document.title, url);
 
-    // save new record for redirected url
-    this.cache.cacheUrl(_extends({}, page, { url: url }));
-  }
+		// save new record for redirected url
+		this.cache.cacheUrl(_extends({}, page, { url: url }));
+	}
 
-  // only add for non-popstate transitions
-  if (!popstate || this.options.animateHistoryBrowsing) {
-    document.documentElement.classList.add('is-rendering');
-  }
+	// only add for non-popstate transitions
+	if (!popstate || this.options.animateHistoryBrowsing) {
+		document.documentElement.classList.add('is-rendering');
+	}
 
-  this.triggerEvent('willReplaceContent', popstate);
-  // replace blocks
-  for (var i = 0; i < page.blocks.length; i++) {
-    document.body.querySelector('[data-swup="' + i + '"]').outerHTML = page.blocks[i];
-  }
-  // set title
-  document.title = page.title;
-  this.triggerEvent('contentReplaced', popstate);
-  this.triggerEvent('pageView', popstate);
+	this.triggerEvent('willReplaceContent', popstate);
+	// replace blocks
+	for (var i = 0; i < page.blocks.length; i++) {
+		document.body.querySelector('[data-swup="' + i + '"]').outerHTML = page.blocks[i];
+	}
+	// set title
+	document.title = page.title;
+	this.triggerEvent('contentReplaced', popstate);
+	this.triggerEvent('pageView', popstate);
 
-  // empty cache if it's disabled (because pages could be preloaded and stuff)
-  if (!this.options.cache) {
-    this.cache.empty();
-  }
+	// empty cache if it's disabled (because pages could be preloaded and stuff)
+	if (!this.options.cache) {
+		this.cache.empty();
+	}
 
-  // start animation IN
-  setTimeout(function () {
-    if (!popstate || _this.options.animateHistoryBrowsing) {
-      _this.triggerEvent('animationInStart');
-      document.documentElement.classList.remove('is-animating');
-    }
-  }, 10);
+	// start animation IN
+	setTimeout(function () {
+		if (!popstate || _this.options.animateHistoryBrowsing) {
+			_this.triggerEvent('animationInStart');
+			document.documentElement.classList.remove('is-animating');
+		}
+	}, 10);
 
-  // handle end of animation
-  if (!popstate || this.options.animateHistoryBrowsing) {
-    var animationPromises = this.getAnimationPromises('in');
-    Promise.all(animationPromises).then(function () {
-      _this.triggerEvent('animationInDone');
-      _this.triggerEvent('transitionEnd', popstate);
-      _this.cleanupAnimationClasses();
-    });
-  } else {
-    this.triggerEvent('transitionEnd', popstate);
-  }
+	// handle end of animation
+	if (!popstate || this.options.animateHistoryBrowsing) {
+		var animationPromises = this.getAnimationPromises('in');
+		Promise.all(animationPromises).then(function () {
+			_this.triggerEvent('animationInDone');
+			_this.triggerEvent('transitionEnd', popstate);
+			_this.cleanupAnimationClasses();
+		});
+	} else {
+		this.triggerEvent('transitionEnd', popstate);
+	}
 
-  // reset scroll-to element
-  this.scrollToElement = null;
+	// reset scroll-to element
+	this.scrollToElement = null;
 };
 
 exports.default = renderPage;
