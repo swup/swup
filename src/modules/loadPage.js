@@ -70,7 +70,7 @@ const loadPage = function(data, popstate) {
 					} else {
 						// get json data
 						let page = this.getPageData(response);
-						if (page != null) {
+						if (page != null && page.blocks.length > 0) {
 							page.url = data.url;
 						} else {
 							reject(data.url);
@@ -96,6 +96,7 @@ const loadPage = function(data, popstate) {
 			this.preloadPromise = null;
 		})
 		.catch((errorUrl) => {
+      console.log( errorUrl );
 			// rewrite the skipPopStateHandling function to redirect manually when the history.go is processed
 			this.options.skipPopStateHandling = function() {
 				window.location = errorUrl;
