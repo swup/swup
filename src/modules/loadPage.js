@@ -96,7 +96,6 @@ const loadPage = function(data, popstate) {
 			this.preloadPromise = null;
 		})
 		.catch((errorUrl) => {
-      console.log( errorUrl );
 			// rewrite the skipPopStateHandling function to redirect manually when the history.go is processed
 			this.options.skipPopStateHandling = function() {
 				window.location = errorUrl;

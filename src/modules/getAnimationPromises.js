@@ -6,7 +6,7 @@ const getAnimationPromises = function() {
 	const animatedElements = queryAll(this.options.animationSelector, document.body);
 
 	if (!animatedElements.length) {
-		console.error(`No animated elements found by selector ${this.options.animationSelector}`);
+		console.warn(`[swup] No animated elements found by selector ${this.options.animationSelector}`);
 		return [Promise.resolve()];
 	}
 
@@ -14,7 +14,7 @@ const getAnimationPromises = function() {
 		const transitionDuration = window.getComputedStyle(element)[`${transitionProperty()}Duration`];
 		// Resolve immediately if no transition defined
 		if (!transitionDuration || transitionDuration == '0s') {
-			console.error(`No CSS transition duration defined for element of selector ${this.options.animationSelector}`);
+			console.warn(`[swup] No CSS transition duration defined for element of selector ${this.options.animationSelector}`);
 			promises.push(Promise.resolve());
 			return;
 		}
