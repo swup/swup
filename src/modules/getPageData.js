@@ -10,7 +10,7 @@ const getPageData = function(request) {
 	if (pageObject) {
 		pageObject.responseURL = request.responseURL ? request.responseURL : window.location.href;
 	} else {
-		console.warn('Received page is invalid.');
+		console.warn('[swup] Received page is invalid.');
 		return null;
 	}
 

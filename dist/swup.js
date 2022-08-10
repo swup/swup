@@ -819,11 +819,11 @@ var getDataFromHtml = function getDataFromHtml(html, containers) {
 
 	containers.forEach(function (selector) {
 		if ((0, _utils.query)(selector, fakeDom) == null) {
-			console.error('Container ' + selector + ' not found on page.');
+			console.warn('[swup] Container ' + selector + ' not found on page.');
 			return null;
 		} else {
 			if ((0, _utils.queryAll)(selector).length !== (0, _utils.queryAll)(selector, fakeDom).length) {
-				console.warn('Mismatched number of containers found on new page.');
+				console.warn('[swup] Mismatched number of containers found on new page.');
 			}
 			(0, _utils.queryAll)(selector).forEach(function (item, index) {
 				(0, _utils.queryAll)(selector, fakeDom)[index].setAttribute('data-swup', blocks.length);
@@ -992,7 +992,7 @@ var markSwupElements = function markSwupElements(element, containers) {
 
 	containers.forEach(function (selector) {
 		if ((0, _utils.query)(selector, element) == null) {
-			console.error('Container ' + selector + ' not found on page.');
+			console.warn('[swup] Container ' + selector + ' not found on page.');
 		} else {
 			(0, _utils.queryAll)(selector).forEach(function (item, index) {
 				(0, _utils.queryAll)(selector, element)[index].setAttribute('data-swup', blocks);
@@ -1115,7 +1115,7 @@ var loadPage = function loadPage(data, popstate) {
 					} else {
 						// get json data
 						var page = _this.getPageData(response);
-						if (page != null) {
+						if (page != null && page.blocks.length > 0) {
 							page.url = data.url;
 						} else {
 							reject(data.url);
@@ -1395,7 +1395,7 @@ var getAnimationPromises = function getAnimationPromises() {
 	var animatedElements = (0, _utils.queryAll)(this.options.animationSelector, document.body);
 
 	if (!animatedElements.length) {
-		console.error('No animated elements found by selector ' + this.options.animationSelector);
+		console.warn('[swup] No animated elements found by selector ' + this.options.animationSelector);
 		return [Promise.resolve()];
 	}
 
@@ -1403,7 +1403,7 @@ var getAnimationPromises = function getAnimationPromises() {
 		var transitionDuration = window.getComputedStyle(element)[(0, _helpers.transitionProperty)() + 'Duration'];
 		// Resolve immediately if no transition defined
 		if (!transitionDuration || transitionDuration == '0s') {
-			console.error('No CSS transition duration defined for element of selector ' + _this.options.animationSelector);
+			console.warn('[swup] No CSS transition duration defined for element of selector ' + _this.options.animationSelector);
 			promises.push(Promise.resolve());
 			return;
 		}
@@ -1445,7 +1445,7 @@ var getPageData = function getPageData(request) {
 	if (pageObject) {
 		pageObject.responseURL = request.responseURL ? request.responseURL : window.location.href;
 	} else {
-		console.warn('Received page is invalid.');
+		console.warn('[swup] Received page is invalid.');
 		return null;
 	}
 

@@ -5,7 +5,7 @@ const markSwupElements = (element, containers) => {
 
 	containers.forEach((selector) => {
 		if (query(selector, element) == null) {
-			console.error(`Container ${selector} not found on page.`);
+			console.warn(`[swup] Container ${selector} not found on page.`);
 		} else {
 			queryAll(selector).forEach((item, index) => {
 				queryAll(selector, element)[index].setAttribute('data-swup', blocks);

@@ -70,7 +70,7 @@ const loadPage = function(data, popstate) {
 					} else {
 						// get json data
 						let page = this.getPageData(response);
-						if (page != null) {
+						if (page != null && page.blocks.length > 0) {
 							page.url = data.url;
 						} else {
 							reject(data.url);
