@@ -14,7 +14,8 @@ wiki-wishlist
 .editorconfig
 .idea
 .vscode
-lib
+/lib
+/dist
 /plugins
 .nyc_output
 coverage
