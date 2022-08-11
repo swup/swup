@@ -7,6 +7,7 @@
     "cy:open": "cypress open",
     "compile": "babel --presets es2015,stage-0 -d lib/ src/",
     "build": "webpack-cli",
+    "lint": "prettier src/**/*.{js,mjs} --write",
     "prepublish": "npm run compile && npm run build",
     "postinstall": "opencollective-postinstall || true",
     "test": "npm run build && npm run test:instrument && start-server-and-test test:server http://localhost:8080 test:run",
@@ -51,5 +52,6 @@
   "collective": {
     "type": "opencollective",
     "url": "https://opencollective.com/swup"
-  }
+  },
+  "prettier": "@swup/prettier-config"
 }

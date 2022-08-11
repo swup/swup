@@ -1,8 +1,8 @@
 const transitionEnd = () => {
 	if (window.ontransitionend === undefined && window.onwebkittransitionend !== undefined) {
-		return 'webkitTransitionEnd'
+		return 'webkitTransitionEnd';
 	} else {
-		return 'transitionend'
+		return 'transitionend';
 	}
 };
 
