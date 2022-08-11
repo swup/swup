@@ -2,19 +2,23 @@ import { queryAll } from '../utils';
 import { transitionEnd, transitionProperty } from '../helpers';
 
 const getAnimationPromises = function() {
+	const selector = this.options.animationSelector;
+	const durationProperty = `${transitionProperty()}Duration`;
 	const promises = [];
-	const animatedElements = queryAll(this.options.animationSelector, document.body);
+	const animatedElements = queryAll(selector, document.body);
 
 	if (!animatedElements.length) {
-		console.warn(`[swup] No animated elements found by selector ${this.options.animationSelector}`);
+		console.warn(`[swup] No animated elements found by selector ${selector}`);
 		return [Promise.resolve()];
 	}
 
 	animatedElements.forEach((element) => {
-		const transitionDuration = window.getComputedStyle(element)[`${transitionProperty()}Duration`];
+		const transitionDuration = window.getComputedStyle(element)[durationProperty];
 		// Resolve immediately if no transition defined
 		if (!transitionDuration || transitionDuration == '0s') {
-			console.warn(`[swup] No CSS transition duration defined for element of selector ${this.options.animationSelector}`);
+			console.warn(
+				`[swup] No CSS transition duration defined for element of selector ${selector}`
+			);
 			promises.push(Promise.resolve());
 			return;
 		}
