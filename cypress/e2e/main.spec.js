@@ -1,5 +1,7 @@
 /// <reference types="Cypress" />
 
+// window._swup holds the swup instance
+
 context('Window', () => {
     beforeEach(() => {
         cy.visit('/page1/');
@@ -33,7 +35,7 @@ context('Window', () => {
     it('should trigger a custom click event', () => {
         let triggered = false;
         cy.window().then(window => {
-            window.swup.on('clickLink', () => triggered = true);
+            window._swup.on('clickLink', () => triggered = true);
         });
         cy.triggerClickOnLink('/page2/');
         cy.window().should(() => {
@@ -136,13 +138,13 @@ context('Window', () => {
 
     it('should return plugin instance', () => {
         cy.window().then(window => {
-            expect(typeof window.swup.findPlugin('ScrollPlugin')).equal('object');
+            expect(typeof window._swup.findPlugin('ScrollPlugin')).equal('object');
         });
     });
 
     it('should remove swup class from html tag', () => {
         cy.window().then(window => {
-            window.swup.destroy();
+            window._swup.destroy();
             cy.get('html').should('not.have.class', 'swup-enabled');
         });
     });
@@ -161,7 +163,7 @@ context('Window', () => {
 
     it('should transition to pages using swup API', () => {
         cy.window().then(window => {
-            window.swup.loadPage({ url: '/page2/' });
+            window._swup.loadPage({ url: '/page2/' });
             cy.shouldBeAtPage('/page2/');
             cy.shouldHaveH1('Page 2');
         });
@@ -169,7 +171,7 @@ context('Window', () => {
 
     it('should update the body class', () => {
         cy.window().then(window => {
-            window.swup.loadPage({ url: '/page2/' });
+            window._swup.loadPage({ url: '/page2/' });
             cy.get('body').should('have.class', 'body2');
             cy.get('body').should('not.have.class', 'body1');
         });
@@ -177,20 +179,20 @@ context('Window', () => {
 
     it('should cache pages', () => {
         cy.window().then(window => {
-            window.swup.loadPage({ url: '/page2/' });
+            window._swup.loadPage({ url: '/page2/' });
             cy.shouldBeAtPage('/page2/');
             cy.window().should(() => {
-                expect(window.swup.cache.getCurrentPage()).not.to.be.undefined;
+                expect(window._swup.cache.getCurrentPage()).not.to.be.undefined;
             });
         });
     });
 
     it('should cache pages from absolute URLs', () => {
         cy.window().then(window => {
-            window.swup.loadPage({ url: 'http://localhost:8080/page2/' });
+            window._swup.loadPage({ url: 'http://localhost:8080/page2/' });
             cy.shouldBeAtPage('/page2/');
             cy.window().should(() => {
-                expect(window.swup.cache.getCurrentPage()).not.to.be.undefined;
+                expect(window._swup.cache.getCurrentPage()).not.to.be.undefined;
             });
         });
     });
