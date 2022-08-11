@@ -52,5 +52,6 @@
   "collective": {
     "type": "opencollective",
     "url": "https://opencollective.com/swup"
-  }
+  },
+  "prettier": "@swup/prettier-config"
 }
