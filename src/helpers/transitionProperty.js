@@ -1,8 +1,8 @@
 const transitionProperty = () => {
 	if (window.ontransitionend === undefined && window.onwebkittransitionend !== undefined) {
-		return 'WebkitTransition'
+		return 'WebkitTransition';
 	} else {
-		return 'transition'
+		return 'transition';
 	}
 };
 
