@@ -44,4 +44,4 @@ jobs:
           command: npm run compile && npm run build
 
       # run tests!
-      - run: npm run test
+      - run: npm run ci
