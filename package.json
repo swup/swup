@@ -10,7 +10,7 @@
     "lint": "prettier src/**/*.{js,mjs} --write",
     "prepublish": "npm run compile && npm run build",
     "postinstall": "opencollective-postinstall || true",
-    "ci": "npm run build && npm run test:instrument && start-server-and-test test:server http://localhost:8274 test:run -- --record",
+    "ci": "export CI=true && npm run build && npm run test:instrument && start-server-and-test test:server http://localhost:8274 test:run -- --record",
     "test": "npm run build && npm run test:instrument && start-server-and-test test:server http://localhost:8274 test:run",
     "test:instrument": "nyc instrument --compact=false dist test/site/swup",
     "test:server": "http-server --port 8274 test/site",
