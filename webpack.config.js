@@ -1,5 +1,10 @@
-const TerserPlugin = require('terser-webpack-plugin');
-// const baseConfig = require('@swup/webpack-config');
+import TerserPlugin from 'terser-webpack-plugin';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+// import baseConfig from '@swup/webpack-config';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const moduleConfig = {
 	mode: 'production',
@@ -13,6 +18,15 @@ const moduleConfig = {
 			type: 'module'
 		}
 	},
+	module: {
+		rules: [
+			{
+				test: /\.m?js$/,
+				exclude: /node_modules/,
+				resolve: { fullySpecified: false }
+			}
+		]
+	},
 	experiments: {
 		outputModule: true
 	}
@@ -20,25 +34,6 @@ const moduleConfig = {
 
 const bundleConfig = {
 	mode: 'production',
-	module: {
-		rules: [
-			{
-				test: /\.m?js$/,
-				exclude: /node_modules/,
-				use: {
-					loader: 'babel-loader'
-				}
-			}
-		]
-	},
-	optimization: {
-		minimize: true,
-		minimizer: [
-			new TerserPlugin({
-				test: /\.min\.js$/
-			})
-		]
-	},
 	entry: {
 		swup: './entry.js',
 		'swup.min': './entry.js'
@@ -50,7 +45,25 @@ const bundleConfig = {
 			type: 'umd',
 			name: 'Swup'
 		}
+	},
+	module: {
+		rules: [
+			{
+				test: /\.m?js$/,
+				exclude: /node_modules/,
+				resolve: { fullySpecified: false },
+				use: { loader: 'babel-loader' }
+			}
+		]
+	},
+	optimization: {
+		minimize: true,
+		minimizer: [
+			new TerserPlugin({
+				test: /\.min\.js$/
+			})
+		]
 	}
 };
 
-module.exports = [moduleConfig, bundleConfig];
+export default [moduleConfig, bundleConfig];
