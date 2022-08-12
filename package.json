@@ -1,6 +1,6 @@
 {
   "name": "swup",
-  "version": "2.0.17",
+  "version": "2.0.18",
   "description": "Complete, flexible, extensible and easy to use page transition library for your web.",
   "type": "module",
   "main": "lib/index.js",
@@ -12,12 +12,15 @@
     "cy:open": "cypress open",
     "compile": "babel -d lib/ src/",
     "build": "webpack-cli",
+    "lint": "prettier src/**/*.{js,mjs} --write",
     "prepublish": "npm run compile && npm run build",
     "postinstall": "opencollective-postinstall || true",
-    "test": "npm run build && npm run test:instrument && start-server-and-test test:server http://localhost:8080 test:run",
+    "ci": "npm run build && npm run test:instrument && start-server-and-test test:server http://localhost:8274 test:run:record",
+    "test": "npm run build && npm run test:instrument && start-server-and-test test:server http://localhost:8274 test:run",
     "test:instrument": "nyc instrument --compact=false dist test/site/swup",
-    "test:server": "http-server test/site",
-    "test:run": "cypress run --record"
+    "test:server": "http-server --port 8274 test/site",
+    "test:run": "cypress run",
+    "test:run:record": "cypress run --record"
   },
   "author": "Georgy Marchuk",
   "license": "MIT",
@@ -55,5 +58,6 @@
   "collective": {
     "type": "opencollective",
     "url": "https://opencollective.com/swup"
-  }
+  },
+  "prettier": "@swup/prettier-config"
 }

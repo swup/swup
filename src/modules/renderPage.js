@@ -3,6 +3,9 @@ import { Link } from '../helpers';
 const renderPage = function(page, popstate) {
 	document.documentElement.classList.remove('is-leaving');
 
+	const isCurrentPage = this.getCurrentUrl() === page.url;
+	if (!isCurrentPage) return;
+
 	// replace state in case the url was redirected
 	const url = new Link(page.responseURL).getPath();
 	if (window.location.pathname !== url) {
@@ -26,15 +29,12 @@ const renderPage = function(page, popstate) {
 	}
 
 	this.triggerEvent('willReplaceContent', popstate);
-
 	// replace blocks
 	for (let i = 0; i < page.blocks.length; i++) {
 		document.body.querySelector(`[data-swup="${i}"]`).outerHTML = page.blocks[i];
 	}
-
 	// set title
 	document.title = page.title;
-
 	this.triggerEvent('contentReplaced', popstate);
 	this.triggerEvent('pageView', popstate);
 
@@ -57,17 +57,7 @@ const renderPage = function(page, popstate) {
 		Promise.all(animationPromises).then(() => {
 			this.triggerEvent('animationInDone');
 			this.triggerEvent('transitionEnd', popstate);
-			// remove "to-{page}" classes
-			document.documentElement.className.split(' ').forEach((classItem) => {
-				if (
-					new RegExp('^to-').test(classItem) ||
-					classItem === 'is-changing' ||
-					classItem === 'is-rendering' ||
-					classItem === 'is-popstate'
-				) {
-					document.documentElement.classList.remove(classItem);
-				}
-			});
+			this.cleanupAnimationClasses();
 		});
 	} else {
 		this.triggerEvent('transitionEnd', popstate);
