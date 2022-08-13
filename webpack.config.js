@@ -35,15 +35,27 @@ const moduleConfig = {
 const bundleConfig = {
 	mode: 'production',
 	entry: {
-		swup: './entry.js',
-		'swup.min': './entry.js'
+		swup: './src/index.js',
+		'swup.min': './src/index.js'
 	},
 	output: {
 		path: __dirname + '/dist/',
 		filename: '[name].js',
 		library: {
+			name: 'Swup',
 			type: 'umd',
-			name: 'Swup'
+			umdNamedDefine: true,
+			export: 'default'
+		},
+		environment: {
+			arrowFunction: false,
+			const: false,
+			destructuring: false,
+			dynamicImport: false,
+			forOf: false,
+			module: false,
+			optionalChaining: false,
+			templateLiteral: false
 		}
 	},
 	module: {
