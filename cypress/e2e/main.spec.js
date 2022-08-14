@@ -1,5 +1,7 @@
 /// <reference types="Cypress" />
 
+// window._swup holds the swup instance
+
 context('Window', () => {
     beforeEach(() => {
         cy.visit('/page1/');
@@ -187,7 +189,7 @@ context('Window', () => {
 
     it('should cache pages from absolute URLs', () => {
         cy.window().then(window => {
-            window._swup.loadPage({ url: 'http://localhost:8080/page2/' });
+            window._swup.loadPage({ url: 'http://localhost:8274/page2/' });
             cy.shouldBeAtPage('/page2/');
             cy.window().should(() => {
                 expect(window._swup.cache.getCurrentPage()).not.to.be.undefined;

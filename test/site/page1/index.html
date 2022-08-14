@@ -68,8 +68,11 @@
             </li>
         </ul>
     </main>
-    <script>
-        window._swup = new Swup({
+    <script type="module">
+        // Uncomment to test ESM import
+        import Swup from '/swup/index.modern.js';
+
+        const swup = new Swup({
             plugins: [
                 new SwupScrollPlugin(),
                 // new SwupScriptsPlugin(),
@@ -84,8 +87,8 @@
             ]
         });
 
-        // Make sure no plugin relies on global swup instance
-        window.swup = null;
+        // Store instance on window so we can access it from cypress tests
+        window._swup = swup;
     </script>
 </body>
 </html>
