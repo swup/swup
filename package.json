@@ -11,9 +11,7 @@
   "amdName": "Swup",
   "scripts": {
     "cy:open": "cypress open",
-    "build:module": "microbundle -f modern,esm,cjs --no-sourcemap",
-    "build:bundle": "microbundle -f umd --external none --no-sourcemap",
-    "build": "npm run build:module && npm run build:bundle",
+    "build": "microbundle --external none --no-sourcemap",
     "lint": "prettier src/**/*.{js,mjs} --write",
     "prepublish": "npm run build",
     "postinstall": "opencollective-postinstall || true",
