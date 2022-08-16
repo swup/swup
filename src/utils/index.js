@@ -21,3 +21,11 @@ export const escapeCssIdentifier = (ident) => {
 		return ident;
 	}
 };
+
+export const whenDomLoaded = (callback) => {
+	if (['complete', 'interactive', 'loaded'].includes(document.readyState)) {
+		callback();
+	} else {
+		document.addEventListener('DOMContentLoaded', () => callback(), false);
+	}
+};

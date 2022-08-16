@@ -13,7 +13,7 @@ import getAnimationPromises from './modules/getAnimationPromises';
 import getPageData from './modules/getPageData';
 import { use, unuse, findPlugin } from './modules/plugins';
 
-import { queryAll } from './utils';
+import { queryAll, whenDomLoaded } from './utils';
 import {
 	getDataFromHtml,
 	getCurrentUrl,
@@ -129,12 +129,14 @@ export default class Swup {
 
 		// initial save to cache
 		if (this.options.cache) {
-			const page = getDataFromHtml(
-				document.documentElement.outerHTML,
-				this.options.containers
-			);
-			page.url = page.responseURL = getCurrentUrl();
-			this.cache.cacheUrl(page);
+			whenDomLoaded(() => {
+				const page = getDataFromHtml(
+					document.documentElement.outerHTML,
+					this.options.containers
+				);
+				page.url = page.responseURL = getCurrentUrl();
+				this.cache.cacheUrl(page);
+			});
 		}
 
 		// mark swup blocks in html
