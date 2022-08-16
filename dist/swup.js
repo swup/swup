@@ -1401,21 +1401,21 @@ var _utils = __webpack_require__(1);
 var _helpers = __webpack_require__(0);
 
 var getAnimationPromises = function getAnimationPromises() {
-	var _this = this;
-
+	var selector = this.options.animationSelector;
+	var durationProperty = (0, _helpers.transitionProperty)() + 'Duration';
 	var promises = [];
-	var animatedElements = (0, _utils.queryAll)(this.options.animationSelector, document.body);
+	var animatedElements = (0, _utils.queryAll)(selector, document.body);
 
 	if (!animatedElements.length) {
-		console.warn('[swup] No animated elements found by selector ' + this.options.animationSelector);
+		console.warn('[swup] No animated elements found by selector ' + selector);
 		return [Promise.resolve()];
 	}
 
 	animatedElements.forEach(function (element) {
-		var transitionDuration = window.getComputedStyle(element)[(0, _helpers.transitionProperty)() + 'Duration'];
+		var transitionDuration = window.getComputedStyle(element)[durationProperty];
 		// Resolve immediately if no transition defined
 		if (!transitionDuration || transitionDuration == '0s') {
-			console.warn('[swup] No CSS transition duration defined for element of selector ' + _this.options.animationSelector);
+			console.warn('[swup] No CSS transition duration defined for element of selector ' + selector);
 			promises.push(Promise.resolve());
 			return;
 		}
