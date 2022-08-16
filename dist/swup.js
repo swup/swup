@@ -202,6 +202,16 @@ var escapeCssIdentifier = exports.escapeCssIdentifier = function escapeCssIdenti
 	}
 };
 
+var whenDomLoaded = exports.whenDomLoaded = function whenDomLoaded(callback) {
+	if (['complete', 'interactive', 'loaded'].includes(document.readyState)) {
+		callback();
+	} else {
+		document.addEventListener('DOMContentLoaded', function () {
+			return callback();
+		}, false);
+	}
+};
+
 /***/ }),
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -454,9 +464,11 @@ var Swup = function () {
 
 			// initial save to cache
 			if (this.options.cache) {
-				var page = (0, _helpers.getDataFromHtml)(document.documentElement.outerHTML, this.options.containers);
-				page.url = page.responseURL = (0, _helpers.getCurrentUrl)();
-				this.cache.cacheUrl(page);
+				(0, _utils.whenDomLoaded)(function () {
+					var page = (0, _helpers.getDataFromHtml)(document.documentElement.outerHTML, _this.options.containers);
+					page.url = page.responseURL = (0, _helpers.getCurrentUrl)();
+					_this.cache.cacheUrl(page);
+				});
 			}
 
 			// mark swup blocks in html
@@ -1012,18 +1024,18 @@ exports.default = markSwupElements;
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+	value: true
 });
 var cleanupAnimationClasses = function cleanupAnimationClasses() {
-  document.documentElement.className.split(' ').forEach(function (classItem) {
-    if (
-    // remove "to-{page}" classes
-    new RegExp('^to-').test(classItem) ||
-    // remove all other classes
-    classItem === 'is-changing' || classItem === 'is-rendering' || classItem === 'is-popstate') {
-      document.documentElement.classList.remove(classItem);
-    }
-  });
+	document.documentElement.className.split(' ').forEach(function (classItem) {
+		if (
+		// remove "to-{page}" classes
+		new RegExp('^to-').test(classItem) ||
+		// remove all other classes
+		classItem === 'is-changing' || classItem === 'is-rendering' || classItem === 'is-popstate') {
+			document.documentElement.classList.remove(classItem);
+		}
+	});
 };
 
 exports.default = cleanupAnimationClasses;
