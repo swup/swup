@@ -21,7 +21,7 @@ const getDataFromHtml = (html, containers) => {
 	});
 
 	const json = {
-		title: fakeDom.querySelector('title').innerText,
+		title: (fakeDom.querySelector('title') || {}).innerText,
 		pageClass: fakeDom.querySelector('body').className,
 		originalContent: html,
 		blocks: blocks
