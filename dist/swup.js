@@ -794,7 +794,7 @@ var createHistoryRecord = function createHistoryRecord(url) {
 		url: url || window.location.href.split(window.location.hostname)[1],
 		random: Math.random(),
 		source: 'swup'
-	}, document.getElementsByTagName('title')[0].innerText, url || window.location.href.split(window.location.hostname)[1]);
+	}, document.title, url || window.location.href.split(window.location.hostname)[1]);
 };
 
 exports.default = createHistoryRecord;
@@ -833,7 +833,7 @@ var getDataFromHtml = function getDataFromHtml(html, containers) {
 	});
 
 	var json = {
-		title: fakeDom.querySelector('title').innerText,
+		title: (fakeDom.querySelector('title') || {}).innerText,
 		pageClass: fakeDom.querySelector('body').className,
 		originalContent: html,
 		blocks: blocks
