@@ -15,7 +15,6 @@ import { use, unuse, findPlugin } from './modules/plugins';
 
 import { queryAll } from './utils';
 import {
-	getDataFromHtml,
 	getCurrentUrl,
 	markSwupElements,
 	Link,
@@ -129,12 +128,9 @@ export default class Swup {
 
 		// initial save to cache
 		if (this.options.cache) {
-			const page = getDataFromHtml(
-				document.documentElement.outerHTML,
-				this.options.containers
-			);
-			page.url = page.responseURL = getCurrentUrl();
-			this.cache.cacheUrl(page);
+			// disabled to avoid caching modified dom state
+			// https://github.com/swup/swup/issues/475
+			// logic moved to preload plugin
 		}
 
 		// mark swup blocks in html
