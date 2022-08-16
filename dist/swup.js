@@ -453,11 +453,11 @@ var Swup = function () {
 			window.addEventListener('popstate', this.boundPopStateHandler);
 
 			// initial save to cache
-			if (this.options.cache) {
-				var page = (0, _helpers.getDataFromHtml)(document.documentElement.outerHTML, this.options.containers);
-				page.url = page.responseURL = (0, _helpers.getCurrentUrl)();
-				this.cache.cacheUrl(page);
-			}
+			if (this.options.cache) {}
+			// disabled to avoid caching modified dom state
+			// https://github.com/swup/swup/issues/475
+			// logic moved to preload plugin
+
 
 			// mark swup blocks in html
 			(0, _helpers.markSwupElements)(document.documentElement, this.options.containers);
@@ -1012,18 +1012,18 @@ exports.default = markSwupElements;
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+	value: true
 });
 var cleanupAnimationClasses = function cleanupAnimationClasses() {
-  document.documentElement.className.split(' ').forEach(function (classItem) {
-    if (
-    // remove "to-{page}" classes
-    new RegExp('^to-').test(classItem) ||
-    // remove all other classes
-    classItem === 'is-changing' || classItem === 'is-rendering' || classItem === 'is-popstate') {
-      document.documentElement.classList.remove(classItem);
-    }
-  });
+	document.documentElement.className.split(' ').forEach(function (classItem) {
+		if (
+		// remove "to-{page}" classes
+		new RegExp('^to-').test(classItem) ||
+		// remove all other classes
+		classItem === 'is-changing' || classItem === 'is-rendering' || classItem === 'is-popstate') {
+			document.documentElement.classList.remove(classItem);
+		}
+	});
 };
 
 exports.default = cleanupAnimationClasses;
@@ -1389,21 +1389,21 @@ var _utils = __webpack_require__(1);
 var _helpers = __webpack_require__(0);
 
 var getAnimationPromises = function getAnimationPromises() {
-	var _this = this;
-
+	var selector = this.options.animationSelector;
+	var durationProperty = (0, _helpers.transitionProperty)() + 'Duration';
 	var promises = [];
-	var animatedElements = (0, _utils.queryAll)(this.options.animationSelector, document.body);
+	var animatedElements = (0, _utils.queryAll)(selector, document.body);
 
 	if (!animatedElements.length) {
-		console.warn('[swup] No animated elements found by selector ' + this.options.animationSelector);
+		console.warn('[swup] No animated elements found by selector ' + selector);
 		return [Promise.resolve()];
 	}
 
 	animatedElements.forEach(function (element) {
-		var transitionDuration = window.getComputedStyle(element)[(0, _helpers.transitionProperty)() + 'Duration'];
+		var transitionDuration = window.getComputedStyle(element)[durationProperty];
 		// Resolve immediately if no transition defined
 		if (!transitionDuration || transitionDuration == '0s') {
-			console.warn('[swup] No CSS transition duration defined for element of selector ' + _this.options.animationSelector);
+			console.warn('[swup] No CSS transition duration defined for element of selector ' + selector);
 			promises.push(Promise.resolve());
 			return;
 		}
