@@ -77,6 +77,7 @@ context('Window', () => {
     // });
 
     it('should transition back to page 1 on popstate', () => {
+    it('should transition to previous page on popstate', () => {
         cy.triggerClickOnLink('/page2/');
 
         cy.wait(1000); // Wait for transition finish
@@ -87,7 +88,7 @@ context('Window', () => {
         });
     });
 
-    it('should transition forward to page 2 on popstate', () => {
+    it('should transition to next page on popstate', () => {
         cy.triggerClickOnLink('/page2/');
 
         cy.wait(1000); // Wait for transition finish
