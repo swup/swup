@@ -12,6 +12,7 @@
     "postinstall": "opencollective-postinstall || true",
     "ci": "npm run build && npm run test:instrument && start-server-and-test test:server http://localhost:8274 test:run:record",
     "test": "npm run build && npm run test:instrument && start-server-and-test test:server http://localhost:8274 test:run",
+    "test:headed": "npm run build && npm run test:instrument && start-server-and-test test:server http://localhost:8274 cy:open",
     "test:instrument": "nyc instrument --compact=false dist test/site/swup",
     "test:server": "http-server --port 8274 test/site",
     "test:run": "cypress run",
