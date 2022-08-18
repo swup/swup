@@ -76,7 +76,6 @@ context('Window', () => {
     //     cy.shouldHaveH1('Page 1');
     // });
 
-    it('should transition back to page 1 on popstate', () => {
     it('should transition to previous page on popstate', () => {
         cy.triggerClickOnLink('/page2/');
 
