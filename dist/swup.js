@@ -1012,18 +1012,18 @@ exports.default = markSwupElements;
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+	value: true
 });
 var cleanupAnimationClasses = function cleanupAnimationClasses() {
-  document.documentElement.className.split(' ').forEach(function (classItem) {
-    if (
-    // remove "to-{page}" classes
-    new RegExp('^to-').test(classItem) ||
-    // remove all other classes
-    classItem === 'is-changing' || classItem === 'is-rendering' || classItem === 'is-popstate') {
-      document.documentElement.classList.remove(classItem);
-    }
-  });
+	document.documentElement.className.split(' ').forEach(function (classItem) {
+		if (
+		// remove "to-{page}" classes
+		new RegExp('^to-').test(classItem) ||
+		// remove all other classes
+		classItem === 'is-changing' || classItem === 'is-rendering' || classItem === 'is-popstate') {
+			document.documentElement.classList.remove(classItem);
+		}
+	});
 };
 
 exports.default = cleanupAnimationClasses;
@@ -1038,6 +1038,8 @@ exports.default = cleanupAnimationClasses;
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -1101,7 +1103,7 @@ var loadPage = function loadPage(data, popstate) {
 	// start/skip loading of page
 	if (this.cache.exists(data.url)) {
 		xhrPromise = new Promise(function (resolve) {
-			resolve();
+			resolve(_this.cache.getPage(data.url));
 		});
 		this.triggerEvent('pageRetrievedFromCache');
 	} else {
@@ -1124,8 +1126,8 @@ var loadPage = function loadPage(data, popstate) {
 						// render page
 						_this.cache.cacheUrl(page);
 						_this.triggerEvent('pageLoaded');
+						resolve(page);
 					}
-					resolve();
 				});
 			});
 		} else {
@@ -1134,9 +1136,12 @@ var loadPage = function loadPage(data, popstate) {
 	}
 
 	// when everything is ready, handle the outcome
-	Promise.all(animationPromises.concat([xhrPromise])).then(function () {
+	Promise.all([xhrPromise].concat(animationPromises)).then(function (_ref) {
+		var _ref2 = _slicedToArray(_ref, 1),
+		    pageData = _ref2[0];
+
 		// render page
-		_this.renderPage(_this.cache.getPage(data.url), popstate);
+		_this.renderPage(pageData, popstate);
 		_this.preloadPromise = null;
 	}).catch(function (errorUrl) {
 		// rewrite the skipPopStateHandling function to redirect manually when the history.go is processed
@@ -1389,21 +1394,21 @@ var _utils = __webpack_require__(1);
 var _helpers = __webpack_require__(0);
 
 var getAnimationPromises = function getAnimationPromises() {
-	var _this = this;
-
+	var selector = this.options.animationSelector;
+	var durationProperty = (0, _helpers.transitionProperty)() + 'Duration';
 	var promises = [];
-	var animatedElements = (0, _utils.queryAll)(this.options.animationSelector, document.body);
+	var animatedElements = (0, _utils.queryAll)(selector, document.body);
 
 	if (!animatedElements.length) {
-		console.warn('[swup] No animated elements found by selector ' + this.options.animationSelector);
+		console.warn('[swup] No animated elements found by selector ' + selector);
 		return [Promise.resolve()];
 	}
 
 	animatedElements.forEach(function (element) {
-		var transitionDuration = window.getComputedStyle(element)[(0, _helpers.transitionProperty)() + 'Duration'];
+		var transitionDuration = window.getComputedStyle(element)[durationProperty];
 		// Resolve immediately if no transition defined
 		if (!transitionDuration || transitionDuration == '0s') {
-			console.warn('[swup] No CSS transition duration defined for element of selector ' + _this.options.animationSelector);
+			console.warn('[swup] No CSS transition duration defined for element of selector ' + selector);
 			promises.push(Promise.resolve());
 			return;
 		}
