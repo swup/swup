@@ -5,7 +5,7 @@ const createHistoryRecord = (url) => {
 			random: Math.random(),
 			source: 'swup'
 		},
-		document.getElementsByTagName('title')[0].innerText,
+		document.title,
 		url || window.location.href.split(window.location.hostname)[1]
 	);
 };
