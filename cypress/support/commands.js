@@ -70,9 +70,10 @@ Cypress.Commands.add('shouldHaveElementInViewport', (element) => {
     cy.get(element).should($el => {
         const bottom = Cypress.$(cy.state('window')).height();
         const rect = $el[0].getBoundingClientRect();
+        const buffer = 1; // allow for sub-pixel placement of elements
 
-        expect(rect.top).to.be.at.least(0, 'element top above viewport');
-        expect(rect.top).not.to.be.greaterThan(bottom);
-        expect(rect.bottom).not.to.be.greaterThan(bottom);
+        expect(rect.top).to.be.at.least(0 - buffer, 'element top above viewport');
+        expect(rect.top).not.to.be.greaterThan(bottom + buffer);
+        expect(rect.bottom).not.to.be.greaterThan(bottom + buffer);
     })
 })

@@ -56,7 +56,7 @@ const loadPage = function(data, popstate) {
 	// start/skip loading of page
 	if (this.cache.exists(data.url)) {
 		xhrPromise = new Promise((resolve) => {
-			resolve();
+			resolve(this.cache.getPage(data.url));
 		});
 		this.triggerEvent('pageRetrievedFromCache');
 	} else {
@@ -79,8 +79,8 @@ const loadPage = function(data, popstate) {
 						// render page
 						this.cache.cacheUrl(page);
 						this.triggerEvent('pageLoaded');
+						resolve(page);
 					}
-					resolve();
 				});
 			});
 		} else {
@@ -89,10 +89,10 @@ const loadPage = function(data, popstate) {
 	}
 
 	// when everything is ready, handle the outcome
-	Promise.all(animationPromises.concat([xhrPromise]))
-		.then(() => {
+	Promise.all([xhrPromise].concat(animationPromises))
+		.then(([pageData]) => {
 			// render page
-			this.renderPage(this.cache.getPage(data.url), popstate);
+			this.renderPage(pageData, popstate);
 			this.preloadPromise = null;
 		})
 		.catch((errorUrl) => {

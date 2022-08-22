@@ -6,6 +6,7 @@ export default defineConfig({
   e2e: {
     baseUrl: 'http://localhost:8274',
     specPattern: 'cypress/e2e/**/*.{js,jsx,ts,tsx}',
+    chromeWebSecurity: false,
     setupNodeEvents(on, config) {
       registerCodeCoverageTasks(on, config)
       return config
