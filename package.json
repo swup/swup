@@ -12,6 +12,7 @@
   "scripts": {
     "cy:open": "cypress open",
     "build": "microbundle --external none --no-sourcemap",
+    "dev": "microbundle watch --external none --no-sourcemap",
     "lint": "prettier src/**/*.{js,mjs} --write",
     "prepublish": "npm run build",
     "postinstall": "opencollective-postinstall || true",
