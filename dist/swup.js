@@ -453,11 +453,11 @@ var Swup = function () {
 			window.addEventListener('popstate', this.boundPopStateHandler);
 
 			// initial save to cache
-			if (this.options.cache) {
-				var page = (0, _helpers.getDataFromHtml)(document.documentElement.outerHTML, this.options.containers);
-				page.url = page.responseURL = (0, _helpers.getCurrentUrl)();
-				this.cache.cacheUrl(page);
-			}
+			if (this.options.cache) {}
+			// disabled to avoid caching modified dom state
+			// https://github.com/swup/swup/issues/475
+			// logic moved to preload plugin
+
 
 			// mark swup blocks in html
 			(0, _helpers.markSwupElements)(document.documentElement, this.options.containers);
