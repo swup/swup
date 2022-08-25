@@ -13,6 +13,9 @@
     "./lib/helpers": "./dist/helpers.modern.js",
     "./lib/utils": "./dist/utils.modern.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "cy:open": "cypress open",
     "build": "microbundle src/*.js --external none --no-sourcemap",
