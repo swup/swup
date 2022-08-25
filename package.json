@@ -10,7 +10,8 @@
   "unpkg": "./dist/index.umd.js",
   "exports": {
     ".": "./dist/index.modern.js",
-    "./lib/helpers": "./dist/helpers.modern.js"
+    "./lib/helpers": "./dist/helpers.modern.js",
+    "./lib/utils": "./dist/utils.modern.js"
   },
   "scripts": {
     "cy:open": "cypress open",
