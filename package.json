@@ -1,17 +1,17 @@
 {
   "name": "swup",
+  "amdName": "Swup",
   "version": "2.0.19",
   "description": "Complete, flexible, extensible and easy to use page transition library for your web.",
   "type": "module",
   "source": "src/index.js",
   "main": "./dist/index.cjs",
   "module": "./dist/index.module.js",
+  "unpkg": "./dist/index.umd.js",
   "exports": {
     ".": "./dist/index.modern.js",
     "./lib/helpers": "./dist/helpers.modern.js"
   },
-  "unpkg": "./dist/index.umd.js",
-  "amdName": "Swup",
   "scripts": {
     "cy:open": "cypress open",
     "build": "microbundle src/*.js --external none --no-sourcemap",
