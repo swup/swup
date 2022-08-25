@@ -6,13 +6,16 @@
   "source": "src/index.js",
   "main": "./dist/index.cjs",
   "module": "./dist/index.module.js",
-  "exports": "./dist/index.modern.js",
+  "exports": {
+    ".": "./dist/index.modern.js",
+    "./lib/helpers": "./dist/helpers.modern.js"
+  },
   "unpkg": "./dist/index.umd.js",
   "amdName": "Swup",
   "scripts": {
     "cy:open": "cypress open",
-    "build": "microbundle --external none --no-sourcemap",
-    "dev": "microbundle watch --external none --no-sourcemap",
+    "build": "microbundle src/*.js --external none --no-sourcemap",
+    "dev": "microbundle watch src/*.js --external none --no-sourcemap",
     "lint": "prettier src/**/*.{js,mjs} --write",
     "prepublish": "npm run build",
     "postinstall": "opencollective-postinstall || true",
