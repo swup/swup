@@ -11,7 +11,7 @@ export const queryAll = (selector, context = document) => {
 		return selector;
 	}
 
-	return Array.prototype.slice.call(context.querySelectorAll(selector));
+	return Array.from(context.querySelectorAll(selector));
 };
 
 export const escapeCssIdentifier = (ident) => {
@@ -20,4 +20,9 @@ export const escapeCssIdentifier = (ident) => {
 	} else {
 		return ident;
 	}
+};
+
+// Fix for Chrome below v61 formatting CSS floats with comma in some locales
+export const toMs = (s) => {
+	return Number(s.slice(0, -1).replace(',', '.')) * 1000;
 };

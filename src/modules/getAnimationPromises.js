@@ -1,10 +1,23 @@
-import { queryAll } from '../utils';
-import { transitionEnd, transitionProperty } from '../helpers';
+import { queryAll, toMs } from '../utils';
 
-const getAnimationPromises = function() {
+// Transition property/event sniffing
+let transitionProp = 'transition';
+let transitionEndEvent = 'transitionend';
+let animationProp = 'animation';
+let animationEndEvent = 'animationend';
+
+if (window.ontransitionend === undefined && window.onwebkittransitionend !== undefined) {
+	transitionProp = 'WebkitTransition';
+	transitionEndEvent = 'webkitTransitionEnd';
+}
+
+if (window.onanimationend === undefined && window.onwebkitanimationend !== undefined) {
+	animationProp = 'WebkitAnimation';
+	animationEndEvent = 'webkitAnimationEnd';
+}
+
+export default function getAnimationPromises() {
 	const selector = this.options.animationSelector;
-	const durationProperty = `${transitionProperty()}Duration`;
-	const promises = [];
 	const animatedElements = queryAll(selector, document.body);
 
 	if (!animatedElements.length) {
@@ -12,27 +25,104 @@ const getAnimationPromises = function() {
 		return [Promise.resolve()];
 	}
 
-	animatedElements.forEach((element) => {
-		const transitionDuration = window.getComputedStyle(element)[durationProperty];
-		// Resolve immediately if no transition defined
-		if (!transitionDuration || transitionDuration == '0s') {
-			console.warn(
-				`[swup] No CSS transition duration defined for element of selector ${selector}`
-			);
-			promises.push(Promise.resolve());
-			return;
-		}
-		const promise = new Promise((resolve) => {
-			element.addEventListener(transitionEnd(), (event) => {
-				if (element == event.target) {
-					resolve();
+	return animatedElements.map(
+		(element) => getAnimationPromiseForElement(element, selector)
+	);
+}
+
+function getAnimationPromiseForElement(element, selector, expectedType = null) {
+	const { type, timeout, propCount } = getTransitionInfo(element, expectedType);
+
+	console.log(`Animaiton promise for ${selector}`, type, timeout, propCount);
+
+	// Resolve immediately if no transition defined
+	if (!type || !timeout) {
+		console.warn(
+			`[swup] No CSS transition duration defined for element of selector ${selector}`
+		);
+		return Promise.resolve();
+	}
+
+	return new Promise((resolve) => {
+		const endEvent = type === 'transition' ? transitionEndEvent : animationEndEvent;
+		let propsEnded = 0;
+
+		const end = () => {
+			element.removeEventListener(endEvent, onEnd);
+			resolve();
+		};
+
+		const onEnd = (event) => {
+			if (event.target === element) {
+				if (++propsEnded >= propCount) {
+					end();
 				}
-			});
-		});
-		promises.push(promise);
+			}
+		};
+
+		setTimeout(() => {
+			if (propsEnded < propCount) {
+				end();
+			}
+		}, timeout + 1);
+
+		element.addEventListener(endEvent, onEnd);
 	});
+}
 
-	return promises;
-};
+export function getTransitionInfo(element, expectedType = null) {
+	const styles = window.getComputedStyle(element);
 
-export default getAnimationPromises;
+	const transitionDelays = (styles[`${transitionProp}Delay`] || '').split(', ');
+	const transitionDurations = (styles[`${transitionProp}Duration`] || '').split(', ');
+	const transitionTimeout = calculateTimeout(transitionDelays, transitionDurations);
+
+	const animationDelays = (styles[`${animationProp}Delay`] || '').split(', ');
+	const animationDurations = (styles[`${animationProp}Duration`] || '').split(', ');
+	const animationTimeout = calculateTimeout(animationDelays, animationDurations);
+
+	let type = '';
+	let timeout = 0;
+	let propCount = 0;
+
+	if (expectedType === 'transition') {
+		if (transitionTimeout > 0) {
+			type = 'transition';
+			timeout = transitionTimeout;
+			propCount = transitionDurations.length;
+		}
+	} else if (expectedType === 'animation') {
+		if (animationTimeout > 0) {
+			type = 'animation';
+			timeout = animationTimeout;
+			propCount = animationDurations.length;
+		}
+	} else {
+		timeout = Math.max(transitionTimeout, animationTimeout);
+		type =
+			timeout > 0
+				? transitionTimeout > animationTimeout
+					? 'transition'
+					: 'animation'
+				: null;
+		propCount = type
+			? type === 'transition'
+				? transitionDurations.length
+				: animationDurations.length
+			: 0;
+	}
+
+	return {
+		type,
+		timeout,
+		propCount
+	};
+}
+
+function calculateTimeout(delays, durations) {
+	while (delays.length < durations.length) {
+		delays = delays.concat(delays);
+	}
+
+	return Math.max(...durations.map((duration, i) => toMs(duration) + toMs(delays[i])));
+}
