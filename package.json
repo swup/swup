@@ -10,6 +10,8 @@
   "unpkg": "./dist/index.umd.js",
   "exports": {
     ".": "./dist/index.modern.js",
+    "./": "./dist/",
+    "./lib/": "./dist/",
     "./lib/helpers": "./dist/helpers.modern.js",
     "./lib/utils": "./dist/utils.modern.js"
   },
@@ -18,8 +20,8 @@
   ],
   "scripts": {
     "cy:open": "cypress open",
-    "build": "microbundle src/*.js --external none --no-sourcemap",
-    "dev": "microbundle watch src/*.js --external none --no-sourcemap",
+    "build": "microbundle src/*.js -f modern,esm,cjs && microbundle -f umd --external none",
+    "dev": "microbundle src/*.js -w",
     "lint": "prettier src/**/*.{js,mjs} --write",
     "prepublish": "npm run build",
     "postinstall": "opencollective-postinstall || true",
