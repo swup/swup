@@ -33,8 +33,6 @@ export default function getAnimationPromises() {
 function getAnimationPromiseForElement(element, selector, expectedType = null) {
 	const { type, timeout, propCount } = getTransitionInfo(element, expectedType);
 
-	console.log(`Animaiton promise for ${selector}`, type, timeout, propCount);
-
 	// Resolve immediately if no transition defined
 	if (!type || !timeout) {
 		console.warn(
