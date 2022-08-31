@@ -29,13 +29,13 @@ const getDataFromHtml = (html, options) => {
 	});
 
 	queryAll(`[${fragmentContainerAttr}]`, fakeDom).forEach((container) => {
-		const id = container.getAttribute(fragmentContainerAttr);
-		if (!id) {
-			console.warn('[swup] Fragment container is missing required `id` attribute');
-		} else if (fragments[id]) {
-			console.warn(`[swup] Duplicate fragment container found with id #${id}`);
+		const name = container.getAttribute(fragmentContainerAttr);
+		if (!name) {
+			console.warn('[swup] Fragment container is missing required name');
+		} else if (fragments[name]) {
+			console.warn(`[swup] Duplicate fragment container found with name #${id}`);
 		} else {
-			fragments[id] = container.outerHTML;
+			fragments[name] = container.outerHTML;
 		}
 	});
 
