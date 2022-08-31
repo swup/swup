@@ -1,4 +1,6 @@
 import { Link, updateHistoryRecord } from '../helpers';
+import { query } from '../utils';
+
 
 const renderPage = function(page, { popstate, fragment, skipTransition } = {}) {
 	document.documentElement.classList.remove('is-leaving');
@@ -20,14 +22,51 @@ const renderPage = function(page, { popstate, fragment, skipTransition } = {}) {
 		document.documentElement.classList.add('is-rendering');
 	}
 
-	this.triggerEvent('willReplaceContent', popstate);
-	// replace blocks
-	for (let i = 0; i < page.blocks.length; i++) {
-		document.body.querySelector(`[data-swup="${i}"]`).outerHTML = page.blocks[i];
+	const replaceBlocks = () => {
+		this.triggerEvent('willReplaceContent', popstate);
+		page.blocks.forEach((html, i) => {
+			const block = query(`[data-swup="${i}"]`, document.body);
+			block.outerHTML = html;
+		});
+		this.triggerEvent('contentReplaced', popstate);
+	};
+
+	const replaceFragments = () => {
+		if (!fragment) {
+			return false;
+		}
+
+		const fragments = Object.entries(page.fragments);
+		if (!fragments.length) {
+			console.warn('[swup] No fragments found, replacing whole page');
+			return false;
+		}
+		if (typeof fragment === 'string' && !fragments[fragment]) {
+			console.warn(`[swup] Fragment "${fragment}" not found, replacing whole page`);
+			return false;
+		}
+
+		document.documentElement.classList.add('is-fragment');
+
+		this.triggerEvent('willReplaceFragments', popstate);
+		fragments.forEach(([name, html], i) => {
+			if (fragment === true || fragment === name) {
+				const container = query(`[${this.options.fragmentContainerAttr}="${name}"]`, document.body);
+				if (container) {
+					container.outerHTML = html;
+				}
+			}
+		});
+		this.triggerEvent('fragmentsReplaced', popstate);
+	};
+
+	// Try fragments first, if not, then blocks
+	if (replaceFragments() === false) {
+		replaceBlocks();
 	}
+
 	// set title
 	document.title = page.title;
-	this.triggerEvent('contentReplaced', popstate);
 	this.triggerEvent('pageView', popstate);
 
 	// empty cache if it's disabled (because pages could be preloaded and stuff)
@@ -35,16 +74,13 @@ const renderPage = function(page, { popstate, fragment, skipTransition } = {}) {
 		this.cache.empty();
 	}
 
-	// start animation IN
+	// Perform transition
 	if (!skipTransition) {
 		setTimeout(() => {
 			this.triggerEvent('animationInStart');
 			document.documentElement.classList.remove('is-animating');
 		}, 10);
-	}
 
-	// handle end of animation
-	if (!skipTransition) {
 		const animationPromises = this.getAnimationPromises('in');
 		Promise.all(animationPromises).then(() => {
 			this.triggerEvent('animationInDone');

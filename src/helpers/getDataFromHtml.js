@@ -4,7 +4,7 @@ const getDataFromHtml = (html, options) => {
 	let fakeDom = document.createElement('html');
 	fakeDom.innerHTML = html;
 	let blocks = [];
-	let fragments = [];
+	let fragments = {};
 
 	if (Array.isArray(options)) {
 		// Support old container-only param
@@ -29,7 +29,14 @@ const getDataFromHtml = (html, options) => {
 	});
 
 	queryAll(`[${fragmentContainerAttr}]`, fakeDom).forEach((container) => {
-		fragments.push(container.outerHTML);
+		const id = container.getAttribute(fragmentContainerAttr);
+		if (!id) {
+			console.warn('[swup] Fragment container is missing required `id` attribute');
+		} else if (fragments[id]) {
+			console.warn(`[swup] Duplicate fragment container found with id #${id}`);
+		} else {
+			fragments[id] = container.outerHTML;
+		}
 	});
 
 	const title = (fakeDom.querySelector('title') || {}).innerText;

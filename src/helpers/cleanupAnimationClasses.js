@@ -6,7 +6,8 @@ const cleanupAnimationClasses = () => {
 			// remove all other classes
 			classItem === 'is-changing' ||
 			classItem === 'is-rendering' ||
-			classItem === 'is-popstate'
+			classItem === 'is-popstate' ||
+			classItem === 'is-fragment'
 		) {
 			document.documentElement.classList.remove(classItem);
 		}
