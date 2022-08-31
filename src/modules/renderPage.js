@@ -1,4 +1,4 @@
-import { Link } from '../helpers';
+import { Link, updateHistoryRecord } from '../helpers';
 
 const renderPage = function(page, { popstate, fragment, skipTransition } = {}) {
 	document.documentElement.classList.remove('is-leaving');
@@ -9,15 +9,7 @@ const renderPage = function(page, { popstate, fragment, skipTransition } = {}) {
 	// replace state in case the url was redirected
 	const url = new Link(page.responseURL).getPath();
 	if (window.location.pathname !== url) {
-		window.history.replaceState(
-			{
-				url,
-				random: Math.random(),
-				source: 'swup'
-			},
-			document.title,
-			url
-		);
+		updateHistoryRecord(url);
 
 		// save new record for redirected url
 		this.cache.cacheUrl({ ...page, url });

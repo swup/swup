@@ -18,7 +18,8 @@ import {
 	getCurrentUrl,
 	markSwupElements,
 	Link,
-	cleanupAnimationClasses
+	cleanupAnimationClasses,
+	updateHistoryRecord
 } from './helpers';
 
 export default class Swup {
@@ -40,7 +41,7 @@ export default class Swup {
 			skipPopStateHandling: function(event) {
 				return !(event.state && event.state.source === 'swup');
 			},
-			fragementLinkAttr: 'data-swup-fragment-link',
+			fragmentLinkAttr: 'data-swup-fragment-link',
 			fragmentContainerAttr: 'data-swup-fragment-container'
 		};
 
@@ -145,16 +146,8 @@ export default class Swup {
 			this.use(plugin);
 		});
 
-		// modify initial history record
-		window.history.replaceState(
-			Object.assign({}, window.history.state, {
-				url: window.location.href,
-				random: Math.random(),
-				source: 'swup'
-			}),
-			document.title,
-			window.location.href
-		);
+		// modify initial history record wth swup data
+		updateHistoryRecord();
 
 		// trigger enabled event
 		this.triggerEvent('enabled');
@@ -259,12 +252,15 @@ export default class Swup {
 			return;
 		}
 
-		const link = new Link(event.state ? event.state.url : window.location.pathname);
+		const { url = window.location.href, fragment } = event.state || {};
+
+		const link = new Link(url);
 		if (link.getHash() !== '') {
 			this.scrollToElement = link.getHash();
 		} else {
 			event.preventDefault();
 		}
+
 		this.triggerEvent('popState', event);
 
 		if (!this.options.animateHistoryBrowsing) {
@@ -272,6 +268,6 @@ export default class Swup {
 			cleanupAnimationClasses();
 		}
 
-		this.loadPage({ url: link.getAddress() }, event);
+		this.loadPage({ url: link.getAddress(), fragment }, event);
 	}
 }

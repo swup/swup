@@ -25,17 +25,9 @@ const loadPage = function(data, popstate = false) {
 			this.triggerEvent('animationOutDone');
 		});
 
-		// create history record if this is not a popstate call
+		// create history record if this is not a popstate call (with or without anchor)
 		if (!popstate) {
-			// create pop element with or without anchor
-			let state;
-			if (this.scrollToElement != null) {
-				state = url + this.scrollToElement;
-			} else {
-				state = url;
-			}
-
-			createHistoryRecord(state);
+			createHistoryRecord(url + (this.scrollToElement || ''), { fragment });
 		}
 	};
 

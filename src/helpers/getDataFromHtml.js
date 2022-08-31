@@ -1,9 +1,17 @@
 import { query, queryAll } from '../utils';
 
-const getDataFromHtml = (html, containers) => {
+const getDataFromHtml = (html, options) => {
 	let fakeDom = document.createElement('html');
 	fakeDom.innerHTML = html;
 	let blocks = [];
+	let fragments = [];
+
+	if (Array.isArray(options)) {
+		// Support old container-only param
+		options = { containers: options };
+	}
+
+	const { containers = [], fragmentContainerAttr } = options || {};
 
 	containers.forEach((selector) => {
 		if (query(selector, fakeDom) == null) {
@@ -20,18 +28,18 @@ const getDataFromHtml = (html, containers) => {
 		}
 	});
 
-	const json = {
-		title: (fakeDom.querySelector('title') || {}).innerText,
-		pageClass: fakeDom.querySelector('body').className,
-		originalContent: html,
-		blocks: blocks
-	};
+	queryAll(`[${fragmentContainerAttr}]`, fakeDom).forEach((container) => {
+		fragments.push(container.outerHTML);
+	});
 
-	// to prevent memory leaks
+	const title = (fakeDom.querySelector('title') || {}).innerText;
+	const pageClass = fakeDom.querySelector('body').className;
+
+	// Prevent memory leaks
 	fakeDom.innerHTML = '';
 	fakeDom = null;
 
-	return json;
+	return { title, pageClass, blocks, fragments, originalContent: html };
 };
 
 export default getDataFromHtml;
