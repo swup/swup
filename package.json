@@ -10,12 +10,11 @@
   "unpkg": "./dist/index.umd.js",
   "exports": {
     ".": "./dist/index.modern.js",
-    "./": "./dist/",
-    "./lib/": "./dist/",
-    "./lib/helpers": "./dist/helpers.modern.js",
-    "./lib/utils": "./dist/utils.modern.js"
+    "./*": "./dist/*.modern.js",
+    "./lib/*": "./dist/*.modern.js"
   },
   "files": [
+    "src",
     "dist"
   ],
   "scripts": {
