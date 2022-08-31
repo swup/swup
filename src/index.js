@@ -72,7 +72,8 @@ export default class Swup {
 			serverError: [],
 			transitionStart: [],
 			transitionEnd: [],
-			willReplaceContent: []
+			willReplaceContent: [],
+			willReplaceFragments: []
 		};
 
 		// variable for anchor to scroll to after render

@@ -5,7 +5,6 @@ const loadPage = function(data, popstate = false) {
 	let xhrPromise;
 
 	const { url, fragment, customTransition } = data;
-
 	const skipTransition = fragment || (popstate && !this.options.animateHistoryBrowsing);
 
 	const animateOut = () => {
@@ -95,7 +94,7 @@ const loadPage = function(data, popstate = false) {
 	// when everything is ready, handle the outcome
 	Promise.all([xhrPromise].concat(animationPromises))
 		.then(([pageData]) => {
-			this.renderPage(pageData, popstate);
+			this.renderPage(pageData, { popstate, fragment, skipTransition });
 			this.preloadPromise = null;
 		})
 		.catch((errorUrl) => {

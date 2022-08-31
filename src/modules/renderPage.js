@@ -1,6 +1,6 @@
 import { Link } from '../helpers';
 
-const renderPage = function(page, popstate) {
+const renderPage = function(page, { popstate, fragment, skipTransition } = {}) {
 	document.documentElement.classList.remove('is-leaving');
 
 	const isCurrentPage = this.getCurrentUrl() === page.url;
@@ -23,8 +23,8 @@ const renderPage = function(page, popstate) {
 		this.cache.cacheUrl({ ...page, url });
 	}
 
-	// only add for non-popstate transitions
-	if (!popstate || this.options.animateHistoryBrowsing) {
+	// only add for page loads with transitions
+	if (!skipTransition) {
 		document.documentElement.classList.add('is-rendering');
 	}
 
@@ -44,15 +44,15 @@ const renderPage = function(page, popstate) {
 	}
 
 	// start animation IN
-	setTimeout(() => {
-		if (!popstate || this.options.animateHistoryBrowsing) {
+	if (!skipTransition) {
+		setTimeout(() => {
 			this.triggerEvent('animationInStart');
 			document.documentElement.classList.remove('is-animating');
-		}
-	}, 10);
+		}, 10);
+	}
 
 	// handle end of animation
-	if (!popstate || this.options.animateHistoryBrowsing) {
+	if (!skipTransition) {
 		const animationPromises = this.getAnimationPromises('in');
 		Promise.all(animationPromises).then(() => {
 			this.triggerEvent('animationInDone');
