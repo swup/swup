@@ -229,7 +229,7 @@ export default class Swup {
 		} else {
 			// link to different url
 
-			this.scrollToElement = hash;
+			this.scrollToElement = hash || null;
 			const customTransition = event.delegateTarget.getAttribute('data-swup-transition');
 
 			let fragment = false;
@@ -253,7 +253,7 @@ export default class Swup {
 		const { url = window.location.href, fragment } = event.state || {};
 
 		const link = new Link(url);
-		if (link.getHash() !== '') {
+		if (link.getHash()) {
 			this.scrollToElement = link.getHash();
 		} else {
 			event.preventDefault();
