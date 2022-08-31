@@ -7,7 +7,7 @@
     <title>Page 1</title>
     <link rel="stylesheet" href="/assets/main.css">
 
-    <script src="/swup/swup.js"></script>
+    <script src="/swup/index.umd.js"></script>
     <script src="https://unpkg.com/@swup/scroll-plugin@latest/dist/SwupScrollPlugin.js"></script>
     <script src="https://unpkg.com/@swup/scripts-plugin@latest/dist/SwupScriptsPlugin.js"></script>
     <script src="https://unpkg.com/@swup/head-plugin@latest/dist/SwupHeadPlugin.js"></script>
@@ -68,14 +68,17 @@
             </li>
         </ul>
     </main>
-    <script>
+    <script type="module">
+        // Uncomment to test ESM import
+        // import Swup from '/swup/index.modern.js';
+
         const swup = new Swup({
             plugins: [
                 new SwupScrollPlugin(),
                 // new SwupScriptsPlugin(),
                 new SwupHeadPlugin(),
                 new SwupPreloadPlugin(),
-                new SwupFormsPlugin(),
+                // new SwupFormsPlugin(),
                 new SwupDebugPlugin(),
                 // new SwupJsPlugin(),
                 new SwupGiaPlugin(),
@@ -83,6 +86,7 @@
                 new SwupFadeTheme(),
             ]
         });
+
         // Store instance on window so we can access it from cypress tests
         window._swup = swup;
     </script>
