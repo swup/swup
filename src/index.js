@@ -39,7 +39,9 @@ export default class Swup {
 			plugins: [],
 			skipPopStateHandling: function(event) {
 				return !(event.state && event.state.source === 'swup');
-			}
+			},
+			fragementLinkAttr: 'data-swup-fragment-link',
+			fragmentContainerAttr: 'data-swup-fragment-container'
 		};
 
 		// merge options
@@ -57,6 +59,7 @@ export default class Swup {
 			animationSkipped: [],
 			clickLink: [],
 			contentReplaced: [],
+			fragmentsReplaced: [],
 			disabled: [],
 			enabled: [],
 			openPageInNewTab: [],
@@ -230,14 +233,16 @@ export default class Swup {
 						this.scrollToElement = link.getHash();
 					}
 
-					// get custom transition from data
-					let customTransition = event.delegateTarget.getAttribute(
-						'data-swup-transition'
-					);
+					const customTransition = event.delegateTarget.getAttribute('data-swup-transition');
+
+					let fragment = false
+					if (event.delegateTarget.hasAttribute(this.options.fragmentLinkAttr)) {
+						fragment = event.delegateTarget.getAttribute(this.options.fragmentLinkAttr) || true;
+					}
 
 					// load page
 					this.loadPage(
-						{ url: link.getAddress(), customTransition: customTransition },
+						{ url: link.getAddress(), fragment, customTransition },
 						false
 					);
 				}
@@ -249,7 +254,10 @@ export default class Swup {
 	}
 
 	popStateHandler(event) {
-		if (this.options.skipPopStateHandling(event)) return;
+		if (this.options.skipPopStateHandling(event)) {
+			return;
+		}
+
 		const link = new Link(event.state ? event.state.url : window.location.pathname);
 		if (link.getHash() !== '') {
 			this.scrollToElement = link.getHash();
