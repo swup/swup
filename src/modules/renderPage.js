@@ -1,5 +1,5 @@
 import { Link, updateHistoryRecord } from '../helpers';
-import { query, nextTick } from '../utils';
+import { query, queryAll, nextTick, compareArrays } from '../utils';
 
 const renderPage = function(page, { popstate, fragment } = {}) {
 	document.documentElement.classList.remove('is-leaving');
@@ -41,9 +41,22 @@ const renderPage = function(page, { popstate, fragment } = {}) {
 			console.warn('[swup] No fragments found, replacing whole page');
 			return false;
 		}
-		if (typeof fragment === 'string' && !page.fragments[fragment]) {
+
+		const { fragmentContainerAttr } = this.options;
+		const fragmentsOnPage = queryAll(`[${fragmentContainerAttr}]`);
+		const fragmentsToReplace = fragments.filter(([name]) => fragment === true || fragment === name);
+		const hasIdenticalFragmentContainers = compareArrays(
+			fragmentsOnPage.map((el) => el.getAttribute(fragmentContainerAttr)),
+			fragmentsToReplace.map(([name]) => name)
+		);
+
+		if (!hasIdenticalFragmentContainers) {
+			console.warn('[swup] Mismatching fragments on current and new page, replacing whole page');
+			return false;
+		}
+
+		if (fragment === 'string' && !page.fragments[fragment]) {
 			console.warn(`[swup] Fragment "${fragment}" not found, replacing whole page`);
-			console.log(page.fragments);
 			return false;
 		}
 
@@ -51,12 +64,10 @@ const renderPage = function(page, { popstate, fragment } = {}) {
 
 		this.triggerEvent('willReplaceContent', popstate);
 		this.triggerEvent('willReplaceFragments', popstate);
-		fragments.forEach(([name, html], i) => {
-			if (fragment === true || fragment === name) {
-				const container = query(`[${this.options.fragmentContainerAttr}="${name}"]`, document.body);
-				if (container) {
-					container.outerHTML = html;
-				}
+		fragmentsToReplace.forEach(([name, html]) => {
+			const container = query(`[${fragmentContainerAttr}="${name}"]`);
+			if (container) {
+				container.outerHTML = html;
 			}
 		});
 		this.triggerEvent('contentReplaced', popstate);
