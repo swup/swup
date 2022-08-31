@@ -1,13 +1,14 @@
-const { defineConfig } = require('cypress')
+import { defineConfig } from 'cypress'
+import registerCodeCoverageTasks from '@cypress/code-coverage/task.js'
 
-module.exports = defineConfig({
+export default defineConfig({
   projectId: 'dpucip',
   e2e: {
     baseUrl: 'http://localhost:8274',
     specPattern: 'cypress/e2e/**/*.{js,jsx,ts,tsx}',
     chromeWebSecurity: false,
     setupNodeEvents(on, config) {
-      require('@cypress/code-coverage/task')(on, config)
+      registerCodeCoverageTasks(on, config)
       return config
     }
   }

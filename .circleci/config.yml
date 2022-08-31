@@ -41,7 +41,7 @@ jobs:
 
       - run:
           name: Build swup
-          command: npm run compile && npm run build
+          command: npm run build
 
       # run tests!
       - run: npm run ci

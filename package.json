@@ -1,14 +1,28 @@
 {
   "name": "swup",
+  "amdName": "Swup",
   "version": "2.0.19",
   "description": "Complete, flexible, extensible and easy to use page transition library for your web.",
-  "main": "lib/index.js",
+  "type": "module",
+  "source": "src/index.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.module.js",
+  "unpkg": "./dist/index.umd.js",
+  "exports": {
+    ".": "./dist/index.modern.js",
+    "./*": "./dist/*.modern.js",
+    "./lib/*": "./dist/*.modern.js"
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
   "scripts": {
     "cy:open": "cypress open",
-    "compile": "babel --presets es2015,stage-0 -d lib/ src/",
-    "build": "webpack-cli",
+    "build": "microbundle src/*.js -f modern,esm,cjs && microbundle -f umd --external none",
+    "dev": "microbundle src/*.js -w",
     "lint": "prettier src/**/*.{js,mjs} --write",
-    "prepublish": "npm run compile && npm run build",
+    "prepublish": "npm run build",
     "postinstall": "opencollective-postinstall || true",
     "ci": "npm run build && npm run test:instrument && start-server-and-test test:server http://localhost:8274 test:run:record",
     "test": "npm run build && npm run test:instrument && start-server-and-test test:server http://localhost:8274 test:run",
@@ -37,20 +51,13 @@
   "devDependencies": {
     "@cypress/code-coverage": "^3.10.0",
     "@swup/prettier-config": "^1.0.0",
-    "@swup/webpack-config": "^1.0.0",
-    "babel-cli": "^6.26.0",
-    "babel-loader": "^7.1.4",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-stage-0": "^6.24.1",
     "cypress": "^10.0.2",
     "http-server": "^14.1.1",
     "istanbul-lib-coverage": "^3.2.0",
+    "microbundle": "^0.15.0",
     "nyc": "^15.1.0",
     "prettier": "1.17.0",
-    "start-server-and-test": "^1.14.0",
-    "uglifyjs-webpack-plugin": "^1.2.5",
-    "webpack": "^4.8.3",
-    "webpack-cli": "^3.3.2"
+    "start-server-and-test": "^1.14.0"
   },
   "collective": {
     "type": "opencollective",
