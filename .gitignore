@@ -13,7 +13,8 @@ wiki-wishlist
 *.sublime-workspace
 .idea
 .vscode
-lib
+/lib
+/dist
 /plugins
 .nyc_output
 coverage
