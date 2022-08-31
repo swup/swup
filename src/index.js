@@ -3,7 +3,9 @@ import delegate from 'delegate-it';
 // modules
 import Cache from './modules/Cache';
 import loadPage from './modules/loadPage';
+import leavePage from './modules/leavePage';
 import renderPage from './modules/renderPage';
+import enterPage from './modules/enterPage';
 import triggerEvent from './modules/triggerEvent';
 import on from './modules/on';
 import off from './modules/off';
@@ -41,7 +43,7 @@ export default class Swup {
 			skipPopStateHandling: function(event) {
 				return !(event.state && event.state.source === 'swup');
 			},
-			fragmentLinkAttr: 'data-swup-fragment-link',
+			fragmentTargetAttr: 'data-swup-to-fragment',
 			fragmentContainerAttr: 'data-swup-fragment-container'
 		};
 
@@ -96,7 +98,9 @@ export default class Swup {
 		this.cache = new Cache();
 		this.cache.swup = this;
 		this.loadPage = loadPage;
+		this.leavePage = leavePage;
 		this.renderPage = renderPage;
+		this.enterPage = enterPage;
 		this.triggerEvent = triggerEvent;
 		this.on = on;
 		this.off = off;
@@ -190,60 +194,54 @@ export default class Swup {
 	}
 
 	linkClickHandler(event) {
-		// no control key pressed
-		if (!event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
-			// index of pressed button needs to be checked because Firefox triggers click on all mouse buttons
-			if (event.button === 0) {
-				this.triggerEvent('clickLink', event);
-				event.preventDefault();
-				const link = new Link(event.delegateTarget);
-				if (link.getAddress() == getCurrentUrl() || link.getAddress() == '') {
-					// link to the same URL
-					if (link.getHash() != '') {
-						// link to the same URL with hash
-						this.triggerEvent('samePageWithHash', event);
-						const element = getAnchorElement(link.getHash());
-						if (element != null) {
-							history.replaceState(
-								{
-									url: link.getAddress() + link.getHash(),
-									random: Math.random(),
-									source: 'swup'
-								},
-								document.title,
-								link.getAddress() + link.getHash()
-							);
-						} else {
-							// referenced element not found
-							console.warn(`Element for offset not found (${link.getHash()})`);
-						}
-					} else {
-						// link to the same URL without hash
-						this.triggerEvent('samePage', event);
-					}
+		// Exit early if control key pressed
+		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+			this.triggerEvent('openPageInNewTab', event);
+			return;
+		}
+
+		// Exit early if other than left mouse button
+		if (event.button !== 0) {
+			return;
+		}
+
+		this.triggerEvent('clickLink', event);
+		event.preventDefault();
+
+		const link = new Link(event.delegateTarget);
+		const url = link.getAddress();
+		const hash = link.getHash();
+
+		if (url == getCurrentUrl() || url == '') {
+			if (!hash) {
+				// link to the same URL without hash
+				this.triggerEvent('samePage', event);
+			} else {
+				// link to the same URL with hash
+				this.triggerEvent('samePageWithHash', event);
+				const element = getAnchorElement(hash);
+				if (element) {
+					updateHistoryRecord(url + hash);
 				} else {
-					// link to different url
-					if (link.getHash() != '') {
-						this.scrollToElement = link.getHash();
-					}
-
-					const customTransition = event.delegateTarget.getAttribute('data-swup-transition');
-
-					let fragment = false
-					if (event.delegateTarget.hasAttribute(this.options.fragmentLinkAttr)) {
-						fragment = event.delegateTarget.getAttribute(this.options.fragmentLinkAttr) || true;
-					}
-
-					// load page
-					this.loadPage(
-						{ url: link.getAddress(), fragment, customTransition },
-						false
-					);
+					console.warn(`Element for offset not found (#${hash})`);
 				}
 			}
 		} else {
-			// open in new tab (do nothing)
-			this.triggerEvent('openPageInNewTab', event);
+			// link to different url
+
+			this.scrollToElement = hash;
+			const customTransition = event.delegateTarget.getAttribute('data-swup-transition');
+
+			let fragment = false;
+			const { fragmentTargetAttr: attr } = this.options;
+			const targetEl = event.delegateTarget.closest(`[${attr}]`);
+			if (targetEl && targetEl.matches(`[${attr}]:not([${attr}="_top"])`)) {
+				fragment = targetEl.getAttribute(this.options.fragmentTargetAttr) || true;
+				console.log('Found fragment target: ', fragment);
+			}
+
+			// load page
+			this.loadPage({ url, fragment, customTransition }, false);
 		}
 	}
 

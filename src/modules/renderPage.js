@@ -1,15 +1,16 @@
 import { Link, updateHistoryRecord } from '../helpers';
 import { query } from '../utils';
 
-
-const renderPage = function(page, { popstate, fragment, skipTransition } = {}) {
+const renderPage = function(page, { popstate, fragment } = {}) {
 	document.documentElement.classList.remove('is-leaving');
 
 	const isCurrentPage = this.getCurrentUrl() === page.url;
 	if (!isCurrentPage) return;
 
+	const skipTransition = fragment || (popstate && !this.options.animateHistoryBrowsing);
+
 	// replace state in case the url was redirected
-	const url = new Link(page.responseURL).getPath();
+	const url = new Link(page.responseURL).getAddress();
 	if (window.location.pathname !== url) {
 		updateHistoryRecord(url);
 
@@ -32,22 +33,20 @@ const renderPage = function(page, { popstate, fragment, skipTransition } = {}) {
 	};
 
 	const replaceFragments = () => {
-		if (!fragment) {
-			return false;
-		}
-
 		const fragments = Object.entries(page.fragments);
 		if (!fragments.length) {
 			console.warn('[swup] No fragments found, replacing whole page');
 			return false;
 		}
-		if (typeof fragment === 'string' && !fragments[fragment]) {
+		if (typeof fragment === 'string' && !page.fragments[fragment]) {
 			console.warn(`[swup] Fragment "${fragment}" not found, replacing whole page`);
+			console.log(page.fragments);
 			return false;
 		}
 
 		document.documentElement.classList.add('is-fragment');
 
+		this.triggerEvent('willReplaceContent', popstate);
 		this.triggerEvent('willReplaceFragments', popstate);
 		fragments.forEach(([name, html], i) => {
 			if (fragment === true || fragment === name) {
@@ -57,11 +56,18 @@ const renderPage = function(page, { popstate, fragment, skipTransition } = {}) {
 				}
 			}
 		});
+		this.triggerEvent('contentReplaced', popstate);
 		this.triggerEvent('fragmentsReplaced', popstate);
 	};
 
 	// Try fragments first, if not, then blocks
-	if (replaceFragments() === false) {
+	if (fragment) {
+		if (replaceFragments() === false) {
+			console.log('Fragments failed, replacing blocks');
+			this.loadPage({ url }, popstate);
+			return;
+		}
+	} else {
 		replaceBlocks();
 	}
 
@@ -74,22 +80,8 @@ const renderPage = function(page, { popstate, fragment, skipTransition } = {}) {
 		this.cache.empty();
 	}
 
-	// Perform transition
-	if (!skipTransition) {
-		setTimeout(() => {
-			this.triggerEvent('animationInStart');
-			document.documentElement.classList.remove('is-animating');
-		}, 10);
-
-		const animationPromises = this.getAnimationPromises('in');
-		Promise.all(animationPromises).then(() => {
-			this.triggerEvent('animationInDone');
-			this.triggerEvent('transitionEnd', popstate);
-			this.cleanupAnimationClasses();
-		});
-	} else {
-		this.triggerEvent('transitionEnd', popstate);
-	}
+	// Perform in transition
+	this.enterPage({ popstate, skipTransition });
 
 	// reset scroll-to element
 	this.scrollToElement = null;
