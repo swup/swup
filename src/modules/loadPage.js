@@ -4,7 +4,7 @@ const loadPage = function(data, popstate = false) {
 	let animationPromises = [];
 	let xhrPromise;
 
-	const { url, fragment, customTransition, request } = data;
+	const { url, fragment, customTransition } = data;
 	const skipTransition = fragment || (popstate && !this.options.animateHistoryBrowsing);
 
 	this.triggerEvent('transitionStart', popstate);
@@ -24,12 +24,6 @@ const loadPage = function(data, popstate = false) {
 	}
 
 	// Load page data
-
-	// if (request) {
-	// 	// Request promise passed into this function, re-use
-	// 	xhrPromise = request;
-	// } else if (this.cache.exists(url)) {
-
 	if (this.cache.exists(url)) {
 		// Found in Cache, resolve directly
 		xhrPromise = Promise.resolve(this.cache.getPage(url));

@@ -4,7 +4,6 @@ import { transitionEnd, transitionProperty } from '../helpers';
 const getAnimationPromises = function() {
 	const selector = this.options.animationSelector;
 	const durationProperty = `${transitionProperty()}Duration`;
-	const promises = [];
 	const animatedElements = queryAll(selector, document.body);
 
 	if (!animatedElements.length) {
@@ -12,24 +11,23 @@ const getAnimationPromises = function() {
 		return [Promise.resolve()];
 	}
 
-	animatedElements.forEach((element) => {
+	const promises = animatedElements.map((element) => {
 		const transitionDuration = window.getComputedStyle(element)[durationProperty];
 		// Resolve immediately if no transition defined
 		if (!transitionDuration || transitionDuration == '0s') {
 			console.warn(
 				`[swup] No CSS transition duration defined for element of selector ${selector}`
 			);
-			promises.push(Promise.resolve());
-			return;
+			return Promise.resolve();
 		}
-		const promise = new Promise((resolve) => {
+		return new Promise((resolve) => {
 			element.addEventListener(transitionEnd(), (event) => {
 				if (element == event.target) {
 					resolve();
 				}
 			});
+			setTimeout(() => resolve(), transitionDuration + 1);
 		});
-		promises.push(promise);
 	});
 
 	return promises;

@@ -1,11 +1,14 @@
 import { Link, updateHistoryRecord } from '../helpers';
-import { query } from '../utils';
+import { query, nextTick } from '../utils';
 
 const renderPage = function(page, { popstate, fragment } = {}) {
 	document.documentElement.classList.remove('is-leaving');
 
 	const isCurrentPage = this.getCurrentUrl() === page.url;
-	if (!isCurrentPage) return;
+	if (!isCurrentPage) {
+		console.log('not current page:', this.getCurrentUrl(), 'vs', page.url, page);
+		return;
+	}
 
 	const skipTransition = fragment || (popstate && !this.options.animateHistoryBrowsing);
 
@@ -64,7 +67,9 @@ const renderPage = function(page, { popstate, fragment } = {}) {
 	if (fragment) {
 		if (replaceFragments() === false) {
 			console.log('Fragments failed, replacing blocks');
-			this.loadPage({ url }, popstate);
+			nextTick(() => {
+				this.loadPage({ url }, popstate);
+			});
 			return;
 		}
 	} else {

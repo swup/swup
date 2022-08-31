@@ -1,3 +1,5 @@
+import { nextTick } from '../utils';
+
 const enterPage = function({ popstate = false, skipTransition = false } = {}) {
 	if (skipTransition) {
 		this.triggerEvent('transitionEnd', popstate);
@@ -5,10 +7,10 @@ const enterPage = function({ popstate = false, skipTransition = false } = {}) {
 		return [Promise.resolve()];
 	}
 
-	setTimeout(() => {
+	nextTick(() => {
 		this.triggerEvent('animationInStart');
 		document.documentElement.classList.remove('is-animating');
-	}, 10);
+	});
 
 	const animationPromises = this.getAnimationPromises('in');
 	Promise.all(animationPromises).then(() => {

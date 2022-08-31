@@ -237,7 +237,6 @@ export default class Swup {
 			const targetEl = event.delegateTarget.closest(`[${attr}]`);
 			if (targetEl && targetEl.matches(`[${attr}]:not([${attr}="_top"])`)) {
 				fragment = targetEl.getAttribute(this.options.fragmentTargetAttr) || true;
-				console.log('Found fragment target: ', fragment);
 			}
 
 			// load page
