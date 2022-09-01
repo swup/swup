@@ -78,8 +78,9 @@ context('Window', () => {
 
     it('should transition to previous page on popstate', () => {
         cy.triggerClickOnLink('/page2/');
+        cy.shouldBeAtPage('/page2/');
+        cy.shouldHaveH1('Page 2');
 
-        cy.wait(1000); // Wait for transition finish
         cy.window().then(window => {
             window.history.back();
             cy.shouldBeAtPage('/page1/');
@@ -89,8 +90,9 @@ context('Window', () => {
 
     it('should transition to next page on popstate', () => {
         cy.triggerClickOnLink('/page2/');
+        cy.shouldBeAtPage('/page2/');
+        cy.shouldHaveH1('Page 2');
 
-        cy.wait(1000); // Wait for transition finish
         cy.window().then(window => {
             window.history.back();
             window.history.forward();
