@@ -25,9 +25,7 @@ export default function getAnimationPromises() {
 		return [Promise.resolve()];
 	}
 
-	return animatedElements.map(
-		(element) => getAnimationPromiseForElement(element, selector)
-	);
+	return animatedElements.map((element) => getAnimationPromiseForElement(element, selector));
 }
 
 function getAnimationPromiseForElement(element, selector, expectedType = null) {
