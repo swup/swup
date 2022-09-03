@@ -1,4 +1,4 @@
-import { queryAll } from '../utils';
+import { queryAll } from '../utils.js';
 import { transitionEnd, transitionProperty } from '../helpers.js';
 
 const getAnimationPromises = function() {
