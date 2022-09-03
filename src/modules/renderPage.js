@@ -1,4 +1,4 @@
-import { Link } from '../helpers';
+import { Link } from '../helpers.js';
 
 const renderPage = function(page, popstate) {
 	document.documentElement.classList.remove('is-leaving');
