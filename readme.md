@@ -32,6 +32,8 @@
 
 [Here](https://medium.com/@gmarcuk/introducing-swup-v2-814e40316dee)'s what's new in v2. Check [changelog](https://swup.js.org/other/changelog) for recent changes, see all [swup repositories](https://github.com/swup/) to discover more, or checkout the [discussions](https://github.com/swup/swup/discussions).
 
+<img src="https://user-images.githubusercontent.com/9338324/49190360-50125480-f372-11e8-89e9-d2fb091a2240.gif" width="100%">
+
 - [Discussions](https://github.com/swup/swup/discussions)
 - [Getting Started](https://swup.js.org/getting-started)
   - [Example](https://swup.js.org/getting-started/example)
@@ -55,6 +57,4 @@
 
 If you're having trouble implementing swup, checkout [Common Issues](https://swup.js.org/other/common-issues), [Closed Issues](https://github.com/gmrchk/swup/issues?q=is%3Aissue+is%3Aclosed) or open a [new one](https://github.com/gmrchk/swup/issues/new).
 
-[Become a backer or sponsor on Open Collective](https://opencollective.com/swup) or support swup through [GitHub sponsors](https://github.com/sponsors/gmrchk). 
-
-<img src="https://user-images.githubusercontent.com/9338324/49190360-50125480-f372-11e8-89e9-d2fb091a2240.gif" width="100%">
+[Become a backer or sponsor on Open Collective](https://opencollective.com/swup) or support swup through [GitHub sponsors](https://github.com/sponsors/gmrchk).
