@@ -1,4 +1,4 @@
-import { classify, createHistoryRecord, fetch } from '../helpers';
+import { classify, createHistoryRecord, fetch } from '../helpers.js';
 
 const loadPage = function(data, popstate = false) {
 	let animationPromises = [];

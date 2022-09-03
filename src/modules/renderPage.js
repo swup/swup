@@ -1,5 +1,5 @@
-import { Link, updateHistoryRecord } from '../helpers';
-import { query, queryAll, nextTick, compareArrays } from '../utils';
+import { Link, updateHistoryRecord } from '../helpers.js';
+import { query, queryAll, nextTick, compareArrays } from '../utils.js';
 
 const renderPage = function(page, { popstate, fragment } = {}) {
 	document.documentElement.classList.remove('is-leaving');

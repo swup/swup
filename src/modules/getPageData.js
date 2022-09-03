@@ -1,4 +1,4 @@
-import { getDataFromHtml } from '../helpers';
+import { getDataFromHtml } from '../helpers.js';
 
 const getPageData = function(request) {
 	// this method can be replaced in case other content than html is expected to be received from server

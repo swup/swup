@@ -1,28 +1,28 @@
 import delegate from 'delegate-it';
 
 // modules
-import Cache from './modules/Cache';
-import loadPage from './modules/loadPage';
-import leavePage from './modules/leavePage';
-import renderPage from './modules/renderPage';
-import enterPage from './modules/enterPage';
-import triggerEvent from './modules/triggerEvent';
-import on from './modules/on';
-import off from './modules/off';
-import updateTransition from './modules/updateTransition';
-import getAnchorElement from './modules/getAnchorElement';
-import getAnimationPromises from './modules/getAnimationPromises';
-import getPageData from './modules/getPageData';
-import { use, unuse, findPlugin } from './modules/plugins';
+import Cache from './modules/Cache.js';
+import loadPage from './modules/loadPage.js';
+import leavePage from './modules/leavePage.js';
+import renderPage from './modules/renderPage.js';
+import enterPage from './modules/enterPage.js';
+import triggerEvent from './modules/triggerEvent.js';
+import on from './modules/on.js';
+import off from './modules/off.js';
+import updateTransition from './modules/updateTransition.js';
+import getAnchorElement from './modules/getAnchorElement.js';
+import getAnimationPromises from './modules/getAnimationPromises.js';
+import getPageData from './modules/getPageData.js';
+import { use, unuse, findPlugin } from './modules/plugins.js';
 
-import { queryAll } from './utils';
+import { queryAll } from './utils.js';
 import {
 	getCurrentUrl,
 	markSwupElements,
 	Link,
 	cleanupAnimationClasses,
 	updateHistoryRecord
-} from './helpers';
+} from './helpers.js';
 
 export default class Swup {
 	constructor(setOptions) {

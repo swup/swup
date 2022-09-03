@@ -1,4 +1,4 @@
-import { query, queryAll } from '../utils';
+import { query, queryAll } from '../utils.js';
 
 const getDataFromHtml = (html, options) => {
 	let fakeDom = document.createElement('html');

@@ -1,5 +1,5 @@
-import { queryAll } from '../utils';
-import { transitionEnd, transitionProperty } from '../helpers';
+import { queryAll } from '../utils.js';
+import { transitionEnd, transitionProperty } from '../helpers.js';
 
 const getAnimationPromises = function() {
 	const selector = this.options.animationSelector;
