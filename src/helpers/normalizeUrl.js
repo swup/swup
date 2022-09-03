@@ -1,4 +1,4 @@
-import Link from './Link';
+import Link from './Link.js';
 
 const normalizeUrl = (url) => {
 	return new Link(url).getAddress();
