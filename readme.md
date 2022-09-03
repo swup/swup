@@ -9,11 +9,21 @@
 Complete, flexible, extensible and easy to use page transition library for your static web.
 </p>
 <p align="center">
-    <a href="https://www.npmjs.com/package/swup"><img src="https://img.shields.io/npm/v/swup.svg" alt="npm version"></a>
-    <img src="https://img.shields.io/bundlephobia/minzip/swup.svg" alt="Gzip Size">
-    <a href="https://github.com/gmrchk/swup/blob/master/LICENSE"><img src="https://img.shields.io/github/license/gmrchk/swup.svg" alt="License"></a>
-    <a href="https://www.npmjs.com/package/swup"><img src="https://img.shields.io/npm/dt/swup.svg" alt="npm downloads"></a>
-    <a href="https://circleci.com/gh/swup/swup"><img src="https://circleci.com/gh/swup/swup.svg?style=svg" alt="CircleCI"></a>
+    <a href="https://www.npmjs.com/package/swup">
+        <img src="https://img.shields.io/npm/v/swup.svg" alt="npm version">
+    </a>
+    <a href="https://bundlephobia.com/package/swup">
+        <img src="https://img.shields.io/bundlephobia/minzip/swup.svg" alt="Bundle size">
+    </a>
+    <a href="https://github.com/gmrchk/swup/blob/master/LICENSE">
+        <img src="https://img.shields.io/github/license/gmrchk/swup.svg" alt="License">
+    </a>
+    <a href="https://www.npmjs.com/package/swup">
+        <img src="https://img.shields.io/npm/dt/swup.svg" alt="npm downloads">
+    </a>
+    <a href="https://circleci.com/gh/swup/swup">
+        <img src="https://circleci.com/gh/swup/swup.svg?style=shield" alt="CircleCI">
+    </a>
 </p>
 
 [Here](https://medium.com/@gmarcuk/introducing-swup-v2-814e40316dee)'s what's new in v2. Check [changelog](https://swup.js.org/other/changelog) for recent changes, see all [swup repositories](https://github.com/swup/) to discover more, or checkout the [discussions](https://github.com/swup/swup/discussions).
