@@ -4,10 +4,14 @@
 
 ---
 
-<p align="center"><img width="420" alt="swup" src="https://swup.js.org/assets/images/swup-logo.svg"></p>
 <p align="center">
-Complete, flexible, extensible and easy to use page transition library for your static web.
+    <img width="300" alt="swup" src="https://swup.js.org/assets/images/swup-logo.svg">
 </p>
+
+<p align="center">
+    Complete, flexible, extensible and easy to use page transition library for your static website.
+</p>
+
 <p align="center">
     <a href="https://www.npmjs.com/package/swup">
         <img src="https://img.shields.io/npm/v/swup.svg" alt="npm version">
