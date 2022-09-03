@@ -1,6 +1,6 @@
 <a href="https://github.com/swup/swup/discussions/424">We're looking for maintainers!</a>   👀
 
-<hr style="border-bottom:1px solid var(--color-border-muted);">
+<br/>
 
 <img src="https://swup.js.org/assets/images/swup-logo.svg" alt="swup logo" height="50" align="right">
 
