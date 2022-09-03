@@ -2,10 +2,7 @@
 
 ---
 
-<span align="right">
-    <img src="https://swup.js.org/assets/images/swup-logo.svg" alt="swup logo" height="50" align="right">
-    <br>
-</span>
+<img src="https://swup.js.org/assets/images/swup-logo.svg" alt="swup logo" height="50" align="right">
 
 # Swup
 
