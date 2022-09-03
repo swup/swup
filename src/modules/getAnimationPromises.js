@@ -1,4 +1,4 @@
-import { queryAll, toMs } from '../utils';
+import { queryAll, toMs } from '../utils.js';
 
 // Transition property/event sniffing
 let transitionProp = 'transition';
