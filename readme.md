@@ -1,4 +1,6 @@
-<h3 align="center"><a href="https://github.com/swup/swup/discussions/424">We're looking for maintainers!</a></h3>
+<h3 align="center">
+    <a href="https://github.com/swup/swup/discussions/424">We're looking for maintainers!</a>
+</h3>
 
 ---
 
@@ -25,17 +27,17 @@ Complete, flexible, extensible and easy to use page transition library for your 
 - [Options](https://swup.js.org/options)
 - [Events](https://swup.js.org/events)
 - Extensions
-    - [Plugins](https://swup.js.org/plugins)
-    - [Themes](https://swup.js.org/themes)
-    - [3rd Party Integrations](https://swup.js.org/third-party-integrations)
+  - [Plugins](https://swup.js.org/plugins)
+  - [Themes](https://swup.js.org/themes)
+  - [3rd Party Integrations](https://swup.js.org/third-party-integrations)
 - [JavaScript API](https://swup.js.org/api)
 - [Swup CLI](https://swup.js.org/cli)
 - [CI/CD Integration](https://swup.js.org/ci-cd)
 - Other
-    - [Changelog](https://swup.js.org//other/changelog)
-    - [Contributions](https://swup.js.org/other/contributions)
-    - [Repositories](https://github.com/swup)
-    - [Sites using swup](https://github.com/swup/swup/discussions/333)
+  - [Changelog](https://swup.js.org//other/changelog)
+  - [Contributions](https://swup.js.org/other/contributions)
+  - [Repositories](https://github.com/swup)
+  - [Sites using swup](https://github.com/swup/swup/discussions/333)
 
 If you're having trouble implementing swup, checkout [Common Issues](https://swup.js.org/other/common-issues), [Closed Issues](https://github.com/gmrchk/swup/issues?q=is%3Aissue+is%3Aclosed) or open a [new one](https://github.com/gmrchk/swup/issues/new).
 
