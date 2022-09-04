@@ -41,7 +41,8 @@ function getAnimationPromiseForElement(element, selector, expectedType = null) {
 
 	return new Promise((resolve) => {
 		const endEvent = type === 'transition' ? transitionEndEvent : animationEndEvent;
-		let propsEnded = 0;
+		const startTime = performance.now();
+		let propsTransitioned = 0;
 
 		const end = () => {
 			element.removeEventListener(endEvent, onEnd);
@@ -49,15 +50,25 @@ function getAnimationPromiseForElement(element, selector, expectedType = null) {
 		};
 
 		const onEnd = (event) => {
-			if (event.target === element) {
-				if (++propsEnded >= propCount) {
-					end();
-				}
+			// Skip transitions on child elements
+			if (event.target !== element) {
+				return;
+			}
+
+			// Skip transitions that happened before we started listening
+			const elapsedTime = (performance.now() - startTime) / 1000;
+			if (elapsedTime < event.elapsedTime) {
+				return;
+			}
+
+			// End if all properties have transitioned
+			if (++propsTransitioned >= propCount) {
+				end();
 			}
 		};
 
 		setTimeout(() => {
-			if (propsEnded < propCount) {
+			if (propsTransitioned < propCount) {
 				end();
 			}
 		}, timeout + 1);
