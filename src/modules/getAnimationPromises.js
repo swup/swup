@@ -26,7 +26,6 @@ const getAnimationPromises = function() {
 					resolve();
 				}
 			});
-			setTimeout(() => resolve(), transitionDuration + 1);
 		});
 	});
 
