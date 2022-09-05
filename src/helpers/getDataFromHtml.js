@@ -33,7 +33,7 @@ const getDataFromHtml = (html, options) => {
 		if (!name) {
 			console.warn('[swup] Fragment container is missing required name');
 		} else if (fragments[name]) {
-			console.warn(`[swup] Duplicate fragment container found with name #${id}`);
+			console.warn(`[swup] Duplicate fragment container found with name #${name}`);
 		} else {
 			fragments[name] = container.outerHTML;
 		}
