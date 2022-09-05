@@ -89,11 +89,11 @@ li span > span {
   animation: slideUp 0.8s cubic-bezier(0.075, 0.82, 0.165, 1) forwards;
   transform: translate3d(0, 100%, 0);
 }
-.transition-fade {
+.transition-default {
   transition: 0.4s;
   opacity: 1;
 }
-html.is-animating .transition-fade {
+html.is-animating .transition-default {
   opacity: 0;
 }
 .wrapper {
@@ -290,6 +290,6 @@ html.is-animating .button--fade {
   margin: 1000px 0;
 }
 
-.no-transitions * {
+.test--no-transitions * {
   transition: none !important;
 }
