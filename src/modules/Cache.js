@@ -1,13 +1,25 @@
 import { getCurrentUrl, normalizeUrl } from '../helpers.js';
 
 export class Cache {
-	constructor() {
+	constructor(options) {
 		this.pages = {};
 		this.last = null;
+
+		const defaults = {
+			resolvePath: path => path
+		}
+		this.options = {
+			...defaults,
+			...options
+		};
+	}
+
+	normalizeUrl(url) {
+		return this.options.resolvePath(normalizeUrl(url));
 	}
 
 	cacheUrl(page) {
-		page.url = normalizeUrl(page.url);
+		page.url = this.normalizeUrl(page.url);
 		if (page.url in this.pages === false) {
 			this.pages[page.url] = page;
 		}
@@ -16,7 +28,7 @@ export class Cache {
 	}
 
 	getPage(url) {
-		url = normalizeUrl(url);
+		url = this.normalizeUrl(url);
 		return this.pages[url];
 	}
 
@@ -25,7 +37,7 @@ export class Cache {
 	}
 
 	exists(url) {
-		url = normalizeUrl(url);
+		url = this.normalizeUrl(url);
 		return url in this.pages;
 	}
 

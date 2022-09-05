@@ -39,6 +39,9 @@ export default class Swup {
 			plugins: [],
 			skipPopStateHandling: function(event) {
 				return !(event.state && event.state.source === 'swup');
+			},
+			cache: {
+				resolvePath: path => path
 			}
 		};
 
@@ -88,7 +91,7 @@ export default class Swup {
 		this.boundPopStateHandler = this.popStateHandler.bind(this);
 
 		// make modules accessible in instance
-		this.cache = new Cache();
+		this.cache = new Cache(options.cache);
 		this.cache.swup = this;
 		this.loadPage = loadPage;
 		this.renderPage = renderPage;
@@ -262,7 +265,6 @@ export default class Swup {
 			document.documentElement.classList.remove('is-animating');
 			cleanupAnimationClasses();
 		}
-
 		this.loadPage({ url: link.getAddress() }, event);
 	}
 }
