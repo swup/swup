@@ -30,7 +30,7 @@ Swup is a library that helps you add page transitions to server-side rendered we
 the complete lifecycle of a page visit by intercepting link clicks, loading the new page in the
 background, replacing the content and transitioning between the old and the new page.
 
-Its goal is to make adding transition to a site as simple as possible, while providing lots of
+Its goal is to make adding transitions to a site as simple as possible, while providing lots of
 other quality-of-life improvements.
 
 ## Features
