@@ -1,16 +1,20 @@
-<a href="https://github.com/swup/swup/discussions/424">We're looking for maintainers!</a>   👀
+<br>
 
-<br/>
+<p align="center">
+  <img width="280" alt="swup" src="https://swup.js.org/assets/images/swup-logo.svg">
+</p>
 
-<img src="https://swup.js.org/assets/images/swup-logo.svg" alt="swup logo" height="50" align="right">
+<p align="center">
+  <a href="https://www.npmjs.com/package/swup"><img src="https://img.shields.io/npm/v/swup.svg" alt="npm version"></a>
+  <img src="https://img.shields.io/bundlephobia/minzip/swup.svg" alt="Gzip Size">
+  <a href="https://github.com/gmrchk/swup/blob/master/LICENSE"><img src="https://img.shields.io/github/license/gmrchk/swup.svg" alt="License"></a>
+  <a href="https://www.npmjs.com/package/swup"><img src="https://img.shields.io/npm/dt/swup.svg" alt="npm downloads"></a>
+  <a href="https://circleci.com/gh/swup/swup"><img src="https://circleci.com/gh/swup/swup.svg?style=svg" alt="CircleCI"></a>
+</p>
+
+<br>
 
 # Swup
-
-[![npm version](https://img.shields.io/npm/v/swup.svg)](https://www.npmjs.com/package/swup)
-[![Bundle size](https://img.shields.io/bundlephobia/minzip/swup.svg)](https://bundlephobia.com/package/swup)
-[![License](https://img.shields.io/github/license/gmrchk/swup.svg)](https://github.com/gmrchk/swup/blob/master/LICENSE)
-[![npm downloads](https://img.shields.io/npm/dt/swup.svg)](https://www.npmjs.com/package/swup)
-[![Build status](https://circleci.com/gh/swup/swup.svg?style=shield)](https://circleci.com/gh/swup/swup)
 
 Complete, flexible, extensible and easy to use page transition library for your static website.
 
@@ -31,12 +35,12 @@ other quality-of-life improvements.
 
 ## Features
 
-- Auto-detects [CSS transitions](https://swup.js.org/getting-started/how-it-works) for perfect timing
-- Updates URLs and preserves native browser history behavior
-- Uses a [cache](https://swup.js.org/api/cache) to speed up subsequent page loads
-- Offers [events](https://swup.js.org/events) for hooking into the lifecycle
-- Has a powerful [plugin system](https://swup.js.org/plugins) and many official and third-party plugins
-- Provides ready-to-go [themes](https://swup.js.org/themes) to get started quickly
+- ✨ Auto-detects [CSS transitions](https://swup.js.org/getting-started/how-it-works) for perfect timing
+- 🔗 Updates URLs and preserves native browser history behavior
+- 📦 Uses a [cache](https://swup.js.org/api/cache) to speed up subsequent page loads
+- 💡 Offers [events](https://swup.js.org/events) for hooking into the lifecycle
+- 🔌 Has a powerful [plugin system](https://swup.js.org/plugins) and many official and third-party plugins
+- 🎨 Provides ready-to-go [themes](https://swup.js.org/themes) to get started quickly
 
 ## Examples
 
@@ -49,6 +53,8 @@ Take a look at [Sites using swup](https://github.com/swup/swup/discussions/333) 
 If you're having trouble implementing swup, check out the [Common Issues](https://swup.js.org/other/common-issues) section of the docs, look at [closed issues](https://github.com/gmrchk/swup/issues?q=is%3Aissue+is%3Aclosed) or create a [new discussion](https://github.com/swup/swup/discussions/new).
 
 ## Want to Contribute?
+
+<a href="https://github.com/swup/swup/discussions/424">We're looking for maintainers!</a>   👀
 
 Become a sponsor on [Open Collective](https://opencollective.com/swup) or support development through
 [GitHub sponsors](https://github.com/sponsors/gmrchk).
