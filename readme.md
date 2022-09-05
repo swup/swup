@@ -6,10 +6,10 @@
 
 <p align="center">
   <a href="https://www.npmjs.com/package/swup"><img src="https://img.shields.io/npm/v/swup.svg" alt="npm version"></a>
-  <img src="https://img.shields.io/bundlephobia/minzip/swup.svg" alt="Gzip Size">
+  <a href="https://bundlephobia.com/package/swup"><img src="https://img.shields.io/bundlephobia/minzip/swup.svg" alt="Bundle size"></a>
   <a href="https://github.com/gmrchk/swup/blob/master/LICENSE"><img src="https://img.shields.io/github/license/gmrchk/swup.svg" alt="License"></a>
   <a href="https://www.npmjs.com/package/swup"><img src="https://img.shields.io/npm/dt/swup.svg" alt="npm downloads"></a>
-  <a href="https://circleci.com/gh/swup/swup"><img src="https://circleci.com/gh/swup/swup.svg?style=svg" alt="CircleCI"></a>
+  <a href="https://circleci.com/gh/swup/swup"><img src="https://circleci.com/gh/swup/swup.svg?style=shield" alt="Build status"></a>
 </p>
 
 <br>
