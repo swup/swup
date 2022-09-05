@@ -303,3 +303,24 @@ html.test--complex-transitions.is-animating .transition-default {
   transform: translateY(10px);
   opacity: 0;
 }
+
+.test--keyframe-transitions .transition-default {
+  transition: none;
+  animation: test-animation 400ms 300ms;
+}
+
+html.test--keyframe-transitions.is-animating .transition-default {
+  transform: translateY(10px);
+  opacity: 0;
+}
+
+@keyframes test-animation {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+}
