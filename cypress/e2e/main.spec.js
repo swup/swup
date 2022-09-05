@@ -2,6 +2,8 @@
 
 // window._swup holds the swup instance
 
+const durationTolerance = 0.1; // 10% plus/minus
+
 context('Window', () => {
     beforeEach(() => {
         cy.visit('/page1/');
@@ -29,6 +31,28 @@ context('Window', () => {
         cy.window().should(() => {
             expect(triggered, 'event was not triggered').to.be.true;
             expect(prevented, 'preventDefault() was not called').to.be.true;
+        });
+    });
+
+    it('should detect transition timings', () => {
+        let durationOut = 0;
+        let durationIn = 0;
+        const expectedDuration = 400;
+
+        cy.window().then((window) => {
+            let startOut = 0;
+            let startIn = 0;
+            window._swup.on('animationOutStart', e => startOut = performance.now());
+            window._swup.on('animationOutDone', e => durationOut = performance.now() - startOut);
+            window._swup.on('animationInStart', e => startIn = performance.now());
+            window._swup.on('animationInDone', e => durationIn = performance.now() - startIn);
+        });
+
+        cy.triggerClickOnLink('/page2/');
+        cy.window().should(() => {
+            const durationRange = [expectedDuration * (1 - durationTolerance), expectedDuration * (1 + durationTolerance)];
+            expect(durationIn, 'in duration not correct').to.be.within(...durationRange);
+            expect(durationOut, 'out duration not correct').to.be.within(...durationRange);
         });
     });
 
