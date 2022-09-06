@@ -30,6 +30,7 @@ export default class Swup {
 			linkSelector: `a[href^="${
 				window.location.origin
 			}"]:not([data-no-swup]), a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup])`,
+			ignoreLink: (el) => false,
 			cache: true,
 			containers: ['#swup'],
 			requestHeaders: {
@@ -193,6 +194,10 @@ export default class Swup {
 	}
 
 	linkClickHandler(event) {
+		if (this.options.ignoreLink(event.delegateTarget)) {
+			return;
+		}
+
 		// no control key pressed
 		if (!event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
 			// index of pressed button needs to be checked because Firefox triggers click on all mouse buttons
