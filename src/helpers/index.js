@@ -3,8 +3,6 @@ export { default as createHistoryRecord } from './createHistoryRecord.js';
 export { default as updateHistoryRecord } from './updateHistoryRecord.js';
 export { default as getDataFromHtml } from './getDataFromHtml.js';
 export { default as fetch } from './fetch.js';
-export { default as transitionEnd } from './transitionEnd.js';
-export { default as transitionProperty } from './transitionProperty.js';
 export { default as getCurrentUrl } from './getCurrentUrl.js';
 export { default as normalizeUrl } from './normalizeUrl.js';
 export { default as markSwupElements } from './markSwupElements.js';
