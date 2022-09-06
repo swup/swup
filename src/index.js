@@ -192,6 +192,9 @@ export default class Swup {
 	}
 
 	isValidTrigger(triggerEl) {
+		if (triggerEl.matches('[download], [target="_blank"]')) {
+			return false;
+		}
 		if (triggerEl.closest('[data-no-swup]')) {
 			return false;
 		}
