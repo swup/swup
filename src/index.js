@@ -27,9 +27,7 @@ export default class Swup {
 		let defaults = {
 			animateHistoryBrowsing: false,
 			animationSelector: '[class*="transition-"]',
-			linkSelector: `a[href^="${
-				window.location.origin
-			}"]:not([data-no-swup]), a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup])`,
+			linkSelector: `a[href^="${window.location.origin}"], a[href^="/"], a[href^="#"]`,
 			ignoreLink: (el) => false,
 			cache: true,
 			containers: ['#swup'],
@@ -193,7 +191,17 @@ export default class Swup {
 		document.documentElement.classList.remove('swup-enabled');
 	}
 
+	isValidTrigger(triggerEl) {
+		if (triggerEl.closest('[data-no-swup]')) {
+			return false;
+		}
+		return true;
+	}
+
 	linkClickHandler(event) {
+		if (!this.isValidTrigger(event.delegateTarget)) {
+			return;
+		}
 		if (this.options.ignoreLink(event.delegateTarget)) {
 			return;
 		}
