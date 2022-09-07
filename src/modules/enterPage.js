@@ -1,4 +1,4 @@
-import { nextTick } from '../utils';
+import { nextTick } from '../utils.js';
 
 const enterPage = function({ popstate = false, skipTransition = false } = {}) {
 	if (skipTransition) {

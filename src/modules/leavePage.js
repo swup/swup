@@ -1,4 +1,4 @@
-import { classify } from '../helpers';
+import { classify } from '../helpers.js';
 
 const leavePage = function(data, { popstate = false, skipTransition = false } = {}) {
 	if (skipTransition) {
