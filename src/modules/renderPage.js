@@ -43,7 +43,7 @@ const renderPage = function(page, { popstate, fragment } = {}) {
 		}
 
 		const { fragmentContainerAttr } = this.options;
-		const fragmentsOnPage = queryAll(`[${fragmentContainerAttr}]`);
+		const fragmentsOnPage = queryAll(`[${fragmentContainerAttr}]`).filter(el => fragment === true || fragment === el.getAttribute(fragmentContainerAttr));
 		const fragmentsToReplace = fragments.filter(([name]) => fragment === true || fragment === name);
 		const hasIdenticalFragmentContainers = compareArrays(
 			fragmentsOnPage.map((el) => el.getAttribute(fragmentContainerAttr)),
