@@ -55,7 +55,7 @@ const renderPage = function(page, { popstate, fragment } = {}) {
 			return false;
 		}
 
-		if (fragment === 'string' && !page.fragments[fragment]) {
+		if (typeof fragment === 'string' && !page.fragments[fragment]) {
 			console.warn(`[swup] Fragment "${fragment}" not found, replacing whole page`);
 			return false;
 		}

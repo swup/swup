@@ -89,11 +89,11 @@ li span > span {
   animation: slideUp 0.8s cubic-bezier(0.075, 0.82, 0.165, 1) forwards;
   transform: translate3d(0, 100%, 0);
 }
-.transition-fade {
+.transition-default {
   transition: 0.4s;
   opacity: 1;
 }
-html.is-animating .transition-fade {
+html.is-animating .transition-default {
   opacity: 0;
 }
 .wrapper {
@@ -290,6 +290,37 @@ html.is-animating .button--fade {
   margin: 1000px 0;
 }
 
-.no-transitions * {
+.test--no-transitions * {
   transition: none !important;
+}
+
+.test--complex-transitions .transition-default {
+  transition: opacity 100ms 200ms, transform 400ms 200ms;
+  opacity: 1;
+}
+
+html.test--complex-transitions.is-animating .transition-default {
+  transform: translateY(10px);
+  opacity: 0;
+}
+
+.test--keyframe-transitions .transition-default {
+  transition: none;
+  animation: test-animation 400ms 300ms;
+}
+
+html.test--keyframe-transitions.is-animating .transition-default {
+  transform: translateY(10px);
+  opacity: 0;
+}
+
+@keyframes test-animation {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(10px);
+    opacity: 0;
+  }
 }

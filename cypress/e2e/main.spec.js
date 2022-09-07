@@ -2,6 +2,8 @@
 
 // window._swup holds the swup instance
 
+const durationTolerance = 0.1; // 10% plus/minus
+
 context('Window', () => {
     beforeEach(() => {
         cy.visit('/page1/');
@@ -32,6 +34,82 @@ context('Window', () => {
         });
     });
 
+    it('should detect transition timings', () => {
+        let durationOut = 0;
+        let durationIn = 0;
+        const expectedDuration = 400;
+
+        cy.window().then((window) => {
+            let startOut = 0;
+            let startIn = 0;
+            window._swup.on('animationOutStart', e => startOut = performance.now());
+            window._swup.on('animationOutDone', e => durationOut = performance.now() - startOut);
+            window._swup.on('animationInStart', e => startIn = performance.now());
+            window._swup.on('animationInDone', e => durationIn = performance.now() - startIn);
+        });
+
+        cy.triggerClickOnLink('/page2/');
+        cy.window().should(() => {
+            const durationRange = [expectedDuration * (1 - durationTolerance), expectedDuration * (1 + durationTolerance)];
+            expect(durationIn, 'in duration not correct').to.be.within(...durationRange);
+            expect(durationOut, 'out duration not correct').to.be.within(...durationRange);
+        });
+    });
+
+    it('should detect complex transition timings', () => {
+        cy.window().then(window => {
+            window.document.documentElement.classList.add('test--complex-transitions');
+        });
+
+        let durationOut = 0;
+        let durationIn = 0;
+        const expectedDuration = 600;
+
+        cy.window().then((window) => {
+            let startOut = 0;
+            let startIn = 0;
+            window._swup.on('animationOutStart', e => startOut = performance.now());
+            window._swup.on('animationOutDone', e => durationOut = performance.now() - startOut);
+            window._swup.on('animationInStart', e => startIn = performance.now());
+            window._swup.on('animationInDone', e => durationIn = performance.now() - startIn);
+        });
+
+        cy.triggerClickOnLink('/page2/');
+
+        cy.window().should(() => {
+            const durationRange = [expectedDuration * (1 - durationTolerance), expectedDuration * (1 + durationTolerance)];
+            expect(durationIn, 'in duration not correct').to.be.within(...durationRange);
+            expect(durationOut, 'out duration not correct').to.be.within(...durationRange);
+        });
+    });
+
+    it('should detect keyframe timings', () => {
+        cy.window().then(window => {
+            window.document.documentElement.classList.add('test--keyframe-transitions');
+        });
+
+        let durationOut = 0;
+        let durationIn = 0;
+        const expectedDuration = 700;
+
+        cy.window().then((window) => {
+            let startOut = 0;
+            let startIn = 0;
+            window._swup.on('animationOutStart', e => startOut = performance.now());
+            window._swup.on('animationOutDone', e => durationOut = performance.now() - startOut);
+            window._swup.on('animationInStart', e => startIn = performance.now());
+            window._swup.on('animationInDone', e => durationIn = performance.now() - startIn);
+        });
+
+        cy.triggerClickOnLink('/page2/');
+
+        cy.window().should(() => {
+            const durationRange = [expectedDuration * (1 - durationTolerance), expectedDuration * (1 + durationTolerance)];
+            expect(durationIn, 'in duration not correct').to.be.within(...durationRange);
+            expect(durationOut, 'out duration not correct').to.be.within(...durationRange);
+        });
+    });
+
     it('should trigger a custom click event', () => {
         let triggered = false;
         cy.window().then(window => {
@@ -56,7 +134,7 @@ context('Window', () => {
 
     it('should transition if no CSS transition is defined', () => {
         cy.window().then(window => {
-            window.document.documentElement.classList.add('no-transitions');
+            window.document.documentElement.classList.add('test--no-transitions');
         });
         cy.triggerClickOnLink('/page2/');
         cy.shouldBeAtPage('/page2/');
@@ -78,8 +156,9 @@ context('Window', () => {
 
     it('should transition to previous page on popstate', () => {
         cy.triggerClickOnLink('/page2/');
+        cy.shouldBeAtPage('/page2/');
+        cy.shouldHaveH1('Page 2');
 
-        cy.wait(1000); // Wait for transition finish
         cy.window().then(window => {
             window.history.back();
             cy.shouldBeAtPage('/page1/');
@@ -89,8 +168,9 @@ context('Window', () => {
 
     it('should transition to next page on popstate', () => {
         cy.triggerClickOnLink('/page2/');
+        cy.shouldBeAtPage('/page2/');
+        cy.shouldHaveH1('Page 2');
 
-        cy.wait(1000); // Wait for transition finish
         cy.window().then(window => {
             window.history.back();
             window.history.forward();
