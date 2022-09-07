@@ -1,4 +1,4 @@
-import { classify, createHistoryRecord, fetch } from '../helpers.js';
+import { classify, createHistoryRecord, updateHistoryRecord, fetch, getCurrentUrl } from '../helpers.js';
 
 const loadPage = function(data, popstate = false) {
 	let animationPromises = [];
@@ -20,8 +20,12 @@ const loadPage = function(data, popstate = false) {
 
 	// create history record if this is not a popstate call (with or without anchor)
 	if (!popstate) {
+		// enables fragment replacement during history browsing
+		updateHistoryRecord(this.currentURL, { fragment });
 		createHistoryRecord(url + (this.scrollToElement || ''), { fragment });
 	}
+
+	this.currentURL = getCurrentUrl();
 
 	// Load page data
 	if (this.cache.exists(url)) {

@@ -114,6 +114,7 @@ export default class Swup {
 		this.findPlugin = findPlugin;
 		this.getCurrentUrl = getCurrentUrl;
 		this.cleanupAnimationClasses = cleanupAnimationClasses;
+		this.currentURL = getCurrentUrl();
 
 		// enable swup
 		this.enable();
