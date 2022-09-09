@@ -19,12 +19,12 @@ export class Cache {
 		}
 	}
 
-	resolveUrl(url) {
+	resolvePath(url) {
 		return this.options.resolve(normalizeUrl(url));
 	}
 
 	cacheUrl(page) {
-		page.url = this.resolveUrl(page.url);
+		page.url = this.resolvePath(page.url);
 		if (page.url in this.pages === false) {
 			this.pages[page.url] = page;
 		}
@@ -33,16 +33,16 @@ export class Cache {
 	}
 
 	getPage(url) {
-		url = this.resolveUrl(url);
+		url = this.resolvePath(url);
 		return this.pages[url];
 	}
 
 	getCurrentPage() {
-		return this.getPage(this.resolveUrl(getCurrentUrl()));
+		return this.getPage(this.resolvePath(getCurrentUrl()));
 	}
 
 	exists(url) {
-		url = this.resolveUrl(url);
+		url = this.resolvePath(url);
 		return url in this.pages;
 	}
 
@@ -53,7 +53,7 @@ export class Cache {
 	}
 
 	remove(url) {
-		delete this.pages[this.resolveUrl(url)];
+		delete this.pages[this.resolvePath(url)];
 	}
 }
 
