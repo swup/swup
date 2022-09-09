@@ -39,9 +39,6 @@ export default class Swup {
 			plugins: [],
 			skipPopStateHandling: function(event) {
 				return !(event.state && event.state.source === 'swup');
-			},
-			cache: {
-				resolvePath: path => path
 			}
 		};
 
