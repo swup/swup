@@ -14,12 +14,13 @@ export class Cache {
 		};
 	}
 
-	normalizeUrl(url) {
-		return this.options.resolvePath(normalizeUrl(url));
+	resolveUrl(url) {
+		const result = this.options.resolvePath(normalizeUrl(url));
+		return result;
 	}
 
 	cacheUrl(page) {
-		page.url = this.normalizeUrl(page.url);
+		page.url = this.resolveUrl(page.url);
 		if (page.url in this.pages === false) {
 			this.pages[page.url] = page;
 		}
@@ -28,7 +29,7 @@ export class Cache {
 	}
 
 	getPage(url) {
-		url = this.normalizeUrl(url);
+		url = this.resolveUrl(url);
 		return this.pages[url];
 	}
 
@@ -37,7 +38,7 @@ export class Cache {
 	}
 
 	exists(url) {
-		url = this.normalizeUrl(url);
+		url = this.resolveUrl(url);
 		return url in this.pages;
 	}
 
