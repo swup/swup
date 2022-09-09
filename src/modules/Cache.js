@@ -12,6 +12,13 @@ export class Cache {
 			...defaults,
 			...options
 		};
+
+		this.options.enabled = options === false ? false : true;
+
+		if( typeof this.options.resolvePath !== 'function' ) {
+			throw new Error('cache.options.resolvePath needs to be a function.');
+		}
+
 	}
 
 	resolveUrl(url) {
