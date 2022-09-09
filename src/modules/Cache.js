@@ -7,17 +7,16 @@ export class Cache {
 
 		const defaults = {
 			enabled: options === false ? false : true,
-			resolvePath: path => path
-		}
+			resolvePath: (path) => path
+		};
 		this.options = {
 			...defaults,
 			...options
 		};
 
-		if( typeof this.options.resolvePath !== 'function' ) {
+		if (typeof this.options.resolvePath !== 'function') {
 			throw new Error('cache.options.resolvePath needs to be a function.');
 		}
-
 	}
 
 	resolveUrl(url) {
