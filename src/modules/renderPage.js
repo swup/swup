@@ -3,7 +3,8 @@ import { Link } from '../helpers.js';
 const renderPage = function(page, popstate) {
 	document.documentElement.classList.remove('is-leaving');
 
-	const isCurrentPage = this.cache.resolvePath(this.getCurrentUrl()) === this.cache.resolvePath(page.url);
+	const isCurrentPage =
+		this.cache.resolvePath(this.getCurrentUrl()) === this.cache.resolvePath(page.url);
 	if (!isCurrentPage) return;
 
 	// replace state in case the url was redirected
