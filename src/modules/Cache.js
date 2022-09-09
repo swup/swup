@@ -15,8 +15,7 @@ export class Cache {
 	}
 
 	resolveUrl(url) {
-		const result = this.options.resolvePath(normalizeUrl(url));
-		return result;
+		return this.options.resolvePath(normalizeUrl(url));
 	}
 
 	cacheUrl(page) {
@@ -34,7 +33,7 @@ export class Cache {
 	}
 
 	getCurrentPage() {
-		return this.getPage(getCurrentUrl());
+		return this.getPage(this.resolveUrl(getCurrentUrl()));
 	}
 
 	exists(url) {
@@ -49,7 +48,7 @@ export class Cache {
 	}
 
 	remove(url) {
-		delete this.pages[url];
+		delete this.pages[this.resolveUrl(url)];
 	}
 }
 
