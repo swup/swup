@@ -1,14 +1,14 @@
-import { Link } from '../helpers.js';
+import { Link, getCurrentUrl } from '../helpers.js';
 
 const renderPage = function(page, popstate) {
 	document.documentElement.classList.remove('is-leaving');
 
-	const isCurrentPage = this.getCurrentUrl() === page.url;
+	const isCurrentPage = this.isSameResolvedPath(getCurrentUrl(), page.url);
 	if (!isCurrentPage) return;
 
 	// replace state in case the url was redirected
 	const url = new Link(page.responseURL).getPath();
-	if (window.location.pathname !== url) {
+	if (!this.isSameResolvedPath(window.location.pathname, url)) {
 		window.history.replaceState(
 			{
 				url,
