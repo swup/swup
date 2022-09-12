@@ -276,4 +276,44 @@ context('Window', () => {
             });
         });
     });
+
+	it('should ignore links for equal resolved paths', () => {
+		 cy.window().then(window => {
+			window._swup.options.resolvePath = path => '/page1/';
+			cy.triggerClickOnLink('/page2/');
+			cy.shouldBeAtPage('/page1/');
+		 });
+	});
+
+	it('should skip PopState handling for equal resolved paths', () => {
+		cy.window().then(window => {
+			window._swup.options.resolvePath = path => '/page1/';
+			window.history.pushState(
+				{
+					url: '/pushed-page-1/',
+					random: Math.random(),
+					source: 'swup'
+				},
+				document.title,
+				'/pushed-page-1/'
+			);
+
+            window.history.pushState(
+                {
+                    url: '/pushed-page-2/',
+                    random: Math.random(),
+                    source: 'swup'
+                },
+                document.title,
+                '/pushed-page-2/'
+            );
+
+			cy.wait(500).then(() => {
+				window.history.back();
+				cy.shouldBeAtPage('/pushed-page-1/');
+				cy.shouldHaveH1('Page 1');
+			})
+		});
+	})
+
 });
