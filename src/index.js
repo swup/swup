@@ -281,7 +281,7 @@ export default class Swup {
 			return path;
 		}
 		const result = this.options.resolvePath(path);
-		if( typeof result !== 'string' ) {
+		if( !result || typeof result !== 'string' ) {
 			console.warn(`[swup] options.resolvePath needs to return a path`);
 			return path;
 		}
