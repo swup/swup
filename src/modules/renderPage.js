@@ -22,7 +22,7 @@ const renderPage = function(page, popstate) {
 		// save new record for redirected url
 		this.cache.cacheUrl({ ...page, url });
 
-		this.updateCurrentResolvedPath();
+		this.currentPath = getCurrentUrl();
 	}
 
 	// only add for non-popstate transitions

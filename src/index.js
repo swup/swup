@@ -87,9 +87,8 @@ export default class Swup {
 		this.delegatedListeners = {};
 		// so we are able to remove the listener
 		this.boundPopStateHandler = this.popStateHandler.bind(this);
-		// allows us to compare the current resolved path inside popStateHandler
-		this.currentResolvedPath = null;
-		this.updateCurrentResolvedPath();
+		// allows us to compare the current and new path inside popStateHandler
+		this.currentPath = getCurrentUrl();
 
 		// make modules accessible in instance
 		this.cache = new Cache();
@@ -255,7 +254,7 @@ export default class Swup {
 	popStateHandler(event) {
 		if (this.options.skipPopStateHandling(event)) return;
 		// bail early if the resolved path hasn't changed
-		if (this.isSameResolvedPath(getCurrentUrl(), this.currentResolvedPath) ) return;
+		if (this.isSameResolvedPath(getCurrentUrl(), this.currentPath) ) return;
 		const link = new Link(event.state ? event.state.url : window.location.pathname);
 		if (link.getHash() !== '') {
 			this.scrollToElement = link.getHash();
@@ -290,12 +289,5 @@ export default class Swup {
 	 */
 	isSameResolvedPath(path1, path2) {
 		return this.resolvePath(path1) === this.resolvePath(path2);
-	}
-	/**
-	 * Utility method to update the current resolved path from the current URL
-	 * @returns {void}
-	 */
-	updateCurrentResolvedPath() {
-		this.currentResolvedPath = this.resolvePath(getCurrentUrl());
 	}
 }
