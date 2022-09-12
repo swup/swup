@@ -39,7 +39,8 @@ export default class Swup {
 			plugins: [],
 			skipPopStateHandling: function(event) {
 				return !(event.state && event.state.source === 'swup');
-			}
+			},
+			resolvePath: path => path
 		};
 
 		// merge options
@@ -264,5 +265,16 @@ export default class Swup {
 		}
 
 		this.loadPage({ url: link.getAddress() }, event);
+	}
+	/**
+	 * Utility function to validate and run the global option 'resolvePath'
+	 * @param {string} path
+	 * @returns string the resolved path
+	 */
+	resolvePath(path) {
+		if( typeof this.options.resolvePath !== 'function' ) {
+			return path;
+		}
+		return this.options.resolvePath(path);
 	}
 }
