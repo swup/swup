@@ -15,6 +15,7 @@ export class Cache {
 		if (page.url in this.pages === false) {
 			this.pages[page.url] = page;
 		}
+		page.responseURL = this.getCacheUrl(page.responseURL);
 		this.last = this.pages[page.url];
 		this.swup.log(`Cache (${Object.keys(this.pages).length})`, this.pages);
 	}
