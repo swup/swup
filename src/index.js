@@ -87,6 +87,8 @@ export default class Swup {
 		this.delegatedListeners = {};
 		// so we are able to remove the listener
 		this.boundPopStateHandler = this.popStateHandler.bind(this);
+		// initially set the resolvedPath, so that we can compare it later
+		this.currentResolvedPath = this.resolvePath(getCurrentUrl());
 
 		// make modules accessible in instance
 		this.cache = new Cache();
@@ -251,6 +253,8 @@ export default class Swup {
 
 	popStateHandler(event) {
 		if (this.options.skipPopStateHandling(event)) return;
+		// bail early if the resolved path hasn't changed
+		if (this.isSameResolvedPath(getCurrentUrl(), this.currentResolvedPath) ) return;
 		const link = new Link(event.state ? event.state.url : window.location.pathname);
 		if (link.getHash() !== '') {
 			this.scrollToElement = link.getHash();
