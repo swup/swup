@@ -53,7 +53,7 @@ const loadPage = function(data, popstate) {
 		this.triggerEvent('animationSkipped');
 	}
 
-	this.currentPath = getCurrentUrl();
+	this.currentPageUrl = getCurrentUrl();
 
 	// start/skip loading of page
 	if (this.cache.exists(data.url)) {
