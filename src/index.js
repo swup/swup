@@ -277,9 +277,15 @@ export default class Swup {
 	 */
 	resolvePath(path) {
 		if( typeof this.options.resolvePath !== 'function' ) {
+			console.warn(`[swup] options.resolvePath needs to be a function.`);
 			return path;
 		}
-		return this.options.resolvePath(path);
+		const result = this.options.resolvePath(path);
+		if( typeof result !== 'string' ) {
+			console.warn(`[swup] options.resolvePath needs to return a path`);
+			return path;
+		}
+		return result;
 	}
 	/**
 	 * Compares the resolved version of two paths and returns true if they are the same
