@@ -227,7 +227,7 @@ export default class Swup {
 						// link to the same URL without hash
 						this.triggerEvent('samePage', event);
 					}
-				} else {
+				} else if(!this.isSameResolvedPath(link.getAddress(), getCurrentUrl())) {
 					// link to different url
 					if (link.getHash() != '') {
 						this.scrollToElement = link.getHash();
