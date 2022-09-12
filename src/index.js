@@ -277,4 +277,13 @@ export default class Swup {
 		}
 		return this.options.resolvePath(path);
 	}
+	/**
+	 * Compares the resolved path of two paths and returns true if they are the same
+	 * @param {string} path1
+	 * @param {string} path2
+	 * @returns {boolean}
+	 */
+	isSameResolvedPath(path1, path2) {
+		return this.resolvePath(path1) === this.resolvePath(path2);
+	}
 }
