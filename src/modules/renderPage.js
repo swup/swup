@@ -3,8 +3,10 @@ import { Link, getCurrentUrl } from '../helpers.js';
 const renderPage = function(page, popstate) {
 	document.documentElement.classList.remove('is-leaving');
 
-	const isCurrentPage = this.isSameResolvedPath(getCurrentUrl(), page.url);
-	if (!isCurrentPage) return;
+	// do nothing if the URL has already changed since the request
+	if( !this.isSameResolvedPath(getCurrentUrl(), page.url) ) {
+		return;
+	}
 
 	// replace state in case the url was redirected
 	const url = new Link(page.responseURL).getPath();
