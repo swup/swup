@@ -53,6 +53,8 @@ const loadPage = function(data, popstate) {
 		this.triggerEvent('animationSkipped');
 	}
 
+	this.updateCurrentResolvedPath();
+
 	// start/skip loading of page
 	if (this.cache.exists(data.url)) {
 		xhrPromise = new Promise((resolve) => {

@@ -87,8 +87,9 @@ export default class Swup {
 		this.delegatedListeners = {};
 		// so we are able to remove the listener
 		this.boundPopStateHandler = this.popStateHandler.bind(this);
-		// initially set the resolvedPath, so that we can compare it later
-		this.currentResolvedPath = this.resolvePath(getCurrentUrl());
+		// allows us to compare the current resolved path inside popStateHandler
+		this.currentResolvedPath = null;
+		this.updateCurrentResolvedPath();
 
 		// make modules accessible in instance
 		this.cache = new Cache();
@@ -289,5 +290,12 @@ export default class Swup {
 	 */
 	isSameResolvedPath(path1, path2) {
 		return this.resolvePath(path1) === this.resolvePath(path2);
+	}
+	/**
+	 * Utility method to update the current resolved path from the current URL
+	 * @returns {void}
+	 */
+	updateCurrentResolvedPath() {
+		this.currentResolvedPath = this.resolvePath(getCurrentUrl());
 	}
 }
