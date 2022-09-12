@@ -274,7 +274,7 @@ export default class Swup {
 	/**
 	 * Utility function to validate and run the global option 'resolvePath'
 	 * @param {string} path
-	 * @returns string the resolved path
+	 * @returns {string} the resolved path
 	 */
 	resolvePath(path) {
 		if( typeof this.options.resolvePath !== 'function' ) {
@@ -283,7 +283,7 @@ export default class Swup {
 		return this.options.resolvePath(path);
 	}
 	/**
-	 * Compares the resolved path of two paths and returns true if they are the same
+	 * Compares the resolved version of two paths and returns true if they are the same
 	 * @param {string} path1
 	 * @param {string} path2
 	 * @returns {boolean}
