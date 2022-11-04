@@ -21,6 +21,8 @@ export default function getAnimationPromises() {
 
 	// Allow usage of swup without animations
 	if (selector === false) {
+		// Use array of a single resolved promise instead of an empty array to allow
+		// possible future use with Promise.race() which requires an actual value
 		return [Promise.resolve()];
 	}
 
