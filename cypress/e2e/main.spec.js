@@ -132,6 +132,15 @@ context('Window', () => {
         cy.shouldHaveH1('Page 3');
     });
 
+    it('should transition if no containers defined', () => {
+        cy.window().then(window => {
+            window._swup.options.animationSelector = false;
+        });
+        cy.triggerClickOnLink('/page2/');
+        cy.shouldBeAtPage('/page2/');
+        cy.shouldHaveH1('Page 2');
+    });
+
     it('should transition if no CSS transition is defined', () => {
         cy.window().then(window => {
             window.document.documentElement.classList.add('test--no-transitions');
