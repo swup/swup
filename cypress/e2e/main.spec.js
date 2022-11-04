@@ -2,7 +2,7 @@
 
 // window._swup holds the swup instance
 
-const durationTolerance = 0.1; // 10% plus/minus
+const durationTolerance = 0.15; // 15% plus/minus
 
 context('Window', () => {
     beforeEach(() => {
