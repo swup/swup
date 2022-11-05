@@ -18,8 +18,17 @@ if (window.onanimationend === undefined && window.onwebkitanimationend !== undef
 
 export default function getAnimationPromises() {
 	const selector = this.options.animationSelector;
+
+	// Allow usage of swup without animations
+	if (selector === false) {
+		// Use array of a single resolved promise instead of an empty array to allow
+		// possible future use with Promise.race() which requires an actual value
+		return [Promise.resolve()];
+	}
+
 	const animatedElements = queryAll(selector, document.body);
 
+	// Warn if no animated containers found on page, but keep things going
 	if (!animatedElements.length) {
 		console.warn(`[swup] No animated elements found by selector ${selector}`);
 		return [Promise.resolve()];
