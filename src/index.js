@@ -29,16 +29,17 @@ export default class Swup {
 			animationSelector: '[class*="transition-"]',
 			cache: true,
 			containers: ['#swup'],
-			ignoreLink: (el) => el.origin !== window.location.origin || el.closest('[data-no-swup]'),
+			ignoreLink: (el) => (
+				el.origin !== window.location.origin ||
+				el.closest('[data-no-swup]')
+			),
 			linkSelector: 'a[href]',
+			plugins: [],
 			requestHeaders: {
 				'X-Requested-With': 'swup',
-				Accept: 'text/html, application/xhtml+xml'
+				'Accept': 'text/html, application/xhtml+xml'
 			},
-			plugins: [],
-			skipPopStateHandling: function(event) {
-				return !(event.state && event.state.source === 'swup');
-			}
+			skipPopStateHandling: (event) => event.state?.source !== 'swup'
 		};
 
 		// merge options
