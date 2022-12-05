@@ -157,15 +157,17 @@ context('Window', () => {
     });
 
     it('should ignore links with data-no-swup attr', () => {
-        cy.shouldNativelyLoadPageAfterAction('/page4/', () => {
+        cy.shouldHaveReloadedAfterAction(() => {
             cy.get(`a[data-no-swup]`).first().click();
         });
+        cy.shouldBeAtPage('/page4/');
     });
 
     it('should ignore links with data-no-swup parent', () => {
-        cy.shouldNativelyLoadPageAfterAction('/page4/', () => {
+        cy.shouldHaveReloadedAfterAction(() => {
             cy.get(`li[data-no-swup] a`).first().click();
         });
+        cy.shouldBeAtPage('/page4/');
     });
 
     // it('should ignore clicks when meta key pressed', () => {
