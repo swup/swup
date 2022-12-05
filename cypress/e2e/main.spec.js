@@ -141,6 +141,12 @@ context('Window', () => {
         cy.shouldHaveH1('Page 2');
     });
 
+    it('should accept relative links', () => {
+        cy.get('[data-cy=nav-link-rel]').click();
+        cy.shouldBeAtPage('/page2/');
+        cy.shouldHaveH1('Page 2');
+    });
+
     it('should ignore links with data-no-swup attr', () => {
         cy.shouldNativelyLoadPageAfterAction('/page4/', () => {
             cy.get(`a[data-no-swup]`).first().click();
