@@ -147,6 +147,13 @@ context('Window', () => {
         cy.shouldHaveH1('Page 2');
     });
 
+    it('should resolve document base URLs', () => {
+        cy.visit('/page1/sub1/');
+        cy.get('[data-cy=nav-link-sub]').click();
+        cy.shouldBeAtPage('/page1/sub2/');
+        cy.shouldHaveH1('Sub 2');
+    });
+
     it('should ignore links to different origins', () => {
         cy.shouldHaveReloadedAfterAction(() => {
             cy.get('[data-cy=nav-link-ext]').click();
