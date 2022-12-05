@@ -30,7 +30,7 @@ export default class Swup {
 			cache: true,
 			containers: ['#swup'],
 			ignoreLink: (el) => el.origin !== window.location.origin || el.closest('[data-no-swup]'),
-			linkSelector: 'a', // deprecated
+			linkSelector: 'a[href]',
 			requestHeaders: {
 				'X-Requested-With': 'swup',
 				Accept: 'text/html, application/xhtml+xml'
