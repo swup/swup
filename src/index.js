@@ -29,7 +29,7 @@ export default class Swup {
 			animationSelector: '[class*="transition-"]',
 			linkSelector: 'a', // deprecated
 			ignoreLink: (el) => {
-				if (el.location.origin !== window.location.origin) {
+				if (el.origin !== window.location.origin) {
 					return true;
 				}
 				if (el.closest('[data-no-swup]')) {
