@@ -27,18 +27,10 @@ export default class Swup {
 		let defaults = {
 			animateHistoryBrowsing: false,
 			animationSelector: '[class*="transition-"]',
-			linkSelector: 'a', // deprecated
-			ignoreLink: (el) => {
-				if (el.origin !== window.location.origin) {
-					return true;
-				}
-				if (el.closest('[data-no-swup]')) {
-					return true;
-				}
-				return false;
-			},
 			cache: true,
 			containers: ['#swup'],
+			ignoreLink: (el) => el.origin !== window.location.origin || el.closest('[data-no-swup]'),
+			linkSelector: 'a', // deprecated
 			requestHeaders: {
 				'X-Requested-With': 'swup',
 				Accept: 'text/html, application/xhtml+xml'
