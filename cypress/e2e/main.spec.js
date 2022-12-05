@@ -147,6 +147,12 @@ context('Window', () => {
         });
     });
 
+    it('should ignore links with data-no-swup parent', () => {
+        cy.shouldNativelyLoadPageAfterAction('/page4/', () => {
+            cy.get(`li[data-no-swup] a`).first().click();
+        });
+    });
+
     // it('should ignore clicks when meta key pressed', () => {
     //     cy.triggerClickOnLink('/page2/', { metaKey: true });
     //     cy.wait(500);
