@@ -35,6 +35,7 @@ export default class Swup {
 			),
 			linkSelector: 'a[href]',
 			plugins: [],
+			resolvePath: (path) => path,
 			requestHeaders: {
 				'X-Requested-With': 'swup',
 				'Accept': 'text/html, application/xhtml+xml'
@@ -86,6 +87,8 @@ export default class Swup {
 		this.delegatedListeners = {};
 		// so we are able to remove the listener
 		this.boundPopStateHandler = this.popStateHandler.bind(this);
+		// allows us to compare the current and new path inside popStateHandler
+		this.currentPageUrl = getCurrentUrl();
 
 		// make modules accessible in instance
 		this.cache = new Cache();
@@ -231,7 +234,7 @@ export default class Swup {
 						// link to the same URL without hash
 						this.triggerEvent('samePage', event);
 					}
-				} else {
+				} else if(!this.isSameResolvedPath(link.getAddress(), getCurrentUrl())) {
 					// link to different url
 					if (link.getHash() != '') {
 						this.scrollToElement = link.getHash();
@@ -264,6 +267,8 @@ export default class Swup {
 
 	popStateHandler(event) {
 		if (this.options.skipPopStateHandling(event)) return;
+		// bail early if the resolved path hasn't changed
+		if (this.isSameResolvedPath(getCurrentUrl(), this.currentPageUrl) ) return;
 		const link = new Link(event.state ? event.state.url : window.location.pathname);
 		if (link.getHash() !== '') {
 			this.scrollToElement = link.getHash();
@@ -278,5 +283,31 @@ export default class Swup {
 		}
 
 		this.loadPage({ url: link.getAddress() }, event);
+	}
+	/**
+	 * Utility function to validate and run the global option 'resolvePath'
+	 * @param {string} path
+	 * @returns {string} the resolved path
+	 */
+	resolvePath(path) {
+		if( typeof this.options.resolvePath !== 'function' ) {
+			console.warn(`[swup] options.resolvePath needs to be a function.`);
+			return path;
+		}
+		const result = this.options.resolvePath(path);
+		if( !result || typeof result !== 'string' ) {
+			console.warn(`[swup] options.resolvePath needs to return a path`);
+			return path;
+		}
+		return result;
+	}
+	/**
+	 * Compares the resolved version of two paths and returns true if they are the same
+	 * @param {string} path1
+	 * @param {string} path2
+	 * @returns {boolean}
+	 */
+	isSameResolvedPath(path1, path2) {
+		return this.resolvePath(path1) === this.resolvePath(path2);
 	}
 }

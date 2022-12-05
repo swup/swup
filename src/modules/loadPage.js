@@ -1,4 +1,4 @@
-import { classify, createHistoryRecord, fetch } from '../helpers.js';
+import { classify, createHistoryRecord, fetch, getCurrentUrl } from '../helpers.js';
 
 const loadPage = function(data, popstate) {
 	// create array for storing animation promises
@@ -52,6 +52,8 @@ const loadPage = function(data, popstate) {
 	} else {
 		this.triggerEvent('animationSkipped');
 	}
+
+	this.currentPageUrl = getCurrentUrl();
 
 	// start/skip loading of page
 	if (this.cache.exists(data.url)) {

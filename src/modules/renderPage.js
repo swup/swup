@@ -1,14 +1,16 @@
-import { Link } from '../helpers.js';
+import { Link, getCurrentUrl } from '../helpers.js';
 
 const renderPage = function(page, popstate) {
 	document.documentElement.classList.remove('is-leaving');
 
-	const isCurrentPage = this.getCurrentUrl() === page.url;
-	if (!isCurrentPage) return;
+	// do nothing if the URL has already changed since the request
+	if( !this.isSameResolvedPath(getCurrentUrl(), page.url) ) {
+		return;
+	}
 
 	// replace state in case the url was redirected
 	const url = new Link(page.responseURL).getPath();
-	if (window.location.pathname !== url) {
+	if (!this.isSameResolvedPath(window.location.pathname, url)) {
 		window.history.replaceState(
 			{
 				url,
@@ -21,6 +23,8 @@ const renderPage = function(page, popstate) {
 
 		// save new record for redirected url
 		this.cache.cacheUrl({ ...page, url });
+
+		this.currentPageUrl = getCurrentUrl();
 	}
 
 	// only add for non-popstate transitions
