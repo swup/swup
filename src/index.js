@@ -27,8 +27,16 @@ export default class Swup {
 		let defaults = {
 			animateHistoryBrowsing: false,
 			animationSelector: '[class*="transition-"]',
-			linkSelector: `a[href^="${window.location.origin}"], a[href^="/"], a[href^="#"]`,
-			ignoreLink: (el) => false,
+			linkSelector: 'a', // deprecated
+			ignoreLink: (el) => {
+				if (el.location.origin !== window.location.origin) {
+					return true;
+				}
+				if (el.closest('[data-no-swup]')) {
+					return true;
+				}
+				return false;
+			},
 			cache: true,
 			containers: ['#swup'],
 			requestHeaders: {
@@ -191,18 +199,8 @@ export default class Swup {
 		document.documentElement.classList.remove('swup-enabled');
 	}
 
-	isValidTrigger(triggerEl) {
-		if (triggerEl.matches('[download], [target="_blank"]')) {
-			return false;
-		}
-		if (triggerEl.closest('[data-no-swup]')) {
-			return false;
-		}
-		return true;
-	}
-
 	linkClickHandler(event) {
-		if (!this.isValidTrigger(event.delegateTarget)) {
+		if (this.triggerWillOpenNewWindow(event.delegateTarget)) {
 			return;
 		}
 		if (this.options.ignoreLink(event.delegateTarget)) {
@@ -262,6 +260,13 @@ export default class Swup {
 			// open in new tab (do nothing)
 			this.triggerEvent('openPageInNewTab', event);
 		}
+	}
+
+	triggerWillOpenNewWindow(triggerEl) {
+		if (triggerEl.matches('[download], [target="_blank"]')) {
+			return true;
+		}
+		return false;
 	}
 
 	popStateHandler(event) {
