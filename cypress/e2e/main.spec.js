@@ -147,6 +147,15 @@ context('Window', () => {
         cy.shouldHaveH1('Page 2');
     });
 
+    it('should ignore links to different origins', () => {
+        cy.shouldHaveReloadedAfterAction(() => {
+            cy.get('[data-cy=nav-link-ext]').click();
+        });
+        cy.location().should((loc) => {
+            expect(loc.origin).to.eq('https://example.net');
+        });
+    });
+
     it('should ignore links with data-no-swup attr', () => {
         cy.shouldNativelyLoadPageAfterAction('/page4/', () => {
             cy.get(`a[data-no-swup]`).first().click();
