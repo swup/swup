@@ -34,11 +34,10 @@ Cypress.Commands.add("shouldBeAtPage", (href) => {
     });
 });
 
-Cypress.Commands.add("shouldNativelyLoadPageAfterAction", (url, action) => {
+Cypress.Commands.add("shouldHaveReloadedAfterAction", (action) => {
     cy.window().then(window => window.beforeReload = true);
     cy.window().should('have.prop', 'beforeReload', true);
     cy.window().then(window => action(window));
-    cy.shouldBeAtPage(url);
     cy.window().should('not.have.prop', 'beforeReload');
 });
 

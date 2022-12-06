@@ -4,7 +4,7 @@ const renderPage = function(page, popstate) {
 	document.documentElement.classList.remove('is-leaving');
 
 	// do nothing if the URL has already changed since the request
-	if( !this.isSameResolvedPath(getCurrentUrl(), page.url) ) {
+	if (!this.isSameResolvedPath(getCurrentUrl(), page.url)) {
 		return;
 	}
 

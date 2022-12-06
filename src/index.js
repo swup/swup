@@ -27,20 +27,20 @@ export default class Swup {
 		let defaults = {
 			animateHistoryBrowsing: false,
 			animationSelector: '[class*="transition-"]',
-			linkSelector: `a[href^="${
-				window.location.origin
-			}"]:not([data-no-swup]), a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup])`,
 			cache: true,
 			containers: ['#swup'],
+			ignoreLink: (el) => (
+				el.origin !== window.location.origin ||
+				el.closest('[data-no-swup]')
+			),
+			linkSelector: 'a[href]',
+			plugins: [],
+			resolvePath: (path) => path,
 			requestHeaders: {
 				'X-Requested-With': 'swup',
-				Accept: 'text/html, application/xhtml+xml'
+				'Accept': 'text/html, application/xhtml+xml'
 			},
-			plugins: [],
-			skipPopStateHandling: function(event) {
-				return !(event.state && event.state.source === 'swup');
-			},
-			resolvePath: path => path
+			skipPopStateHandling: (event) => event.state?.source !== 'swup'
 		};
 
 		// merge options
@@ -196,6 +196,13 @@ export default class Swup {
 	}
 
 	linkClickHandler(event) {
+		if (this.triggerWillOpenNewWindow(event.delegateTarget)) {
+			return;
+		}
+		if (this.options.ignoreLink(event.delegateTarget)) {
+			return;
+		}
+
 		// no control key pressed
 		if (!event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
 			// index of pressed button needs to be checked because Firefox triggers click on all mouse buttons
@@ -249,6 +256,13 @@ export default class Swup {
 			// open in new tab (do nothing)
 			this.triggerEvent('openPageInNewTab', event);
 		}
+	}
+
+	triggerWillOpenNewWindow(triggerEl) {
+		if (triggerEl.matches('[download], [target="_blank"]')) {
+			return true;
+		}
+		return false;
 	}
 
 	popStateHandler(event) {

@@ -150,16 +150,47 @@ context('Window', () => {
         cy.shouldHaveH1('Page 2');
     });
 
-    it('should ignore links with data-no-swup attr', () => {
-        cy.shouldNativelyLoadPageAfterAction('/page4/', () => {
-            cy.get(`a[data-no-swup]`).first().click();
+    it('should accept relative links', () => {
+        cy.get('[data-cy=nav-link-rel]').click();
+        cy.shouldBeAtPage('/page2/');
+        cy.shouldHaveH1('Page 2');
+    });
+
+    it('should resolve document base URLs', () => {
+        cy.visit('/page1/sub1/');
+        cy.get('[data-cy=nav-link-sub]').click();
+        cy.shouldBeAtPage('/page1/sub2/');
+        cy.shouldHaveH1('Sub 2');
+    });
+
+    it('should ignore links to different origins', () => {
+        cy.shouldHaveReloadedAfterAction(() => {
+            cy.get('[data-cy=nav-link-ext]').click();
+        });
+        cy.location().should((loc) => {
+            expect(loc.origin).to.eq('https://example.net');
         });
     });
 
+    it('should ignore links with data-no-swup attr', () => {
+        cy.shouldHaveReloadedAfterAction(() => {
+            cy.get(`a[data-no-swup]`).first().click();
+        });
+        cy.shouldBeAtPage('/page4/');
+    });
+
+    it('should ignore links with data-no-swup parent', () => {
+        cy.shouldHaveReloadedAfterAction(() => {
+            cy.get(`li[data-no-swup] a`).first().click();
+        });
+        cy.shouldBeAtPage('/page4/');
+    });
+
     it('should ignore SVG links by default', () => {
-        cy.shouldNativelyLoadPageAfterAction('/page2/', () => {
+        cy.shouldHaveReloadedAfterAction(() => {
             cy.get('svg a').first().click();
         });
+        cy.shouldBeAtPage('/page2/');
     });
 
     it('should follow SVG links when added to selector', () => {
@@ -172,9 +203,10 @@ context('Window', () => {
     });
 
     it('should ignore map area links by default', () => {
-        cy.shouldNativelyLoadPageAfterAction('/page2/', () => {
+        cy.shouldHaveReloadedAfterAction(() => {
             cy.get('map area').first().click({ force: true });
         });
+        cy.shouldBeAtPage('/page2/');
     });
 
     it('should follow map area links when added to selector', () => {
