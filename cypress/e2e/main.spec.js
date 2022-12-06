@@ -215,6 +215,17 @@ context('Window', () => {
         });
     });
 
+    it('should skip popstate handling for foreign state entries', () => {
+        cy.window().then(window => {
+            window.history.pushState({ source: 'not-swup' }, null, '/page-2/');
+            window.history.pushState({ source: 'not-swup' }, null, '/page-3/');
+
+            window.history.back();
+            cy.shouldBeAtPage('/page-2/');
+            cy.shouldHaveH1('Page 1');
+        });
+    });
+
     it('should scroll to hash element and back to top', () => {
         cy.get('[data-cy=nav-to-anchor]').click();
         cy.shouldHaveElementInViewport('[data-cy=anchor]');
