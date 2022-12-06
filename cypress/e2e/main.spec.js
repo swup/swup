@@ -187,9 +187,10 @@ context('Window', () => {
     });
 
     it('should ignore SVG links by default', () => {
-        cy.shouldNativelyLoadPageAfterAction('/page2/', () => {
+        cy.shouldHaveReloadedAfterAction(() => {
             cy.get('svg a').first().click();
         });
+        cy.shouldBeAtPage('/page2/');
     });
 
     it('should follow SVG links when added to selector', () => {
@@ -202,9 +203,10 @@ context('Window', () => {
     });
 
     it('should ignore map area links by default', () => {
-        cy.shouldNativelyLoadPageAfterAction('/page2/', () => {
+        cy.shouldHaveReloadedAfterAction(() => {
             cy.get('map area').first().click({ force: true });
         });
+        cy.shouldBeAtPage('/page2/');
     });
 
     it('should follow map area links when added to selector', () => {
