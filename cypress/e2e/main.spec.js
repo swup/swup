@@ -328,7 +328,9 @@ context('Window', () => {
          cy.window().then(window => {
             window._swup.options.resolvePath = path => '/page1/';
             cy.triggerClickOnLink('/page2/');
-            cy.shouldBeAtPage('/page1/');
+            cy.wait(500).then(() => {
+                cy.shouldBeAtPage('/page1/');
+            });
          });
     });
 
