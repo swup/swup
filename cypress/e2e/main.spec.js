@@ -201,6 +201,20 @@ context('Window', () => {
         });
     });
 
+    it('should trigger a custom popState event', () => {
+        cy.triggerClickOnLink('/page2/');
+        cy.shouldBeAtPage('/page2/');
+
+        cy.window().then(window => {
+            let called = false;
+            window._swup.on('popState', () => called = true);
+            window.history.back();
+            cy.window().should(() => {
+                expect(called, 'popstate handler not called').to.be.true;
+            });
+        });
+    });
+
     it('should scroll to hash element and back to top', () => {
         cy.get('[data-cy=nav-to-anchor]').click();
         cy.shouldHaveElementInViewport('[data-cy=anchor]');
