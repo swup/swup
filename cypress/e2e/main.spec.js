@@ -186,6 +186,36 @@ context('Window', () => {
         cy.shouldBeAtPage('/page4/');
     });
 
+    it('should ignore SVG links by default', () => {
+        cy.shouldNativelyLoadPageAfterAction('/page2/', () => {
+            cy.get('svg a').first().click();
+        });
+    });
+
+    it('should follow SVG links when added to selector', () => {
+        cy.window().then(window => {
+            window._swup.options.linkSelector = 'a[href], svg a[*|href]';
+        });
+        cy.get('svg a').first().click();
+        cy.shouldBeAtPage('/page2/');
+        cy.shouldHaveH1('Page 2');
+    });
+
+    it('should ignore map area links by default', () => {
+        cy.shouldNativelyLoadPageAfterAction('/page2/', () => {
+            cy.get('map area').first().click({ force: true });
+        });
+    });
+
+    it('should follow map area links when added to selector', () => {
+        cy.window().then(window => {
+            window._swup.options.linkSelector = 'a[href], map area[href]';
+        });
+        cy.get('map area').first().click({ force: true });
+        cy.shouldBeAtPage('/page2/');
+        cy.shouldHaveH1('Page 2');
+    });
+
     // it('should ignore clicks when meta key pressed', () => {
     //     cy.triggerClickOnLink('/page2/', { metaKey: true });
     //     cy.wait(500);
@@ -215,6 +245,44 @@ context('Window', () => {
             window.history.forward();
             cy.shouldBeAtPage('/page2/');
             cy.shouldHaveH1('Page 2');
+        });
+    });
+
+    it('should save state into the history', () => {
+        cy.triggerClickOnLink('/page2/');
+        cy.shouldBeAtPage('/page2/');
+
+        cy.window().then(window => {
+            window.history.back();
+            cy.window().should(() => {
+                expect(window.history.state.url, 'page url not saved').to.equal('http://localhost:8274/page1/');
+                expect(window.history.state.source, 'state source not saved').to.equal('swup');
+            });
+        });
+    });
+
+    it('should trigger a custom popState event', () => {
+        cy.triggerClickOnLink('/page2/');
+        cy.shouldBeAtPage('/page2/');
+
+        cy.window().then(window => {
+            let called = false;
+            window._swup.on('popState', () => called = true);
+            window.history.back();
+            cy.window().should(() => {
+                expect(called, 'popstate handler not called').to.be.true;
+            });
+        });
+    });
+
+    it('should skip popstate handling for foreign state entries', () => {
+        cy.window().then(window => {
+            window.history.pushState({ source: 'not-swup' }, null, '/page-2/');
+            window.history.pushState({ source: 'not-swup' }, null, '/page-3/');
+
+            window.history.back();
+            cy.shouldBeAtPage('/page-2/');
+            cy.shouldHaveH1('Page 1');
         });
     });
 
@@ -316,26 +384,28 @@ context('Window', () => {
         });
     });
 
-	it('should ignore links for equal resolved paths', () => {
-		 cy.window().then(window => {
-			window._swup.options.resolvePath = path => '/page1/';
-			cy.triggerClickOnLink('/page2/');
-			cy.shouldBeAtPage('/page1/');
-		 });
-	});
+    it('should ignore links for equal resolved paths', () => {
+         cy.window().then(window => {
+            window._swup.options.resolvePath = path => '/page1/';
+            cy.triggerClickOnLink('/page2/');
+            cy.wait(500).then(() => {
+                cy.shouldBeAtPage('/page1/');
+            });
+         });
+    });
 
-	it('should skip PopState handling for equal resolved paths', () => {
-		cy.window().then(window => {
-			window._swup.options.resolvePath = path => '/page1/';
-			window.history.pushState(
-				{
-					url: '/pushed-page-1/',
-					random: Math.random(),
-					source: 'swup'
-				},
-				document.title,
-				'/pushed-page-1/'
-			);
+    it('should skip popstate handling for equal resolved paths', () => {
+        cy.window().then(window => {
+            window._swup.options.resolvePath = path => '/page1/';
+            window.history.pushState(
+                {
+                    url: '/pushed-page-1/',
+                    random: Math.random(),
+                    source: 'swup'
+                },
+                document.title,
+                '/pushed-page-1/'
+            );
 
             window.history.pushState(
                 {
@@ -347,12 +417,12 @@ context('Window', () => {
                 '/pushed-page-2/'
             );
 
-			cy.wait(500).then(() => {
-				window.history.back();
-				cy.shouldBeAtPage('/pushed-page-1/');
-				cy.shouldHaveH1('Page 1');
-			})
-		});
-	})
+            cy.wait(500).then(() => {
+                window.history.back();
+                cy.shouldBeAtPage('/pushed-page-1/');
+                cy.shouldHaveH1('Page 1');
+            })
+        });
+    });
 
 });
