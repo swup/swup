@@ -173,7 +173,7 @@ context('Window', () => {
 
     it('should ignore map area links by default', () => {
         cy.shouldNativelyLoadPageAfterAction('/page2/', () => {
-            cy.get('map area').first().click();
+            cy.get('map area').first().click({ force: true });
         });
     });
 
@@ -181,7 +181,7 @@ context('Window', () => {
         cy.window().then(window => {
             window._swup.options.linkSelector = 'a[href], map area[href]';
         });
-        cy.get('map area').first().click();
+        cy.get('map area').first().click({ force: true });
         cy.shouldBeAtPage('/page2/');
         cy.shouldHaveH1('Page 2');
     });
