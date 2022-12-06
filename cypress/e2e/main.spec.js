@@ -171,6 +171,21 @@ context('Window', () => {
         cy.shouldHaveH1('Page 2');
     });
 
+    it('should ignore map area links by default', () => {
+        cy.shouldNativelyLoadPageAfterAction('/page2/', () => {
+            cy.get('map area').first().click();
+        });
+    });
+
+    it('should follow map area links when added to selector', () => {
+        cy.window().then(window => {
+            window._swup.options.linkSelector = 'a[href], map area[href]';
+        });
+        cy.get('map area').first().click();
+        cy.shouldBeAtPage('/page2/');
+        cy.shouldHaveH1('Page 2');
+    });
+
     // it('should ignore clicks when meta key pressed', () => {
     //     cy.triggerClickOnLink('/page2/', { metaKey: true });
     //     cy.wait(500);
