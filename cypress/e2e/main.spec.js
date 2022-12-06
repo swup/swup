@@ -156,6 +156,21 @@ context('Window', () => {
         });
     });
 
+    it('should ignore SVG links by default', () => {
+        cy.shouldNativelyLoadPageAfterAction('/page2/', () => {
+            cy.get('svg a').first().click();
+        });
+    });
+
+    it('should follow SVG links when added to selector', () => {
+        cy.window().then(window => {
+            window._swup.options.linkSelector = 'a[href], svg a[*|href]';
+        });
+        cy.get('svg a').first().click();
+        cy.shouldBeAtPage('/page2/');
+        cy.shouldHaveH1('Page 2');
+    });
+
     // it('should ignore clicks when meta key pressed', () => {
     //     cy.triggerClickOnLink('/page2/', { metaKey: true });
     //     cy.wait(500);
