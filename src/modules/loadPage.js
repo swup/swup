@@ -10,7 +10,7 @@ const loadPage = function(data, popstate = false) {
 	this.triggerEvent('transitionStart', popstate);
 
 	// set transition object
-	this.updateTransition(window.location.pathname, url, customTransition);
+	this.updateTransition(getCurrentUrl(), url, customTransition);
 	if (customTransition != null) {
 		document.documentElement.classList.add(`to-${classify(customTransition)}`);
 	}
