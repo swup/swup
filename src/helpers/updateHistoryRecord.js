@@ -1,5 +1,7 @@
+import { getCurrentUrl } from '../helpers.js';
+
 const updateHistoryRecord = (url = null, customData = {}) => {
-	url = url || location.href;
+	url = url || getCurrentUrl({ hash: true });
 	const data = {
 		...history.state,
 		url,

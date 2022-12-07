@@ -1,5 +1,7 @@
+import { getCurrentUrl } from '../helpers.js';
+
 const createHistoryRecord = (url, customData = {}) => {
-	url = url || location.href;
+	url = url || getCurrentUrl({ hash: true });
 	const data = {
 		url,
 		random: Math.random(),
