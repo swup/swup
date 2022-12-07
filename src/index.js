@@ -261,9 +261,11 @@ export default class Swup {
 		}
 
 		// Exit early if the resolved path hasn't changed
-		if (this.isSameResolvedPath(getCurrentUrl(), this.currentPageUrl)) return;
+		if (this.isSameResolvedPath(getCurrentUrl(), this.currentPageUrl)) {
+			return;
+		}
 
-		const url = event.state?.url ?? window.location.href;
+		const url = event.state?.url ?? location.href;
 
 		const link = new Link(url);
 		if (link.getHash()) {

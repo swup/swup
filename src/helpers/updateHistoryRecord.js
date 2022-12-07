@@ -1,13 +1,13 @@
 const updateHistoryRecord = (url = null, customData = {}) => {
-	url = url || window.location.href; // window.location.href.split(window.location.hostname)[1];
+	url = url || location.href;
 	const data = {
-		...window.history.state,
+		...history.state,
 		url,
 		random: Math.random(),
 		source: 'swup',
 		...customData
 	};
-	window.history.replaceState(data, document.title, url);
+	history.replaceState(data, '', url);
 };
 
 export default updateHistoryRecord;

@@ -71,7 +71,7 @@ const loadPage = function(data, popstate = false) {
 			};
 
 			// go back to the actual page were still at
-			window.history.go(-1);
+			history.go(-1);
 		});
 };
 
