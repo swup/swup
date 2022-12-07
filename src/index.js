@@ -150,15 +150,7 @@ export default class Swup {
 		});
 
 		// modify initial history record
-		window.history.replaceState(
-			Object.assign({}, window.history.state, {
-				url: window.location.href,
-				random: Math.random(),
-				source: 'swup'
-			}),
-			document.title,
-			window.location.href
-		);
+		updateHistoryRecord();
 
 		// trigger enabled event
 		this.triggerEvent('enabled');
