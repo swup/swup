@@ -1,12 +1,11 @@
-import { Link, updateHistoryRecord } from '../helpers.js';
+import { Link, updateHistoryRecord, getCurrentUrl } from '../helpers.js';
 import { query } from '../utils.js';
 
 const renderPage = function(page, { popstate } = {}) {
 	document.documentElement.classList.remove('is-leaving');
 
-	const isCurrentPage = this.getCurrentUrl() === page.url;
-	if (!isCurrentPage) {
-		console.log('not current page:', this.getCurrentUrl(), 'vs', page.url, page);
+	// Ignore rendering if another page was loaded in the meantime
+	if (getCurrentUrl() !== page.url) {
 		return;
 	}
 
