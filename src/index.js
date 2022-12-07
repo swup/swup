@@ -223,7 +223,7 @@ export default class Swup {
 		const url = link.getAddress();
 		const hash = link.getHash();
 
-		if (url == getCurrentUrl() || url == '') {
+		if (!url || url == getCurrentUrl()) {
 			if (!hash) {
 				// link to the same URL without hash
 				this.triggerEvent('samePage', event);
