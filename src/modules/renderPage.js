@@ -4,20 +4,18 @@ import { query } from '../utils.js';
 const renderPage = function(page, { popstate } = {}) {
 	document.documentElement.classList.remove('is-leaving');
 
-	// Ignore rendering if another page was loaded in the meantime
-	if (getCurrentUrl() !== page.url) {
+	// do nothing if another page was requested in the meantime
+	if (!this.isSameResolvedPath(getCurrentUrl(), page.url)) {
 		return;
 	}
 
 	const skipTransition = popstate && !this.options.animateHistoryBrowsing;
 
-	// replace state in case the url was redirected
+	// update cache and state if the url was redirected
 	const url = new Link(page.responseURL).getAddress();
-	if (window.location.pathname !== url) {
-		updateHistoryRecord(url);
-
-		// save new record for redirected url
+	if (!this.isSameResolvedPath(getCurrentUrl(), url)) {
 		this.cache.cacheUrl({ ...page, url });
+		updateHistoryRecord(url);
 	}
 
 	// only add for page loads with transitions
