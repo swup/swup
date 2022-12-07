@@ -1,100 +1,66 @@
 import { classify, createHistoryRecord, fetch, getCurrentUrl } from '../helpers.js';
 
-const loadPage = function(data, popstate) {
-	// create array for storing animation promises
-	let animationPromises = [],
-		xhrPromise;
-	const animateOut = () => {
-		this.triggerEvent('animationOutStart');
+const loadPage = function(data, popstate = false) {
+	let animationPromises = [];
+	let xhrPromise;
 
-		// handle classes
-		document.documentElement.classList.add('is-changing');
-		document.documentElement.classList.add('is-leaving');
-		document.documentElement.classList.add('is-animating');
-		if (popstate) {
-			document.documentElement.classList.add('is-popstate');
-		}
-		document.documentElement.classList.add('to-' + classify(data.url));
-
-		// animation promise stuff
-		animationPromises = this.getAnimationPromises('out');
-		Promise.all(animationPromises).then(() => {
-			this.triggerEvent('animationOutDone');
-		});
-
-		// create history record if this is not a popstate call
-		if (!popstate) {
-			// create pop element with or without anchor
-			let state;
-			if (this.scrollToElement != null) {
-				state = data.url + this.scrollToElement;
-			} else {
-				state = data.url;
-			}
-
-			createHistoryRecord(state);
-		}
-	};
+	const { url, customTransition } = data;
+	const skipTransition = popstate && !this.options.animateHistoryBrowsing;
 
 	this.triggerEvent('transitionStart', popstate);
 
 	// set transition object
-	if (data.customTransition != null) {
-		this.updateTransition(window.location.pathname, data.url, data.customTransition);
-		document.documentElement.classList.add(`to-${classify(data.customTransition)}`);
-	} else {
-		this.updateTransition(window.location.pathname, data.url);
+	this.updateTransition(window.location.pathname, url, customTransition);
+	if (customTransition != null) {
+		document.documentElement.classList.add(`to-${classify(customTransition)}`);
 	}
 
 	// start/skip animation
-	if (!popstate || this.options.animateHistoryBrowsing) {
-		animateOut();
-	} else {
-		this.triggerEvent('animationSkipped');
+	animationPromises = this.leavePage(data, { popstate, skipTransition });
+
+	// create history record if this is not a popstate call (with or without anchor)
+	if (!popstate) {
+		createHistoryRecord(url + (this.scrollToElement || ''));
 	}
 
 	this.currentPageUrl = getCurrentUrl();
 
-	// start/skip loading of page
-	if (this.cache.exists(data.url)) {
-		xhrPromise = new Promise((resolve) => {
-			resolve(this.cache.getPage(data.url));
-		});
+	// Load page data
+	if (this.cache.exists(url)) {
+		// Found in Cache, resolve directly
+		xhrPromise = Promise.resolve(this.cache.getPage(url));
 		this.triggerEvent('pageRetrievedFromCache');
+	} else if (this.preloadPromise && this.preloadPromise.route === url) {
+		// Alreay preloading, re-use
+		xhrPromise = this.preloadPromise;
 	} else {
-		if (!this.preloadPromise || this.preloadPromise.route != data.url) {
-			xhrPromise = new Promise((resolve, reject) => {
-				fetch({ ...data, headers: this.options.requestHeaders }, (response) => {
-					if (response.status === 500) {
-						this.triggerEvent('serverError');
-						reject(data.url);
-						return;
-					} else {
-						// get json data
-						let page = this.getPageData(response);
-						if (page != null && page.blocks.length > 0) {
-							page.url = data.url;
-						} else {
-							reject(data.url);
-							return;
-						}
-						// render page
-						this.cache.cacheUrl(page);
-						this.triggerEvent('pageLoaded');
-						resolve(page);
-					}
-				});
+		// Fetch from server
+		xhrPromise = new Promise((resolve, reject) => {
+			fetch({ ...data, headers: this.options.requestHeaders }, (response) => {
+				if (response.status === 500) {
+					this.triggerEvent('serverError');
+					reject(url);
+					return;
+				}
+				// get json data
+				const page = this.getPageData(response);
+				if (!page || !page.blocks.length) {
+					reject(url);
+					return;
+				}
+				// render page
+				page.url = url;
+				this.cache.cacheUrl(page);
+				this.triggerEvent('pageLoaded');
+				resolve(page);
 			});
-		} else {
-			xhrPromise = this.preloadPromise;
-		}
+		});
 	}
 
 	// when everything is ready, handle the outcome
 	Promise.all([xhrPromise].concat(animationPromises))
 		.then(([pageData]) => {
-			// render page
-			this.renderPage(pageData, popstate);
+			this.renderPage(pageData, { popstate, skipTransition });
 			this.preloadPromise = null;
 		})
 		.catch((errorUrl) => {

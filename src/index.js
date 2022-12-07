@@ -3,7 +3,9 @@ import delegate from 'delegate-it';
 // modules
 import Cache from './modules/Cache.js';
 import loadPage from './modules/loadPage.js';
+import leavePage from './modules/leavePage.js';
 import renderPage from './modules/renderPage.js';
+import enterPage from './modules/enterPage.js';
 import triggerEvent from './modules/triggerEvent.js';
 import on from './modules/on.js';
 import off from './modules/off.js';
@@ -18,7 +20,8 @@ import {
 	getCurrentUrl,
 	markSwupElements,
 	Link,
-	cleanupAnimationClasses
+	cleanupAnimationClasses,
+	updateHistoryRecord
 } from './helpers.js';
 
 export default class Swup {
@@ -94,7 +97,9 @@ export default class Swup {
 		this.cache = new Cache();
 		this.cache.swup = this;
 		this.loadPage = loadPage;
+		this.leavePage = leavePage;
 		this.renderPage = renderPage;
+		this.enterPage = enterPage;
 		this.triggerEvent = triggerEvent;
 		this.on = on;
 		this.off = off;
@@ -196,65 +201,57 @@ export default class Swup {
 	}
 
 	linkClickHandler(event) {
-		if (this.triggerWillOpenNewWindow(event.delegateTarget)) {
+		const linkEl = event.delegateTarget;
+
+		// Exit early if the link would open new window (or none at all)
+		if (this.triggerWillOpenNewWindow(linkEl)) {
 			return;
 		}
-		if (this.options.ignoreLink(event.delegateTarget)) {
+
+		// Exit early if the link should be ignored
+		if (this.options.ignoreLink(linkEl)) {
 			return;
 		}
 
-		// no control key pressed
-		if (!event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
-			// index of pressed button needs to be checked because Firefox triggers click on all mouse buttons
-			if (event.button === 0) {
-				this.triggerEvent('clickLink', event);
-				event.preventDefault();
-				const link = new Link(event.delegateTarget);
-				if (link.getAddress() == getCurrentUrl() || link.getAddress() == '') {
-					// link to the same URL
-					if (link.getHash() != '') {
-						// link to the same URL with hash
-						this.triggerEvent('samePageWithHash', event);
-						const element = getAnchorElement(link.getHash());
-						if (element != null) {
-							history.replaceState(
-								{
-									url: link.getAddress() + link.getHash(),
-									random: Math.random(),
-									source: 'swup'
-								},
-								document.title,
-								link.getAddress() + link.getHash()
-							);
-						} else {
-							// referenced element not found
-							console.warn(`Element for offset not found (${link.getHash()})`);
-						}
-					} else {
-						// link to the same URL without hash
-						this.triggerEvent('samePage', event);
-					}
-				} else if(!this.isSameResolvedPath(link.getAddress(), getCurrentUrl())) {
-					// link to different url
-					if (link.getHash() != '') {
-						this.scrollToElement = link.getHash();
-					}
+		// Exit early if control key pressed
+		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+			this.triggerEvent('openPageInNewTab', event);
+			return;
+		}
 
-					// get custom transition from data
-					let customTransition = event.delegateTarget.getAttribute(
-						'data-swup-transition'
-					);
+		// Exit early if other than left mouse button
+		if (event.button !== 0) {
+			return;
+		}
 
-					// load page
-					this.loadPage(
-						{ url: link.getAddress(), customTransition: customTransition },
-						false
-					);
+		this.triggerEvent('clickLink', event);
+		event.preventDefault();
+
+		const link = new Link(linkEl);
+		const url = link.getAddress();
+		const hash = link.getHash();
+
+		if (url == getCurrentUrl() || url == '') {
+			if (!hash) {
+				// link to the same URL without hash
+				this.triggerEvent('samePage', event);
+			} else {
+				// link to the same URL with hash
+				this.triggerEvent('samePageWithHash', event);
+				const element = getAnchorElement(hash);
+				if (element) {
+					updateHistoryRecord(url + hash);
+				} else {
+					console.warn(`Element for offset not found (#${hash})`);
 				}
 			}
-		} else {
-			// open in new tab (do nothing)
-			this.triggerEvent('openPageInNewTab', event);
+		} else if (!this.isSameResolvedPath(url, getCurrentUrl())) {
+			// link to different url
+			this.scrollToElement = hash || null;
+			const customTransition = linkEl.getAttribute('data-swup-transition');
+
+			// load page
+			this.loadPage({ url, customTransition }, false);
 		}
 	}
 
@@ -266,15 +263,23 @@ export default class Swup {
 	}
 
 	popStateHandler(event) {
-		if (this.options.skipPopStateHandling(event)) return;
-		// bail early if the resolved path hasn't changed
-		if (this.isSameResolvedPath(getCurrentUrl(), this.currentPageUrl) ) return;
-		const link = new Link(event.state ? event.state.url : window.location.pathname);
-		if (link.getHash() !== '') {
+		// Exit early if this event should be ignored
+		if (this.options.skipPopStateHandling(event)) {
+			return;
+		}
+
+		// Exit early if the resolved path hasn't changed
+		if (this.isSameResolvedPath(getCurrentUrl(), this.currentPageUrl)) return;
+
+		const url = event.state?.url ?? window.location.href;
+
+		const link = new Link(url);
+		if (link.getHash()) {
 			this.scrollToElement = link.getHash();
 		} else {
 			event.preventDefault();
 		}
+
 		this.triggerEvent('popState', event);
 
 		if (!this.options.animateHistoryBrowsing) {
@@ -284,23 +289,25 @@ export default class Swup {
 
 		this.loadPage({ url: link.getAddress() }, event);
 	}
+
 	/**
 	 * Utility function to validate and run the global option 'resolvePath'
 	 * @param {string} path
 	 * @returns {string} the resolved path
 	 */
 	resolvePath(path) {
-		if( typeof this.options.resolvePath !== 'function' ) {
+		if (typeof this.options.resolvePath !== 'function') {
 			console.warn(`[swup] options.resolvePath needs to be a function.`);
 			return path;
 		}
 		const result = this.options.resolvePath(path);
-		if( !result || typeof result !== 'string' ) {
+		if (!result || typeof result !== 'string') {
 			console.warn(`[swup] options.resolvePath needs to return a path`);
 			return path;
 		}
 		return result;
 	}
+
 	/**
 	 * Compares the resolved version of two paths and returns true if they are the same
 	 * @param {string} path1
