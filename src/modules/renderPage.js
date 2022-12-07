@@ -15,6 +15,7 @@ const renderPage = function(page, { popstate } = {}) {
 	const url = new Link(page.responseURL).getAddress();
 	if (!this.isSameResolvedPath(getCurrentUrl(), url)) {
 		this.cache.cacheUrl({ ...page, url });
+		this.currentPageUrl = getCurrentUrl();
 		updateHistoryRecord(url);
 	}
 
