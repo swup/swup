@@ -40,7 +40,7 @@ export default class Swup {
 			resolvePath: (path) => path,
 			requestHeaders: {
 				'X-Requested-With': 'swup',
-				'Accept': 'text/html, application/xhtml+xml'
+				Accept: 'text/html, application/xhtml+xml'
 			},
 			skipPopStateHandling: (event) => event.state?.source !== 'swup'
 		};
@@ -222,28 +222,41 @@ export default class Swup {
 		const url = link.getAddress();
 		const hash = link.getHash();
 
-		if (!url || url == getCurrentUrl()) {
-			if (!hash) {
-				// link to the same URL without hash
-				this.triggerEvent('samePage', event);
-			} else {
-				// link to the same URL with hash
-				this.triggerEvent('samePageWithHash', event);
-				const element = getAnchorElement(hash);
-				if (element) {
-					updateHistoryRecord(url + hash);
-				} else {
-					console.warn(`Element for offset not found (#${hash})`);
-				}
-			}
-		} else if (!this.isSameResolvedPath(url, getCurrentUrl())) {
-			// link to different url
-			this.scrollToElement = hash || null;
-			const customTransition = linkEl.getAttribute('data-swup-transition');
-
-			// load page
-			this.loadPage({ url, customTransition }, false);
+		if (!url || url === getCurrentUrl()) {
+			this.handleLinkToSamePage(url, hash, event);
+			return;
 		}
+
+		// Bail early if the resolved path hasn't changed
+		if (this.isSameResolvedPath(url, getCurrentUrl())) return;
+
+		// Store the element that should be scrolled to after loading the next page
+		this.scrollToElement = hash || null;
+
+		// Get the custom transition name, if present
+		const customTransition = linkEl.getAttribute('data-swup-transition');
+
+		// Finally, proceed with loading the page
+		this.loadPage({ url, customTransition }, false);
+	}
+
+	handleLinkToSamePage(url, hash, event) {
+		// link to the same URL without hash
+		if (!hash) {
+			this.triggerEvent('samePage', event);
+			return;
+		}
+
+		// link to the same URL with hash
+		this.triggerEvent('samePageWithHash', event);
+
+		const element = getAnchorElement(hash);
+		// Warn and bail early if no element was found for the hash
+		if (!element) {
+			return console.warn(`Element for offset not found (#${hash})`);
+		}
+
+		updateHistoryRecord(url + hash);
 	}
 
 	triggerWillOpenNewWindow(triggerEl) {
