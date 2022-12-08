@@ -1,16 +1,19 @@
 # Changelog
 
-## [Unreleased]
+<!-- ## [Unreleased] -->
 
-[Upgrade instructions for swup 3](https://swup.js.org/getting-started/upgrading)
+## [3.0.0] - 2022-12
 
-- Export native ESM modules
 - Support CSS animations and keyframes
 - Allow ignoring links via callback function
-- Improved test coverage
+- Export native ESM modules
 - Smaller bundle size: 4.5 kB
+- Improved test coverage
 
 ### Breaking changes
+
+See [Upgrade instructions for swup 3](https://swup.js.org/getting-started/upgrading)
+for details.
 
 - Swup will now wait for the longest transitioned property
 - UMD and CDN bundle names have changed
@@ -55,8 +58,9 @@
 
 - Fix bug where animateHistoryBrowsing option was ignored for OUT animations
 
-[Unreleased]: https://github.com/swup/swup/compare/2.0.19...HEAD
+[Unreleased]: https://github.com/swup/swup/compare/3.0.0...HEAD
 
+[3.0.0]: https://github.com/swup/swup/releases/tag/3.0.0
 [2.0.19]: https://github.com/swup/swup/releases/tag/2.0.19
 [2.0.18]: https://github.com/swup/swup/releases/tag/2.0.18
 [2.0.17]: https://github.com/swup/swup/releases/tag/2.0.17
