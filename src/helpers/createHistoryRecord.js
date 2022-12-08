@@ -1,4 +1,4 @@
-import { getCurrentUrl } from '../helpers.js';
+import { default as getCurrentUrl } from './getCurrentUrl.js';
 
 const createHistoryRecord = (url, customData = {}) => {
 	url = url || getCurrentUrl({ hash: true });
