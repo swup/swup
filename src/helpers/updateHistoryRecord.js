@@ -1,14 +1,15 @@
 import { getCurrentUrl } from '../helpers.js';
 
-const createHistoryRecord = (url, customData = {}) => {
+const updateHistoryRecord = (url = null, customData = {}) => {
 	url = url || getCurrentUrl({ hash: true });
 	const data = {
+		...history.state,
 		url,
 		random: Math.random(),
 		source: 'swup',
 		...customData
 	};
-	history.pushState(data, '', url);
+	history.replaceState(data, '', url);
 };
 
-export default createHistoryRecord;
+export default updateHistoryRecord;
