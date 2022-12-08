@@ -32,10 +32,9 @@ export default class Swup {
 			animationSelector: '[class*="transition-"]',
 			cache: true,
 			containers: ['#swup'],
-			ignoreLink: (el) => (
-				el.origin !== window.location.origin ||
-				el.closest('[data-no-swup]')
-			),
+			ignoreLink: (el) => {
+				return el.origin !== window.location.origin || el.closest('[data-no-swup]');
+			},
 			linkSelector: 'a[href]',
 			plugins: [],
 			resolvePath: (path) => path,
