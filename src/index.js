@@ -222,12 +222,13 @@ export default class Swup {
 		const url = link.getAddress();
 		const hash = link.getHash();
 
+		// Handle links to the same page and exit early, where applicable
 		if (!url || url === getCurrentUrl()) {
 			this.handleLinkToSamePage(url, hash, event);
 			return;
 		}
 
-		// Bail early if the resolved path hasn't changed
+		// Exit early if the resolved path hasn't changed
 		if (this.isSameResolvedPath(url, getCurrentUrl())) return;
 
 		// Store the element that should be scrolled to after loading the next page
@@ -241,7 +242,7 @@ export default class Swup {
 	}
 
 	handleLinkToSamePage(url, hash, event) {
-		// link to the same URL without hash
+		// Emit event and exit early if the url points to the same page without hash
 		if (!hash) {
 			this.triggerEvent('samePage', event);
 			return;
@@ -251,7 +252,8 @@ export default class Swup {
 		this.triggerEvent('samePageWithHash', event);
 
 		const element = getAnchorElement(hash);
-		// Warn and bail early if no element was found for the hash
+
+		// Warn and exit early if no matching element was found for the hash
 		if (!element) {
 			return console.warn(`Element for offset not found (#${hash})`);
 		}
