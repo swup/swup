@@ -7,7 +7,7 @@ export class Cache {
 	}
 
 	getCacheUrl(url) {
-		return this.swup.resolvePath(normalizeUrl(url));
+		return this.swup.resolveUrl(normalizeUrl(url));
 	}
 
 	cacheUrl(page) {

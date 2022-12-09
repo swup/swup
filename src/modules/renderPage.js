@@ -5,7 +5,7 @@ const renderPage = function(page, { popstate } = {}) {
 	document.documentElement.classList.remove('is-leaving');
 
 	// do nothing if another page was requested in the meantime
-	if (!this.isSameResolvedPath(getCurrentUrl(), page.url)) {
+	if (!this.isSameResolvedUrl(getCurrentUrl(), page.url)) {
 		return;
 	}
 
@@ -13,7 +13,7 @@ const renderPage = function(page, { popstate } = {}) {
 
 	// update cache and state if the url was redirected
 	const url = new Link(page.responseURL).getAddress();
-	if (!this.isSameResolvedPath(getCurrentUrl(), url)) {
+	if (!this.isSameResolvedUrl(getCurrentUrl(), url)) {
 		this.cache.cacheUrl({ ...page, url });
 		this.currentPageUrl = getCurrentUrl();
 		updateHistoryRecord(url);

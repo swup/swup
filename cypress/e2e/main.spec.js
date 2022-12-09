@@ -2,7 +2,7 @@
 
 // window._swup holds the swup instance
 
-const durationTolerance = 0.15; // 15% plus/minus
+const durationTolerance = 0.2; // 20% plus/minus
 
 context('Window', () => {
     beforeEach(() => {
@@ -386,9 +386,9 @@ context('Window', () => {
         });
     });
 
-    it('should ignore links for equal resolved paths', () => {
+    it('should ignore links for equal resolved urls', () => {
          cy.window().then(window => {
-            window._swup.options.resolvePath = path => '/page1/';
+            window._swup.options.resolveUrl = url =>'/page1/';
             cy.triggerClickOnLink('/page2/');
             cy.wait(500).then(() => {
                 cy.shouldBeAtPage('/page1/');
@@ -396,9 +396,9 @@ context('Window', () => {
          });
     });
 
-    it('should skip popstate handling for equal resolved paths', () => {
+    it('should skip popstate handling for equal resolved urls', () => {
         cy.window().then(window => {
-            window._swup.options.resolvePath = path => '/page1/';
+            window._swup.options.resolveUrl = url =>'/page1/';
             window.history.pushState(
                 {
                     url: '/pushed-page-1/',

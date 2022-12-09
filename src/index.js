@@ -1,26 +1,25 @@
 import delegate from 'delegate-it';
 
-// modules
 import Cache from './modules/Cache.js';
-import loadPage from './modules/loadPage.js';
-import leavePage from './modules/leavePage.js';
-import renderPage from './modules/renderPage.js';
 import enterPage from './modules/enterPage.js';
-import triggerEvent from './modules/triggerEvent.js';
-import on from './modules/on.js';
-import off from './modules/off.js';
-import updateTransition from './modules/updateTransition.js';
 import getAnchorElement from './modules/getAnchorElement.js';
 import getAnimationPromises from './modules/getAnimationPromises.js';
 import getPageData from './modules/getPageData.js';
+import leavePage from './modules/leavePage.js';
+import loadPage from './modules/loadPage.js';
+import off from './modules/off.js';
+import on from './modules/on.js';
 import { use, unuse, findPlugin } from './modules/plugins.js';
+import renderPage from './modules/renderPage.js';
+import triggerEvent from './modules/triggerEvent.js';
+import updateTransition from './modules/updateTransition.js';
 
 import { queryAll } from './utils.js';
 import {
-	getCurrentUrl,
-	markSwupElements,
-	Link,
 	cleanupAnimationClasses,
+	getCurrentUrl,
+	Link,
+	markSwupElements,
 	updateHistoryRecord
 } from './helpers.js';
 
@@ -37,7 +36,7 @@ export default class Swup {
 			},
 			linkSelector: 'a[href]',
 			plugins: [],
-			resolvePath: (path) => path,
+			resolveUrl: (url) => url,
 			requestHeaders: {
 				'X-Requested-With': 'swup',
 				Accept: 'text/html, application/xhtml+xml'
@@ -229,7 +228,7 @@ export default class Swup {
 		}
 
 		// Exit early if the resolved path hasn't changed
-		if (this.isSameResolvedPath(url, getCurrentUrl())) return;
+		if (this.isSameResolvedUrl(url, getCurrentUrl())) return;
 
 		// Store the element that should be scrolled to after loading the next page
 		this.scrollToElement = hash || null;
@@ -275,7 +274,7 @@ export default class Swup {
 		}
 
 		// Exit early if the resolved path hasn't changed
-		if (this.isSameResolvedPath(getCurrentUrl(), this.currentPageUrl)) {
+		if (this.isSameResolvedUrl(getCurrentUrl(), this.currentPageUrl)) {
 			return;
 		}
 
@@ -299,30 +298,34 @@ export default class Swup {
 	}
 
 	/**
-	 * Utility function to validate and run the global option 'resolvePath'
-	 * @param {string} path
-	 * @returns {string} the resolved path
+	 * Utility function to validate and run the global option 'resolveUrl'
+	 * @param {string} url
+	 * @returns {string} the resolved url
 	 */
-	resolvePath(path) {
-		if (typeof this.options.resolvePath !== 'function') {
-			console.warn(`[swup] options.resolvePath needs to be a function.`);
-			return path;
+	resolveUrl(url) {
+		if (typeof this.options.resolveUrl !== 'function') {
+			console.warn(`[swup] options.resolveUrl expects a callback function.`);
+			return url;
 		}
-		const result = this.options.resolvePath(path);
+		const result = this.options.resolveUrl(url);
 		if (!result || typeof result !== 'string') {
-			console.warn(`[swup] options.resolvePath needs to return a path`);
-			return path;
+			console.warn(`[swup] options.resolveUrl needs to return a url`);
+			return url;
+		}
+		if (result.startsWith('//') || result.startsWith('http')) {
+			console.warn(`[swup] options.resolveUrl needs to return a relative url`);
+			return url;
 		}
 		return result;
 	}
 
 	/**
 	 * Compares the resolved version of two paths and returns true if they are the same
-	 * @param {string} path1
-	 * @param {string} path2
+	 * @param {string} url1
+	 * @param {string} url2
 	 * @returns {boolean}
 	 */
-	isSameResolvedPath(path1, path2) {
-		return this.resolvePath(path1) === this.resolvePath(path2);
+	isSameResolvedUrl(url1, url2) {
+		return this.resolveUrl(url1) === this.resolveUrl(url2);
 	}
 }
