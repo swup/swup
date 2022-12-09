@@ -1,26 +1,25 @@
 import delegate from 'delegate-it';
 
-// modules
 import Cache from './modules/Cache.js';
-import loadPage from './modules/loadPage.js';
-import leavePage from './modules/leavePage.js';
-import renderPage from './modules/renderPage.js';
 import enterPage from './modules/enterPage.js';
-import triggerEvent from './modules/triggerEvent.js';
-import on from './modules/on.js';
-import off from './modules/off.js';
-import updateTransition from './modules/updateTransition.js';
 import getAnchorElement from './modules/getAnchorElement.js';
 import getAnimationPromises from './modules/getAnimationPromises.js';
 import getPageData from './modules/getPageData.js';
+import leavePage from './modules/leavePage.js';
+import loadPage from './modules/loadPage.js';
+import off from './modules/off.js';
+import on from './modules/on.js';
 import { use, unuse, findPlugin } from './modules/plugins.js';
+import renderPage from './modules/renderPage.js';
+import triggerEvent from './modules/triggerEvent.js';
+import updateTransition from './modules/updateTransition.js';
 
 import { queryAll } from './utils.js';
 import {
-	getCurrentUrl,
-	markSwupElements,
-	Link,
 	cleanupAnimationClasses,
+	getCurrentUrl,
+	Link,
+	markSwupElements,
 	updateHistoryRecord
 } from './helpers.js';
 
