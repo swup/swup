@@ -8,7 +8,7 @@ jobs:
   checkout-and-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout out code
+      - name: Check out code
         uses: actions/checkout@v2
       # Install NPM dependencies, cache them correctly
       # and run all Cypress tests
