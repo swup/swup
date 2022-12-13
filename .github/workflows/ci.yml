@@ -10,10 +10,9 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v2
-      # Install NPM dependencies, cache them correctly
-      # and run all Cypress tests
       - name: Run cypress tests
         uses: cypress-io/github-action@v4.2.2
         with:
-          build: npm run build
+          # build not necessary: already part of prepublish script
+          # build: npm run build
           start: npm run test:start
