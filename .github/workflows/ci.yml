@@ -1,0 +1,19 @@
+name: E2E tests
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  checkout-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout out code
+        uses: actions/checkout@v2
+      # Install NPM dependencies, cache them correctly
+      # and run all Cypress tests
+      - name: Run cypress tests
+        uses: cypress-io/github-action@v4.2.2
+        with:
+          build: npm run build
+          start: npm run test:start
