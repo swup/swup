@@ -9,7 +9,7 @@
     "lint": "prettier src/**/*.{js,mjs} --write",
     "prepublish": "npm run compile && npm run build",
     "postinstall": "opencollective-postinstall || true",
-    "ci": "start-server-and-test test:start 8274 cy:run:record",
+    "ci": "start-server-and-test test:start 8274 cy:run",
     "test": "start-server-and-test test:start 8274 cy:run",
     "test:dev": "start-server-and-test test:start 8274 cy:open",
     "test:instrument": "nyc instrument --compact=false dist test/site/swup",
