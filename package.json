@@ -15,8 +15,8 @@
     "test:instrument": "nyc instrument --compact=false dist test/site/swup",
     "test:server": "http-server --port 8274 test/site",
     "test:start": "npm run test:instrument && npm run test:server",
-    "cy:run": "cypress run --browser chrome",
-    "cy:run:record": "cypress run --browser chrome --record",
+    "cy:run": "cypress run",
+    "cy:run:record": "cypress run --record",
     "cy:open": "cypress open"
   },
   "author": "Georgy Marchuk",
