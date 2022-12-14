@@ -2,7 +2,7 @@
 
 // window._swup holds the swup instance
 
-const durationTolerance = 0.15; // 15% plus/minus
+const durationTolerance = 0.2; // 20% plus/minus
 
 context('Window', () => {
     beforeEach(() => {
@@ -257,7 +257,7 @@ context('Window', () => {
         cy.window().then(window => {
             window.history.back();
             cy.window().should(() => {
-                expect(window.history.state.url, 'page url not saved').to.equal('http://localhost:8274/page1/');
+                expect(window.history.state.url, 'page url not saved').to.equal('/page1/');
                 expect(window.history.state.source, 'state source not saved').to.equal('swup');
             });
         });
@@ -386,9 +386,9 @@ context('Window', () => {
         });
     });
 
-    it('should ignore links for equal resolved paths', () => {
+    it('should ignore links for equal resolved urls', () => {
          cy.window().then(window => {
-            window._swup.options.resolvePath = path => '/page1/';
+            window._swup.options.resolveUrl = url =>'/page1/';
             cy.triggerClickOnLink('/page2/');
             cy.wait(500).then(() => {
                 cy.shouldBeAtPage('/page1/');
@@ -396,9 +396,9 @@ context('Window', () => {
          });
     });
 
-    it('should skip popstate handling for equal resolved paths', () => {
+    it('should skip popstate handling for equal resolved urls', () => {
         cy.window().then(window => {
-            window._swup.options.resolvePath = path => '/page1/';
+            window._swup.options.resolveUrl = url =>'/page1/';
             window.history.pushState(
                 {
                     url: '/pushed-page-1/',

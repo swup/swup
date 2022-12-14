@@ -1,10 +1,5 @@
 const updateTransition = function(from, to, custom) {
-	// transition routes
-	this.transition = {
-		from: from,
-		to: to,
-		custom: custom
-	};
+	this.transition = { from, to, custom };
 };
 
 export default updateTransition;

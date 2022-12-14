@@ -20,18 +20,14 @@ const getDataFromHtml = (html, containers) => {
 		}
 	});
 
-	const json = {
-		title: (fakeDom.querySelector('title') || {}).innerText,
-		pageClass: fakeDom.querySelector('body').className,
-		originalContent: html,
-		blocks: blocks
-	};
+	const title = query('title', fakeDom)?.innerText;
+	const pageClass = query('body', fakeDom)?.className;
 
 	// to prevent memory leaks
 	fakeDom.innerHTML = '';
 	fakeDom = null;
 
-	return json;
+	return { title, pageClass, blocks, originalContent: html };
 };
 
 export default getDataFromHtml;

@@ -1,44 +1,40 @@
-import { Link, getCurrentUrl } from '../helpers.js';
+import { Link, updateHistoryRecord, getCurrentUrl } from '../helpers.js';
+import { query } from '../utils.js';
 
-const renderPage = function(page, popstate) {
+const renderPage = function(page, { popstate } = {}) {
 	document.documentElement.classList.remove('is-leaving');
 
-	// do nothing if the URL has already changed since the request
-	if (!this.isSameResolvedPath(getCurrentUrl(), page.url)) {
+	// do nothing if another page was requested in the meantime
+	if (!this.isSameResolvedUrl(getCurrentUrl(), page.url)) {
 		return;
 	}
 
-	// replace state in case the url was redirected
-	const url = new Link(page.responseURL).getPath();
-	if (!this.isSameResolvedPath(window.location.pathname, url)) {
-		window.history.replaceState(
-			{
-				url,
-				random: Math.random(),
-				source: 'swup'
-			},
-			document.title,
-			url
-		);
+	const skipTransition = popstate && !this.options.animateHistoryBrowsing;
 
-		// save new record for redirected url
+	// update cache and state if the url was redirected
+	const url = new Link(page.responseURL).getAddress();
+	if (!this.isSameResolvedUrl(getCurrentUrl(), url)) {
 		this.cache.cacheUrl({ ...page, url });
-
 		this.currentPageUrl = getCurrentUrl();
+		updateHistoryRecord(url);
 	}
 
-	// only add for non-popstate transitions
-	if (!popstate || this.options.animateHistoryBrowsing) {
+	// only add for page loads with transitions
+	if (!skipTransition) {
 		document.documentElement.classList.add('is-rendering');
 	}
 
 	this.triggerEvent('willReplaceContent', popstate);
+
 	// replace blocks
-	for (let i = 0; i < page.blocks.length; i++) {
-		document.body.querySelector(`[data-swup="${i}"]`).outerHTML = page.blocks[i];
-	}
+	page.blocks.forEach((html, i) => {
+		const block = query(`[data-swup="${i}"]`, document.body);
+		block.outerHTML = html;
+	});
+
 	// set title
 	document.title = page.title;
+
 	this.triggerEvent('contentReplaced', popstate);
 	this.triggerEvent('pageView', popstate);
 
@@ -47,25 +43,8 @@ const renderPage = function(page, popstate) {
 		this.cache.empty();
 	}
 
-	// start animation IN
-	setTimeout(() => {
-		if (!popstate || this.options.animateHistoryBrowsing) {
-			this.triggerEvent('animationInStart');
-			document.documentElement.classList.remove('is-animating');
-		}
-	}, 10);
-
-	// handle end of animation
-	if (!popstate || this.options.animateHistoryBrowsing) {
-		const animationPromises = this.getAnimationPromises('in');
-		Promise.all(animationPromises).then(() => {
-			this.triggerEvent('animationInDone');
-			this.triggerEvent('transitionEnd', popstate);
-			this.cleanupAnimationClasses();
-		});
-	} else {
-		this.triggerEvent('transitionEnd', popstate);
-	}
+	// Perform in transition
+	this.enterPage({ popstate, skipTransition });
 
 	// reset scroll-to element
 	this.scrollToElement = null;

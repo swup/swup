@@ -1,5 +1,6 @@
 export { default as classify } from './classify.js';
 export { default as createHistoryRecord } from './createHistoryRecord.js';
+export { default as updateHistoryRecord } from './updateHistoryRecord.js';
 export { default as getDataFromHtml } from './getDataFromHtml.js';
 export { default as fetch } from './fetch.js';
 export { default as getCurrentUrl } from './getCurrentUrl.js';
