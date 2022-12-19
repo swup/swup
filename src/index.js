@@ -1,5 +1,3 @@
-import delegate from 'delegate-it';
-
 import Cache from './modules/Cache.js';
 import enterPage from './modules/enterPage.js';
 import getAnchorElement from './modules/getAnchorElement.js';
@@ -17,6 +15,7 @@ import updateTransition from './modules/updateTransition.js';
 import { queryAll } from './utils.js';
 import {
 	cleanupAnimationClasses,
+	delegateEvent,
 	getCurrentUrl,
 	Link,
 	markSwupElements,
@@ -99,6 +98,7 @@ export default class Swup {
 		this.renderPage = renderPage;
 		this.enterPage = enterPage;
 		this.triggerEvent = triggerEvent;
+		this.delegateEvent = delegateEvent;
 		this.on = on;
 		this.off = off;
 		this.updateTransition = updateTransition;
@@ -124,8 +124,7 @@ export default class Swup {
 		}
 
 		// add event listeners
-		this.delegatedListeners.click = delegate(
-			document,
+		this.delegatedListeners.click = delegateEvent(
 			this.options.linkSelector,
 			'click',
 			this.linkClickHandler.bind(this)
