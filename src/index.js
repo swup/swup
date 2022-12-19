@@ -98,6 +98,7 @@ export default class Swup {
 		this.renderPage = renderPage;
 		this.enterPage = enterPage;
 		this.triggerEvent = triggerEvent;
+		this.delegateEvent = delegateEvent;
 		this.on = on;
 		this.off = off;
 		this.updateTransition = updateTransition;
