@@ -31,7 +31,7 @@ export default class Swup {
 			cache: true,
 			containers: ['#swup'],
 			ignoreLink: (el) => {
-				return el.origin !== window.location.origin || el.closest('[data-no-swup]');
+				return el.closest('[data-no-swup]');
 			},
 			linkSelector: 'a[href]',
 			plugins: [],
@@ -189,18 +189,30 @@ export default class Swup {
 		document.documentElement.classList.remove('swup-enabled');
 	}
 
+	ignoreLink(linkEl) {
+		// Ignore if the links origin doesn't match the window origin
+		if (linkEl.origin !== window.location.origin) {
+			return true;
+		}
+
+		// Ignore if the link would open new window (or none at all)
+		if (this.triggerWillOpenNewWindow(linkEl)) {
+			return true;
+		}
+
+		// Ignore if the link should be ignored
+		if (this.options.ignoreLink(linkEl)) {
+			return true;
+		}
+		// Finally, allow the link
+		return false;
+	}
+
 	linkClickHandler(event) {
 		const linkEl = event.delegateTarget;
 
-		// Exit early if the link would open new window (or none at all)
-		if (this.triggerWillOpenNewWindow(linkEl)) {
-			return;
-		}
-
 		// Exit early if the link should be ignored
-		if (this.options.ignoreLink(linkEl)) {
-			return;
-		}
+		if (this.ignoreLink(linkEl)) return;
 
 		// Exit early if control key pressed
 		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
