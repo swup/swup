@@ -211,9 +211,10 @@ export default class Swup {
 
 	linkClickHandler(event) {
 		const linkEl = event.delegateTarget;
+		const link = new Link(linkEl);
 
 		// Exit early if the link should be ignored
-		if (this.shouldIgnoreVisit(linkEl.href, { el: linkEl })) {
+		if (this.shouldIgnoreVisit(link.getHref(), { el: linkEl })) {
 			return;
 		}
 
@@ -231,7 +232,6 @@ export default class Swup {
 		this.triggerEvent('clickLink', event);
 		event.preventDefault();
 
-		const link = new Link(linkEl);
 		const url = link.getAddress();
 		const hash = link.getHash();
 
