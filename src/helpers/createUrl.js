@@ -1,5 +1,5 @@
 function createUrl(hrefOrElement) {
-	let href
+	let href;
 	if (hrefOrElement instanceof Element) {
 		href = hrefOrElement.getAttribute('href') || hrefOrElement.getAttribute('xlink:href');
 	} else {
@@ -10,8 +10,8 @@ function createUrl(hrefOrElement) {
 
 	// Define custom 'address' getter for pathname + query params
 	Object.defineProperty(url, 'address', {
-    get() {
-			return this.pathname + this.search
+		get() {
+			return this.pathname + this.search;
 		}
 	});
 
