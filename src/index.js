@@ -17,6 +17,7 @@ import {
 	cleanupAnimationClasses,
 	delegateEvent,
 	getCurrentUrl,
+	createUrl,
 	Link,
 	markSwupElements,
 	updateHistoryRecord
@@ -216,9 +217,8 @@ export default class Swup {
 		this.triggerEvent('clickLink', event);
 		event.preventDefault();
 
-		const link = new Link(linkEl);
-		const url = link.getAddress();
-		const hash = link.getHash();
+		const url = createUrl(linkEl).address;
+		const hash = createUrl(linkEl).hash;
 
 		// Handle links to the same page and exit early, where applicable
 		if (!url || url === getCurrentUrl()) {
@@ -277,11 +277,9 @@ export default class Swup {
 			return;
 		}
 
-		const url = event.state?.url ?? location.href;
-
-		const link = new Link(url);
-		if (link.getHash()) {
-			this.scrollToElement = link.getHash();
+		const url = createUrl(event.state?.url ?? location.href);
+		if (url.hash) {
+			this.scrollToElement = url.hash;
 		} else {
 			event.preventDefault();
 		}
@@ -293,7 +291,7 @@ export default class Swup {
 			cleanupAnimationClasses();
 		}
 
-		this.loadPage({ url: link.getAddress() }, event);
+		this.loadPage({ url: url.address }, event);
 	}
 
 	/**

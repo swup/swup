@@ -1,4 +1,4 @@
-import { Link, updateHistoryRecord, getCurrentUrl } from '../helpers.js';
+import { createUrl, updateHistoryRecord, getCurrentUrl } from '../helpers.js';
 import { query } from '../utils.js';
 
 const renderPage = function(page, { popstate } = {}) {
@@ -12,7 +12,7 @@ const renderPage = function(page, { popstate } = {}) {
 	const skipTransition = popstate && !this.options.animateHistoryBrowsing;
 
 	// update cache and state if the url was redirected
-	const url = new Link(page.responseURL).getAddress();
+	const url = createUrl(page.responseURL).address;
 	if (!this.isSameResolvedUrl(getCurrentUrl(), url)) {
 		this.cache.cacheUrl({ ...page, url });
 		this.currentPageUrl = getCurrentUrl();
