@@ -7,5 +7,4 @@ export { default as fetch } from './fetch.js';
 export { default as getCurrentUrl } from './getCurrentUrl.js';
 export { default as createUrl } from './createUrl.js';
 export { default as markSwupElements } from './markSwupElements.js';
-export { default as Link } from './Link.js';
 export { default as cleanupAnimationClasses } from './cleanupAnimationClasses.js';
