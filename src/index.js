@@ -30,9 +30,7 @@ export default class Swup {
 			animationSelector: '[class*="transition-"]',
 			cache: true,
 			containers: ['#swup'],
-			ignoreLink: (el) => {
-				return el.closest('[data-no-swup]');
-			},
+			ignoreVisit: (href, { el }) => el?.closest('[data-no-swup]'),
 			linkSelector: 'a[href]',
 			plugins: [],
 			resolveUrl: (url) => url,
@@ -189,21 +187,24 @@ export default class Swup {
 		document.documentElement.classList.remove('swup-enabled');
 	}
 
-	ignoreLink(linkEl) {
-		// Ignore if the links origin doesn't match the window origin
-		if (linkEl.origin !== window.location.origin) {
+	shouldIgnoreVisit(href, { el } = {}) {
+		const url = new URL(href, document.baseURI);
+
+		// Ignore if the new URL's origin doesn't match the current one
+		if (url.origin !== window.location.origin) {
 			return true;
 		}
 
-		// Ignore if the link would open new window (or none at all)
-		if (this.triggerWillOpenNewWindow(linkEl)) {
+		// Ignore if the link/form would open new window (or none at all)
+		if (el && this.triggerWillOpenNewWindow(el)) {
 			return true;
 		}
 
-		// Ignore if the link should be ignored
-		if (this.options.ignoreLink(linkEl)) {
+		// Ignore if the visit should be ignored as per user options
+		if (this.options.ignoreVisit(href, { el })) {
 			return true;
 		}
+
 		// Finally, allow the link
 		return false;
 	}
@@ -212,7 +213,9 @@ export default class Swup {
 		const linkEl = event.delegateTarget;
 
 		// Exit early if the link should be ignored
-		if (this.ignoreLink(linkEl)) return;
+		if (this.shouldIgnoreVisit(linkEl.href, { el: linkEl })) {
+			return;
+		}
 
 		// Exit early if control key pressed
 		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
