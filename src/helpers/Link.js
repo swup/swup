@@ -1,11 +1,16 @@
 export default class Link {
 	constructor(elementOrUrl) {
+		this.link = document.createElement('a');
+
 		if (elementOrUrl instanceof Element || elementOrUrl instanceof SVGElement) {
-			this.link = elementOrUrl;
-		} else {
-			this.link = document.createElement('a');
+			this.link.href = elementOrUrl.getAttribute('href') || elementOrUrl.getAttribute('xlink:href');
+		} else if (typeof elementOrUrl === 'string') {
 			this.link.href = elementOrUrl;
 		}
+	}
+
+	getHref() {
+		return this.link.href;
 	}
 
 	getPath() {

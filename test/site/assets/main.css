@@ -306,20 +306,20 @@ html.test--complex-transitions.is-animating .transition-default {
 
 .test--keyframe-transitions .transition-default {
   transition: none;
+}
+html.test--keyframe-transitions.is-changing .transition-default {
   animation: test-animation 400ms 300ms;
 }
-
-html.test--keyframe-transitions.is-animating .transition-default {
-  transform: translateY(10px);
-  opacity: 0;
+html.test--keyframe-transitions.is-rendering .transition-default {
+  animation-direction: reverse;
 }
 
 @keyframes test-animation {
-  0%, 100% {
+  from {
     transform: translateY(0);
     opacity: 1;
   }
-  50% {
+  to {
     transform: translateY(10px);
     opacity: 0;
   }
