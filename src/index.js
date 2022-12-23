@@ -195,7 +195,7 @@ export default class Swup {
 			return true;
 		}
 
-		// Ignore if the link/form would open new window (or none at all)
+		// Ignore if the link/form would open a new window (or none at all)
 		if (el && this.triggerWillOpenNewWindow(el)) {
 			return true;
 		}
@@ -205,7 +205,7 @@ export default class Swup {
 			return true;
 		}
 
-		// Finally, allow the link
+		// Finally, allow the visit
 		return false;
 	}
 
