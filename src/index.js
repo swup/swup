@@ -188,10 +188,10 @@ export default class Swup {
 	}
 
 	shouldIgnoreVisit(href, { el } = {}) {
-		const url = new URL(href, document.baseURI);
+		const { origin } = Location.fromUrl(href);
 
 		// Ignore if the new URL's origin doesn't match the current one
-		if (url.origin !== window.location.origin) {
+		if (origin !== window.location.origin) {
 			return true;
 		}
 
@@ -211,10 +211,10 @@ export default class Swup {
 
 	linkClickHandler(event) {
 		const linkEl = event.delegateTarget;
-		const link = new Link(linkEl);
+		const { href, url, hash } = Location.fromElement(linkEl);
 
 		// Exit early if the link should be ignored
-		if (this.shouldIgnoreVisit(link.getHref(), { el: linkEl })) {
+		if (this.shouldIgnoreVisit(href, { el: linkEl })) {
 			return;
 		}
 
@@ -231,8 +231,6 @@ export default class Swup {
 
 		this.triggerEvent('clickLink', event);
 		event.preventDefault();
-
-		const { url, hash } = Location.fromElement(linkEl);
 
 		// Handle links to the same page and exit early, where applicable
 		if (!url || url === getCurrentUrl()) {
