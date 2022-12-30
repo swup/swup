@@ -5,6 +5,6 @@ export { default as delegateEvent } from './delegateEvent.js';
 export { default as getDataFromHtml } from './getDataFromHtml.js';
 export { default as fetch } from './fetch.js';
 export { default as getCurrentUrl } from './getCurrentUrl.js';
-export { default as createUrl } from './createUrl.js';
+export { default as Location } from './Location.js';
 export { default as markSwupElements } from './markSwupElements.js';
 export { default as cleanupAnimationClasses } from './cleanupAnimationClasses.js';
