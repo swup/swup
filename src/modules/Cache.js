@@ -1,4 +1,4 @@
-import { getCurrentUrl, normalizeUrl } from '../helpers.js';
+import { getCurrentUrl, Location } from '../helpers.js';
 
 export class Cache {
 	constructor() {
@@ -7,7 +7,7 @@ export class Cache {
 	}
 
 	getCacheUrl(url) {
-		return this.swup.resolveUrl(normalizeUrl(url));
+		return this.swup.resolveUrl(Location.fromUrl(url).url);
 	}
 
 	cacheUrl(page) {

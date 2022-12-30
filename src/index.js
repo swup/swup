@@ -17,7 +17,7 @@ import {
 	cleanupAnimationClasses,
 	delegateEvent,
 	getCurrentUrl,
-	Link,
+	Location,
 	markSwupElements,
 	updateHistoryRecord
 } from './helpers.js';
@@ -188,10 +188,10 @@ export default class Swup {
 	}
 
 	shouldIgnoreVisit(href, { el } = {}) {
-		const url = new URL(href, document.baseURI);
+		const { origin } = Location.fromUrl(href);
 
 		// Ignore if the new URL's origin doesn't match the current one
-		if (url.origin !== window.location.origin) {
+		if (origin !== window.location.origin) {
 			return true;
 		}
 
@@ -211,10 +211,10 @@ export default class Swup {
 
 	linkClickHandler(event) {
 		const linkEl = event.delegateTarget;
-		const link = new Link(linkEl);
+		const { href, url, hash } = Location.fromElement(linkEl);
 
 		// Exit early if the link should be ignored
-		if (this.shouldIgnoreVisit(link.getHref(), { el: linkEl })) {
+		if (this.shouldIgnoreVisit(href, { el: linkEl })) {
 			return;
 		}
 
@@ -231,9 +231,6 @@ export default class Swup {
 
 		this.triggerEvent('clickLink', event);
 		event.preventDefault();
-
-		const url = link.getAddress();
-		const hash = link.getHash();
 
 		// Handle links to the same page and exit early, where applicable
 		if (!url || url === getCurrentUrl()) {
@@ -292,11 +289,10 @@ export default class Swup {
 			return;
 		}
 
-		const url = event.state?.url ?? location.href;
+		const { url, hash } = Location.fromUrl(event.state?.url ?? location.href);
 
-		const link = new Link(url);
-		if (link.getHash()) {
-			this.scrollToElement = link.getHash();
+		if (hash) {
+			this.scrollToElement = hash;
 		} else {
 			event.preventDefault();
 		}
@@ -308,7 +304,7 @@ export default class Swup {
 			cleanupAnimationClasses();
 		}
 
-		this.loadPage({ url: link.getAddress() }, event);
+		this.loadPage({ url }, event);
 	}
 
 	/**
