@@ -2,12 +2,12 @@
 
 <!-- ## [Unreleased] -->
 
-## [3.0.0] - 2022-12
+## [3.0.0] - 2023-01
 
 - Support CSS animations and keyframes
 - Allow ignoring links via callback function
 - Export native ESM modules
-- Smaller bundle size: 4.5 kB
+- Smaller bundle size for modern browsers: 4.9 kB
 - Improved test coverage
 
 ### Breaking changes
