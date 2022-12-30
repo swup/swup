@@ -34,3 +34,13 @@ export const escapeCssIdentifier = (ident) => {
 export const toMs = (s) => {
 	return Number(s.slice(0, -1).replace(',', '.')) * 1000;
 };
+
+export const normalizeVersion = (version) => {
+	return String(version).split('.').concat([0, 0, 0]).slice(0, 3).join('.');
+};
+
+export const compareVersion = (installed, required) => {
+	installed = normalizeVersion(installed);
+	required = normalizeVersion(required);
+	return required.localeCompare(installed, undefined, { numeric: true });
+};
