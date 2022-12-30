@@ -1,8 +1,26 @@
 /**
  * A helper for creating a Location from either an element
  * or a URL object/string
+ *
+ * Note: this could be implemented as a class inheriting from URL
+ * Except: Babel will add tons of boilerplate for ES6 classes + getters
+ * So for now it's implemented as an augmented URL object with custom getter
+ *
+ * class Location extends URL {
+ *   get url() {
+ *     return this.pathname + this.search;
+ *   }
+ * }
+ *
  */
-export default class Location extends URL {
+
+export default class Location {
+	constructor(url, base = document.baseURI) {
+		const location = new URL(url.toString(), base);
+		Object.defineProperty(location, 'url', { get: () => location.pathname + location.search });
+		return location;
+	}
+
 	/**
 	 * Instantiate a Location from an element's href attribute
 	 * @param {Element} el
@@ -10,7 +28,7 @@ export default class Location extends URL {
 	 */
 	static fromElement(el) {
 		const href = el.getAttribute('href') || el.getAttribute('xlink:href');
-		return new Location(href, document.baseURI);
+		return new Location(href);
 	}
 
 	/**
@@ -19,15 +37,6 @@ export default class Location extends URL {
 	 * @return new Location instance
 	 */
 	static fromUrl(url) {
-		return new Location(url.toString(), document.baseURI);
-	}
-
-	/**
-	 * Get the URL that is being used throughout swup
-	 * for identifying pages: pathname + searchParams
-	 * @return string
-	 */
-	get url() {
-		return this.pathname + this.search;
+		return new Location(url);
 	}
 }
