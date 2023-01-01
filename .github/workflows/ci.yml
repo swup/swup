@@ -4,6 +4,9 @@ on:
   push:
   workflow_dispatch:
 
+env:
+  CYPRESS_RECORD_KEY: f0c7f413-87e6-4a24-a911-fae98792c8a0
+
 jobs:
   checkout-and-test:
     runs-on: ubuntu-latest
