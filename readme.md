@@ -18,7 +18,7 @@
 
 Complete, flexible, extensible, and easy-to-use page transition library for your server-side rendered website.
 
-[Features](#features) •
+[Features](#features) • 
 [Documentation](https://swup.js.org/getting-started) •
 [Plugins](https://swup.js.org/plugins) •
 [Themes](https://swup.js.org/themes) •
