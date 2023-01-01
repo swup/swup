@@ -9,7 +9,7 @@ const triggerEvent = function(eventName, originalEvent) {
 	});
 
 	// trigger event on document with prefix "swup:"
-	const event = new CustomEvent('swup:' + eventName, { detail: eventName });
+	const event = new CustomEvent(`swup:${eventName}`, { detail: eventName });
 	document.dispatchEvent(event);
 };
 

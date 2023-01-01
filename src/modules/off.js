@@ -1,26 +1,18 @@
 const off = function off(event, handler) {
-	if (event != null) {
-		if (handler != null) {
-			if (
-				this._handlers[event] &&
-				this._handlers[event].filter((savedHandler) => savedHandler === handler).length
-			) {
-				let toRemove = this._handlers[event].filter(
-					(savedHandler) => savedHandler === handler
-				)[0];
-				let index = this._handlers[event].indexOf(toRemove);
-				if (index > -1) {
-					this._handlers[event].splice(index, 1);
-				}
-			} else {
-				console.warn(`Handler for event '${event}' no found.`);
-			}
+	if (event && handler) {
+		// Remove specific handler
+		if (this._handlers[event].includes(handler)) {
+			this._handlers[event] = this._handlers[event].filter((h) => h !== handler);
 		} else {
-			this._handlers[event] = [];
+			console.warn(`Handler for event '${event}' not found.`);
 		}
+	} else if (event) {
+		// Remove all handlers for specific event
+		this._handlers[event] = [];
 	} else {
-		Object.keys(this._handlers).forEach((keys) => {
-			this._handlers[keys] = [];
+		// Remove all handlers for all events
+		Object.keys(this._handlers).forEach((event) => {
+			this._handlers[event] = [];
 		});
 	}
 };

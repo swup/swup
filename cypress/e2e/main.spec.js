@@ -121,6 +121,30 @@ context('Window', () => {
         });
     });
 
+    it('should remove custom event handlers', () => {
+        let countA = 0;
+        let countB = 0;
+        const handlerA = () => (countA += 1);
+        const handlerB = () => (countB += 1);
+        cy.window().then(window => {
+            window._swup.on('transitionStart', handlerA);
+            window._swup.on('contentReplaced', handlerB);
+        });
+        cy.triggerClickOnLink('/page2/');
+        cy.window().should(() => {
+            expect(countA).to.equal(1);
+            expect(countB).to.equal(1);
+        });
+        cy.window().then(window => {
+            window._swup.off('transitionStart', handlerA);
+        });
+        cy.triggerClickOnLink('/page3/');
+        cy.window().should(() => {
+            expect(countA).to.equal(1);
+            expect(countB).to.equal(2);
+        });
+    });
+
     it('should transition to other pages', () => {
         cy.triggerClickOnLink('/page2/');
         cy.shouldBeAtPage('/page2/');
