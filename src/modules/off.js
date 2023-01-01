@@ -4,7 +4,7 @@ const off = function off(event, handler) {
 		if (this._handlers[event].includes(handler)) {
 			this._handlers[event] = this._handlers[event].filter((h) => h !== handler);
 		} else {
-			console.warn(`Handler for event '${event}' no found.`);
+			console.warn(`Handler for event '${event}' not found.`);
 		}
 	} else if (event) {
 		// Remove all handlers for specific event
