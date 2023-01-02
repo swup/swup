@@ -2,8 +2,7 @@ name: Lint
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
 
 permissions:
@@ -18,6 +17,8 @@ jobs:
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -27,8 +28,7 @@ jobs:
       - name: Install Node.js dependencies
         run: npm ci
 
-      - name: Run linters
-        uses: wearerequired/lint-action@v2
+      - name: Prettify code
+        uses: creyD/prettier_action@v4.2
         with:
-          prettier: true
-          prettier_args: 'src/**/*.{js,mjs}'
+          prettier_options: --check src/**/*.{js,mjs}
