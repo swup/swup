@@ -14,12 +14,7 @@ import getPageData from './modules/getPageData';
 import { use, unuse, findPlugin } from './modules/plugins';
 
 import { queryAll } from './utils';
-import {
-	getCurrentUrl,
-	markSwupElements,
-	Link,
-	cleanupAnimationClasses
-} from './helpers';
+import { getCurrentUrl, markSwupElements, Link, cleanupAnimationClasses } from './helpers';
 
 export default class Swup {
 	constructor(setOptions) {
