@@ -1,16 +1,13 @@
 const classify = (text) => {
-	let output = text
-		.toString()
+	const output = String(text)
+		// .normalize('NFD')                   // split an accented letter in the base letter and the acent
+		// .replace(/[\u0300-\u036f]/g, '')   // remove all previously split accents
 		.toLowerCase()
-		.replace(/\s+/g, '-') // Replace spaces with -
-		.replace(/\//g, '-') // Replace / with -
-		.replace(/[^\w\-]+/g, '') // Remove all non-word chars
-		.replace(/\-\-+/g, '-') // Replace multiple - with single -
-		.replace(/^-+/, '') // Trim - from start of text
-		.replace(/-+$/, ''); // Trim - from end of text
-	if (output[0] === '/') output = output.splice(1);
-	if (output === '') output = 'homepage';
-	return output;
+		.replace(/[\s\/]/g, '-') // Replace spaces and slashes with -
+		.replace(/[^\w-]+/g, '') // Remove all non-word chars
+		.replace(/--+/g, '-') // Replace multiple - with single -
+		.replace(/(^-+|-+$)/, ''); // Trim - from edges
+	return output || 'homepage';
 };
 
 export default classify;
