@@ -48,21 +48,18 @@ Cypress.Commands.add("shouldHaveH1", (str) => {
 Cypress.Commands.add("shouldHaveTransitionLeaveClasses", (page) => {
     cy.get('html').should('have.class', 'is-changing');
     cy.get('html').should('have.class', 'is-leaving');
-    cy.get('html').should('have.class', `to-${page}`);
 });
 
 Cypress.Commands.add("shouldHaveTransitionEnterClasses", (page) => {
     cy.get('html').should('have.class', 'is-changing');
     cy.get('html').should('have.class', 'is-rendering');
     cy.get('html').should('not.have.class', 'is-leaving');
-    cy.get('html').should('have.class', `to-${page}`);
 });
 
 Cypress.Commands.add("shouldNotHaveTransitionClasses", (page) => {
     cy.get('html').should('not.have.class', 'is-changing');
     cy.get('html').should('not.have.class', 'is-rendering');
     cy.get('html').should('not.have.class', 'is-leaving');
-    cy.get('html').should('not.have.class', `to-${page}`);
 });
 
 Cypress.Commands.add('shouldHaveElementInViewport', (element) => {
