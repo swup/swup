@@ -1,12 +1,12 @@
-	const output = String(text)
 const classify = (text, fallback) => {
-		// .normalize('NFD')                   // split an accented letter in the base letter and the acent
-		// .replace(/[\u0300-\u036f]/g, '')   // remove all previously split accents
+	const output = String(text)
 		.toLowerCase()
-		.replace(/[\s\/]/g, '-') // Replace spaces and slashes with -
-		.replace(/[^\w-]+/g, '') // Remove all non-word chars
-		.replace(/--+/g, '-') // Replace multiple - with single -
-		.replace(/(^-+|-+$)/, ''); // Trim - from edges
+		.normalize('NFD') // split an accented letter in the base letter and the acent
+		.replace(/[\u0300-\u036f]/g, '') // remove all previously split accents
+		.replace(/[\s/_]+/g, '-') // replace spaces and slashes with '-'
+		.replace(/[^\w-]+/g, '') // remove all non-word chars
+		.replace(/--+/g, '-') // replace repeating '-' with single '-'
+		.replace(/^-+|-+$/, ''); // trim '-' from edges
 	return output || fallback || '';
 };
 
