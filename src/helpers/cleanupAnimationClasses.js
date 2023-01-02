@@ -1,18 +1,12 @@
-const swupClasses = [
-	'is-changing',
-	'is-rendering',
-	'is-popstate',
-	/^to-/,
-];
+const isSwupClass = (className) => {
+	return /^to-/.test(className) ||
+		['is-changing', 'is-rendering', 'is-popstate'].includes(className);
+}
 
 const cleanupAnimationClasses = () => {
 	const htmlClasses = document.documentElement.className.split(' ');
-	htmlClasses.forEach((htmlClass) => {
-		const isSwupClass = swupClasses.some((swupClass) => htmlClass.match(swupClass));
-		if (isSwupClass) {
-			document.documentElement.classList.remove(htmlClass);
-		}
-	});
+	const removeClasses = htmlClasses.filter(isSwupClass);
+	document.documentElement.classList.remove(...removeClasses);
 };
 
 export default cleanupAnimationClasses;
