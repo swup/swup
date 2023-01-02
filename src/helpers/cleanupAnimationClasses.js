@@ -6,13 +6,13 @@ const swupClasses = [
 ];
 
 const cleanupAnimationClasses = () => {
-  const htmlClasses = [...document.documentElement.classList];
-	const classesToRemove = htmlClasses.filter(
-		(htmlClass) => swupClasses.some(
-			(swupClass) => htmlClass.match(swupClass)
-		)
-	);
-	document.documentElement.classList.remove(...classesToRemove);
+  const htmlClasses = document.documentElement.className.split(' ');
+	htmlClasses.forEach((htmlClass) => {
+		const isSwupClass = swupClasses.some((swupClass) => htmlClass.match(swupClass));
+		if (isSwupClass) {
+			document.documentElement.classList.remove(htmlClass);
+		}
+	});
 };
 
 export default cleanupAnimationClasses;
