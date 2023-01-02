@@ -1,5 +1,3 @@
-import { classify } from '../helpers.js';
-
 const leavePage = function(data, { popstate = false, skipTransition = false } = {}) {
 	if (skipTransition) {
 		this.triggerEvent('animationSkipped');
@@ -9,13 +7,11 @@ const leavePage = function(data, { popstate = false, skipTransition = false } = 
 	this.triggerEvent('animationOutStart');
 
 	// handle classes
-	const path = classify(data.url, 'homepage')
 	document.documentElement.classList.toggle('is-popstate', popstate);
 	document.documentElement.classList.add(
 		'is-changing',
 		'is-leaving',
-		'is-animating',
-		`to-${path}`
+		'is-animating'
 	);
 
 	// animation promise stuff
