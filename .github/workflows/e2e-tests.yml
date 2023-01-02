@@ -6,9 +6,6 @@ on:
   pull_request:
   workflow_dispatch:
 
-env:
-  CYPRESS_RECORD_KEY: f0c7f413-87e6-4a24-a911-fae98792c8a0
-
 jobs:
   checkout-and-test:
     runs-on: ubuntu-latest
@@ -19,3 +16,7 @@ jobs:
         uses: cypress-io/github-action@v4.2.2
         with:
           command: npm run ci
+          record: true
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
