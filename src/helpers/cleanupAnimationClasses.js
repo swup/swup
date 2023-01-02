@@ -1,7 +1,5 @@
-const isSwupClass = (className) => {
-	return /^to-/.test(className) ||
-		['is-changing', 'is-rendering', 'is-popstate'].includes(className);
-}
+const isSwupClass = (className) =>
+	/^to-/.test(className) || ['is-changing', 'is-rendering', 'is-popstate'].includes(className);
 
 const cleanupAnimationClasses = () => {
 	const htmlClasses = document.documentElement.className.split(' ');

@@ -8,11 +8,7 @@ const leavePage = function(data, { popstate = false, skipTransition = false } = 
 
 	// handle classes
 	document.documentElement.classList.toggle('is-popstate', popstate);
-	document.documentElement.classList.add(
-		'is-changing',
-		'is-leaving',
-		'is-animating'
-	);
+	document.documentElement.classList.add('is-changing', 'is-leaving', 'is-animating');
 
 	// animation promise stuff
 	const animationPromises = this.getAnimationPromises('out');
