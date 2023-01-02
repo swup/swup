@@ -12,7 +12,7 @@ import renderPage from './modules/renderPage.js';
 import triggerEvent from './modules/triggerEvent.js';
 import updateTransition from './modules/updateTransition.js';
 
-import { version } from '../package.json';
+import pckg from '../package.json';
 import { queryAll } from './utils.js';
 import {
 	cleanupAnimationClasses,
@@ -24,7 +24,7 @@ import {
 } from './helpers.js';
 
 export default class Swup {
-	version = version
+	version = pckg.version
 
 	constructor(setOptions) {
 		// default options
