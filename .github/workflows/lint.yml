@@ -31,4 +31,4 @@ jobs:
         uses: wearerequired/lint-action@v2
         with:
           prettier: true
-          prettier_args: 'src/**/*.{js,mjs}'
+          prettier_args: '--check src/**/*.{js,mjs}'
