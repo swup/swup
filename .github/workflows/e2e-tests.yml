@@ -8,6 +8,7 @@ on:
 
 jobs:
   checkout-and-test:
+    name: Run E2E tests
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
