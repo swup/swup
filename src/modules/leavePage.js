@@ -9,12 +9,13 @@ const leavePage = function(data, { popstate = false, skipTransition = false } = 
 	this.triggerEvent('animationOutStart');
 
 	// handle classes
+	const path = classify(data.url, 'homepage')
 	document.documentElement.classList.toggle('is-popstate', popstate);
 	document.documentElement.classList.add(
 		'is-changing',
 		'is-leaving',
 		'is-animating',
-		`to-${classify(data.url)}`
+		`to-${path}`
 	);
 
 	// animation promise stuff
