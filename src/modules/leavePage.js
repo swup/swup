@@ -7,8 +7,10 @@ const leavePage = function(data, { popstate = false, skipTransition = false } = 
 	this.triggerEvent('animationOutStart');
 
 	// handle classes
-	document.documentElement.classList.toggle('is-popstate', popstate);
 	document.documentElement.classList.add('is-changing', 'is-leaving', 'is-animating');
+	if (popstate) {
+		document.documentElement.classList.add('is-popstate');
+	}
 
 	// animation promise stuff
 	const animationPromises = this.getAnimationPromises('out');
