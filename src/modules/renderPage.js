@@ -26,7 +26,7 @@ const renderPage = function(page, { popstate } = {}) {
 
 	this.triggerEvent('willReplaceContent', popstate);
 
-	this.replaceContent().then(() => {
+	this.replaceContent(page).then(() => {
 		this.triggerEvent('contentReplaced', popstate);
 		this.triggerEvent('pageView', popstate);
 
