@@ -11,7 +11,7 @@ const fetchWrapper = (options, callback = false) => {
 
 	return fetch(url, init)
 		.then((response) => {
-			return response.text().then((html) => ({ response, html }))
+			return response.text().then((html) => ({ response, html }));
 		})
 		.then(({ response, html }) => {
 			// Compatibility layer for other methods expecting XHR properties
