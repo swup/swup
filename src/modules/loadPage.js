@@ -34,7 +34,6 @@ const loadPage = function(data, popstate = false) {
 		// Alreay preloading, re-use
 		xhrPromise = this.preloadPromise;
 		this.preloadPromise = null;
-		console.log(xhrPromise);
 	} else {
 		// Fetch from server
 		xhrPromise = new Promise((resolve, reject) => {
@@ -66,7 +65,7 @@ const loadPage = function(data, popstate = false) {
 			this.preloadPromise = null;
 		})
 		.catch((errorUrl) => {
-			// Return early if errrorUrl is not defined
+			// Return early if errorUrl is not defined (probably aborted preload request)
 			if (errorUrl === undefined) return;
 
 			// Rewrite `skipPopStateHandling` to redirect manually when `history.go` is processed
