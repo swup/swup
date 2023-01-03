@@ -10,10 +10,12 @@ const fetchWrapper = (options, callback = false) => {
 	const init = { method, headers, body: body || data };
 
 	return fetch(url, init)
-		.then((response) => response.text())
-		.then((html) => {
+		.then((response) => {
+			return response.text().then((html) => ({ response, html }))
+		})
+		.then(({ response, html }) => {
 			// Compatibility layer for other methods expecting XHR properties
-			response.responseURL = response.url;
+			response.responseURL = response.url || url;
 			response.responseText = html;
 			callback(response);
 		});
