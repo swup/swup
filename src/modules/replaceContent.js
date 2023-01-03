@@ -1,5 +1,3 @@
-import { query } from '../utils.js';
-
 /**
  * Perform the replacement of content after loading a page.
  *
@@ -15,7 +13,7 @@ import { query } from '../utils.js';
 const replaceContent = function({ blocks, title }) {
 	// Replace content blocks
 	blocks.forEach((html, i) => {
-		const block = query(`[data-swup="${i}"]`, document.body);
+		const block = document.body.querySelector(`[data-swup="${i}"]`);
 		block.outerHTML = html;
 	});
 
