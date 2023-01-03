@@ -42,10 +42,10 @@ context('Window', () => {
         cy.window().then((window) => {
             let startOut = 0;
             let startIn = 0;
-            window._swup.on('animationOutStart', e => startOut = performance.now());
-            window._swup.on('animationOutDone', e => durationOut = performance.now() - startOut);
-            window._swup.on('animationInStart', e => startIn = performance.now());
-            window._swup.on('animationInDone', e => durationIn = performance.now() - startIn);
+            window._swup.on('animationOutStart', () => startOut = performance.now());
+            window._swup.on('animationOutDone', () => durationOut = performance.now() - startOut);
+            window._swup.on('animationInStart', () => startIn = performance.now());
+            window._swup.on('animationInDone', () => durationIn = performance.now() - startIn);
         });
 
         cy.triggerClickOnLink('/page2/');
@@ -68,10 +68,10 @@ context('Window', () => {
         cy.window().then((window) => {
             let startOut = 0;
             let startIn = 0;
-            window._swup.on('animationOutStart', e => startOut = performance.now());
-            window._swup.on('animationOutDone', e => durationOut = performance.now() - startOut);
-            window._swup.on('animationInStart', e => startIn = performance.now());
-            window._swup.on('animationInDone', e => durationIn = performance.now() - startIn);
+            window._swup.on('animationOutStart', () => startOut = performance.now());
+            window._swup.on('animationOutDone', () => durationOut = performance.now() - startOut);
+            window._swup.on('animationInStart', () => startIn = performance.now());
+            window._swup.on('animationInDone', () => durationIn = performance.now() - startIn);
         });
 
         cy.triggerClickOnLink('/page2/');
