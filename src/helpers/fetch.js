@@ -1,11 +1,14 @@
-const defaults = {
-	url: window.location.pathname + window.location.search,
-	method: 'GET',
-	headers: {}
-};
-
 const fetchWrapper = (options, callback = false) => {
-	const { url, method, data, body, headers } = { ...defaults, ...options };
+	const defaults = {
+		url: window.location.pathname + window.location.search,
+		method: 'GET',
+		headers: {}
+	};
+
+	const { url, method, data, body, headers } = {
+		...defaults,
+		...options
+	};
 
 	const init = { method, headers, body: body || data };
 
