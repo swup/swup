@@ -37,35 +37,38 @@ const loadPage = function(data, popstate = false) {
 	} else {
 		// Fetch from server
 		xhrPromise = new Promise((resolve, reject) => {
-			const { abort } = fetch({ ...data, headers: this.options.requestHeaders }, (response) => {
-				// Reject without URL for aborted requests (will prevent browser reloads)
-				if (response.error === 'aborted') {
-					reject();
-					return;
+			const { abort } = fetch(
+				{ ...data, headers: this.options.requestHeaders },
+				(response) => {
+					// Reject without URL for aborted requests (will prevent browser reloads)
+					if (response.error === 'aborted') {
+						reject();
+						return;
+					}
+					// Reject with URL for arbitary errors in fetch
+					if (response.error) {
+						reject(url);
+						return;
+					}
+					// Reject with URL for server errors
+					if (response.status === 500) {
+						this.triggerEvent('serverError');
+						reject(url);
+						return;
+					}
+					// get json data
+					const page = this.getPageData(response);
+					if (!page || !page.blocks.length) {
+						reject(url);
+						return;
+					}
+					// render page
+					page.url = url;
+					this.cache.cacheUrl(page);
+					this.triggerEvent('pageLoaded');
+					resolve(page);
 				}
-				// Reject with URL for arbitary errors in fetch
-				if (response.error) {
-					reject(url);
-					return;
-				}
-				// Reject with URL for server errors
-				if (response.status === 500) {
-					this.triggerEvent('serverError');
-					reject(url);
-					return;
-				}
-				// get json data
-				const page = this.getPageData(response);
-				if (!page || !page.blocks.length) {
-					reject(url);
-					return;
-				}
-				// render page
-				page.url = url;
-				this.cache.cacheUrl(page);
-				this.triggerEvent('pageLoaded');
-				resolve(page);
-			});
+			);
 		});
 	}
 
