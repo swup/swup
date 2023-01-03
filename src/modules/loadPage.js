@@ -37,7 +37,18 @@ const loadPage = function(data, popstate = false) {
 	} else {
 		// Fetch from server
 		xhrPromise = new Promise((resolve, reject) => {
-			fetch({ ...data, headers: this.options.requestHeaders }, (response) => {
+			const { abort } = fetch({ ...data, headers: this.options.requestHeaders }, (response) => {
+				// Reject without URL for aborted requests (will prevent browser reloads)
+				if (response.error === 'aborted') {
+					reject();
+					return;
+				}
+				// Reject with URL for arbitary errors in fetch
+				if (response.error) {
+					reject(url);
+					return;
+				}
+				// Reject with URL for server errors
 				if (response.status === 500) {
 					this.triggerEvent('serverError');
 					reject(url);

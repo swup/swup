@@ -10,9 +10,12 @@ const fetchWrapper = (options, callback = false) => {
 		...options
 	};
 
-	const init = { method, headers, body: body || data };
+	const controller = new AbortController();
+	const signal = controller.signal;
 
-	return fetch(url, init)
+	const init = { method, headers, body: body || data, signal };
+
+	fetch(url, init)
 		.then((response) => {
 			return response.text().then((html) => ({ response, html }));
 		})
@@ -21,7 +24,22 @@ const fetchWrapper = (options, callback = false) => {
 			response.responseURL = response.url || url;
 			response.responseText = html;
 			callback(response);
+		})
+		.catch((error) => {
+			// Handle intentionally aborted requests
+			if (signal.aborted && signal.reason === 'aborted') {
+				callback({ error: 'aborted' });
+				return;
+			}
+			// Handle all other errors
+			callback({ error: 'error' });
 		});
+	/**
+	 * Make `controller.abort` accessible from the outside
+	 */
+	return {
+		abort: () => controller.abort('aborted')
+	};
 };
 
 export default fetchWrapper;
