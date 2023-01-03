@@ -5,6 +5,7 @@ import getAnimationPromises from './modules/getAnimationPromises.js';
 import getPageData from './modules/getPageData.js';
 import leavePage from './modules/leavePage.js';
 import loadPage from './modules/loadPage.js';
+import replaceContent from './modules/replaceContent.js';
 import off from './modules/off.js';
 import on from './modules/on.js';
 import { use, unuse, findPlugin } from './modules/plugins.js';
@@ -94,6 +95,7 @@ export default class Swup {
 		this.loadPage = loadPage;
 		this.leavePage = leavePage;
 		this.renderPage = renderPage;
+		this.replaceContent = replaceContent;
 		this.enterPage = enterPage;
 		this.triggerEvent = triggerEvent;
 		this.delegateEvent = delegateEvent;
