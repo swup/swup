@@ -5,9 +5,9 @@
 ## [3.0.0] - 2023-01
 
 - Support CSS animations and keyframes
-- Allow ignoring links via callback function
+- Allow ignoring visits via callback function
 - Export native ESM modules
-- Smaller bundle size for modern browsers: 4.9 kB
+- Smaller bundle size for modern browsers: 4.7 kB
 - Improved test coverage
 
 ### Breaking changes
@@ -16,6 +16,7 @@ See [Upgrade instructions for swup 3](https://swup.js.org/getting-started/upgrad
 for details.
 
 - Swup will now wait for the longest transitioned property
+- Swup will no longer add `to-*` classes for the next URL
 - UMD and CDN bundle names have changed
 - Import paths for helpers have changed
 
