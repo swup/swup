@@ -33,13 +33,13 @@ const applyComparator = (comparisonResult, comparator) => {
  * versionSatisfies('2.1.0', ['>=2', '<4']) // true
  * versionSatisfies('2.1.0', ['5']) // false
  *
- * @param {String} installed Installed version
- * @param {Array} requirements Array of requirements that must be satisfied
- * @returns
+ * @param {string} installed Installed version
+ * @param {Array.<string>} requirements Array of requirements that must be satisfied
+ * @returns boolean
  */
 export const versionSatisfies = (installed, requirements) => {
 	return requirements.every((required) => {
-		const [, comparator, version] = String(required).match(/^([\D]+)?(.*)$/) || [];
+		const [, comparator, version] = required.match(/^([\D]+)?(.*)$/) || [];
 		const comparisonResult = compareVersion(installed, version);
 		return applyComparator(comparisonResult, comparator || '>=');
 	});
