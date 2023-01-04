@@ -1,3 +1,5 @@
+import * as pckg from '../package.json';
+
 import Cache from './modules/Cache.js';
 import enterPage from './modules/enterPage.js';
 import getAnchorElement from './modules/getAnchorElement.js';
@@ -13,7 +15,6 @@ import renderPage from './modules/renderPage.js';
 import triggerEvent from './modules/triggerEvent.js';
 import updateTransition from './modules/updateTransition.js';
 
-import pckg from '../package.json';
 import { queryAll } from './utils.js';
 import {
 	cleanupAnimationClasses,
