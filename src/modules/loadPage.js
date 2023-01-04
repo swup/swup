@@ -33,6 +33,7 @@ const loadPage = function(data, popstate = false) {
 	} else if (this.preloadPromise && this.preloadPromise.route === url) {
 		// Alreay preloading, re-use
 		xhrPromise = this.preloadPromise;
+		this.preloadPromise = null;
 	} else {
 		// Fetch from server
 		xhrPromise = new Promise((resolve, reject) => {
@@ -64,13 +65,16 @@ const loadPage = function(data, popstate = false) {
 			this.preloadPromise = null;
 		})
 		.catch((errorUrl) => {
-			// rewrite the skipPopStateHandling function to redirect manually when the history.go is processed
-			this.options.skipPopStateHandling = function() {
+			// Return early if errorUrl is not defined (probably aborted preload request)
+			if (errorUrl === undefined) return;
+
+			// Rewrite `skipPopStateHandling` to redirect manually when `history.go` is processed
+			this.options.skipPopStateHandling = () => {
 				window.location = errorUrl;
 				return true;
 			};
 
-			// go back to the actual page were still at
+			// Go back to the actual page we're still at
 			history.go(-1);
 		});
 };

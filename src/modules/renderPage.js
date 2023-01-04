@@ -1,5 +1,4 @@
 import { Location, updateHistoryRecord, getCurrentUrl } from '../helpers.js';
-import { query } from '../utils.js';
 
 const renderPage = function(page, { popstate } = {}) {
 	document.documentElement.classList.remove('is-leaving');
@@ -27,28 +26,21 @@ const renderPage = function(page, { popstate } = {}) {
 
 	this.triggerEvent('willReplaceContent', popstate);
 
-	// replace blocks
-	page.blocks.forEach((html, i) => {
-		const block = query(`[data-swup="${i}"]`, document.body);
-		block.outerHTML = html;
+	this.replaceContent(page).then(() => {
+		this.triggerEvent('contentReplaced', popstate);
+		this.triggerEvent('pageView', popstate);
+
+		// empty cache if it's disabled (because pages could be preloaded and stuff)
+		if (!this.options.cache) {
+			this.cache.empty();
+		}
+
+		// Perform in transition
+		this.enterPage({ popstate, skipTransition });
+
+		// reset scroll-to element
+		this.scrollToElement = null;
 	});
-
-	// set title
-	document.title = page.title;
-
-	this.triggerEvent('contentReplaced', popstate);
-	this.triggerEvent('pageView', popstate);
-
-	// empty cache if it's disabled (because pages could be preloaded and stuff)
-	if (!this.options.cache) {
-		this.cache.empty();
-	}
-
-	// Perform in transition
-	this.enterPage({ popstate, skipTransition });
-
-	// reset scroll-to element
-	this.scrollToElement = null;
 };
 
 export default renderPage;

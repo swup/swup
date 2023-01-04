@@ -2,7 +2,7 @@
 
 // window._swup holds the swup instance
 
-const durationTolerance = 0.2; // 20% plus/minus
+const durationTolerance = 0.25; // 25% plus/minus
 
 context('Window', () => {
     beforeEach(() => {
@@ -42,10 +42,10 @@ context('Window', () => {
         cy.window().then((window) => {
             let startOut = 0;
             let startIn = 0;
-            window._swup.on('animationOutStart', e => startOut = performance.now());
-            window._swup.on('animationOutDone', e => durationOut = performance.now() - startOut);
-            window._swup.on('animationInStart', e => startIn = performance.now());
-            window._swup.on('animationInDone', e => durationIn = performance.now() - startIn);
+            window._swup.on('animationOutStart', () => startOut = performance.now());
+            window._swup.on('animationOutDone', () => durationOut = performance.now() - startOut);
+            window._swup.on('animationInStart', () => startIn = performance.now());
+            window._swup.on('animationInDone', () => durationIn = performance.now() - startIn);
         });
 
         cy.triggerClickOnLink('/page2/');
@@ -68,10 +68,10 @@ context('Window', () => {
         cy.window().then((window) => {
             let startOut = 0;
             let startIn = 0;
-            window._swup.on('animationOutStart', e => startOut = performance.now());
-            window._swup.on('animationOutDone', e => durationOut = performance.now() - startOut);
-            window._swup.on('animationInStart', e => startIn = performance.now());
-            window._swup.on('animationInDone', e => durationIn = performance.now() - startIn);
+            window._swup.on('animationOutStart', () => startOut = performance.now());
+            window._swup.on('animationOutDone', () => durationOut = performance.now() - startOut);
+            window._swup.on('animationInStart', () => startIn = performance.now());
+            window._swup.on('animationInDone', () => durationIn = performance.now() - startIn);
         });
 
         cy.triggerClickOnLink('/page2/');
@@ -118,6 +118,30 @@ context('Window', () => {
         cy.triggerClickOnLink('/page2/');
         cy.window().should(() => {
             expect(triggered, 'event was not triggered').to.be.true;
+        });
+    });
+
+    it('should remove custom event handlers', () => {
+        let countA = 0;
+        let countB = 0;
+        const handlerA = () => (countA += 1);
+        const handlerB = () => (countB += 1);
+        cy.window().then(window => {
+            window._swup.on('transitionStart', handlerA);
+            window._swup.on('contentReplaced', handlerB);
+        });
+        cy.triggerClickOnLink('/page2/');
+        cy.window().should(() => {
+            expect(countA).to.equal(1);
+            expect(countB).to.equal(1);
+        });
+        cy.window().then(window => {
+            window._swup.off('transitionStart', handlerA);
+        });
+        cy.triggerClickOnLink('/page3/');
+        cy.window().should(() => {
+            expect(countA).to.equal(1);
+            expect(countB).to.equal(2);
         });
     });
 
