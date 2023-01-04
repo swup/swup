@@ -25,7 +25,7 @@ import {
 } from './helpers.js';
 
 export default class Swup {
-	version = pckg.version
+	version = pckg.version;
 
 	constructor(setOptions) {
 		// default options
