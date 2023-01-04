@@ -10,7 +10,7 @@ const compareVersion = (a, b) => {
 	return a.localeCompare(b, undefined, { numeric: true });
 };
 
-// Apply comparators (equals, greater-than, etc) by their symbol
+// Apply a comparator (equals, greater-than, etc) by its symbol to a sort comparison
 const applyComparator = (comparisonResult, comparator) => {
 	const comparators = {
 		'': (r) => r === 0,
@@ -23,7 +23,16 @@ const applyComparator = (comparisonResult, comparator) => {
 	return comparatorFn(comparisonResult);
 }
 
-// Check if the installed version satisfies a list of requirements
+/**
+ * Check if a version satisfies all given version requirements
+ *
+ * versionSatisfies('2.1.0', ['>=2', '<4']) // true
+ * versionSatisfies('2.1.0', ['5']) // false
+ *
+ * @param {String} installed Installed version
+ * @param {Array} requirements Array of requirements that must be satisfied
+ * @returns
+ */
 export const versionSatisfies = (installed, requirements) => {
 	return requirements.every((required) => {
 		const [, comparator, version] = String(required).match(/^([\D]+)?(.*)$/) || [];
