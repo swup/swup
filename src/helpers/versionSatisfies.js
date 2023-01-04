@@ -1,6 +1,10 @@
 // Fill versions to exactly 3 decimals
 const normalizeVersion = (version) => {
-	return String(version).split('.').concat([0, 0]).slice(0, 3).join('.');
+	return String(version)
+		.split('.')
+		.concat([0, 0])
+		.slice(0, 3)
+		.join('.');
 };
 
 // Numerically compare version strings after normalizing them
@@ -17,11 +21,11 @@ const applyComparator = (comparisonResult, comparator) => {
 		'>': (r) => r > 0,
 		'>=': (r) => r >= 0,
 		'<': (r) => r < 0,
-		'<=': (r) => r <= 0,
+		'<=': (r) => r <= 0
 	};
 	const comparatorFn = comparators[comparator] || comparators[''];
 	return comparatorFn(comparisonResult);
-}
+};
 
 /**
  * Check if a version satisfies all given version requirements
