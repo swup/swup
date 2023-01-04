@@ -9,7 +9,7 @@
   <a href="https://bundlephobia.com/package/swup"><img src="https://img.shields.io/bundlephobia/minzip/swup?label=size" alt="Bundle size"></a>
   <a href="https://github.com/gmrchk/swup/blob/master/LICENSE"><img src="https://img.shields.io/github/license/gmrchk/swup.svg" alt="License"></a>
   <a href="https://www.npmjs.com/package/swup"><img src="https://img.shields.io/npm/dt/swup.svg" alt="npm downloads"></a>
-  <a href="https://circleci.com/gh/swup/swup"><img src="https://circleci.com/gh/swup/swup.svg?style=shield" alt="Build status"></a>
+  <a href="https://github.com/swup/swup/actions/workflows/e2e-tests.yml"><img src="https://img.shields.io/github/actions/workflow/status/swup/swup/e2e-tests.yml?branch=master&label=tests" alt="Test status"></a>
 </p>
 
 <br>
