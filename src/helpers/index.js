@@ -8,3 +8,4 @@ export { default as getCurrentUrl } from './getCurrentUrl.js';
 export { default as Location } from './Location.js';
 export { default as markSwupElements } from './markSwupElements.js';
 export { default as cleanupAnimationClasses } from './cleanupAnimationClasses.js';
+export { default as versionSatisfies } from './versionSatisfies.js';

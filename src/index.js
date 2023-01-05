@@ -23,7 +23,11 @@ import {
 	updateHistoryRecord
 } from './helpers.js';
 
+import version from './config/version.js';
+
 export default class Swup {
+	version = version;
+
 	constructor(setOptions) {
 		// default options
 		let defaults = {

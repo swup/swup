@@ -9,6 +9,12 @@ context('Window', () => {
         cy.visit('/page1/');
     });
 
+    it('should have a version property', () => {
+        cy.window().then((window) => {
+            expect(window._swup.version).to.not.be.empty;
+        });
+    });
+
     it('should add swup class to html element', () => {
         cy.get('html').should('have.class', 'swup-enabled');
         cy.shouldHaveH1('Page 1');
