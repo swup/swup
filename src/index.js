@@ -1,5 +1,3 @@
-import * as pckg from '../package.json';
-
 import Cache from './modules/Cache.js';
 import enterPage from './modules/enterPage.js';
 import getAnchorElement from './modules/getAnchorElement.js';
@@ -25,8 +23,10 @@ import {
 	updateHistoryRecord
 } from './helpers.js';
 
+import version from './config/version.js';
+
 export default class Swup {
-	version = pckg.version;
+	version = version;
 
 	constructor(setOptions) {
 		// default options
