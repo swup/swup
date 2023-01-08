@@ -6,7 +6,12 @@ export const use = function(plugin) {
 
 	this.plugins.push(plugin);
 	plugin.swup = this;
-	if (typeof plugin._beforeMount === 'function') {
+	if (plugin._checkRequirements) {
+		if (!plugin._checkRequirements()) {
+			return;
+		}
+	}
+	if (plugin._beforeMount) {
 		plugin._beforeMount();
 	}
 	plugin.mount();
