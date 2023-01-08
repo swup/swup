@@ -18,7 +18,9 @@
     "dist"
   ],
   "scripts": {
-    "build": "microbundle src/*.js -f modern,esm,cjs && microbundle -f umd --external none",
+    "build": "npm run build:module && npm run build:bundle",
+    "build:module": "microbundle src/*.js -f modern,esm,cjs",
+    "build:bundle": "microbundle -f umd --external none",
     "dev": "microbundle src/*.js -w",
     "lint": "prettier src/**/*.{js,mjs} --write",
     "prepublish": "npm run build",
