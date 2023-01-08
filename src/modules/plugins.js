@@ -18,7 +18,7 @@ export function use(plugin) {
 	this.plugins.push(plugin);
 
 	return this.plugins;
-};
+}
 
 export function unuse(pluginOrName) {
 	const plugin = this.findPlugin(pluginOrName);
@@ -35,10 +35,8 @@ export function unuse(pluginOrName) {
 	this.plugins = this.plugins.filter((p) => p !== plugin);
 
 	return this.plugins;
-};
+}
 
 export function findPlugin(pluginOrName) {
-	return this.plugins.find(
-		(plugin) => plugin === pluginOrName || plugin.name === pluginOrName
-	);
-};
+	return this.plugins.find((plugin) => plugin === pluginOrName || plugin.name === pluginOrName);
+}
