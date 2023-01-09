@@ -2,7 +2,7 @@
   "name": "swup",
   "amdName": "Swup",
   "version": "3.0.0",
-  "description": "Complete, flexible, extensible and easy to use page transition library for your web.",
+  "description": "Complete, flexible, extensible, and easy-to-use page transition library for your server-side rendered website.",
   "type": "module",
   "source": "src/index.js",
   "main": "./dist/index.cjs",
