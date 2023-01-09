@@ -7,7 +7,7 @@
 - Support CSS animations and keyframes
 - Allow ignoring visits via callback function
 - Export native ESM modules
-- Smaller bundle size for modern browsers: 4.7 kB
+- Smaller bundle size for modern browsers: 4.5 kB
 - Improved test coverage
 
 ### Breaking changes
