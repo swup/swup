@@ -11,14 +11,14 @@
   "types": "dist/types/index.d.ts",
   "exports": {
     ".": {
-      "default": "./dist/index.modern.js",
+      "types": "./dist/types/index.d.ts",
       "require": "./dist/index.cjs",
-      "types": "./dist/types/index.d.ts"
+      "default": "./dist/index.modern.js"
     },
     "./*": {
-      "default": "./dist/*.modern.js",
+      "types": "./dist/types/*.d.ts",
       "require": "./dist/*.cjs",
-      "types": "./dist/types/*.d.ts"
+      "default": "./dist/*.modern.js"
     }
   },
   "files": [
