@@ -1,4 +1,4 @@
-name: Compressed Size
+name: Bundle size
 
 on:
   push:
@@ -7,8 +7,8 @@ on:
 
 jobs:
   build:
+    name: Check bundle size
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
       - uses: preactjs/compressed-size-action@v2
