@@ -1,3 +1,17 @@
+import delegate from 'delegate-it';
+
+import version from './config/version.js';
+
+import {
+	cleanupAnimationClasses,
+	delegateEvent,
+	getCurrentUrl,
+	Location,
+	markSwupElements,
+	updateHistoryRecord
+} from './helpers.js';
+import { Unsubscribe } from './helpers/delegateEvent.js';
+
 import Cache from './modules/Cache.js';
 import enterPage from './modules/enterPage.js';
 import getAnchorElement from './modules/getAnchorElement.js';
@@ -7,33 +21,20 @@ import leavePage from './modules/leavePage.js';
 import loadPage from './modules/loadPage.js';
 import replaceContent from './modules/replaceContent.js';
 import off from './modules/off.js';
-import on from './modules/on.js';
-import { use, unuse, findPlugin } from './modules/plugins.js';
+import on, { Handlers } from './modules/on.js';
+import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
 import renderPage from './modules/renderPage.js';
 import triggerEvent from './modules/triggerEvent.js';
 import updateTransition from './modules/updateTransition.js';
 
 import { queryAll } from './utils.js';
-import {
-	cleanupAnimationClasses,
-	delegateEvent,
-	getCurrentUrl,
-	Location,
-	markSwupElements,
-	updateHistoryRecord
-} from './helpers.js';
-
-import version from './config/version.js';
-import { Plugin } from './modules/plugins';
-import { Handlers } from './modules/on';
-import delegate from 'delegate-it';
-import { Unsubscribe } from './helpers/delegateEvent';
 
 export type Transition = {
 	from?: string;
 	to?: string;
 	custom?: string;
 };
+
 type DelegatedListeners = {
 	click?: Unsubscribe;
 };
@@ -47,7 +48,6 @@ export type Options = {
 	requestHeaders: Record<string, string>;
 	plugins: Plugin[];
 	skipPopStateHandling: (event: any) => boolean;
-
 	ignoreVisit: (href: string, { el }: { el?: Element }) => boolean;
 	resolveUrl: (url: string) => string;
 };
