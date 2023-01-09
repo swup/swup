@@ -139,53 +139,48 @@ export default class Swup {
 
 		this.boundPopStateHandler = this.popStateHandler.bind(this);
 
-		// make modules accessible in instance
 		this.cache = new Cache(this);
 
-		// enable swup
 		this.enable();
 	}
 
 	enable() {
-		// check for Promise support
+		// Check for Promise support
 		if (typeof Promise === 'undefined') {
 			console.warn('Promise is not supported');
 			return;
 		}
 
-		// add event listeners
+		// Add event listeners
 		this.delegatedListeners.click = delegateEvent(
 			this.options.linkSelector,
 			'click',
 			this.linkClickHandler.bind(this)
 		);
+
 		window.addEventListener('popstate', this.boundPopStateHandler);
 
-		// initial save to cache
-		if (this.options.cache) {
-			// disabled to avoid caching modified dom state
-			// https://github.com/swup/swup/issues/475
-			// logic moved to preload plugin
-		}
+		// Initial save to cache
+		// Disabled to avoid caching modified dom state: logic moved to preload plugin
+		// https://github.com/swup/swup/issues/475
+		if (this.options.cache) {}
 
-		// mark swup blocks in html
+		// Mark swup blocks in html
 		markSwupElements(document.documentElement, this.options.containers);
 
-		// mount plugins
-		this.options.plugins.forEach((plugin) => {
-			this.use(plugin);
-		});
+		// Mount plugins
+		this.options.plugins.forEach((plugin) => this.use(plugin));
 
-		// modify initial history record
+		// Modify initial history record
 		updateHistoryRecord();
 
-		// trigger enabled event
+		// Trigger enabled event
 		this.triggerEvent('enabled');
 
-		// add swup-enabled class to html tag
+		// Add swup-enabled class to html tag
 		document.documentElement.classList.add('swup-enabled');
 
-		// trigger page view event
+		// Trigger page view event
 		this.triggerEvent('pageView');
 	}
 
