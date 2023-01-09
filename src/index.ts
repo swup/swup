@@ -117,29 +117,25 @@ export default class Swup {
 	getCurrentUrl = getCurrentUrl;
 	cleanupAnimationClasses = cleanupAnimationClasses;
 
-	constructor(setOptions: Partial<Options>) {
-		// default options
-		let defaults: Options = {
-			animateHistoryBrowsing: false,
-			animationSelector: '[class*="transition-"]',
-			cache: true,
-			containers: ['#swup'],
-			ignoreVisit: (href, { el } = {}) => !!el?.closest('[data-no-swup]'),
-			linkSelector: 'a[href]',
-			plugins: [],
-			resolveUrl: (url) => url,
-			requestHeaders: {
-				'X-Requested-With': 'swup',
-				Accept: 'text/html, application/xhtml+xml'
-			},
-			skipPopStateHandling: (event) => event.state?.source !== 'swup'
-		};
+	defaults: Options = {
+		animateHistoryBrowsing: false,
+		animationSelector: '[class*="transition-"]',
+		cache: true,
+		containers: ['#swup'],
+		ignoreVisit: (href, { el } = {}) => !!el?.closest('[data-no-swup]'),
+		linkSelector: 'a[href]',
+		plugins: [],
+		resolveUrl: (url) => url,
+		requestHeaders: {
+			'X-Requested-With': 'swup',
+			Accept: 'text/html, application/xhtml+xml'
+		},
+		skipPopStateHandling: (event) => event.state?.source !== 'swup'
+	};
 
-		// merge options
-		this.options = {
-			...defaults,
-			...setOptions
-		};
+	constructor(options: Partial<Options> = {}) {
+		// Merge defaults and options
+		this.options = { ...this.defaults, ...options };
 
 		this.boundPopStateHandler = this.popStateHandler.bind(this);
 
