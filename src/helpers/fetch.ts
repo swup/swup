@@ -19,7 +19,7 @@ const fetch = (
 
 	let request = new XMLHttpRequest();
 
-	request.onreadystatechange = function () {
+	request.onreadystatechange = function() {
 		if (request.readyState === 4) {
 			if (request.status !== 500) {
 				callback(request);

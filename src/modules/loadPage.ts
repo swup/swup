@@ -7,7 +7,7 @@ export type TransitionOptions = {
 	customTransition?: string;
 };
 
-const loadPage = function (this: Swup, data: TransitionOptions, popstate: PopStateEvent | null) {
+const loadPage = function(this: Swup, data: TransitionOptions, popstate: PopStateEvent | null) {
 	let animationPromises: Promise<void>[] = [];
 	let xhrPromise: Promise<PageRecord>;
 
