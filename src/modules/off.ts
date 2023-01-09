@@ -1,4 +1,7 @@
-const off = function off(event, handler) {
+import Swup from '../index';
+import { EventType, Handler } from './on';
+
+const off = function off(this: Swup, event?: EventType, handler?: Handler) {
 	if (event && handler) {
 		// Remove specific handler
 		if (this._handlers[event].includes(handler)) {
@@ -12,7 +15,7 @@ const off = function off(event, handler) {
 	} else {
 		// Remove all handlers for all events
 		Object.keys(this._handlers).forEach((event) => {
-			this._handlers[event] = [];
+			this._handlers[event as EventType] = [];
 		});
 	}
 };

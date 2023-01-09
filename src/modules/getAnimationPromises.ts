@@ -1,4 +1,5 @@
 import { queryAll, toMs } from '../utils.js';
+import Swup from '../index';
 
 // Transition property/event sniffing
 let transitionProp = 'transition';
@@ -16,7 +17,7 @@ if (window.onanimationend === undefined && window.onwebkitanimationend !== undef
 	animationEndEvent = 'webkitAnimationEnd';
 }
 
-export default function getAnimationPromises() {
+export default function getAnimationPromises(this: Swup): Promise<void>[] {
 	const selector = this.options.animationSelector;
 
 	// Allow usage of swup without animations
@@ -37,7 +38,14 @@ export default function getAnimationPromises() {
 	return animatedElements.map((element) => getAnimationPromiseForElement(element, selector));
 }
 
-function getAnimationPromiseForElement(element, selector, expectedType = null) {
+const isTransitionOrAnimationEvent = (event: any): event is TransitionEvent | AnimationEvent =>
+	!!event.elapsedTime;
+
+function getAnimationPromiseForElement(
+	element: Element,
+	selector: string,
+	expectedType: 'animation' | 'transition' | null = null
+): Promise<void> {
 	const { type, timeout, propCount } = getTransitionInfo(element, expectedType);
 
 	// Resolve immediately if no transition defined
@@ -58,10 +66,14 @@ function getAnimationPromiseForElement(element, selector, expectedType = null) {
 			resolve();
 		};
 
-		const onEnd = (event) => {
+		const onEnd: EventListener = (event) => {
 			// Skip transitions on child elements
 			if (event.target !== element) {
 				return;
+			}
+
+			if (!isTransitionOrAnimationEvent(event)) {
+				throw new Error('Not a transition or animation event.');
 			}
 
 			// Skip transitions that happened before we started listening
@@ -86,18 +98,35 @@ function getAnimationPromiseForElement(element, selector, expectedType = null) {
 	});
 }
 
-export function getTransitionInfo(element, expectedType = null) {
+export function getTransitionInfo(
+	element: Element,
+	expectedType: 'animation' | 'transition' | null = null
+) {
 	const styles = window.getComputedStyle(element);
 
-	const transitionDelays = (styles[`${transitionProp}Delay`] || '').split(', ');
-	const transitionDurations = (styles[`${transitionProp}Duration`] || '').split(', ');
+	// not sure what to do about the below mess other than casting, but it's a mess
+	const transitionDelay = `${transitionProp}Delay` as keyof CSSStyleDeclaration;
+	const transitionDuration = `${transitionProp}Duration` as keyof CSSStyleDeclaration;
+	const animationDelay = `${animationProp}Delay` as keyof CSSStyleDeclaration;
+	const animationDuration = `${animationProp}Duration` as keyof CSSStyleDeclaration;
+
+	const transitionDelays = (
+		styles[transitionDelay] as CSSStyleDeclaration['transitionDelay']
+	).split(', ');
+	const transitionDurations = (
+		(styles[transitionDuration] || '') as CSSStyleDeclaration['transitionDuration']
+	).split(', ');
 	const transitionTimeout = calculateTimeout(transitionDelays, transitionDurations);
 
-	const animationDelays = (styles[`${animationProp}Delay`] || '').split(', ');
-	const animationDurations = (styles[`${animationProp}Duration`] || '').split(', ');
+	const animationDelays = (
+		(styles[animationDelay] || '') as CSSStyleDeclaration['animationDelay']
+	).split(', ');
+	const animationDurations = (
+		(styles[animationDuration] || '') as CSSStyleDeclaration['animationDuration']
+	).split(', ');
 	const animationTimeout = calculateTimeout(animationDelays, animationDurations);
 
-	let type = '';
+	let type: string | null = '';
 	let timeout = 0;
 	let propCount = 0;
 
@@ -135,7 +164,7 @@ export function getTransitionInfo(element, expectedType = null) {
 	};
 }
 
-function calculateTimeout(delays, durations) {
+function calculateTimeout(delays: string[], durations: string[]) {
 	while (delays.length < durations.length) {
 		delays = delays.concat(delays);
 	}

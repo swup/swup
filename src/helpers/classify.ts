@@ -1,4 +1,4 @@
-const classify = (text, fallback) => {
+const classify = (text: string, fallback?: string): string => {
 	const output = String(text)
 		.toLowerCase()
 		// .normalize('NFD') // split an accented letter in the base letter and the acent

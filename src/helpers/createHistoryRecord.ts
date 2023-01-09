@@ -1,6 +1,6 @@
 import { default as getCurrentUrl } from './getCurrentUrl.js';
 
-const createHistoryRecord = (url, customData = {}) => {
+const createHistoryRecord = (url: string, customData: Record<string, unknown> = {}): void => {
 	url = url || getCurrentUrl({ hash: true });
 	const data = {
 		url,

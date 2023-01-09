@@ -1,13 +1,20 @@
 import { classify, createHistoryRecord, fetch, getCurrentUrl } from '../helpers.js';
+import Swup from '../index';
+import { PageRecord } from './Cache';
 
-const loadPage = function(data, popstate = false) {
-	let animationPromises = [];
-	let xhrPromise;
+export type TransitionOptions = {
+	url: string;
+	customTransition?: string;
+};
+
+const loadPage = function (this: Swup, data: TransitionOptions, popstate: PopStateEvent | null) {
+	let animationPromises: Promise<void>[] = [];
+	let xhrPromise: Promise<PageRecord>;
 
 	const { url, customTransition } = data;
-	const skipTransition = popstate && !this.options.animateHistoryBrowsing;
+	const skipTransition = !!(popstate && !this.options.animateHistoryBrowsing);
 
-	this.triggerEvent('transitionStart', popstate);
+	this.triggerEvent('transitionStart', popstate || undefined);
 
 	// set transition object
 	this.updateTransition(getCurrentUrl(), url, customTransition);
@@ -50,15 +57,16 @@ const loadPage = function(data, popstate = false) {
 					return;
 				}
 				// render page
-				page.url = url;
-				this.cache.cacheUrl(page);
+				const cacheablePageData = { ...page, url };
+				this.cache.cacheUrl(cacheablePageData);
 				this.triggerEvent('pageLoaded');
-				resolve(page);
+				resolve(cacheablePageData);
 			});
 		});
 	}
 
 	// when everything is ready, handle the outcome
+	// @ts-ignore two different promises should be fine to concat 🤷
 	Promise.all([xhrPromise].concat(animationPromises))
 		.then(([pageData]) => {
 			this.renderPage(pageData, { popstate, skipTransition });

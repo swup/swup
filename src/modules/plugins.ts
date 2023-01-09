@@ -1,4 +1,19 @@
-export const use = function(plugin) {
+import Swup from '../index';
+
+// this should probably just be imported from @swup/plugin, but it doesn't have type defs now
+export type Plugin = {
+	name: string;
+	mount: () => void;
+	unmount: () => void;
+	isSwupPlugin: true;
+	swup?: Swup;
+
+	// these are possibly undefined for backward compatibility
+	_beforeMount?: () => void;
+	_afterUnmount?: () => void;
+};
+
+export const use = function (this: Swup, plugin: Plugin) {
 	if (!plugin.isSwupPlugin) {
 		console.warn(`Not swup plugin instance ${plugin}.`);
 		return;
@@ -14,7 +29,7 @@ export const use = function(plugin) {
 	return this.plugins;
 };
 
-export const unuse = function(plugin) {
+export const unuse = function (this: Swup, plugin: Plugin) {
 	let pluginReference;
 
 	if (typeof plugin === 'string') {
@@ -40,6 +55,6 @@ export const unuse = function(plugin) {
 	return this.plugins;
 };
 
-export const findPlugin = function(pluginName) {
+export const findPlugin = function (this: Swup, pluginName: string): Plugin | undefined {
 	return this.plugins.find((p) => pluginName === p.name);
 };

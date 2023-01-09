@@ -1,4 +1,13 @@
-const leavePage = function(data, { popstate = false, skipTransition = false } = {}) {
+import Swup from '../index';
+import { TransitionOptions } from './loadPage';
+
+const leavePage = function (
+	this: Swup,
+	data: TransitionOptions,
+	{ popstate, skipTransition }: { popstate: PopStateEvent | null; skipTransition?: boolean } = {
+		popstate: null
+	}
+) {
 	if (skipTransition) {
 		this.triggerEvent('animationSkipped');
 		return [Promise.resolve()];
@@ -13,7 +22,7 @@ const leavePage = function(data, { popstate = false, skipTransition = false } = 
 	}
 
 	// animation promise stuff
-	const animationPromises = this.getAnimationPromises('out');
+	const animationPromises: Promise<void>[] = this.getAnimationPromises();
 	Promise.all(animationPromises).then(() => {
 		this.triggerEvent('animationOutDone');
 	});

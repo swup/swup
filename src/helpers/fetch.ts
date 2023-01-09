@@ -1,4 +1,10 @@
-const fetch = (setOptions, callback = false) => {
+import { TransitionOptions } from '../modules/loadPage';
+import { Options } from '../index';
+
+const fetch = (
+	setOptions: TransitionOptions & { headers: Options['requestHeaders'] },
+	callback: (request: XMLHttpRequest) => void
+): XMLHttpRequest => {
 	let defaults = {
 		url: window.location.pathname + window.location.search,
 		method: 'GET',
@@ -13,7 +19,7 @@ const fetch = (setOptions, callback = false) => {
 
 	let request = new XMLHttpRequest();
 
-	request.onreadystatechange = function() {
+	request.onreadystatechange = function () {
 		if (request.readyState === 4) {
 			if (request.status !== 500) {
 				callback(request);

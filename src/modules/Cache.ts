@@ -1,16 +1,25 @@
 import { getCurrentUrl, Location } from '../helpers.js';
+import Swup from '../index';
+import { PageData } from './getPageData';
 
+export interface PageRecord extends PageData {
+	url: string;
+	responseURL: string;
+}
 export class Cache {
-	constructor() {
-		this.pages = {};
-		this.last = null;
+	pages: Record<string, PageRecord> = {};
+	last: PageRecord | null = null;
+	swup: Swup;
+
+	constructor(swup: Swup) {
+		this.swup = swup;
 	}
 
-	getCacheUrl(url) {
+	getCacheUrl(url: string): string {
 		return this.swup.resolveUrl(Location.fromUrl(url).url);
 	}
 
-	cacheUrl(page) {
+	cacheUrl(page: PageRecord) {
 		page.url = this.getCacheUrl(page.url);
 		if (page.url in this.pages === false) {
 			this.pages[page.url] = page;
@@ -20,27 +29,27 @@ export class Cache {
 		this.swup.log(`Cache (${Object.keys(this.pages).length})`, this.pages);
 	}
 
-	getPage(url) {
+	getPage(url: string): PageRecord {
 		url = this.getCacheUrl(url);
 		return this.pages[url];
 	}
 
-	getCurrentPage() {
+	getCurrentPage(): PageRecord {
 		return this.getPage(getCurrentUrl());
 	}
 
-	exists(url) {
+	exists(url: string): boolean {
 		url = this.getCacheUrl(url);
 		return url in this.pages;
 	}
 
-	empty() {
+	empty(): void {
 		this.pages = {};
 		this.last = null;
 		this.swup.log('Cache cleared');
 	}
 
-	remove(url) {
+	remove(url: string): void {
 		delete this.pages[this.getCacheUrl(url)];
 	}
 }

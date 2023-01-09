@@ -24,18 +24,107 @@ import {
 } from './helpers.js';
 
 import version from './config/version.js';
+import { Plugin } from './modules/plugins';
+import { Handlers } from './modules/on';
+import delegate from 'delegate-it';
+import { Unsubscribe } from './helpers/delegateEvent';
+
+export type Transition = {
+	from?: string;
+	to?: string;
+	custom?: string;
+};
+type DelegatedListeners = {
+	click?: Unsubscribe;
+};
+
+export type Options = {
+	animateHistoryBrowsing: boolean;
+	animationSelector: string | false;
+	linkSelector: string;
+	cache: boolean;
+	containers: string[];
+	requestHeaders: Record<string, string>;
+	plugins: Plugin[];
+	skipPopStateHandling: (event: any) => boolean;
+
+	ignoreVisit: (href: string, { el }: { el?: Element }) => boolean;
+	resolveUrl: (url: string) => string;
+};
 
 export default class Swup {
 	version = version;
 
-	constructor(setOptions) {
+	_handlers: Handlers = {
+		animationInDone: [],
+		animationInStart: [],
+		animationOutDone: [],
+		animationOutStart: [],
+		animationSkipped: [],
+		clickLink: [],
+		contentReplaced: [],
+		disabled: [],
+		enabled: [],
+		openPageInNewTab: [],
+		pageLoaded: [],
+		pageRetrievedFromCache: [],
+		pageView: [],
+		popState: [],
+		samePage: [],
+		samePageWithHash: [],
+		serverError: [],
+		transitionStart: [],
+		transitionEnd: [],
+		willReplaceContent: []
+	};
+
+	// variable for anchor to scroll to after render
+	scrollToElement: string | null = null;
+	// variable for promise used for preload, so no new loading of the same page starts while page is loading
+	preloadPromise: (Promise<any> & { route: string }) | null = null;
+	// variable for save options
+	options: Options;
+	// running plugin instances
+	plugins: Plugin[] = [];
+	// variable for current transition info object
+	transition: Transition = {};
+	// cache instance
+	cache: Cache;
+	// allows us to compare the current and new path inside popStateHandler
+	currentPageUrl = getCurrentUrl();
+	// variable for keeping event listeners from "delegate"
+	delegatedListeners: DelegatedListeners = {};
+	// so we are able to remove the listener
+	boundPopStateHandler: (event: PopStateEvent) => void;
+
+	loadPage = loadPage;
+	leavePage = leavePage;
+	renderPage = renderPage;
+	replaceContent = replaceContent;
+	enterPage = enterPage;
+	triggerEvent = triggerEvent;
+	delegateEvent = delegateEvent;
+	on = on;
+	off = off;
+	updateTransition = updateTransition;
+	getAnimationPromises = getAnimationPromises;
+	getPageData = getPageData;
+	getAnchorElement = getAnchorElement;
+	log: (message: string, context?: any) => void = () => {}; // here so it can be used by plugins
+	use = use;
+	unuse = unuse;
+	findPlugin = findPlugin;
+	getCurrentUrl = getCurrentUrl;
+	cleanupAnimationClasses = cleanupAnimationClasses;
+
+	constructor(setOptions: Partial<Options>) {
 		// default options
-		let defaults = {
+		let defaults: Options = {
 			animateHistoryBrowsing: false,
 			animationSelector: '[class*="transition-"]',
 			cache: true,
 			containers: ['#swup'],
-			ignoreVisit: (href, { el } = {}) => el?.closest('[data-no-swup]'),
+			ignoreVisit: (href, { el } = {}) => !!el?.closest('[data-no-swup]'),
 			linkSelector: 'a[href]',
 			plugins: [],
 			resolveUrl: (url) => url,
@@ -47,74 +136,15 @@ export default class Swup {
 		};
 
 		// merge options
-		const options = {
+		this.options = {
 			...defaults,
 			...setOptions
 		};
 
-		// handler arrays
-		this._handlers = {
-			animationInDone: [],
-			animationInStart: [],
-			animationOutDone: [],
-			animationOutStart: [],
-			animationSkipped: [],
-			clickLink: [],
-			contentReplaced: [],
-			disabled: [],
-			enabled: [],
-			openPageInNewTab: [],
-			pageLoaded: [],
-			pageRetrievedFromCache: [],
-			pageView: [],
-			popState: [],
-			samePage: [],
-			samePageWithHash: [],
-			serverError: [],
-			transitionStart: [],
-			transitionEnd: [],
-			willReplaceContent: []
-		};
-
-		// variable for anchor to scroll to after render
-		this.scrollToElement = null;
-		// variable for promise used for preload, so no new loading of the same page starts while page is loading
-		this.preloadPromise = null;
-		// variable for save options
-		this.options = options;
-		// variable for plugins array
-		this.plugins = [];
-		// variable for current transition object
-		this.transition = {};
-		// variable for keeping event listeners from "delegate"
-		this.delegatedListeners = {};
-		// so we are able to remove the listener
 		this.boundPopStateHandler = this.popStateHandler.bind(this);
-		// allows us to compare the current and new path inside popStateHandler
-		this.currentPageUrl = getCurrentUrl();
 
 		// make modules accessible in instance
-		this.cache = new Cache();
-		this.cache.swup = this;
-		this.loadPage = loadPage;
-		this.leavePage = leavePage;
-		this.renderPage = renderPage;
-		this.replaceContent = replaceContent;
-		this.enterPage = enterPage;
-		this.triggerEvent = triggerEvent;
-		this.delegateEvent = delegateEvent;
-		this.on = on;
-		this.off = off;
-		this.updateTransition = updateTransition;
-		this.getAnimationPromises = getAnimationPromises;
-		this.getPageData = getPageData;
-		this.getAnchorElement = getAnchorElement;
-		this.log = () => {}; // here so it can be used by plugins
-		this.use = use;
-		this.unuse = unuse;
-		this.findPlugin = findPlugin;
-		this.getCurrentUrl = getCurrentUrl;
-		this.cleanupAnimationClasses = cleanupAnimationClasses;
+		this.cache = new Cache(this);
 
 		// enable swup
 		this.enable();
@@ -165,7 +195,7 @@ export default class Swup {
 
 	destroy() {
 		// remove delegated listeners
-		this.delegatedListeners.click.destroy();
+		this.delegatedListeners.click!.destroy();
 
 		// remove popstate listener
 		window.removeEventListener('popstate', this.boundPopStateHandler);
@@ -193,7 +223,7 @@ export default class Swup {
 		document.documentElement.classList.remove('swup-enabled');
 	}
 
-	shouldIgnoreVisit(href, { el } = {}) {
+	shouldIgnoreVisit(href: string, { el }: { el?: Element } = {}) {
 		const { origin } = Location.fromUrl(href);
 
 		// Ignore if the new URL's origin doesn't match the current one
@@ -215,9 +245,9 @@ export default class Swup {
 		return false;
 	}
 
-	linkClickHandler(event) {
+	linkClickHandler(event: delegate.Event<MouseEvent>) {
 		const linkEl = event.delegateTarget;
-		const { href, url, hash } = Location.fromElement(linkEl);
+		const { href, url, hash } = Location.fromElement(linkEl as HTMLAnchorElement);
 
 		// Exit early if the link should be ignored
 		if (this.shouldIgnoreVisit(href, { el: linkEl })) {
@@ -251,13 +281,13 @@ export default class Swup {
 		this.scrollToElement = hash || null;
 
 		// Get the custom transition name, if present
-		const customTransition = linkEl.getAttribute('data-swup-transition');
+		const customTransition = linkEl.getAttribute('data-swup-transition') || undefined;
 
 		// Finally, proceed with loading the page
-		this.loadPage({ url, customTransition }, false);
+		this.loadPage({ url, customTransition }, null);
 	}
 
-	handleLinkToSamePage(url, hash, event) {
+	handleLinkToSamePage(url: string, hash: string, event: MouseEvent) {
 		// Emit event and exit early if the url points to the same page without hash
 		if (!hash) {
 			this.triggerEvent('samePage', event);
@@ -277,14 +307,14 @@ export default class Swup {
 		updateHistoryRecord(url + hash);
 	}
 
-	triggerWillOpenNewWindow(triggerEl) {
+	triggerWillOpenNewWindow(triggerEl: Element) {
 		if (triggerEl.matches('[download], [target="_blank"]')) {
 			return true;
 		}
 		return false;
 	}
 
-	popStateHandler(event) {
+	popStateHandler(event: PopStateEvent) {
 		// Exit early if this event should be ignored
 		if (this.options.skipPopStateHandling(event)) {
 			return;
@@ -318,7 +348,7 @@ export default class Swup {
 	 * @param {string} url
 	 * @returns {string} the resolved url
 	 */
-	resolveUrl(url) {
+	resolveUrl(url: string) {
 		if (typeof this.options.resolveUrl !== 'function') {
 			console.warn(`[swup] options.resolveUrl expects a callback function.`);
 			return url;
@@ -341,7 +371,7 @@ export default class Swup {
 	 * @param {string} url2
 	 * @returns {boolean}
 	 */
-	isSameResolvedUrl(url1, url2) {
+	isSameResolvedUrl(url1: string, url2: string) {
 		return this.resolveUrl(url1) === this.resolveUrl(url2);
 	}
 }

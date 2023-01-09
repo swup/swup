@@ -1,14 +1,20 @@
 import { Location, updateHistoryRecord, getCurrentUrl } from '../helpers.js';
+import Swup from '../index';
+import { PageRecord } from './Cache';
 
-const renderPage = function(page, { popstate } = {}) {
+const renderPage = function (
+	this: Swup,
+	page: PageRecord,
+	{ popstate, skipTransition }: { popstate: PopStateEvent | null; skipTransition?: boolean } = {
+		popstate: null
+	}
+) {
 	document.documentElement.classList.remove('is-leaving');
 
 	// do nothing if another page was requested in the meantime
 	if (!this.isSameResolvedUrl(getCurrentUrl(), page.url)) {
 		return;
 	}
-
-	const skipTransition = popstate && !this.options.animateHistoryBrowsing;
 
 	const { url } = Location.fromUrl(page.responseURL);
 
@@ -24,11 +30,11 @@ const renderPage = function(page, { popstate } = {}) {
 		document.documentElement.classList.add('is-rendering');
 	}
 
-	this.triggerEvent('willReplaceContent', popstate);
+	this.triggerEvent('willReplaceContent', popstate || undefined);
 
 	this.replaceContent(page).then(() => {
-		this.triggerEvent('contentReplaced', popstate);
-		this.triggerEvent('pageView', popstate);
+		this.triggerEvent('contentReplaced', popstate || undefined);
+		this.triggerEvent('pageView', popstate || undefined);
 
 		// empty cache if it's disabled (because pages could be preloaded and stuff)
 		if (!this.options.cache) {
@@ -36,7 +42,7 @@ const renderPage = function(page, { popstate } = {}) {
 		}
 
 		// Perform in transition
-		this.enterPage({ popstate, skipTransition });
+		this.enterPage({ popstate: popstate || undefined, skipTransition });
 
 		// reset scroll-to element
 		this.scrollToElement = null;
