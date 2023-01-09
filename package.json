@@ -8,6 +8,7 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.module.js",
   "unpkg": "./dist/index.umd.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": "./dist/index.modern.js",
     "./*": "./dist/*.modern.js",
@@ -19,10 +20,10 @@
   ],
   "scripts": {
     "build": "npm run build:module && npm run build:bundle",
-    "build:module": "microbundle src/*.js -f modern,esm,cjs",
+    "build:module": "microbundle src/*.ts -f modern,esm,cjs",
     "build:bundle": "microbundle -f umd --external none",
-    "dev": "microbundle src/*.js -w",
-    "lint": "prettier src/**/*.{js,mjs} --write",
+    "dev": "microbundle src/*.ts -w",
+    "lint": "prettier src/**/*.{ts,mjs} --write",
     "prepublish": "npm run build",
     "postinstall": "opencollective-postinstall || true",
     "ci": "start-server-and-test test:start 8274 cy:run:record",
