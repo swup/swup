@@ -1,7 +1,7 @@
-import { EventType } from '../types';
+import { EventType } from './on';
 import Swup from '../index';
 
-const triggerEvent = function (
+const triggerEvent = function(
 	this: Swup,
 	eventName: EventType,
 	originalEvent?: PopStateEvent | MouseEvent
