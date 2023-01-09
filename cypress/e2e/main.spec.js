@@ -4,6 +4,13 @@
 
 const durationTolerance = 0.25; // 25% plus/minus
 
+const pluginStub = {
+    name: 'TestPlugin',
+    isSwupPlugin: true,
+    mount: () => {},
+    unmount: () => {}
+}
+
 context('Window', () => {
     beforeEach(() => {
         cy.visit('/page1/');
@@ -355,9 +362,63 @@ context('Window', () => {
         cy.shouldNotHaveTransitionClasses('page2');
     });
 
-    it('should return plugin instance', () => {
+    it('should mount and unmount plugins', () => {
         cy.window().then(window => {
-            expect(typeof window._swup.findPlugin('ScrollPlugin')).equal('object');
+            let mounted = false;
+            let unmounted = false;
+            const plugin = {
+                ...pluginStub,
+                mount: () => {
+                    mounted = true;
+                },
+                unmount: () => {
+                    unmounted = true;
+                }
+            };
+            window._swup.use(plugin);
+            window._swup.unuse(plugin);
+            expect(mounted).to.be.true;
+            expect(unmounted).to.be.true;
+        });
+    });
+
+    it('should return plugin instances', () => {
+        cy.window().then(window => {
+            const instance = window._swup.findPlugin('ScrollPlugin');
+            expect(instance).to.be.an('object');
+        });
+    });
+
+    it('should check plugin version requirements', () => {
+        cy.window().then(window => {
+            let checked = false;
+
+            window._swup.version = '10.0.0';
+            window._swup.use({
+                ...pluginStub,
+                name: 'AllowedPlugin',
+                requires: { swup: '>=9' },
+                _checkRequirements: () => {
+                    checked = true;
+                    return true;
+                }
+            });
+            window._swup.use({
+                ...pluginStub,
+                name: 'UnallowedPlugin',
+                requires: { swup: '>=11' },
+                _checkRequirements: () => {
+                    return false;
+                }
+            });
+
+            expect(checked).to.be.true;
+            const instance = window._swup.findPlugin('AllowedPlugin');
+            expect(instance).to.be.an('object');
+
+            const unallowedInstance = window._swup.findPlugin('UnallowedPlugin');
+            expect(unallowedInstance).to.be.undefined;
+
         });
     });
 
