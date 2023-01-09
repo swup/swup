@@ -34,7 +34,7 @@ export const use = function (this: Swup, plugin: Plugin) {
 	this.plugins.push(plugin);
 
 	return this.plugins;
-}
+};
 
 export function unuse(this: Swup, pluginOrName: Plugin | string) {
 	const plugin = this.findPlugin(pluginOrName);
