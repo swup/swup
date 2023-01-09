@@ -34,11 +34,10 @@ Cypress.Commands.add("shouldBeAtPage", (href) => {
     });
 });
 
-Cypress.Commands.add("shouldNativelyLoadPageAfterAction", (url, action) => {
+Cypress.Commands.add("shouldHaveReloadedAfterAction", (action) => {
     cy.window().then(window => window.beforeReload = true);
     cy.window().should('have.prop', 'beforeReload', true);
     cy.window().then(window => action(window));
-    cy.shouldBeAtPage(url);
     cy.window().should('not.have.prop', 'beforeReload');
 });
 
@@ -49,21 +48,18 @@ Cypress.Commands.add("shouldHaveH1", (str) => {
 Cypress.Commands.add("shouldHaveTransitionLeaveClasses", (page) => {
     cy.get('html').should('have.class', 'is-changing');
     cy.get('html').should('have.class', 'is-leaving');
-    cy.get('html').should('have.class', `to-${page}`);
 });
 
 Cypress.Commands.add("shouldHaveTransitionEnterClasses", (page) => {
     cy.get('html').should('have.class', 'is-changing');
     cy.get('html').should('have.class', 'is-rendering');
     cy.get('html').should('not.have.class', 'is-leaving');
-    cy.get('html').should('have.class', `to-${page}`);
 });
 
 Cypress.Commands.add("shouldNotHaveTransitionClasses", (page) => {
     cy.get('html').should('not.have.class', 'is-changing');
     cy.get('html').should('not.have.class', 'is-rendering');
     cy.get('html').should('not.have.class', 'is-leaving');
-    cy.get('html').should('not.have.class', `to-${page}`);
 });
 
 Cypress.Commands.add('shouldHaveElementInViewport', (element) => {

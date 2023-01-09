@@ -1,0 +1,33 @@
+name: Lint
+
+on:
+  push:
+    branches: [master, next]
+  pull_request:
+
+permissions:
+  checks: write
+  contents: write
+
+jobs:
+  run-linters:
+    name: Run linters
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Set up node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run prettier
+        run: |-
+          npx --no-install prettier --check 'src/**/*.{js,mjs}'

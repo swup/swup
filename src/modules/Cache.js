@@ -1,4 +1,4 @@
-import { getCurrentUrl, normalizeUrl } from '../helpers.js';
+import { getCurrentUrl, Location } from '../helpers.js';
 
 export class Cache {
 	constructor() {
@@ -6,17 +6,22 @@ export class Cache {
 		this.last = null;
 	}
 
+	getCacheUrl(url) {
+		return this.swup.resolveUrl(Location.fromUrl(url).url);
+	}
+
 	cacheUrl(page) {
-		page.url = normalizeUrl(page.url);
+		page.url = this.getCacheUrl(page.url);
 		if (page.url in this.pages === false) {
 			this.pages[page.url] = page;
 		}
+		page.responseURL = this.getCacheUrl(page.responseURL);
 		this.last = this.pages[page.url];
 		this.swup.log(`Cache (${Object.keys(this.pages).length})`, this.pages);
 	}
 
 	getPage(url) {
-		url = normalizeUrl(url);
+		url = this.getCacheUrl(url);
 		return this.pages[url];
 	}
 
@@ -25,7 +30,7 @@ export class Cache {
 	}
 
 	exists(url) {
-		url = normalizeUrl(url);
+		url = this.getCacheUrl(url);
 		return url in this.pages;
 	}
 
@@ -36,7 +41,7 @@ export class Cache {
 	}
 
 	remove(url) {
-		delete this.pages[url];
+		delete this.pages[this.getCacheUrl(url)];
 	}
 }
 

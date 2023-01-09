@@ -1,45 +1,49 @@
-import delegate from 'delegate-it';
-
-// modules
 import Cache from './modules/Cache.js';
-import loadPage from './modules/loadPage.js';
-import renderPage from './modules/renderPage.js';
-import triggerEvent from './modules/triggerEvent.js';
-import on from './modules/on.js';
-import off from './modules/off.js';
-import updateTransition from './modules/updateTransition.js';
+import enterPage from './modules/enterPage.js';
 import getAnchorElement from './modules/getAnchorElement.js';
 import getAnimationPromises from './modules/getAnimationPromises.js';
 import getPageData from './modules/getPageData.js';
+import leavePage from './modules/leavePage.js';
+import loadPage from './modules/loadPage.js';
+import replaceContent from './modules/replaceContent.js';
+import off from './modules/off.js';
+import on from './modules/on.js';
 import { use, unuse, findPlugin } from './modules/plugins.js';
+import renderPage from './modules/renderPage.js';
+import triggerEvent from './modules/triggerEvent.js';
+import updateTransition from './modules/updateTransition.js';
 
 import { queryAll } from './utils.js';
 import {
+	cleanupAnimationClasses,
+	delegateEvent,
 	getCurrentUrl,
+	Location,
 	markSwupElements,
-	Link,
-	cleanupAnimationClasses
+	updateHistoryRecord
 } from './helpers.js';
 
+import version from './config/version.js';
+
 export default class Swup {
+	version = version;
+
 	constructor(setOptions) {
 		// default options
 		let defaults = {
 			animateHistoryBrowsing: false,
 			animationSelector: '[class*="transition-"]',
-			linkSelector: `a[href^="${
-				window.location.origin
-			}"]:not([data-no-swup]), a[href^="/"]:not([data-no-swup]), a[href^="#"]:not([data-no-swup])`,
 			cache: true,
 			containers: ['#swup'],
+			ignoreVisit: (href, { el } = {}) => el?.closest('[data-no-swup]'),
+			linkSelector: 'a[href]',
+			plugins: [],
+			resolveUrl: (url) => url,
 			requestHeaders: {
 				'X-Requested-With': 'swup',
 				Accept: 'text/html, application/xhtml+xml'
 			},
-			plugins: [],
-			skipPopStateHandling: function(event) {
-				return !(event.state && event.state.source === 'swup');
-			}
+			skipPopStateHandling: (event) => event.state?.source !== 'swup'
 		};
 
 		// merge options
@@ -86,13 +90,19 @@ export default class Swup {
 		this.delegatedListeners = {};
 		// so we are able to remove the listener
 		this.boundPopStateHandler = this.popStateHandler.bind(this);
+		// allows us to compare the current and new path inside popStateHandler
+		this.currentPageUrl = getCurrentUrl();
 
 		// make modules accessible in instance
 		this.cache = new Cache();
 		this.cache.swup = this;
 		this.loadPage = loadPage;
+		this.leavePage = leavePage;
 		this.renderPage = renderPage;
+		this.replaceContent = replaceContent;
+		this.enterPage = enterPage;
 		this.triggerEvent = triggerEvent;
+		this.delegateEvent = delegateEvent;
 		this.on = on;
 		this.off = off;
 		this.updateTransition = updateTransition;
@@ -118,8 +128,7 @@ export default class Swup {
 		}
 
 		// add event listeners
-		this.delegatedListeners.click = delegate(
-			document,
+		this.delegatedListeners.click = delegateEvent(
 			this.options.linkSelector,
 			'click',
 			this.linkClickHandler.bind(this)
@@ -142,15 +151,7 @@ export default class Swup {
 		});
 
 		// modify initial history record
-		window.history.replaceState(
-			Object.assign({}, window.history.state, {
-				url: window.location.href,
-				random: Math.random(),
-				source: 'swup'
-			}),
-			document.title,
-			window.location.href
-		);
+		updateHistoryRecord();
 
 		// trigger enabled event
 		this.triggerEvent('enabled');
@@ -192,70 +193,116 @@ export default class Swup {
 		document.documentElement.classList.remove('swup-enabled');
 	}
 
-	linkClickHandler(event) {
-		// no control key pressed
-		if (!event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
-			// index of pressed button needs to be checked because Firefox triggers click on all mouse buttons
-			if (event.button === 0) {
-				this.triggerEvent('clickLink', event);
-				event.preventDefault();
-				const link = new Link(event.delegateTarget);
-				if (link.getAddress() == getCurrentUrl() || link.getAddress() == '') {
-					// link to the same URL
-					if (link.getHash() != '') {
-						// link to the same URL with hash
-						this.triggerEvent('samePageWithHash', event);
-						const element = getAnchorElement(link.getHash());
-						if (element != null) {
-							history.replaceState(
-								{
-									url: link.getAddress() + link.getHash(),
-									random: Math.random(),
-									source: 'swup'
-								},
-								document.title,
-								link.getAddress() + link.getHash()
-							);
-						} else {
-							// referenced element not found
-							console.warn(`Element for offset not found (${link.getHash()})`);
-						}
-					} else {
-						// link to the same URL without hash
-						this.triggerEvent('samePage', event);
-					}
-				} else {
-					// link to different url
-					if (link.getHash() != '') {
-						this.scrollToElement = link.getHash();
-					}
+	shouldIgnoreVisit(href, { el } = {}) {
+		const { origin } = Location.fromUrl(href);
 
-					// get custom transition from data
-					let customTransition = event.delegateTarget.getAttribute(
-						'data-swup-transition'
-					);
-
-					// load page
-					this.loadPage(
-						{ url: link.getAddress(), customTransition: customTransition },
-						false
-					);
-				}
-			}
-		} else {
-			// open in new tab (do nothing)
-			this.triggerEvent('openPageInNewTab', event);
+		// Ignore if the new URL's origin doesn't match the current one
+		if (origin !== window.location.origin) {
+			return true;
 		}
+
+		// Ignore if the link/form would open a new window (or none at all)
+		if (el && this.triggerWillOpenNewWindow(el)) {
+			return true;
+		}
+
+		// Ignore if the visit should be ignored as per user options
+		if (this.options.ignoreVisit(href, { el })) {
+			return true;
+		}
+
+		// Finally, allow the visit
+		return false;
+	}
+
+	linkClickHandler(event) {
+		const linkEl = event.delegateTarget;
+		const { href, url, hash } = Location.fromElement(linkEl);
+
+		// Exit early if the link should be ignored
+		if (this.shouldIgnoreVisit(href, { el: linkEl })) {
+			return;
+		}
+
+		// Exit early if control key pressed
+		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+			this.triggerEvent('openPageInNewTab', event);
+			return;
+		}
+
+		// Exit early if other than left mouse button
+		if (event.button !== 0) {
+			return;
+		}
+
+		this.triggerEvent('clickLink', event);
+		event.preventDefault();
+
+		// Handle links to the same page and exit early, where applicable
+		if (!url || url === getCurrentUrl()) {
+			this.handleLinkToSamePage(url, hash, event);
+			return;
+		}
+
+		// Exit early if the resolved path hasn't changed
+		if (this.isSameResolvedUrl(url, getCurrentUrl())) return;
+
+		// Store the element that should be scrolled to after loading the next page
+		this.scrollToElement = hash || null;
+
+		// Get the custom transition name, if present
+		const customTransition = linkEl.getAttribute('data-swup-transition');
+
+		// Finally, proceed with loading the page
+		this.loadPage({ url, customTransition }, false);
+	}
+
+	handleLinkToSamePage(url, hash, event) {
+		// Emit event and exit early if the url points to the same page without hash
+		if (!hash) {
+			this.triggerEvent('samePage', event);
+			return;
+		}
+
+		// link to the same URL with hash
+		this.triggerEvent('samePageWithHash', event);
+
+		const element = getAnchorElement(hash);
+
+		// Warn and exit early if no matching element was found for the hash
+		if (!element) {
+			return console.warn(`Element for offset not found (#${hash})`);
+		}
+
+		updateHistoryRecord(url + hash);
+	}
+
+	triggerWillOpenNewWindow(triggerEl) {
+		if (triggerEl.matches('[download], [target="_blank"]')) {
+			return true;
+		}
+		return false;
 	}
 
 	popStateHandler(event) {
-		if (this.options.skipPopStateHandling(event)) return;
-		const link = new Link(event.state ? event.state.url : window.location.pathname);
-		if (link.getHash() !== '') {
-			this.scrollToElement = link.getHash();
+		// Exit early if this event should be ignored
+		if (this.options.skipPopStateHandling(event)) {
+			return;
+		}
+
+		// Exit early if the resolved path hasn't changed
+		if (this.isSameResolvedUrl(getCurrentUrl(), this.currentPageUrl)) {
+			return;
+		}
+
+		const { url, hash } = Location.fromUrl(event.state?.url ?? location.href);
+
+		if (hash) {
+			this.scrollToElement = hash;
 		} else {
 			event.preventDefault();
 		}
+
 		this.triggerEvent('popState', event);
 
 		if (!this.options.animateHistoryBrowsing) {
@@ -263,6 +310,38 @@ export default class Swup {
 			cleanupAnimationClasses();
 		}
 
-		this.loadPage({ url: link.getAddress() }, event);
+		this.loadPage({ url }, event);
+	}
+
+	/**
+	 * Utility function to validate and run the global option 'resolveUrl'
+	 * @param {string} url
+	 * @returns {string} the resolved url
+	 */
+	resolveUrl(url) {
+		if (typeof this.options.resolveUrl !== 'function') {
+			console.warn(`[swup] options.resolveUrl expects a callback function.`);
+			return url;
+		}
+		const result = this.options.resolveUrl(url);
+		if (!result || typeof result !== 'string') {
+			console.warn(`[swup] options.resolveUrl needs to return a url`);
+			return url;
+		}
+		if (result.startsWith('//') || result.startsWith('http')) {
+			console.warn(`[swup] options.resolveUrl needs to return a relative url`);
+			return url;
+		}
+		return result;
+	}
+
+	/**
+	 * Compares the resolved version of two paths and returns true if they are the same
+	 * @param {string} url1
+	 * @param {string} url2
+	 * @returns {boolean}
+	 */
+	isSameResolvedUrl(url1, url2) {
+		return this.resolveUrl(url1) === this.resolveUrl(url2);
 	}
 }

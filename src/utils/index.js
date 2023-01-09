@@ -14,6 +14,14 @@ export const queryAll = (selector, context = document) => {
 	return Array.from(context.querySelectorAll(selector));
 };
 
+export const nextTick = (callback) => {
+	requestAnimationFrame(() => {
+		requestAnimationFrame(() => {
+			callback();
+		});
+	});
+};
+
 export const escapeCssIdentifier = (ident) => {
 	if (window.CSS && window.CSS.escape) {
 		return CSS.escape(ident);

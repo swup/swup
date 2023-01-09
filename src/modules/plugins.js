@@ -1,45 +1,42 @@
-export const use = function(plugin) {
+export function use(plugin) {
 	if (!plugin.isSwupPlugin) {
-		console.warn(`Not swup plugin instance ${plugin}.`);
+		console.error('Not a swup plugin instance', plugin);
 		return;
 	}
 
-	this.plugins.push(plugin);
 	plugin.swup = this;
-	if (typeof plugin._beforeMount === 'function') {
+	if (plugin._checkRequirements) {
+		if (!plugin._checkRequirements()) {
+			return;
+		}
+	}
+	if (plugin._beforeMount) {
 		plugin._beforeMount();
 	}
 	plugin.mount();
 
+	this.plugins.push(plugin);
+
 	return this.plugins;
-};
+}
 
-export const unuse = function(plugin) {
-	let pluginReference;
-
-	if (typeof plugin === 'string') {
-		pluginReference = this.plugins.find((p) => plugin === p.name);
-	} else {
-		pluginReference = plugin;
-	}
-
-	if (!pluginReference) {
-		console.warn('No such plugin.');
+export function unuse(pluginOrName) {
+	const plugin = this.findPlugin(pluginOrName);
+	if (!plugin) {
+		console.error('No such plugin', plugin);
 		return;
 	}
 
-	pluginReference.unmount();
-
-	if (typeof pluginReference._afterUnmount === 'function') {
-		pluginReference._afterUnmount();
+	plugin.unmount();
+	if (plugin._afterUnmount) {
+		plugin._afterUnmount();
 	}
 
-	const index = this.plugins.indexOf(pluginReference);
-	this.plugins.splice(index, 1);
+	this.plugins = this.plugins.filter((p) => p !== plugin);
 
 	return this.plugins;
-};
+}
 
-export const findPlugin = function(pluginName) {
-	return this.plugins.find((p) => pluginName === p.name);
-};
+export function findPlugin(pluginOrName) {
+	return this.plugins.find((plugin) => plugin === pluginOrName || plugin.name === pluginOrName);
+}

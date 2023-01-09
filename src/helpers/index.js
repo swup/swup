@@ -1,9 +1,11 @@
 export { default as classify } from './classify.js';
 export { default as createHistoryRecord } from './createHistoryRecord.js';
+export { default as updateHistoryRecord } from './updateHistoryRecord.js';
+export { default as delegateEvent } from './delegateEvent.js';
 export { default as getDataFromHtml } from './getDataFromHtml.js';
 export { default as fetch } from './fetch.js';
 export { default as getCurrentUrl } from './getCurrentUrl.js';
-export { default as normalizeUrl } from './normalizeUrl.js';
+export { default as Location } from './Location.js';
 export { default as markSwupElements } from './markSwupElements.js';
-export { default as Link } from './Link.js';
 export { default as cleanupAnimationClasses } from './cleanupAnimationClasses.js';
+export { default as versionSatisfies } from './versionSatisfies.js';

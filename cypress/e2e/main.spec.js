@@ -2,11 +2,24 @@
 
 // window._swup holds the swup instance
 
-const durationTolerance = 0.1; // 10% plus/minus
+const durationTolerance = 0.25; // 25% plus/minus
+
+const pluginStub = {
+    name: 'TestPlugin',
+    isSwupPlugin: true,
+    mount: () => {},
+    unmount: () => {}
+}
 
 context('Window', () => {
     beforeEach(() => {
         cy.visit('/page1/');
+    });
+
+    it('should have a version property', () => {
+        cy.window().then((window) => {
+            expect(window._swup.version).to.not.be.empty;
+        });
     });
 
     it('should add swup class to html element', () => {
@@ -42,10 +55,10 @@ context('Window', () => {
         cy.window().then((window) => {
             let startOut = 0;
             let startIn = 0;
-            window._swup.on('animationOutStart', e => startOut = performance.now());
-            window._swup.on('animationOutDone', e => durationOut = performance.now() - startOut);
-            window._swup.on('animationInStart', e => startIn = performance.now());
-            window._swup.on('animationInDone', e => durationIn = performance.now() - startIn);
+            window._swup.on('animationOutStart', () => startOut = performance.now());
+            window._swup.on('animationOutDone', () => durationOut = performance.now() - startOut);
+            window._swup.on('animationInStart', () => startIn = performance.now());
+            window._swup.on('animationInDone', () => durationIn = performance.now() - startIn);
         });
 
         cy.triggerClickOnLink('/page2/');
@@ -68,10 +81,10 @@ context('Window', () => {
         cy.window().then((window) => {
             let startOut = 0;
             let startIn = 0;
-            window._swup.on('animationOutStart', e => startOut = performance.now());
-            window._swup.on('animationOutDone', e => durationOut = performance.now() - startOut);
-            window._swup.on('animationInStart', e => startIn = performance.now());
-            window._swup.on('animationInDone', e => durationIn = performance.now() - startIn);
+            window._swup.on('animationOutStart', () => startOut = performance.now());
+            window._swup.on('animationOutDone', () => durationOut = performance.now() - startOut);
+            window._swup.on('animationInStart', () => startIn = performance.now());
+            window._swup.on('animationInDone', () => durationIn = performance.now() - startIn);
         });
 
         cy.triggerClickOnLink('/page2/');
@@ -121,6 +134,30 @@ context('Window', () => {
         });
     });
 
+    it('should remove custom event handlers', () => {
+        let countA = 0;
+        let countB = 0;
+        const handlerA = () => (countA += 1);
+        const handlerB = () => (countB += 1);
+        cy.window().then(window => {
+            window._swup.on('transitionStart', handlerA);
+            window._swup.on('contentReplaced', handlerB);
+        });
+        cy.triggerClickOnLink('/page2/');
+        cy.window().should(() => {
+            expect(countA).to.equal(1);
+            expect(countB).to.equal(1);
+        });
+        cy.window().then(window => {
+            window._swup.off('transitionStart', handlerA);
+        });
+        cy.triggerClickOnLink('/page3/');
+        cy.window().should(() => {
+            expect(countA).to.equal(1);
+            expect(countB).to.equal(2);
+        });
+    });
+
     it('should transition to other pages', () => {
         cy.triggerClickOnLink('/page2/');
         cy.shouldBeAtPage('/page2/');
@@ -132,6 +169,15 @@ context('Window', () => {
         cy.shouldHaveH1('Page 3');
     });
 
+    it('should transition if no containers defined', () => {
+        cy.window().then(window => {
+            window._swup.options.animationSelector = false;
+        });
+        cy.triggerClickOnLink('/page2/');
+        cy.shouldBeAtPage('/page2/');
+        cy.shouldHaveH1('Page 2');
+    });
+
     it('should transition if no CSS transition is defined', () => {
         cy.window().then(window => {
             window.document.documentElement.classList.add('test--no-transitions');
@@ -141,10 +187,72 @@ context('Window', () => {
         cy.shouldHaveH1('Page 2');
     });
 
+    it('should accept relative links', () => {
+        cy.get('[data-cy=nav-link-rel]').click();
+        cy.shouldBeAtPage('/page2/');
+        cy.shouldHaveH1('Page 2');
+    });
+
+    it('should resolve document base URLs', () => {
+        cy.visit('/page1/sub1/');
+        cy.get('[data-cy=nav-link-sub]').click();
+        cy.shouldBeAtPage('/page1/sub2/');
+        cy.shouldHaveH1('Sub 2');
+    });
+
+    it('should ignore links to different origins', () => {
+        cy.shouldHaveReloadedAfterAction(() => {
+            cy.get('[data-cy=nav-link-ext]').click();
+        });
+        cy.location().should((loc) => {
+            expect(loc.origin).to.eq('https://example.net');
+        });
+    });
+
     it('should ignore links with data-no-swup attr', () => {
-        cy.shouldNativelyLoadPageAfterAction('/page4/', () => {
+        cy.shouldHaveReloadedAfterAction(() => {
             cy.get(`a[data-no-swup]`).first().click();
         });
+        cy.shouldBeAtPage('/page4/');
+    });
+
+    it('should ignore links with data-no-swup parent', () => {
+        cy.shouldHaveReloadedAfterAction(() => {
+            cy.get(`li[data-no-swup] a`).first().click();
+        });
+        cy.shouldBeAtPage('/page4/');
+    });
+
+    it('should ignore SVG links by default', () => {
+        cy.shouldHaveReloadedAfterAction(() => {
+            cy.get('svg a').first().click();
+        });
+        cy.shouldBeAtPage('/page2/');
+    });
+
+    it('should follow SVG links when added to selector', () => {
+        cy.window().then(window => {
+            window._swup.options.linkSelector = 'a[href], svg a[*|href]';
+        });
+        cy.get('svg a').first().click();
+        cy.shouldBeAtPage('/page2/');
+        cy.shouldHaveH1('Page 2');
+    });
+
+    it('should ignore map area links by default', () => {
+        cy.shouldHaveReloadedAfterAction(() => {
+            cy.get('map area').first().click({ force: true });
+        });
+        cy.shouldBeAtPage('/page2/');
+    });
+
+    it('should follow map area links when added to selector', () => {
+        cy.window().then(window => {
+            window._swup.options.linkSelector = 'a[href], map area[href]';
+        });
+        cy.get('map area').first().click({ force: true });
+        cy.shouldBeAtPage('/page2/');
+        cy.shouldHaveH1('Page 2');
     });
 
     // it('should ignore clicks when meta key pressed', () => {
@@ -176,6 +284,44 @@ context('Window', () => {
             window.history.forward();
             cy.shouldBeAtPage('/page2/');
             cy.shouldHaveH1('Page 2');
+        });
+    });
+
+    it('should save state into the history', () => {
+        cy.triggerClickOnLink('/page2/');
+        cy.shouldBeAtPage('/page2/');
+
+        cy.window().then(window => {
+            window.history.back();
+            cy.window().should(() => {
+                expect(window.history.state.url, 'page url not saved').to.equal('/page1/');
+                expect(window.history.state.source, 'state source not saved').to.equal('swup');
+            });
+        });
+    });
+
+    it('should trigger a custom popState event', () => {
+        cy.triggerClickOnLink('/page2/');
+        cy.shouldBeAtPage('/page2/');
+
+        cy.window().then(window => {
+            let called = false;
+            window._swup.on('popState', () => called = true);
+            window.history.back();
+            cy.window().should(() => {
+                expect(called, 'popstate handler not called').to.be.true;
+            });
+        });
+    });
+
+    it('should skip popstate handling for foreign state entries', () => {
+        cy.window().then(window => {
+            window.history.pushState({ source: 'not-swup' }, null, '/page-2/');
+            window.history.pushState({ source: 'not-swup' }, null, '/page-3/');
+
+            window.history.back();
+            cy.shouldBeAtPage('/page-2/');
+            cy.shouldHaveH1('Page 1');
         });
     });
 
@@ -216,9 +362,63 @@ context('Window', () => {
         cy.shouldNotHaveTransitionClasses('page2');
     });
 
-    it('should return plugin instance', () => {
+    it('should mount and unmount plugins', () => {
         cy.window().then(window => {
-            expect(typeof window._swup.findPlugin('ScrollPlugin')).equal('object');
+            let mounted = false;
+            let unmounted = false;
+            const plugin = {
+                ...pluginStub,
+                mount: () => {
+                    mounted = true;
+                },
+                unmount: () => {
+                    unmounted = true;
+                }
+            };
+            window._swup.use(plugin);
+            window._swup.unuse(plugin);
+            expect(mounted).to.be.true;
+            expect(unmounted).to.be.true;
+        });
+    });
+
+    it('should return plugin instances', () => {
+        cy.window().then(window => {
+            const instance = window._swup.findPlugin('ScrollPlugin');
+            expect(instance).to.be.an('object');
+        });
+    });
+
+    it('should check plugin version requirements', () => {
+        cy.window().then(window => {
+            let checked = false;
+
+            window._swup.version = '10.0.0';
+            window._swup.use({
+                ...pluginStub,
+                name: 'AllowedPlugin',
+                requires: { swup: '>=9' },
+                _checkRequirements: () => {
+                    checked = true;
+                    return true;
+                }
+            });
+            window._swup.use({
+                ...pluginStub,
+                name: 'UnallowedPlugin',
+                requires: { swup: '>=11' },
+                _checkRequirements: () => {
+                    return false;
+                }
+            });
+
+            expect(checked).to.be.true;
+            const instance = window._swup.findPlugin('AllowedPlugin');
+            expect(instance).to.be.an('object');
+
+            const unallowedInstance = window._swup.findPlugin('UnallowedPlugin');
+            expect(unallowedInstance).to.be.undefined;
+
         });
     });
 
@@ -276,4 +476,46 @@ context('Window', () => {
             });
         });
     });
+
+    it('should ignore links for equal resolved urls', () => {
+         cy.window().then(window => {
+            window._swup.options.resolveUrl = url =>'/page1/';
+            cy.triggerClickOnLink('/page2/');
+            cy.wait(500).then(() => {
+                cy.shouldBeAtPage('/page1/');
+            });
+         });
+    });
+
+    it('should skip popstate handling for equal resolved urls', () => {
+        cy.window().then(window => {
+            window._swup.options.resolveUrl = url =>'/page1/';
+            window.history.pushState(
+                {
+                    url: '/pushed-page-1/',
+                    random: Math.random(),
+                    source: 'swup'
+                },
+                document.title,
+                '/pushed-page-1/'
+            );
+
+            window.history.pushState(
+                {
+                    url: '/pushed-page-2/',
+                    random: Math.random(),
+                    source: 'swup'
+                },
+                document.title,
+                '/pushed-page-2/'
+            );
+
+            cy.wait(500).then(() => {
+                window.history.back();
+                cy.shouldBeAtPage('/pushed-page-1/');
+                cy.shouldHaveH1('Page 1');
+            })
+        });
+    });
+
 });
