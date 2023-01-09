@@ -161,9 +161,10 @@ export default class Swup {
 		window.addEventListener('popstate', this.boundPopStateHandler);
 
 		// Initial save to cache
-		// Disabled to avoid caching modified dom state: logic moved to preload plugin
-		// https://github.com/swup/swup/issues/475
-		if (this.options.cache) {}
+		if (this.options.cache) {
+			// Disabled to avoid caching modified dom state: logic moved to preload plugin
+			// https://github.com/swup/swup/issues/475
+		}
 
 		// Mark swup blocks in html
 		markSwupElements(document.documentElement, this.options.containers);
