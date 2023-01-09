@@ -1,7 +1,7 @@
 import Swup from '../index';
 import { TransitionOptions } from './loadPage';
 
-const leavePage = function (
+const leavePage = function(
 	this: Swup,
 	data: TransitionOptions,
 	{ popstate, skipTransition }: { popstate: PopStateEvent | null; skipTransition?: boolean } = {
@@ -22,7 +22,7 @@ const leavePage = function (
 	}
 
 	// animation promise stuff
-	const animationPromises: Promise<void>[] = this.getAnimationPromises();
+	const animationPromises: Promise<void>[] = this.getAnimationPromises('out');
 	Promise.all(animationPromises).then(() => {
 		this.triggerEvent('animationOutDone');
 	});

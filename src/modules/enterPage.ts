@@ -1,7 +1,7 @@
 import { nextTick } from '../utils.js';
 import Swup from '../index';
 
-const enterPage = function (
+const enterPage = function(
 	this: Swup,
 	{ popstate, skipTransition }: { popstate?: PopStateEvent; skipTransition?: boolean }
 ) {
@@ -16,7 +16,7 @@ const enterPage = function (
 		document.documentElement.classList.remove('is-animating');
 	});
 
-	const animationPromises = this.getAnimationPromises();
+	const animationPromises = this.getAnimationPromises('in');
 	Promise.all(animationPromises).then(() => {
 		this.triggerEvent('animationInDone');
 		this.triggerEvent('transitionEnd', popstate);

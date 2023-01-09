@@ -17,7 +17,13 @@ if (window.onanimationend === undefined && window.onwebkitanimationend !== undef
 	animationEndEvent = 'webkitAnimationEnd';
 }
 
-export default function getAnimationPromises(this: Swup): Promise<void>[] {
+export default function getAnimationPromises(
+	this: Swup,
+	// we don't use this argument, but JS plugin depends on it with
+	// its own version of getAnimationPromises, so it must be specified when
+	// getAnimationPromises is being used
+	animationType: 'in' | 'out'
+): Promise<void>[] {
 	const selector = this.options.animationSelector;
 
 	// Allow usage of swup without animations
@@ -110,20 +116,17 @@ export function getTransitionInfo(
 	const animationDelay = `${animationProp}Delay` as keyof CSSStyleDeclaration;
 	const animationDuration = `${animationProp}Duration` as keyof CSSStyleDeclaration;
 
-	const transitionDelays = (
-		styles[transitionDelay] as CSSStyleDeclaration['transitionDelay']
-	).split(', ');
-	const transitionDurations = (
-		(styles[transitionDuration] || '') as CSSStyleDeclaration['transitionDuration']
-	).split(', ');
+	const transitionDelays = (styles[
+		transitionDelay
+	] as CSSStyleDeclaration['transitionDelay']).split(', ');
+	const transitionDurations = ((styles[transitionDuration] ||
+		'') as CSSStyleDeclaration['transitionDuration']).split(', ');
 	const transitionTimeout = calculateTimeout(transitionDelays, transitionDurations);
 
-	const animationDelays = (
-		(styles[animationDelay] || '') as CSSStyleDeclaration['animationDelay']
-	).split(', ');
-	const animationDurations = (
-		(styles[animationDuration] || '') as CSSStyleDeclaration['animationDuration']
-	).split(', ');
+	const animationDelays = ((styles[animationDelay] ||
+		'') as CSSStyleDeclaration['animationDelay']).split(', ');
+	const animationDurations = ((styles[animationDuration] ||
+		'') as CSSStyleDeclaration['animationDuration']).split(', ');
 	const animationTimeout = calculateTimeout(animationDelays, animationDurations);
 
 	let type: string | null = '';
