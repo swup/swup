@@ -8,17 +8,17 @@
   "main": "dist/index.cjs",
   "module": "dist/index.module.js",
   "unpkg": "dist/index.umd.js",
-  "types": "dist/src/src/index.d.ts",
+  "types": "dist/types/index.d.ts",
   "exports": {
     ".": {
       "default": "./dist/index.modern.js",
       "require": "./dist/index.cjs",
-      "types": "./dist/src/src/index.d.ts"
+      "types": "./dist/types/index.d.ts"
     },
     "./*": {
       "default": "./dist/*.modern.js",
       "require": "./dist/*.cjs",
-      "types": "./dist/src/src/*.d.ts"
+      "types": "./dist/types/*.d.ts"
     }
   },
   "files": [
