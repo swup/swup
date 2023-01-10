@@ -1,11 +1,16 @@
 import Swup from '../index.js';
 import { fetch } from '../helpers.js';
-import { TransitionOptions } from '../modules/loadPage.js';
+import { TransitionOptions } from './loadPage.js';
 import { PageRecord } from './Cache.js';
 
-export default function getPageFetchPromise(this: Swup, data: TransitionOptions): Promise<PageRecord> {
-	const { url } = data;
+export default function fetchPage(this: Swup, data: TransitionOptions): Promise<PageRecord> {
 	const headers = this.options.requestHeaders;
+	const { url } = data;
+
+	if (this.cache.exists(url)) {
+		this.triggerEvent('pageRetrievedFromCache');
+		return Promise.resolve(this.cache.getPage(url));
+	}
 
 	return new Promise((resolve, reject) => {
 		fetch({ ...data, headers }, (response) => {

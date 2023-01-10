@@ -1,6 +1,5 @@
 import { classify, createHistoryRecord, getCurrentUrl } from '../helpers.js';
 import Swup from '../index.js';
-import { PageRecord } from './Cache.js';
 
 export type TransitionOptions = {
 	url: string;
@@ -8,9 +7,6 @@ export type TransitionOptions = {
 };
 
 const loadPage = function(this: Swup, data: TransitionOptions, popstate: PopStateEvent | null) {
-	let animationPromises: Promise<void>[] = [];
-	let xhrPromise: Promise<PageRecord>;
-
 	const { url, customTransition } = data;
 	const skipTransition = !!(popstate && !this.options.animateHistoryBrowsing);
 
@@ -23,7 +19,7 @@ const loadPage = function(this: Swup, data: TransitionOptions, popstate: PopStat
 	}
 
 	// start/skip animation
-	animationPromises = this.leavePage(data, { popstate, skipTransition });
+	const animationPromises = this.leavePage(data, { popstate, skipTransition });
 
 	// create history record if this is not a popstate call (with or without anchor)
 	if (!popstate) {
@@ -33,20 +29,10 @@ const loadPage = function(this: Swup, data: TransitionOptions, popstate: PopStat
 	this.currentPageUrl = getCurrentUrl();
 
 	// Load page data
-	if (this.cache.exists(url)) {
-		// Found in Cache, resolve directly
-		xhrPromise = Promise.resolve(this.cache.getPage(url));
-		this.triggerEvent('pageRetrievedFromCache');
-	} else if (this.preloadPromise && this.preloadPromise.route === url) {
-		// Alreay preloading, re-use
-		xhrPromise = this.preloadPromise;
-		this.preloadPromise = null;
-	} else {
-		xhrPromise = this.getPageFetchPromise(data);
-	}
+	const fetchPromise = this.fetchPage(data);
 
 	// when everything is ready, handle the outcome
-	Promise.all([xhrPromise, ...animationPromises])
+	Promise.all([fetchPromise, ...animationPromises])
 		.then(([pageData]) => {
 			this.renderPage(pageData, { popstate, skipTransition });
 			this.preloadPromise = null;
