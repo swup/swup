@@ -2,38 +2,33 @@ import { TransitionOptions } from '../modules/loadPage.js';
 import { Options } from '../index.js';
 
 const fetch = (
-	setOptions: TransitionOptions & { headers: Options['requestHeaders'] },
+	options: TransitionOptions & { headers: Options['requestHeaders'] },
 	callback: (request: XMLHttpRequest) => void
 ): XMLHttpRequest => {
-	let defaults = {
+	const defaults = {
 		url: window.location.pathname + window.location.search,
 		method: 'GET',
 		data: null,
 		headers: {}
 	};
 
-	let options = {
-		...defaults,
-		...setOptions
-	};
+	const { url, method, headers, data } = { ...defaults, ...options };
 
-	let request = new XMLHttpRequest();
+	const request = new XMLHttpRequest();
 
 	request.onreadystatechange = function() {
 		if (request.readyState === 4) {
-			if (request.status !== 500) {
-				callback(request);
-			} else {
-				callback(request);
-			}
+			// if (request.status === 500) {} else {}
+			callback(request);
 		}
 	};
 
-	request.open(options.method, options.url, true);
-	Object.keys(options.headers).forEach((key) => {
-		request.setRequestHeader(key, options.headers[key]);
+	request.open(method, url, true);
+	Object.entries(headers).forEach(([key, header]) => {
+		request.setRequestHeader(key, header);
 	});
-	request.send(options.data);
+	request.send(data);
+
 	return request;
 };
 
