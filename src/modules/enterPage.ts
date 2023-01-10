@@ -1,5 +1,5 @@
 import { nextTick } from '../utils.js';
-import Swup from '../index';
+import Swup from '../index.js';
 
 const enterPage = function(
 	this: Swup,

@@ -1,4 +1,4 @@
-import Swup from '../index';
+import Swup from '../index.js';
 
 export type EventType =
 	| 'animationInDone'

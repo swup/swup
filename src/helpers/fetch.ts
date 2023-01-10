@@ -1,5 +1,5 @@
-import { TransitionOptions } from '../modules/loadPage';
-import { Options } from '../index';
+import { TransitionOptions } from '../modules/loadPage.js';
+import { Options } from '../index.js';
 
 const fetch = (
 	setOptions: TransitionOptions & { headers: Options['requestHeaders'] },

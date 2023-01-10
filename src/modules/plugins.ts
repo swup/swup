@@ -1,4 +1,4 @@
-import Swup from '../index';
+import Swup from '../index.js';
 
 // this should probably just be imported from @swup/plugin, but it doesn't have type defs now
 export type Plugin = {

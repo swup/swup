@@ -1,6 +1,6 @@
 import { getCurrentUrl, Location } from '../helpers.js';
-import Swup from '../index';
-import { PageData } from './getPageData';
+import Swup from '../index.js';
+import { PageData } from './getPageData.js';
 
 export interface PageRecord extends PageData {
 	url: string;

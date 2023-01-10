@@ -1,5 +1,5 @@
 import { queryAll, toMs } from '../utils.js';
-import Swup from '../index';
+import Swup from '../index.js';
 
 // Transition property/event sniffing
 let transitionProp = 'transition';
