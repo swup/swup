@@ -81,8 +81,6 @@ export default class Swup {
 
 	// variable for anchor to scroll to after render
 	scrollToElement: string | null = null;
-	// variable for promise used for preload, so no new loading of the same page starts while page is loading
-	preloadPromise: (Promise<any> & { route: string }) | null = null;
 	// variable for save options
 	options: Options;
 	// running plugin instances
