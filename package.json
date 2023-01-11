@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "build": "npm run build:module && npm run build:bundle",
-    "build:module": "microbundle src/*.ts -f modern,esm,cjs",
+    "build:module": "microbundle src/!\\(index\\).ts -f modern,esm,cjs",
     "build:bundle": "microbundle src/Swup.ts -f umd --external none",
     "dev": "microbundle src/*.ts -w",
     "lint": "prettier 'src/**/*.ts' --write",
