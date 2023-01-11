@@ -116,17 +116,20 @@ export function getTransitionInfo(
 	const animationDelay = `${animationProp}Delay` as keyof CSSStyleDeclaration;
 	const animationDuration = `${animationProp}Duration` as keyof CSSStyleDeclaration;
 
-	const transitionDelays = (styles[
-		transitionDelay
-	] as CSSStyleDeclaration['transitionDelay']).split(', ');
-	const transitionDurations = ((styles[transitionDuration] ||
-		'') as CSSStyleDeclaration['transitionDuration']).split(', ');
+	const transitionDelays = (
+		styles[transitionDelay] as CSSStyleDeclaration['transitionDelay']
+	).split(', ');
+	const transitionDurations = (
+		(styles[transitionDuration] || '') as CSSStyleDeclaration['transitionDuration']
+	).split(', ');
 	const transitionTimeout = calculateTimeout(transitionDelays, transitionDurations);
 
-	const animationDelays = ((styles[animationDelay] ||
-		'') as CSSStyleDeclaration['animationDelay']).split(', ');
-	const animationDurations = ((styles[animationDuration] ||
-		'') as CSSStyleDeclaration['animationDuration']).split(', ');
+	const animationDelays = (
+		(styles[animationDelay] || '') as CSSStyleDeclaration['animationDelay']
+	).split(', ');
+	const animationDurations = (
+		(styles[animationDuration] || '') as CSSStyleDeclaration['animationDuration']
+	).split(', ');
 	const animationTimeout = calculateTimeout(animationDelays, animationDurations);
 
 	let type: string | null = '';

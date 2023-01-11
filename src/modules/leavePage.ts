@@ -1,7 +1,7 @@
 import Swup from '../Swup.js';
 import { TransitionOptions } from './loadPage.js';
 
-const leavePage = function(
+const leavePage = function (
 	this: Swup,
 	data: TransitionOptions,
 	{ popstate, skipTransition }: { popstate: PopStateEvent | null; skipTransition?: boolean } = {

@@ -4,4 +4,4 @@ export default { Swup };
 export * from './helpers';
 export * from './utils';
 
-export type { Options }
+export type { Options };

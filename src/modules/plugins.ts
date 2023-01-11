@@ -14,7 +14,7 @@ export type Plugin = {
 	_checkRequirements?: () => boolean;
 };
 
-export const use = function(this: Swup, plugin: Plugin) {
+export const use = function (this: Swup, plugin: Plugin) {
 	if (!plugin.isSwupPlugin) {
 		console.error('Not a swup plugin instance', plugin);
 		return;
