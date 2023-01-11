@@ -1,4 +1,10 @@
-const fetch = (setOptions, callback = false) => {
+import { TransitionOptions } from '../modules/loadPage.js';
+import { Options } from '../index.js';
+
+const fetch = (
+	setOptions: TransitionOptions & { headers: Options['requestHeaders'] },
+	callback: (request: XMLHttpRequest) => void
+): XMLHttpRequest => {
 	let defaults = {
 		url: window.location.pathname + window.location.search,
 		method: 'GET',

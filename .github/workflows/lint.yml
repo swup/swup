@@ -30,4 +30,4 @@ jobs:
 
       - name: Run prettier
         run: |-
-          npx --no-install prettier --check 'src/**/*.{js,mjs}'
+          npx --no-install prettier --check 'src/**/*.ts'

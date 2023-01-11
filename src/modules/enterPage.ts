@@ -1,6 +1,10 @@
 import { nextTick } from '../utils.js';
+import Swup from '../index.js';
 
-const enterPage = function({ popstate = false, skipTransition = false } = {}) {
+const enterPage = function(
+	this: Swup,
+	{ popstate, skipTransition }: { popstate?: PopStateEvent; skipTransition?: boolean }
+) {
 	if (skipTransition) {
 		this.triggerEvent('transitionEnd', popstate);
 		this.cleanupAnimationClasses();

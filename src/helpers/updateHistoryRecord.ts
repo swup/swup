@@ -1,6 +1,9 @@
 import { default as getCurrentUrl } from './getCurrentUrl.js';
 
-const updateHistoryRecord = (url = null, customData = {}) => {
+const updateHistoryRecord = (
+	url: string | null = null,
+	customData: Record<string, unknown> = {}
+): void => {
 	url = url || getCurrentUrl({ hash: true });
 	const data = {
 		...history.state,

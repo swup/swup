@@ -10,10 +10,11 @@
  * @param {object} page The page object
  * @returns Promise
  */
-const replaceContent = function({ blocks, title }) {
+const replaceContent = function({ blocks, title }: { blocks: string[]; title: string }) {
 	// Replace content blocks
 	blocks.forEach((html, i) => {
-		const block = document.body.querySelector(`[data-swup="${i}"]`);
+		// we know the block exists at this point
+		const block = document.body.querySelector(`[data-swup="${i}"]`)!;
 		block.outerHTML = html;
 	});
 

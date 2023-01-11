@@ -1,4 +1,11 @@
-const triggerEvent = function(eventName, originalEvent) {
+import { EventType } from './on.js';
+import Swup from '../index.js';
+
+const triggerEvent = function(
+	this: Swup,
+	eventName: EventType,
+	originalEvent?: PopStateEvent | MouseEvent
+): void {
 	// call saved handlers with "on" method and pass originalEvent object if available
 	this._handlers[eventName].forEach((handler) => {
 		try {

@@ -8,17 +8,19 @@
  *
  * class Location extends URL {
  *   get url() {
- *     return this.pathname + this.search;
+ *	 return this.pathname + this.search;
  *   }
  * }
  *
  */
 
-export default class Location {
-	constructor(url, base = document.baseURI) {
-		const location = new URL(url.toString(), base);
-		Object.defineProperty(location, 'url', { get: () => location.pathname + location.search });
-		return location;
+export default class Location extends URL {
+	constructor(url: string, base: string = document.baseURI) {
+		super(url.toString(), base);
+	}
+
+	get url() {
+		return this.pathname + this.search;
 	}
 
 	/**
@@ -26,9 +28,9 @@ export default class Location {
 	 * @param {Element} el
 	 * @return new Location instance
 	 */
-	static fromElement(el) {
+	static fromElement(el: HTMLAnchorElement): Location {
 		const href = el.getAttribute('href') || el.getAttribute('xlink:href');
-		return new Location(href);
+		return new Location(href!);
 	}
 
 	/**
@@ -36,7 +38,7 @@ export default class Location {
 	 * @param {URL|string} url
 	 * @return new Location instance
 	 */
-	static fromUrl(url) {
+	static fromUrl(url: string): Location {
 		return new Location(url);
 	}
 }

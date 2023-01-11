@@ -4,14 +4,22 @@
   "version": "3.0.0",
   "description": "Complete, flexible, extensible, and easy-to-use page transition library for your server-side rendered website.",
   "type": "module",
-  "source": "src/index.js",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.module.js",
-  "unpkg": "./dist/index.umd.js",
+  "source": "src/index.ts",
+  "main": "dist/index.cjs",
+  "module": "dist/index.module.js",
+  "unpkg": "dist/index.umd.js",
+  "types": "dist/types/index.d.ts",
   "exports": {
-    ".": "./dist/index.modern.js",
-    "./*": "./dist/*.modern.js",
-    "./lib/*": "./dist/*.modern.js"
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.modern.js"
+    },
+    "./*": {
+      "types": "./dist/types/*.d.ts",
+      "require": "./dist/*.cjs",
+      "default": "./dist/*.modern.js"
+    }
   },
   "files": [
     "src",
@@ -19,10 +27,10 @@
   ],
   "scripts": {
     "build": "npm run build:module && npm run build:bundle",
-    "build:module": "microbundle src/*.js -f modern,esm,cjs",
-    "build:bundle": "microbundle -f umd --external none",
-    "dev": "microbundle src/*.js -w",
-    "lint": "prettier src/**/*.{js,mjs} --write",
+    "build:module": "microbundle src/*.ts -f modern,esm,cjs",
+    "build:bundle": "microbundle src/index.ts -f umd --external none",
+    "dev": "microbundle src/*.ts -w",
+    "lint": "prettier 'src/**/*.ts' --write",
     "prepublish": "npm run build",
     "postinstall": "opencollective-postinstall || true",
     "ci": "start-server-and-test test:start 8274 cy:run:record",
@@ -59,7 +67,7 @@
     "istanbul-lib-coverage": "^3.2.0",
     "microbundle": "^0.15.0",
     "nyc": "^15.1.0",
-    "prettier": "1.17.0",
+    "prettier": "1.19.0",
     "start-server-and-test": "^1.14.0"
   },
   "collective": {
