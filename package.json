@@ -7,7 +7,7 @@
   "source": "src/Swup.ts",
   "main": "dist/Swup.cjs",
   "module": "dist/Swup.module.js",
-  "unpkg": "dist/index.umd.js",
+  "unpkg": "dist/Swup.umd.js",
   "types": "dist/types/index.d.ts",
   "files": [
     "src",
