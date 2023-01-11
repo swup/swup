@@ -1,5 +1,5 @@
 import { EventType } from './on.js';
-import Swup from '../index.js';
+import Swup from '../Swup.js';
 
 const triggerEvent = function(
 	this: Swup,

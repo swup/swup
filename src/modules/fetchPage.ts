@@ -1,4 +1,4 @@
-import Swup from '../index.js';
+import Swup from '../Swup.js';
 import { fetch } from '../helpers.js';
 import { TransitionOptions } from './loadPage.js';
 import { PageRecord } from './Cache.js';

@@ -1,4 +1,4 @@
-import Swup from '../index.js';
+import Swup from '../Swup.js';
 import { TransitionOptions } from './loadPage.js';
 
 const leavePage = function(

@@ -1,5 +1,5 @@
 import { getDataFromHtml } from '../helpers.js';
-import Swup from '../index.js';
+import Swup from '../Swup.js';
 import { PageHtmlData } from '../helpers/getDataFromHtml.js';
 
 export type PageData = PageHtmlData & {

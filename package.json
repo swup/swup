@@ -9,18 +9,6 @@
   "module": "dist/index.module.js",
   "unpkg": "dist/index.umd.js",
   "types": "dist/types/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/types/index.d.ts",
-      "require": "./dist/index.cjs",
-      "default": "./dist/index.modern.js"
-    },
-    "./*": {
-      "types": "./dist/types/*.d.ts",
-      "require": "./dist/*.cjs",
-      "default": "./dist/*.modern.js"
-    }
-  },
   "files": [
     "src",
     "dist"
@@ -28,7 +16,7 @@
   "scripts": {
     "build": "npm run build:module && npm run build:bundle",
     "build:module": "microbundle src/*.ts -f modern,esm,cjs",
-    "build:bundle": "microbundle src/index.ts -f umd --external none",
+    "build:bundle": "microbundle src/Swup.ts -f umd --external none",
     "dev": "microbundle src/*.ts -w",
     "lint": "prettier 'src/**/*.ts' --write",
     "prepublish": "npm run build",

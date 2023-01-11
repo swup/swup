@@ -1,5 +1,5 @@
 import { classify, createHistoryRecord, getCurrentUrl } from '../helpers.js';
-import Swup from '../index.js';
+import Swup from '../Swup.js';
 
 export type TransitionOptions = {
 	url: string;
