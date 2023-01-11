@@ -4,9 +4,9 @@
   "version": "3.0.0-rc.1",
   "description": "Complete, flexible, extensible, and easy-to-use page transition library for your server-side rendered website.",
   "type": "module",
-  "source": "src/index.ts",
-  "main": "dist/index.cjs",
-  "module": "dist/index.module.js",
+  "source": "src/Swup.ts",
+  "main": "dist/Swup.cjs",
+  "module": "dist/Swup.module.js",
   "unpkg": "dist/index.umd.js",
   "types": "dist/types/index.d.ts",
   "files": [
