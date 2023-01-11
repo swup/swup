@@ -6,6 +6,7 @@ export type PageHtmlData = {
 	blocks: string[];
 	pageClass?: string;
 };
+
 const getDataFromHtml = (html: string, containers: string[]): PageHtmlData => {
 	let fakeDom = document.createElement('html');
 	fakeDom.innerHTML = html;
