@@ -28,6 +28,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run tsc
+        run: |-
+          npx tsc --noEmit --skipLibCheck
+
       - name: Run prettier
         run: |-
-          npx tsc --noEmit --skipLibCheck && npx --no-install prettier --check 'src/**/*.ts'
+          npx --no-install prettier --check 'src/**/*.ts'
