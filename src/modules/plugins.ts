@@ -1,4 +1,4 @@
-import Swup from '../index.js';
+import Swup from '../Swup.js';
 
 // this should probably just be imported from @swup/plugin, but it doesn't have type defs now
 export type Plugin = {
@@ -14,7 +14,7 @@ export type Plugin = {
 	_checkRequirements?: () => boolean;
 };
 
-export const use = function(this: Swup, plugin: Plugin) {
+export const use = function (this: Swup, plugin: Plugin) {
 	if (!plugin.isSwupPlugin) {
 		console.error('Not a swup plugin instance', plugin);
 		return;

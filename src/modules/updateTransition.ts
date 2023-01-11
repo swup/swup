@@ -1,6 +1,6 @@
-import Swup from '../index.js';
+import Swup from '../Swup.js';
 
-const updateTransition = function(this: Swup, from: string, to: string, custom?: string): void {
+const updateTransition = function (this: Swup, from: string, to: string, custom?: string): void {
 	this.transition = { from, to, custom };
 };
 

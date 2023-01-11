@@ -1,8 +1,8 @@
 import { Location, updateHistoryRecord, getCurrentUrl } from '../helpers.js';
-import Swup from '../index.js';
+import Swup from '../Swup.js';
 import { PageRecord } from './Cache.js';
 
-const renderPage = function(
+const renderPage = function (
 	this: Swup,
 	page: PageRecord,
 	{ popstate, skipTransition }: { popstate: PopStateEvent | null; skipTransition?: boolean } = {

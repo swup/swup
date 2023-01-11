@@ -1,12 +1,13 @@
 import { classify, createHistoryRecord, getCurrentUrl } from '../helpers.js';
-import Swup from '../index.js';
+import Swup from '../Swup.js';
+import { PageRecord } from './Cache.js';
 
 export type TransitionOptions = {
 	url: string;
 	customTransition?: string;
 };
 
-const loadPage = function(this: Swup, data: TransitionOptions, popstate: PopStateEvent | null) {
+const loadPage = function (this: Swup, data: TransitionOptions, popstate: PopStateEvent | null) {
 	const { url, customTransition } = data;
 	const skipTransition = !!(popstate && !this.options.animateHistoryBrowsing);
 
@@ -32,9 +33,9 @@ const loadPage = function(this: Swup, data: TransitionOptions, popstate: PopStat
 	const fetchPromise = this.fetchPage(data);
 
 	// when everything is ready, render the page
-	Promise.all([fetchPromise, ...animationPromises])
+	Promise.all<PageRecord | void>([fetchPromise, ...animationPromises])
 		.then(([pageData]) => {
-			this.renderPage(pageData, { popstate, skipTransition });
+			this.renderPage(pageData as PageRecord, { popstate, skipTransition });
 		})
 		.catch((errorUrl) => {
 			// Return early if errorUrl is not defined (probably aborted preload request)
