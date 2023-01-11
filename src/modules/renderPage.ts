@@ -36,7 +36,7 @@ const renderPage = function(
 		this.triggerEvent('contentReplaced', popstate || undefined);
 		this.triggerEvent('pageView', popstate || undefined);
 
-		// empty cache if it's disabled (because pages could be preloaded and stuff)
+		// empty cache if it's disabled (in case preload plugin filled it)
 		if (!this.options.cache) {
 			this.cache.empty();
 		}

@@ -31,11 +31,10 @@ const loadPage = function(this: Swup, data: TransitionOptions, popstate: PopStat
 	// Load page data
 	const fetchPromise = this.fetchPage(data);
 
-	// when everything is ready, handle the outcome
+	// when everything is ready, render the page
 	Promise.all([fetchPromise, ...animationPromises])
 		.then(([pageData]) => {
 			this.renderPage(pageData, { popstate, skipTransition });
-			this.preloadPromise = null;
 		})
 		.catch((errorUrl) => {
 			// Return early if errorUrl is not defined (probably aborted preload request)
