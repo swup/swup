@@ -10,7 +10,7 @@
  * @param {object} page The page object
  * @returns Promise
  */
-const replaceContent = function ({ blocks, title }: { blocks: string[]; title: string }) {
+export const replaceContent = function ({ blocks, title }: { blocks: string[]; title: string }) {
 	// Replace content blocks
 	blocks.forEach((html, i) => {
 		// we know the block exists at this point
@@ -24,5 +24,3 @@ const replaceContent = function ({ blocks, title }: { blocks: string[]; title: s
 	// Return a Promise to allow plugins to defer
 	return Promise.resolve();
 };
-
-export default replaceContent;

@@ -1,6 +1,6 @@
 import { query, queryAll } from '../utils.js';
 
-const markSwupElements = (element: Element, containers: string[]): void => {
+export const markSwupElements = (element: Element, containers: string[]): void => {
 	let blocks = 0;
 
 	containers.forEach((selector) => {
@@ -14,5 +14,3 @@ const markSwupElements = (element: Element, containers: string[]): void => {
 		}
 	});
 };
-
-export default markSwupElements;

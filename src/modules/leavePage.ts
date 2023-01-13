@@ -1,7 +1,7 @@
 import Swup from '../Swup.js';
 import { TransitionOptions } from './loadPage.js';
 
-const leavePage = function (
+export const leavePage = function (
 	this: Swup,
 	data: TransitionOptions,
 	{ popstate, skipTransition }: { popstate: PopStateEvent | null; skipTransition?: boolean } = {
@@ -29,5 +29,3 @@ const leavePage = function (
 
 	return animationPromises;
 };
-
-export default leavePage;

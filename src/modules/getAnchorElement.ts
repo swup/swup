@@ -1,6 +1,6 @@
 import { escapeCssIdentifier, query } from '../utils.js';
 
-const getAnchorElement = (hash: string): Element | null => {
+export const getAnchorElement = (hash: string): Element | null => {
 	if (!hash) {
 		return null;
 	}
@@ -15,5 +15,3 @@ const getAnchorElement = (hash: string): Element | null => {
 	// https://html.spec.whatwg.org/#find-a-potential-indicated-element
 	return query(`#${hash}`) || query(`a[name='${hash}']`);
 };
-
-export default getAnchorElement;

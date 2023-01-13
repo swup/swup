@@ -1,4 +1,4 @@
-const classify = (text: string, fallback?: string): string => {
+export const classify = (text: string, fallback?: string): string => {
 	const output = String(text)
 		.toLowerCase()
 		// .normalize('NFD') // split an accented letter in the base letter and the acent
@@ -9,5 +9,3 @@ const classify = (text: string, fallback?: string): string => {
 		.replace(/^-+|-+$/, ''); // trim '-' from edges
 	return output || fallback || '';
 };
-
-export default classify;

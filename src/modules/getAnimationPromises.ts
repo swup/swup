@@ -17,7 +17,7 @@ if (window.onanimationend === undefined && window.onwebkitanimationend !== undef
 	animationEndEvent = 'webkitAnimationEnd';
 }
 
-export default function getAnimationPromises(
+export function getAnimationPromises(
 	this: Swup,
 	// we don't use this argument, but JS plugin depends on it with
 	// its own version of getAnimationPromises, so it must be specified when

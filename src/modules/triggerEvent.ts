@@ -1,7 +1,7 @@
 import { EventType } from './on.js';
 import Swup from '../Swup.js';
 
-const triggerEvent = function (
+export const triggerEvent = function (
 	this: Swup,
 	eventName: EventType,
 	originalEvent?: PopStateEvent | MouseEvent
@@ -19,5 +19,3 @@ const triggerEvent = function (
 	const event = new CustomEvent(`swup:${eventName}`, { detail: eventName });
 	document.dispatchEvent(event);
 };
-
-export default triggerEvent;
