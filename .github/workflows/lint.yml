@@ -30,8 +30,8 @@ jobs:
 
       - name: Run tsc
         run: |-
-          npx tsc --noEmit --skipLibCheck
+          npm run lint:ts
 
       - name: Run prettier
         run: |-
-          npx --no-install prettier --check 'src/**/*.ts'
+          npm run lint:prettier -- --check
