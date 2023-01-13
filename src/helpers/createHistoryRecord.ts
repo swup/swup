@@ -1,6 +1,9 @@
 import { getCurrentUrl } from './getCurrentUrl.js';
 
-export const createHistoryRecord = (url: string, customData: Record<string, unknown> = {}): void => {
+export const createHistoryRecord = (
+	url: string,
+	customData: Record<string, unknown> = {}
+): void => {
 	url = url || getCurrentUrl({ hash: true });
 	const data = {
 		url,

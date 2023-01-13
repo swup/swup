@@ -7,7 +7,11 @@ export type TransitionOptions = {
 	customTransition?: string;
 };
 
-export const loadPage = function (this: Swup, data: TransitionOptions, popstate: PopStateEvent | null) {
+export const loadPage = function (
+	this: Swup,
+	data: TransitionOptions,
+	popstate: PopStateEvent | null
+) {
 	const { url, customTransition } = data;
 	const skipTransition = !!(popstate && !this.options.animateHistoryBrowsing);
 
