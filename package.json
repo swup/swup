@@ -30,7 +30,8 @@
     "test:start": "npm run test:instrument && npm run test:server",
     "cy:run": "cypress run",
     "cy:run:record": "cypress run --record",
-    "cy:open": "cypress open"
+    "cy:open": "cypress open",
+    "prepare": "husky install"
   },
   "author": "Georgy Marchuk",
   "license": "MIT",
@@ -57,7 +58,8 @@
     "microbundle": "^0.15.0",
     "nyc": "^15.1.0",
     "prettier": "^2.8.2",
-    "start-server-and-test": "^1.14.0"
+    "start-server-and-test": "^1.14.0",
+    "husky": "^8.0.0"
   },
   "collective": {
     "type": "opencollective",
