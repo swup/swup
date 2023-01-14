@@ -1,7 +1,7 @@
 import Swup from '../Swup.js';
 import { EventType, Handler } from './on.js';
 
-const off = function off(this: Swup, event?: EventType, handler?: Handler) {
+export const off = function off(this: Swup, event?: EventType, handler?: Handler) {
 	if (event && handler) {
 		// Remove specific handler
 		if (this._handlers[event].includes(handler)) {
@@ -19,5 +19,3 @@ const off = function off(this: Swup, event?: EventType, handler?: Handler) {
 		});
 	}
 };
-
-export default off;

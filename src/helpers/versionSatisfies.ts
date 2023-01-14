@@ -42,5 +42,3 @@ export const versionSatisfies = (installed: string, requirements: string[]) => {
 		return applyComparator(comparisonResult, (comparator as Comparator) || '>=');
 	});
 };
-
-export default versionSatisfies;

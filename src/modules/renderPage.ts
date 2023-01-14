@@ -2,7 +2,7 @@ import { Location, updateHistoryRecord, getCurrentUrl } from '../helpers.js';
 import Swup from '../Swup.js';
 import { PageRecord } from './Cache.js';
 
-const renderPage = function (
+export const renderPage = function (
 	this: Swup,
 	page: PageRecord,
 	{ popstate, skipTransition }: { popstate: PopStateEvent | null; skipTransition?: boolean } = {
@@ -48,5 +48,3 @@ const renderPage = function (
 		this.scrollToElement = null;
 	});
 };
-
-export default renderPage;

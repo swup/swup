@@ -1,6 +1,6 @@
-import { default as getCurrentUrl } from './getCurrentUrl.js';
+import { getCurrentUrl } from './getCurrentUrl.js';
 
-const updateHistoryRecord = (
+export const updateHistoryRecord = (
 	url: string | null = null,
 	customData: Record<string, unknown> = {}
 ): void => {
@@ -14,5 +14,3 @@ const updateHistoryRecord = (
 	};
 	history.replaceState(data, '', url);
 };
-
-export default updateHistoryRecord;

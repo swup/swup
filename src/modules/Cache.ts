@@ -53,5 +53,3 @@ export class Cache {
 		delete this.pages[this.getCacheUrl(url)];
 	}
 }
-
-export default Cache;

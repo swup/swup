@@ -1,7 +1,7 @@
 import { TransitionOptions } from '../modules/loadPage.js';
 import { Options } from '../Swup.js';
 
-const fetch = (
+export const fetch = (
 	options: TransitionOptions & { headers: Options['requestHeaders'] },
 	callback: (request: XMLHttpRequest) => void
 ): XMLHttpRequest => {
@@ -31,5 +31,3 @@ const fetch = (
 
 	return request;
 };
-
-export default fetch;

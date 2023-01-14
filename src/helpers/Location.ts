@@ -14,7 +14,7 @@
  *
  */
 
-export default class Location extends URL {
+export class Location extends URL {
 	constructor(url: string, base: string = document.baseURI) {
 		super(url.toString(), base);
 	}

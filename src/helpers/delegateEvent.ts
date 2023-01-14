@@ -4,7 +4,7 @@ import { ParseSelector } from 'typed-query-selector/parser';
 export type Unsubscribe = {
 	destroy: () => void;
 };
-const delegateEvent = <Selector extends string, TEvent extends EventType>(
+export const delegateEvent = <Selector extends string, TEvent extends EventType>(
 	selector: Selector,
 	type: TEvent,
 	callback: delegate.EventHandler<GlobalEventHandlersEventMap[TEvent]>,
@@ -19,5 +19,3 @@ const delegateEvent = <Selector extends string, TEvent extends EventType>(
 	);
 	return { destroy: () => delegation.destroy() };
 };
-
-export default delegateEvent;

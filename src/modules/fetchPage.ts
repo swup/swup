@@ -3,7 +3,7 @@ import { fetch } from '../helpers.js';
 import { TransitionOptions } from './loadPage.js';
 import { PageRecord } from './Cache.js';
 
-export default function fetchPage(this: Swup, data: TransitionOptions): Promise<PageRecord> {
+export function fetchPage(this: Swup, data: TransitionOptions): Promise<PageRecord> {
 	const headers = this.options.requestHeaders;
 	const { url } = data;
 

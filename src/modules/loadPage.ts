@@ -7,7 +7,11 @@ export type TransitionOptions = {
 	customTransition?: string;
 };
 
-const loadPage = function (this: Swup, data: TransitionOptions, popstate: PopStateEvent | null) {
+export const loadPage = function (
+	this: Swup,
+	data: TransitionOptions,
+	popstate: PopStateEvent | null
+) {
 	const { url, customTransition } = data;
 	const skipTransition = !!(popstate && !this.options.animateHistoryBrowsing);
 
@@ -51,5 +55,3 @@ const loadPage = function (this: Swup, data: TransitionOptions, popstate: PopSta
 			history.go(-1);
 		});
 };
-
-export default loadPage;

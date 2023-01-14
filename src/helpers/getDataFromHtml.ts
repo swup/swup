@@ -7,7 +7,7 @@ export type PageHtmlData = {
 	pageClass?: string;
 };
 
-const getDataFromHtml = (html: string, containers: string[]): PageHtmlData => {
+export const getDataFromHtml = (html: string, containers: string[]): PageHtmlData => {
 	let fakeDom = document.createElement('html');
 	fakeDom.innerHTML = html;
 	let blocks: string[] = [];
@@ -37,5 +37,3 @@ const getDataFromHtml = (html: string, containers: string[]): PageHtmlData => {
 
 	return { title, pageClass, blocks, originalContent: html };
 };
-
-export default getDataFromHtml;
