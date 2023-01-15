@@ -33,7 +33,8 @@
     "test:start": "npm run test:instrument && npm run test:server",
     "cy:run": "cypress run",
     "cy:run:record": "cypress run --record",
-    "cy:open": "cypress open"
+    "cy:open": "cypress open",
+    "prepare": "git config core.hooksPath .githooks"
   },
   "author": "Georgy Marchuk",
   "license": "MIT",
