@@ -61,8 +61,7 @@
     "microbundle": "^0.15.0",
     "nyc": "^15.1.0",
     "prettier": "^2.8.2",
-    "start-server-and-test": "^1.14.0",
-    "husky": "^8.0.0"
+    "start-server-and-test": "^1.14.0"
   },
   "collective": {
     "type": "opencollective",
