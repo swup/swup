@@ -33,8 +33,7 @@
     "test:start": "npm run test:instrument && npm run test:server",
     "cy:run": "cypress run",
     "cy:run:record": "cypress run --record",
-    "cy:open": "cypress open",
-    "prepare": "husky install"
+    "cy:open": "cypress open"
   },
   "author": "Georgy Marchuk",
   "license": "MIT",
