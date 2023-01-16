@@ -112,10 +112,8 @@ describe('Markup', function () {
 
 	it('should process transition classes', function () {
 		cy.triggerClickOnLink('/page-2.html');
-		cy.wait(300);
 		cy.shouldHaveTransitionLeaveClasses();
 		cy.shouldHaveTransitionEnterClasses();
-		cy.wait(300);
 		cy.shouldNotHaveTransitionClasses();
 	});
 
@@ -211,7 +209,7 @@ describe('Navigation', function () {
 		cy.shouldBeAtPage('/page-2.html');
 		cy.shouldHaveH1('Page 2');
 
-		cy.wait(500); // Wait for transition finish
+		cy.wait(200); // Wait for transition finish
 		cy.triggerClickOnLink('/page-3.html');
 		cy.shouldBeAtPage('/page-3.html');
 		cy.shouldHaveH1('Page 3');
@@ -233,7 +231,7 @@ describe('Navigation', function () {
 
 	// it('should ignore visit when meta key pressed', function() {
 	//     cy.triggerClickOnLink('/page-2.html', { metaKey: true });
-	//     cy.wait(500);
+	//     cy.wait(200);
 	//     cy.shouldBeAtPage('/page-1.html');
 	//     cy.shouldHaveH1('Page 1');
 	// });
@@ -331,9 +329,8 @@ describe('Resolve URLs', function () {
 	it('should ignore links for equal resolved urls', function () {
 		this.swup.options.resolveUrl = () => '/page-1.html';
 		cy.triggerClickOnLink('/page-2.html');
-		cy.wait(500).then(() => {
-			cy.shouldBeAtPage('/page-1.html');
-		});
+		cy.wait(200);
+        cy.shouldBeAtPage('/page-1.html');
 	});
 
 	it('should skip popstate handling for equal resolved urls', function () {

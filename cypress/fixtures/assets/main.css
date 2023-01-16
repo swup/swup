@@ -90,7 +90,7 @@ li span > span {
   transform: translate3d(0, 100%, 0);
 }
 .transition-default {
-  transition: 0.4s;
+  transition: 0.1s;
   opacity: 1;
 }
 html.is-animating .transition-default {
