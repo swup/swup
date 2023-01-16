@@ -78,22 +78,18 @@ describe('Instance', function() {
 describe('Cache', function() {
 
     it('should cache pages', function() {
-        cy.window().then(window => {
-            this.swup.loadPage({ url: '/page2/' });
-            cy.shouldBeAtPage('/page2/');
-            cy.window().should(() => {
-                expect(this.swup.cache.getCurrentPage()).not.to.be.undefined;
-            });
+        this.swup.loadPage({ url: '/page2/' });
+        cy.shouldBeAtPage('/page2/');
+        cy.window().should(() => {
+            expect(this.swup.cache.getCurrentPage()).not.to.be.undefined;
         });
     });
 
     it('should cache pages from absolute URLs', function() {
-        cy.window().then(window => {
-            this.swup.loadPage({ url: 'http://localhost:8274/page2/' });
-            cy.shouldBeAtPage('/page2/');
-            cy.window().should(() => {
-                expect(this.swup.cache.getCurrentPage()).not.to.be.undefined;
-            });
+        this.swup.loadPage({ url: 'http://localhost:8274/page2/' });
+        cy.shouldBeAtPage('/page2/');
+        cy.window().should(() => {
+            expect(this.swup.cache.getCurrentPage()).not.to.be.undefined;
         });
     });
 
@@ -121,10 +117,8 @@ describe('Markup', function() {
     });
 
     it('should remove swup class from html tag', function() {
-        cy.window().then(window => {
-            this.swup.destroy();
-            cy.get('html').should('not.have.class', 'swup-enabled');
-        });
+        this.swup.destroy();
+        cy.get('html').should('not.have.class', 'swup-enabled');
     });
 
 });
@@ -148,37 +142,37 @@ describe('Events', function() {
     });
 
     it('should trigger a custom click event', function() {
-        let triggered = false;
-        cy.window().then(window => {
-            this.swup.on('clickLink', () => triggered = true);
-        });
+        const handlers = { click() {} };
+        cy.spy(handlers, 'click');
+
+        this.swup.on('clickLink', handlers.click);
         cy.triggerClickOnLink('/page2/');
         cy.window().should(() => {
-            expect(triggered, 'event was not triggered').to.be.true;
+            expect(handlers.click).to.be.called;
         });
     });
 
     it('should remove custom event handlers', function() {
-        let countA = 0;
-        let countB = 0;
-        const handlerA = () => (countA += 1);
-        const handlerB = () => (countB += 1);
-        cy.window().then(window => {
-            this.swup.on('transitionStart', handlerA);
-            this.swup.on('contentReplaced', handlerB);
-        });
+        const handlers = { transition() {}, content() {} };
+        cy.spy(handlers, 'transition');
+        cy.spy(handlers, 'content');
+
+        this.swup.on('transitionStart', handlers.transition);
+        this.swup.on('contentReplaced', handlers.content);
+
         cy.triggerClickOnLink('/page2/');
         cy.window().should(() => {
-            expect(countA).to.equal(1);
-            expect(countB).to.equal(1);
+            expect(handlers.transition).to.be.calledOnce;
+            expect(handlers.content).to.be.calledOnce;
         });
-        cy.window().then(window => {
-            this.swup.off('transitionStart', handlerA);
+
+        cy.window().then(() => {
+            this.swup.off('transitionStart', handlers.transition);
         });
         cy.triggerClickOnLink('/page3/');
         cy.window().should(() => {
-            expect(countA).to.equal(1);
-            expect(countB).to.equal(2);
+            expect(handlers.transition).to.be.calledOnce;
+            expect(handlers.content).to.be.calledTwice;
         });
     });
 });
@@ -190,7 +184,7 @@ describe('Transitions', function() {
         let durationIn = 0;
         const expectedDuration = 400;
 
-        cy.window().then((window) => {
+        cy.window().then(() => {
             let startOut = 0;
             let startIn = 0;
             this.swup.on('animationOutStart', () => startOut = performance.now());
@@ -208,15 +202,15 @@ describe('Transitions', function() {
     });
 
     it('should detect complex transition timings', function() {
-        cy.window().then(window => {
-            window.document.documentElement.classList.add('test--complex-transitions');
+        cy.document().then(document => {
+            document.documentElement.classList.add('test--complex-transitions');
         });
 
         let durationOut = 0;
         let durationIn = 0;
         const expectedDuration = 600;
 
-        cy.window().then((window) => {
+        cy.window().then(() => {
             let startOut = 0;
             let startIn = 0;
             this.swup.on('animationOutStart', () => startOut = performance.now());
@@ -243,13 +237,13 @@ describe('Transitions', function() {
         let durationIn = 0;
         const expectedDuration = 700;
 
-        cy.window().then((window) => {
+        cy.window().then(() => {
             let startOut = 0;
             let startIn = 0;
-            this.swup.on('animationOutStart', e => startOut = performance.now());
-            this.swup.on('animationOutDone', e => durationOut = performance.now() - startOut);
-            this.swup.on('animationInStart', e => startIn = performance.now());
-            this.swup.on('animationInDone', e => durationIn = performance.now() - startIn);
+            this.swup.on('animationOutStart', () => startOut = performance.now());
+            this.swup.on('animationOutDone', () => durationOut = performance.now() - startOut);
+            this.swup.on('animationInStart', () => startIn = performance.now());
+            this.swup.on('animationInDone', () => durationIn = performance.now() - startIn);
         });
 
         cy.triggerClickOnLink('/page2/');
@@ -276,9 +270,7 @@ describe('Navigation', function() {
     });
 
     it('should transition if no containers defined', function() {
-        cy.window().then(window => {
-            this.swup.options.animationSelector = false;
-        });
+        this.swup.options.animationSelector = false;
         cy.triggerClickOnLink('/page2/');
         cy.shouldBeAtPage('/page2/');
         cy.shouldHaveH1('Page 2');
@@ -320,8 +312,8 @@ describe('Links', function() {
         cy.shouldHaveReloadedAfterAction(() => {
             cy.get('[data-cy=nav-link-ext]').click();
         });
-        cy.location().should((loc) => {
-            expect(loc.origin).to.eq('https://example.net');
+        cy.location().should((location) => {
+            expect(location.origin).to.eq('https://example.net');
         });
     });
 });
@@ -354,9 +346,7 @@ describe('Link selector', function() {
     });
 
     it('should follow SVG links when added to selector', function() {
-        cy.window().then(window => {
-            this.swup.options.linkSelector = 'a[href], svg a[*|href]';
-        });
+        this.swup.options.linkSelector = 'a[href], svg a[*|href]';
         cy.get('svg a').first().click();
         cy.shouldBeAtPage('/page2/');
         cy.shouldHaveH1('Page 2');
@@ -370,9 +360,7 @@ describe('Link selector', function() {
     });
 
     it('should follow map area links when added to selector', function() {
-        cy.window().then(window => {
-            this.swup.options.linkSelector = 'a[href], map area[href]';
-        });
+        this.swup.options.linkSelector = 'a[href], map area[href]';
         cy.get('map area').first().click({ force: true });
         cy.shouldBeAtPage('/page2/');
         cy.shouldHaveH1('Page 2');
@@ -383,8 +371,8 @@ describe('Link selector', function() {
 describe('Resolve URLs', function() {
 
     it('should ignore links for equal resolved urls', function() {
-        cy.window().then(window => {
-            this.swup.options.resolveUrl = url =>'/page1/';
+        cy.window().then(() => {
+            this.swup.options.resolveUrl = () =>'/page1/';
             cy.triggerClickOnLink('/page2/');
             cy.wait(500).then(() => {
                 cy.shouldBeAtPage('/page1/');
@@ -394,7 +382,7 @@ describe('Resolve URLs', function() {
 
     it('should skip popstate handling for equal resolved urls', function() {
         cy.window().then(window => {
-            this.swup.options.resolveUrl = url =>'/page1/';
+            this.swup.options.resolveUrl = () =>'/page1/';
             window.history.pushState(
                 {
                     url: '/pushed-page-1/',
@@ -465,16 +453,19 @@ describe('History', function() {
     });
 
     it('should trigger a custom popState event', function() {
+        const handlers = { popstate() {} };
+        cy.spy(handlers, 'popstate');
+
+        this.swup.on('popState', handlers.popstate);
+
         cy.triggerClickOnLink('/page2/');
         cy.shouldBeAtPage('/page2/');
 
-        cy.window().then(window => {
-            let called = false;
-            this.swup.on('popState', () => called = true);
+        cy.window().then((window) => {
             window.history.back();
-            cy.window().should(() => {
-                expect(called, 'popstate handler not called').to.be.true;
-            });
+        });
+        cy.window().should(() => {
+            expect(handlers.popstate).to.be.called;
         });
     });
 
@@ -494,11 +485,9 @@ describe('History', function() {
 describe('API', function() {
 
     it('should transition to pages using swup API', function() {
-        cy.window().then(window => {
-            this.swup.loadPage({ url: '/page2/' });
-            cy.shouldBeAtPage('/page2/');
-            cy.shouldHaveH1('Page 2');
-        });
+        this.swup.loadPage({ url: '/page2/' });
+        cy.shouldBeAtPage('/page2/');
+        cy.shouldHaveH1('Page 2');
     });
 
 });
@@ -510,7 +499,7 @@ describe('Scroll Plugin', function() {
         cy.shouldHaveElementInViewport('[data-cy=anchor]');
 
         cy.triggerClickOnLink('/page1/');
-        cy.window().should(window => {
+        cy.window().should((window) => {
             expect(window.scrollY).equal(0);
         });
     });
@@ -549,11 +538,9 @@ describe('Scroll Plugin', function() {
 describe('Body Class Plugin', function() {
 
     it('should update the body class', function() {
-        cy.window().then(window => {
-            this.swup.loadPage({ url: '/page2/' });
-            cy.get('body').should('have.class', 'body2');
-            cy.get('body').should('not.have.class', 'body1');
-        });
+        this.swup.loadPage({ url: '/page2/' });
+        cy.get('body').should('have.class', 'body2');
+        cy.get('body').should('not.have.class', 'body1');
     });
 
 });
