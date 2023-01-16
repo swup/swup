@@ -19,7 +19,10 @@
     "build:module": "microbundle src/index.ts -f modern,esm,cjs",
     "build:bundle": "microbundle src/Swup.ts -f umd --external none",
     "dev": "microbundle src/*.ts -w",
-    "lint": "tsc --noEmit --skipLibCheck && prettier 'src/**/*.ts' --write",
+    "lint": "npm run lint:ts && npm run lint:prettier -- --check",
+    "format": "npm run lint:ts && npm run lint:prettier -- --write",
+    "lint:ts": "tsc --noEmit --skipLibCheck",
+    "lint:prettier": "prettier 'src/**/*.ts'",
     "prepublish": "npm run build",
     "postinstall": "opencollective-postinstall || true",
     "ci": "start-server-and-test test:start 8274 cy:run:record",
@@ -30,7 +33,8 @@
     "test:start": "npm run test:instrument && npm run test:server",
     "cy:run": "cypress run",
     "cy:run:record": "cypress run --record",
-    "cy:open": "cypress open"
+    "cy:open": "cypress open",
+    "prepare": "husky install"
   },
   "author": "Georgy Marchuk",
   "license": "MIT",
@@ -57,7 +61,8 @@
     "microbundle": "^0.15.0",
     "nyc": "^15.1.0",
     "prettier": "^2.8.2",
-    "start-server-and-test": "^1.14.0"
+    "start-server-and-test": "^1.14.0",
+    "husky": "^8.0.0"
   },
   "collective": {
     "type": "opencollective",
