@@ -1,11 +1,14 @@
 #!/bin/sh
 
+# Make sure /usr/local/bin is in the path
 PATH="$PATH:/usr/local/bin"
 
+# Check if there are any staged files ending with `.ts`
 STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep "\.ts$")
 
 if [[ "$STAGED_FILES" = "" ]]; then
   exit 0
 fi
 
+# Finally, run the lint task
 npm run lint
