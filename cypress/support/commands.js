@@ -82,6 +82,35 @@ Cypress.Commands.add('shouldHaveElementInViewport', (element) => {
 	});
 });
 
+Cypress.Commands.add('transitionWithExpectedDuration', function (durationInMs, url = null) {
+	cy.wrapSwupInstance();
+
+	const durationTolerance = 0.25; // 25% plus/minus
+
+	let startOut = 0;
+	let durationOut = 0;
+	let startIn = 0;
+	let durationIn = 0;
+
+	cy.window().then((window) => {
+		this.swup.on('animationOutStart', () => (startOut = performance.now()));
+		this.swup.on('animationOutDone', () => (durationOut = performance.now() - startOut));
+		this.swup.on('animationInStart', () => (startIn = performance.now()));
+		this.swup.on('animationInDone', () => (durationIn = performance.now() - startIn));
+		url = url || window.location.href;
+		this.swup.loadPage({ url });
+	});
+
+	cy.window().should(() => {
+		const durationRange = [
+			durationInMs * (1 - durationTolerance),
+			durationInMs * (1 + durationTolerance)
+		];
+		expect(durationIn, 'in duration not correct').to.be.within(...durationRange);
+		expect(durationOut, 'out duration not correct').to.be.within(...durationRange);
+	});
+});
+
 Cypress.Commands.add('pushHistoryState', (url, data = {}) => {
 	cy.window().then((window) => {
 		const state = {

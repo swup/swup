@@ -4,8 +4,6 @@
 
 const baseUrl = Cypress.config('baseUrl');
 
-const durationTolerance = 0.25; // 25% plus/minus
-
 const createPlugin = (plugin = {}) => {
 	return {
 		name: 'TestPlugin',
@@ -188,89 +186,17 @@ describe('Events', function () {
 describe('Transition timing', function () {
 	it('should detect transition timing', function () {
 		cy.visit('/transition-duration.html');
-		cy.wrapSwupInstance();
-
-		let durationOut = 0;
-		let durationIn = 0;
-		const expectedDuration = 400;
-
-		let startOut = 0;
-		let startIn = 0;
-		cy.window().then(() => {
-			this.swup.on('animationOutStart', () => (startOut = performance.now()));
-			this.swup.on('animationOutDone', () => (durationOut = performance.now() - startOut));
-			this.swup.on('animationInStart', () => (startIn = performance.now()));
-			this.swup.on('animationInDone', () => (durationIn = performance.now() - startIn));
-		});
-
-		cy.triggerClickOnLink('/page-2.html');
-
-		cy.window().should(() => {
-			const durationRange = [
-				expectedDuration * (1 - durationTolerance),
-				expectedDuration * (1 + durationTolerance)
-			];
-			expect(durationIn, 'in duration not correct').to.be.within(...durationRange);
-			expect(durationOut, 'out duration not correct').to.be.within(...durationRange);
-		});
+		cy.transitionWithExpectedDuration(400);
 	});
 
 	it('should detect complex transition timing', function () {
 		cy.visit('/transition-complex.html');
-		cy.wrapSwupInstance();
-
-		let durationOut = 0;
-		let durationIn = 0;
-		const expectedDuration = 600;
-
-		let startOut = 0;
-		let startIn = 0;
-		cy.window().then(() => {
-			this.swup.on('animationOutStart', () => (startOut = performance.now()));
-			this.swup.on('animationOutDone', () => (durationOut = performance.now() - startOut));
-			this.swup.on('animationInStart', () => (startIn = performance.now()));
-			this.swup.on('animationInDone', () => (durationIn = performance.now() - startIn));
-		});
-
-		cy.triggerClickOnLink('/page-2.html');
-
-		cy.window().should(() => {
-			const durationRange = [
-				expectedDuration * (1 - durationTolerance),
-				expectedDuration * (1 + durationTolerance)
-			];
-			expect(durationIn, 'in duration not correct').to.be.within(...durationRange);
-			expect(durationOut, 'out duration not correct').to.be.within(...durationRange);
-		});
+		cy.transitionWithExpectedDuration(600);
 	});
 
 	it('should detect keyframe timing', function () {
 		cy.visit('/transition-keyframes.html');
-		cy.wrapSwupInstance();
-
-		let durationOut = 0;
-		let durationIn = 0;
-		const expectedDuration = 700;
-
-		cy.window().then(() => {
-			let startOut = 0;
-			let startIn = 0;
-			this.swup.on('animationOutStart', () => (startOut = performance.now()));
-			this.swup.on('animationOutDone', () => (durationOut = performance.now() - startOut));
-			this.swup.on('animationInStart', () => (startIn = performance.now()));
-			this.swup.on('animationInDone', () => (durationIn = performance.now() - startIn));
-		});
-
-		cy.triggerClickOnLink('/page-2.html');
-
-		cy.window().should(() => {
-			const durationRange = [
-				expectedDuration * (1 - durationTolerance),
-				expectedDuration * (1 + durationTolerance)
-			];
-			expect(durationIn, 'in duration not correct').to.be.within(...durationRange);
-			expect(durationOut, 'out duration not correct').to.be.within(...durationRange);
-		});
+		cy.transitionWithExpectedDuration(700);
 	});
 });
 
