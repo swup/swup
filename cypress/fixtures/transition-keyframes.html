@@ -16,6 +16,17 @@
         html.is-rendering .transition-default {
             animation-direction: reverse;
         }
+        @keyframes test-animation {
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(10px);
+                opacity: 0;
+            }
+        }
+
     </style>
 </head>
 <body>

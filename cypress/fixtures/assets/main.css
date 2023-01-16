@@ -252,51 +252,11 @@ html.is-animating .button--fade {
   text-decoration: none;
   font-weight: 700;
 }
-@-moz-keyframes slideUp {
-  0% {
-    transform: translate3d(0, 100%, 0);
-  }
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-}
-@-webkit-keyframes slideUp {
-  0% {
-    transform: translate3d(0, 100%, 0);
-  }
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-}
-@-o-keyframes slideUp {
-  0% {
-    transform: translate3d(0, 100%, 0);
-  }
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-}
 @keyframes slideUp {
   0% {
     transform: translate3d(0, 100%, 0);
   }
   100% {
     transform: translate3d(0, 0, 0);
-  }
-}
-
-.scroll-anchors > * {
-  display: block;
-  margin: 1000px 0;
-}
-
-@keyframes test-animation {
-  from {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateY(10px);
-    opacity: 0;
   }
 }
