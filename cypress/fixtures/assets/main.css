@@ -290,30 +290,6 @@ html.is-animating .button--fade {
   margin: 1000px 0;
 }
 
-.test--no-transitions * {
-  transition: none !important;
-}
-
-.test--complex-transitions .transition-default {
-  transition: opacity 100ms 200ms, transform 400ms 200ms;
-  opacity: 1;
-}
-
-html.test--complex-transitions.is-animating .transition-default {
-  transform: translateY(10px);
-  opacity: 0;
-}
-
-.test--keyframe-transitions .transition-default {
-  transition: none;
-}
-html.test--keyframe-transitions.is-changing .transition-default {
-  animation: test-animation 400ms 300ms;
-}
-html.test--keyframe-transitions.is-rendering .transition-default {
-  animation-direction: reverse;
-}
-
 @keyframes test-animation {
   from {
     transform: translateY(0);

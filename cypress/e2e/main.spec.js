@@ -192,19 +192,17 @@ describe('Events', function() {
 
 describe('Transitions', function() {
 
-    beforeEach(() => {
-        cy.visit('/page-1.html');
-        cy.wrapSwupInstance();
-    });
-
     it('should detect transition timings', function() {
+        cy.visit('/transition-duration.html');
+        cy.wrapSwupInstance();
+
         let durationOut = 0;
         let durationIn = 0;
         const expectedDuration = 400;
 
+        let startOut = 0;
+        let startIn = 0;
         cy.window().then(() => {
-            let startOut = 0;
-            let startIn = 0;
             this.swup.on('animationOutStart', () => startOut = performance.now());
             this.swup.on('animationOutDone', () => durationOut = performance.now() - startOut);
             this.swup.on('animationInStart', () => startIn = performance.now());
@@ -212,6 +210,7 @@ describe('Transitions', function() {
         });
 
         cy.triggerClickOnLink('/page-2.html');
+
         cy.window().should(() => {
             const durationRange = [expectedDuration * (1 - durationTolerance), expectedDuration * (1 + durationTolerance)];
             expect(durationIn, 'in duration not correct').to.be.within(...durationRange);
@@ -220,17 +219,16 @@ describe('Transitions', function() {
     });
 
     it('should detect complex transition timings', function() {
-        cy.document().then(document => {
-            document.documentElement.classList.add('test--complex-transitions');
-        });
+        cy.visit('/transition-complex.html');
+        cy.wrapSwupInstance();
 
         let durationOut = 0;
         let durationIn = 0;
         const expectedDuration = 600;
 
+        let startOut = 0;
+        let startIn = 0;
         cy.window().then(() => {
-            let startOut = 0;
-            let startIn = 0;
             this.swup.on('animationOutStart', () => startOut = performance.now());
             this.swup.on('animationOutDone', () => durationOut = performance.now() - startOut);
             this.swup.on('animationInStart', () => startIn = performance.now());
@@ -247,9 +245,8 @@ describe('Transitions', function() {
     });
 
     it('should detect keyframe timings', function() {
-        cy.window().then(window => {
-            window.document.documentElement.classList.add('test--keyframe-transitions');
-        });
+        cy.visit('/transition-keyframes.html');
+        cy.wrapSwupInstance();
 
         let durationOut = 0;
         let durationIn = 0;
@@ -300,9 +297,7 @@ describe('Navigation', function() {
     });
 
     it('should transition if no CSS transition is defined', function() {
-        cy.window().then(window => {
-            window.document.documentElement.classList.add('test--no-transitions');
-        });
+        cy.visit('/transition-none.html');
         cy.triggerClickOnLink('/page-2.html');
         cy.shouldBeAtPage('/page-2.html');
         cy.shouldHaveH1('Page 2');
