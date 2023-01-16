@@ -11,17 +11,105 @@ const pluginStub = {
     unmount: () => {}
 }
 
-context('Window', function() {
-    beforeEach(() => {
-        cy.visit('/page1/');
-        cy.window().then((window) => {
-            cy.wrap(window._swup).as('swup');
-        });
+beforeEach(() => {
+    cy.visit('/page1/');
+    cy.window().then((window) => {
+        cy.wrap(window._swup).as('swup');
     });
+});
+
+describe('Instance', function() {
 
     it('should have a version property', function() {
         expect(this.swup.version).to.not.be.empty;
     });
+
+    it('should mount and unmount plugins', function() {
+        cy.window().then(window => {
+            let mounted = false;
+            let unmounted = false;
+            const plugin = {
+                ...pluginStub,
+                mount: () => {
+                    mounted = true;
+                },
+                unmount: () => {
+                    unmounted = true;
+                }
+            };
+            this.swup.use(plugin);
+            this.swup.unuse(plugin);
+            expect(mounted).to.be.true;
+            expect(unmounted).to.be.true;
+        });
+    });
+
+    it('should return plugin instances', function() {
+        cy.window().then(window => {
+            const instance = this.swup.findPlugin('ScrollPlugin');
+            expect(instance).to.be.an('object');
+        });
+    });
+
+    it('should check plugin version requirements', function() {
+        cy.window().then(window => {
+            let checked = false;
+
+            this.swup.version = '10.0.0';
+            this.swup.use({
+                ...pluginStub,
+                name: 'AllowedPlugin',
+                requires: { swup: '>=9' },
+                _checkRequirements: () => {
+                    checked = true;
+                    return true;
+                }
+            });
+            this.swup.use({
+                ...pluginStub,
+                name: 'UnallowedPlugin',
+                requires: { swup: '>=11' },
+                _checkRequirements: () => {
+                    return false;
+                }
+            });
+
+            expect(checked).to.be.true;
+            const instance = this.swup.findPlugin('AllowedPlugin');
+            expect(instance).to.be.an('object');
+
+            const unallowedInstance = this.swup.findPlugin('UnallowedPlugin');
+            expect(unallowedInstance).to.be.undefined;
+
+        });
+    });
+});
+
+describe('Cache', function() {
+
+    it('should cache pages', function() {
+        cy.window().then(window => {
+            this.swup.loadPage({ url: '/page2/' });
+            cy.shouldBeAtPage('/page2/');
+            cy.window().should(() => {
+                expect(this.swup.cache.getCurrentPage()).not.to.be.undefined;
+            });
+        });
+    });
+
+    it('should cache pages from absolute URLs', function() {
+        cy.window().then(window => {
+            this.swup.loadPage({ url: 'http://localhost:8274/page2/' });
+            cy.shouldBeAtPage('/page2/');
+            cy.window().should(() => {
+                expect(this.swup.cache.getCurrentPage()).not.to.be.undefined;
+            });
+        });
+    });
+
+});
+
+describe('Markup', function() {
 
     it('should add swup class to html element', function() {
         cy.get('html').should('have.class', 'swup-enabled');
@@ -31,6 +119,27 @@ context('Window', function() {
     it('should add data-swup attr to containers', function() {
         cy.get('[data-cy=container]').should('have.attr', 'data-swup', '0');
     });
+
+    it('should process transition classes', function() {
+        cy.triggerClickOnLink('/page2/');
+        cy.wait(300);
+        cy.shouldHaveTransitionLeaveClasses('page2');
+        cy.wait(300);
+        cy.shouldHaveTransitionEnterClasses('page2');
+        cy.wait(300);
+        cy.shouldNotHaveTransitionClasses('page2');
+    });
+
+    it('should remove swup class from html tag', function() {
+        cy.window().then(window => {
+            this.swup.destroy();
+            cy.get('html').should('not.have.class', 'swup-enabled');
+        });
+    });
+
+});
+
+describe('Events', function() {
 
     it('should prevent the default click event', function() {
         let triggered = false;
@@ -47,6 +156,44 @@ context('Window', function() {
             expect(prevented, 'preventDefault() was not called').to.be.true;
         });
     });
+
+    it('should trigger a custom click event', function() {
+        let triggered = false;
+        cy.window().then(window => {
+            this.swup.on('clickLink', () => triggered = true);
+        });
+        cy.triggerClickOnLink('/page2/');
+        cy.window().should(() => {
+            expect(triggered, 'event was not triggered').to.be.true;
+        });
+    });
+
+    it('should remove custom event handlers', function() {
+        let countA = 0;
+        let countB = 0;
+        const handlerA = () => (countA += 1);
+        const handlerB = () => (countB += 1);
+        cy.window().then(window => {
+            this.swup.on('transitionStart', handlerA);
+            this.swup.on('contentReplaced', handlerB);
+        });
+        cy.triggerClickOnLink('/page2/');
+        cy.window().should(() => {
+            expect(countA).to.equal(1);
+            expect(countB).to.equal(1);
+        });
+        cy.window().then(window => {
+            this.swup.off('transitionStart', handlerA);
+        });
+        cy.triggerClickOnLink('/page3/');
+        cy.window().should(() => {
+            expect(countA).to.equal(1);
+            expect(countB).to.equal(2);
+        });
+    });
+});
+
+describe('Transitions', function() {
 
     it('should detect transition timings', function() {
         let durationOut = 0;
@@ -123,41 +270,9 @@ context('Window', function() {
             expect(durationOut, 'out duration not correct').to.be.within(...durationRange);
         });
     });
+});
 
-    it('should trigger a custom click event', function() {
-        let triggered = false;
-        cy.window().then(window => {
-            this.swup.on('clickLink', () => triggered = true);
-        });
-        cy.triggerClickOnLink('/page2/');
-        cy.window().should(() => {
-            expect(triggered, 'event was not triggered').to.be.true;
-        });
-    });
-
-    it('should remove custom event handlers', function() {
-        let countA = 0;
-        let countB = 0;
-        const handlerA = () => (countA += 1);
-        const handlerB = () => (countB += 1);
-        cy.window().then(window => {
-            this.swup.on('transitionStart', handlerA);
-            this.swup.on('contentReplaced', handlerB);
-        });
-        cy.triggerClickOnLink('/page2/');
-        cy.window().should(() => {
-            expect(countA).to.equal(1);
-            expect(countB).to.equal(1);
-        });
-        cy.window().then(window => {
-            this.swup.off('transitionStart', handlerA);
-        });
-        cy.triggerClickOnLink('/page3/');
-        cy.window().should(() => {
-            expect(countA).to.equal(1);
-            expect(countB).to.equal(2);
-        });
-    });
+describe('Navigation', function() {
 
     it('should transition to other pages', function() {
         cy.triggerClickOnLink('/page2/');
@@ -188,6 +303,16 @@ context('Window', function() {
         cy.shouldHaveH1('Page 2');
     });
 
+    // it('should ignore visit when meta key pressed', function() {
+    //     cy.triggerClickOnLink('/page2/', { metaKey: true });
+    //     cy.wait(500);
+    //     cy.shouldBeAtPage('/page1/');
+    //     cy.shouldHaveH1('Page 1');
+    // });
+});
+
+describe('Links', function() {
+
     it('should accept relative links', function() {
         cy.get('[data-cy=nav-link-rel]').click();
         cy.shouldBeAtPage('/page2/');
@@ -201,7 +326,7 @@ context('Window', function() {
         cy.shouldHaveH1('Sub 2');
     });
 
-    it('should ignore links to different origins', function() {
+    it('should skip links to different origins', function() {
         cy.shouldHaveReloadedAfterAction(() => {
             cy.get('[data-cy=nav-link-ext]').click();
         });
@@ -209,6 +334,9 @@ context('Window', function() {
             expect(loc.origin).to.eq('https://example.net');
         });
     });
+});
+
+describe('Ignoring visits', function() {
 
     it('should ignore links with data-no-swup attr', function() {
         cy.shouldHaveReloadedAfterAction(() => {
@@ -223,6 +351,10 @@ context('Window', function() {
         });
         cy.shouldBeAtPage('/page4/');
     });
+
+});
+
+describe('Link selector', function() {
 
     it('should ignore SVG links by default', function() {
         cy.shouldHaveReloadedAfterAction(() => {
@@ -256,12 +388,53 @@ context('Window', function() {
         cy.shouldHaveH1('Page 2');
     });
 
-    // it('should ignore clicks when meta key pressed', function() {
-    //     cy.triggerClickOnLink('/page2/', { metaKey: true });
-    //     cy.wait(500);
-    //     cy.shouldBeAtPage('/page1/');
-    //     cy.shouldHaveH1('Page 1');
-    // });
+});
+
+describe('Resolve URLs', function() {
+
+    it('should ignore links for equal resolved urls', function() {
+        cy.window().then(window => {
+            this.swup.options.resolveUrl = url =>'/page1/';
+            cy.triggerClickOnLink('/page2/');
+            cy.wait(500).then(() => {
+                cy.shouldBeAtPage('/page1/');
+            });
+        });
+    });
+
+    it('should skip popstate handling for equal resolved urls', function() {
+        cy.window().then(window => {
+            this.swup.options.resolveUrl = url =>'/page1/';
+            window.history.pushState(
+                {
+                    url: '/pushed-page-1/',
+                    random: Math.random(),
+                    source: 'swup'
+                },
+                document.title,
+                '/pushed-page-1/'
+            );
+
+            window.history.pushState(
+                {
+                    url: '/pushed-page-2/',
+                    random: Math.random(),
+                    source: 'swup'
+                },
+                document.title,
+                '/pushed-page-2/'
+            );
+
+            cy.wait(500).then(() => {
+                window.history.back();
+                cy.shouldBeAtPage('/pushed-page-1/');
+                cy.shouldHaveH1('Page 1');
+            })
+        });
+    });
+});
+
+describe('History', function() {
 
     it('should transition to previous page on popstate', function() {
         cy.triggerClickOnLink('/page2/');
@@ -326,6 +499,22 @@ context('Window', function() {
         });
     });
 
+});
+
+describe('API', function() {
+
+    it('should transition to pages using swup API', function() {
+        cy.window().then(window => {
+            this.swup.loadPage({ url: '/page2/' });
+            cy.shouldBeAtPage('/page2/');
+            cy.shouldHaveH1('Page 2');
+        });
+    });
+
+});
+
+describe('Scroll Plugin', function() {
+
     it('should scroll to hash element and back to top', function() {
         cy.get('[data-cy=nav-to-anchor]').click();
         cy.shouldHaveElementInViewport('[data-cy=anchor]');
@@ -353,83 +542,6 @@ context('Window', function() {
         cy.shouldHaveElementInViewport('[data-cy=anchor-with-unicode]');
     });
 
-    it('should process transition classes', function() {
-        cy.triggerClickOnLink('/page2/');
-        cy.wait(300);
-        cy.shouldHaveTransitionLeaveClasses('page2');
-        cy.wait(300);
-        cy.shouldHaveTransitionEnterClasses('page2');
-        cy.wait(300);
-        cy.shouldNotHaveTransitionClasses('page2');
-    });
-
-    it('should mount and unmount plugins', function() {
-        cy.window().then(window => {
-            let mounted = false;
-            let unmounted = false;
-            const plugin = {
-                ...pluginStub,
-                mount: () => {
-                    mounted = true;
-                },
-                unmount: () => {
-                    unmounted = true;
-                }
-            };
-            this.swup.use(plugin);
-            this.swup.unuse(plugin);
-            expect(mounted).to.be.true;
-            expect(unmounted).to.be.true;
-        });
-    });
-
-    it('should return plugin instances', function() {
-        cy.window().then(window => {
-            const instance = this.swup.findPlugin('ScrollPlugin');
-            expect(instance).to.be.an('object');
-        });
-    });
-
-    it('should check plugin version requirements', function() {
-        cy.window().then(window => {
-            let checked = false;
-
-            this.swup.version = '10.0.0';
-            this.swup.use({
-                ...pluginStub,
-                name: 'AllowedPlugin',
-                requires: { swup: '>=9' },
-                _checkRequirements: () => {
-                    checked = true;
-                    return true;
-                }
-            });
-            this.swup.use({
-                ...pluginStub,
-                name: 'UnallowedPlugin',
-                requires: { swup: '>=11' },
-                _checkRequirements: () => {
-                    return false;
-                }
-            });
-
-            expect(checked).to.be.true;
-            const instance = this.swup.findPlugin('AllowedPlugin');
-            expect(instance).to.be.an('object');
-
-            const unallowedInstance = this.swup.findPlugin('UnallowedPlugin');
-            expect(unallowedInstance).to.be.undefined;
-
-        });
-    });
-
-    it('should remove swup class from html tag', function() {
-        cy.window().then(window => {
-            this.swup.destroy();
-            cy.get('html').should('not.have.class', 'swup-enabled');
-        });
-    });
-
     it('should transition page and scroll on link with hash', function() {
         // go to page2 first
         cy.triggerClickOnLink('/page2/');
@@ -442,80 +554,15 @@ context('Window', function() {
         cy.shouldHaveElementInViewport('[data-cy=anchor]');
     });
 
-    it('should transition to pages using swup API', function() {
-        cy.window().then(window => {
-            this.swup.loadPage({ url: '/page2/' });
-            cy.shouldBeAtPage('/page2/');
-            cy.shouldHaveH1('Page 2');
-        });
-    });
+});
+
+describe('Body Class Plugin', function() {
 
     it('should update the body class', function() {
         cy.window().then(window => {
             this.swup.loadPage({ url: '/page2/' });
             cy.get('body').should('have.class', 'body2');
             cy.get('body').should('not.have.class', 'body1');
-        });
-    });
-
-    it('should cache pages', function() {
-        cy.window().then(window => {
-            this.swup.loadPage({ url: '/page2/' });
-            cy.shouldBeAtPage('/page2/');
-            cy.window().should(() => {
-                expect(this.swup.cache.getCurrentPage()).not.to.be.undefined;
-            });
-        });
-    });
-
-    it('should cache pages from absolute URLs', function() {
-        cy.window().then(window => {
-            this.swup.loadPage({ url: 'http://localhost:8274/page2/' });
-            cy.shouldBeAtPage('/page2/');
-            cy.window().should(() => {
-                expect(this.swup.cache.getCurrentPage()).not.to.be.undefined;
-            });
-        });
-    });
-
-    it('should ignore links for equal resolved urls', function() {
-         cy.window().then(window => {
-            this.swup.options.resolveUrl = url =>'/page1/';
-            cy.triggerClickOnLink('/page2/');
-            cy.wait(500).then(() => {
-                cy.shouldBeAtPage('/page1/');
-            });
-         });
-    });
-
-    it('should skip popstate handling for equal resolved urls', function() {
-        cy.window().then(window => {
-            this.swup.options.resolveUrl = url =>'/page1/';
-            window.history.pushState(
-                {
-                    url: '/pushed-page-1/',
-                    random: Math.random(),
-                    source: 'swup'
-                },
-                document.title,
-                '/pushed-page-1/'
-            );
-
-            window.history.pushState(
-                {
-                    url: '/pushed-page-2/',
-                    random: Math.random(),
-                    source: 'swup'
-                },
-                document.title,
-                '/pushed-page-2/'
-            );
-
-            cy.wait(500).then(() => {
-                window.history.back();
-                cy.shouldBeAtPage('/pushed-page-1/');
-                cy.shouldHaveH1('Page 1');
-            })
         });
     });
 
