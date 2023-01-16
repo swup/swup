@@ -1,3 +1,5 @@
 #!/bin/sh
 
+PATH="$PATH:/usr/local/bin"
+
 npm run lint
