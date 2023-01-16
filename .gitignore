@@ -19,3 +19,5 @@ wiki-wishlist
 .nyc_output
 coverage
 /test/site/swup
+/cypress/videos
+/cypress/screenshots
