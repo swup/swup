@@ -4,12 +4,16 @@
 
 const durationTolerance = 0.25; // 25% plus/minus
 
-const pluginStub = {
-    name: 'TestPlugin',
-    isSwupPlugin: true,
-    mount: () => {},
-    unmount: () => {}
-}
+const createPlugin = (plugin = {}) => {
+    return {
+        name: 'TestPlugin',
+        isSwupPlugin: true,
+        mount: () => {},
+        unmount: () => {},
+        _checkRequirements: () => true,
+        ...plugin
+    };
+};
 
 beforeEach(() => {
     cy.visit('/page1/');
@@ -25,63 +29,49 @@ describe('Instance', function() {
     });
 
     it('should mount and unmount plugins', function() {
-        cy.window().then(window => {
-            let mounted = false;
-            let unmounted = false;
-            const plugin = {
-                ...pluginStub,
-                mount: () => {
-                    mounted = true;
-                },
-                unmount: () => {
-                    unmounted = true;
-                }
-            };
-            this.swup.use(plugin);
-            this.swup.unuse(plugin);
-            expect(mounted).to.be.true;
-            expect(unmounted).to.be.true;
-        });
+        const plugin = createPlugin();
+        cy.spy(plugin, 'mount');
+        cy.spy(plugin, 'unmount');
+
+        this.swup.use(plugin);
+        expect(plugin.mount).to.be.called;
+
+        this.swup.unuse(plugin);
+        expect(plugin.unmount).to.be.called;
     });
 
-    it('should return plugin instances', function() {
-        cy.window().then(window => {
-            const instance = this.swup.findPlugin('ScrollPlugin');
-            expect(instance).to.be.an('object');
-        });
+    it('should find a plugin instance by reference', function() {
+        const plugin = createPlugin();
+        this.swup.use(plugin);
+        const instance = this.swup.findPlugin(plugin);
+        expect(instance).to.be.an('object');
     });
 
-    it('should check plugin version requirements', function() {
-        cy.window().then(window => {
-            let checked = false;
+    it('should find a plugin instance by name', function() {
+        const plugin = createPlugin({ name: 'ExamplePlugin' });
+        this.swup.use(plugin);
+        const instance = this.swup.findPlugin('ExamplePlugin');
+        expect(instance).to.be.an('object');
+    });
 
-            this.swup.version = '10.0.0';
-            this.swup.use({
-                ...pluginStub,
-                name: 'AllowedPlugin',
-                requires: { swup: '>=9' },
-                _checkRequirements: () => {
-                    checked = true;
-                    return true;
-                }
-            });
-            this.swup.use({
-                ...pluginStub,
-                name: 'UnallowedPlugin',
-                requires: { swup: '>=11' },
-                _checkRequirements: () => {
-                    return false;
-                }
-            });
+    it('should check plugin requirements', function() {
+        const plugin = createPlugin();
+        cy.spy(plugin, '_checkRequirements');
+        this.swup.use(plugin);
+        expect(plugin._checkRequirements).to.be.called;
+    });
 
-            expect(checked).to.be.true;
-            const instance = this.swup.findPlugin('AllowedPlugin');
-            expect(instance).to.be.an('object');
+    it('should reject plugins with unmet requirements', function() {
+        const allowedPlugin = createPlugin({ _checkRequirements: () => true });
+        const unallowedPlugin = createPlugin({ _checkRequirements: () => false });
+        this.swup.use(allowedPlugin);
+        this.swup.use(unallowedPlugin);
 
-            const unallowedInstance = this.swup.findPlugin('UnallowedPlugin');
-            expect(unallowedInstance).to.be.undefined;
+        const allowedInstance = this.swup.findPlugin(allowedPlugin);
+        expect(allowedInstance).to.be.an('object');
 
-        });
+        const unallowedInstance = this.swup.findPlugin(unallowedPlugin);
+        expect(unallowedInstance).to.be.undefined;
     });
 });
 
