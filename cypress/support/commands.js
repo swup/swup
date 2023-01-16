@@ -51,24 +51,24 @@ Cypress.Commands.add("shouldHaveH1", (str) => {
     cy.get('h1').should('contain', str);
 });
 
-Cypress.Commands.add("shouldHaveTransitionLeaveClasses", (page) => {
+Cypress.Commands.add("shouldHaveTransitionLeaveClasses", () => {
     cy.get('html').should('have.class', 'is-changing');
     cy.get('html').should('have.class', 'is-leaving');
 });
 
-Cypress.Commands.add("shouldHaveTransitionEnterClasses", (page) => {
+Cypress.Commands.add("shouldHaveTransitionEnterClasses", () => {
     cy.get('html').should('have.class', 'is-changing');
     cy.get('html').should('have.class', 'is-rendering');
     cy.get('html').should('not.have.class', 'is-leaving');
 });
 
-Cypress.Commands.add("shouldNotHaveTransitionClasses", (page) => {
+Cypress.Commands.add("shouldNotHaveTransitionClasses", () => {
     cy.get('html').should('not.have.class', 'is-changing');
     cy.get('html').should('not.have.class', 'is-rendering');
     cy.get('html').should('not.have.class', 'is-leaving');
 });
 
-Cypress.Commands.add('shouldHaveElementInViewport', (element) => {
+Cypress.Commands.add("shouldHaveElementInViewport", (element) => {
     cy.get(element).should($el => {
         const bottom = Cypress.$(cy.state('window')).height();
         const rect = $el[0].getBoundingClientRect();
