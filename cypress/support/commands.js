@@ -24,6 +24,12 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
+Cypress.Commands.add("wrapSwupInstance", () => {
+    cy.window().then((window) => {
+        cy.wrap(window._swup).as('swup');
+    });
+});
+
 Cypress.Commands.add("triggerClickOnLink", (buttonHref, options = {}) => {
     cy.get(`a[href="${ CSS.escape(buttonHref) }"]`).first().click(options);
 });
