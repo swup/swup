@@ -73,3 +73,16 @@ Cypress.Commands.add('shouldHaveElementInViewport', (element) => {
         expect(rect.bottom).not.to.be.greaterThan(bottom + buffer);
     })
 })
+
+Cypress.Commands.add("pushHistoryState", (url, data = {}) => {
+
+    cy.window().then((window) => {
+        const state = {
+            url,
+            random: Math.random(),
+            source: 'swup',
+            ...data
+        };
+        window.history.pushState(state, '', url);
+    });
+});
