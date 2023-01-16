@@ -18,6 +18,6 @@ wiki-wishlist
 /plugins
 .nyc_output
 coverage
-/test/site/swup
+/cypress/fixtures/dist
 /cypress/videos
 /cypress/screenshots
