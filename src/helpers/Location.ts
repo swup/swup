@@ -2,16 +2,6 @@
  * A helper for creating a Location from either an element
  * or a URL object/string
  *
- * Note: this could be implemented as a class inheriting from URL
- * Except: Babel will add tons of boilerplate for ES6 classes + getters
- * So for now it's implemented as an augmented URL object with custom getter
- *
- * class Location extends URL {
- *   get url() {
- *	 return this.pathname + this.search;
- *   }
- * }
- *
  */
 
 export class Location extends URL {
