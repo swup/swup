@@ -90,7 +90,7 @@ li span > span {
   transform: translate3d(0, 100%, 0);
 }
 .transition-default {
-  transition: 0.4s;
+  transition: 0.1s;
   opacity: 1;
 }
 html.is-animating .transition-default {
@@ -252,75 +252,11 @@ html.is-animating .button--fade {
   text-decoration: none;
   font-weight: 700;
 }
-@-moz-keyframes slideUp {
-  0% {
-    transform: translate3d(0, 100%, 0);
-  }
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-}
-@-webkit-keyframes slideUp {
-  0% {
-    transform: translate3d(0, 100%, 0);
-  }
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-}
-@-o-keyframes slideUp {
-  0% {
-    transform: translate3d(0, 100%, 0);
-  }
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-}
 @keyframes slideUp {
   0% {
     transform: translate3d(0, 100%, 0);
   }
   100% {
     transform: translate3d(0, 0, 0);
-  }
-}
-
-.scroll-anchors > * {
-  display: block;
-  margin: 1000px 0;
-}
-
-.test--no-transitions * {
-  transition: none !important;
-}
-
-.test--complex-transitions .transition-default {
-  transition: opacity 100ms 200ms, transform 400ms 200ms;
-  opacity: 1;
-}
-
-html.test--complex-transitions.is-animating .transition-default {
-  transform: translateY(10px);
-  opacity: 0;
-}
-
-.test--keyframe-transitions .transition-default {
-  transition: none;
-}
-html.test--keyframe-transitions.is-changing .transition-default {
-  animation: test-animation 400ms 300ms;
-}
-html.test--keyframe-transitions.is-rendering .transition-default {
-  animation-direction: reverse;
-}
-
-@keyframes test-animation {
-  from {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateY(10px);
-    opacity: 0;
   }
 }
