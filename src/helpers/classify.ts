@@ -6,6 +6,6 @@ export const classify = (text: string, fallback?: string): string => {
 		.replace(/[\s/_.]+/g, '-') // replace spaces and _./ with '-'
 		.replace(/[^\w-]+/g, '') // remove all non-word chars
 		.replace(/--+/g, '-') // replace repeating '-' with single '-'
-		.replace(/^-+|-+$/, ''); // trim '-' from edges
+		.replace(/^-+|-+$/g, ''); // trim '-' from edges
 	return output || fallback || '';
 };
