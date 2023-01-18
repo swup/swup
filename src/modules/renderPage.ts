@@ -1,6 +1,6 @@
-import { Location, updateHistoryRecord, getCurrentUrl } from '../helpers.js';
-import Swup from '../Swup.js';
-import { PageRecord } from './Cache.js';
+import { Location, updateHistoryRecord, getCurrentUrl } from '../helpers';
+import Swup from '../Swup';
+import { PageRecord } from './Cache';
 
 export const renderPage = function (
 	this: Swup,

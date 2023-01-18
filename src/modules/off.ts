@@ -1,5 +1,5 @@
-import Swup from '../Swup.js';
-import { EventType, Handler } from './on.js';
+import Swup from '../Swup';
+import { EventType, Handler } from './on';
 
 export const off = function off(this: Swup, event?: EventType, handler?: Handler) {
 	if (event && handler) {

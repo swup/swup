@@ -1,4 +1,4 @@
-import { query, queryAll } from '../utils.js';
+import { query, queryAll } from '../utils';
 
 export const markSwupElements = (element: Element, containers: string[]): void => {
 	let blocks = 0;

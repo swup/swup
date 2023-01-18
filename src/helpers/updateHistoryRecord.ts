@@ -1,4 +1,4 @@
-import { getCurrentUrl } from './getCurrentUrl.js';
+import { getCurrentUrl } from './getCurrentUrl';
 
 export const updateHistoryRecord = (
 	url: string | null = null,

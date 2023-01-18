@@ -1,6 +1,6 @@
-import { classify, createHistoryRecord, getCurrentUrl } from '../helpers.js';
-import Swup from '../Swup.js';
-import { PageRecord } from './Cache.js';
+import { classify, createHistoryRecord, getCurrentUrl } from '../helpers';
+import Swup from '../Swup';
+import { PageRecord } from './Cache';
 
 export type TransitionOptions = {
 	url: string;

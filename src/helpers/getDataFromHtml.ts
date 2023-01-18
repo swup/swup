@@ -1,4 +1,4 @@
-import { query, queryAll } from '../utils.js';
+import { query, queryAll } from '../utils';
 
 export type PageHtmlData = {
 	title: string;

@@ -1,9 +1,9 @@
-import Swup, { Options } from './Swup.js';
+import Swup, { Options } from './Swup';
 import { Plugin } from './modules/plugins';
 
 export default Swup;
 
-export * from './helpers.js';
-export * from './utils.js';
+export * from './helpers';
+export * from './utils';
 
 export type { Options, Plugin };

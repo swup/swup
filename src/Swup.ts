@@ -1,6 +1,6 @@
 import delegate from 'delegate-it';
 
-import version from './config/version.js';
+import version from './config/version';
 
 import {
 	cleanupAnimationClasses,
@@ -9,26 +9,26 @@ import {
 	Location,
 	markSwupElements,
 	updateHistoryRecord
-} from './helpers.js';
-import { Unsubscribe } from './helpers/delegateEvent.js';
+} from './helpers';
+import { Unsubscribe } from './helpers/delegateEvent';
 
-import { Cache } from './modules/Cache.js';
-import { enterPage } from './modules/enterPage.js';
-import { getAnchorElement } from './modules/getAnchorElement.js';
-import { getAnimationPromises } from './modules/getAnimationPromises.js';
-import { getPageData } from './modules/getPageData.js';
-import { fetchPage } from './modules/fetchPage.js';
-import { leavePage } from './modules/leavePage.js';
-import { loadPage } from './modules/loadPage.js';
-import { replaceContent } from './modules/replaceContent.js';
-import { off } from './modules/off.js';
-import { on, Handlers } from './modules/on.js';
-import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
-import { renderPage } from './modules/renderPage.js';
-import { triggerEvent } from './modules/triggerEvent.js';
-import { updateTransition } from './modules/updateTransition.js';
+import { Cache } from './modules/Cache';
+import { enterPage } from './modules/enterPage';
+import { getAnchorElement } from './modules/getAnchorElement';
+import { getAnimationPromises } from './modules/getAnimationPromises';
+import { getPageData } from './modules/getPageData';
+import { fetchPage } from './modules/fetchPage';
+import { leavePage } from './modules/leavePage';
+import { loadPage } from './modules/loadPage';
+import { replaceContent } from './modules/replaceContent';
+import { off } from './modules/off';
+import { on, Handlers } from './modules/on';
+import { use, unuse, findPlugin, Plugin } from './modules/plugins';
+import { renderPage } from './modules/renderPage';
+import { triggerEvent } from './modules/triggerEvent';
+import { updateTransition } from './modules/updateTransition';
 
-import { queryAll } from './utils.js';
+import { queryAll } from './utils';
 
 export type Transition = {
 	from?: string;

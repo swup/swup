@@ -1,7 +1,7 @@
-import Swup from '../Swup.js';
-import { fetch } from '../helpers.js';
-import { TransitionOptions } from './loadPage.js';
-import { PageRecord } from './Cache.js';
+import Swup from '../Swup';
+import { fetch } from '../helpers';
+import { TransitionOptions } from './loadPage';
+import { PageRecord } from './Cache';
 
 export function fetchPage(this: Swup, data: TransitionOptions): Promise<PageRecord> {
 	const headers = this.options.requestHeaders;
