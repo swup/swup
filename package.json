@@ -26,7 +26,7 @@
     "prepublish": "npm run build",
     "postinstall": "opencollective-postinstall || true",
     "test": "npm run test:unit && npm run test:e2e",
-    "test:ci": "npm run test:unit && npm run test:unit:ci",
+    "test:ci": "npm run test:unit && npm run test:e2E:ci",
     "test:unit": "jest",
     "test:e2e": "start-server-and-test test:e2e:start 8274 cy:run",
     "test:e2e:ci": "start-server-and-test test:e2e:start 8274 cy:run:record",
