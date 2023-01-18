@@ -2,7 +2,7 @@ name: Lint
 
 on:
   push:
-    branches: [master]
+    branches: [master, next]
   pull_request:
 
 permissions:
@@ -28,6 +28,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run tsc
+        run: |-
+          npm run lint:ts
+
       - name: Run prettier
         run: |-
-          npx --no-install prettier --check 'src/**/*.{js,mjs}'
+          npm run lint:prettier -- --check
