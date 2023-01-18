@@ -1,21 +1,29 @@
 import Swup from '../Swup.js';
 
-// this should probably just be imported from @swup/plugin, but it doesn't have type defs now
 export type Plugin = {
 	name: string;
+	isSwupPlugin: true;
 	mount: () => void;
 	unmount: () => void;
-	isSwupPlugin: true;
+
+	// the instance is assigned later on after passing to swup
 	swup?: Swup;
 
 	// these are possibly undefined for backward compatibility
+	version?: string;
+	requires?: Record<string, string>;
 	_beforeMount?: () => void;
 	_afterUnmount?: () => void;
 	_checkRequirements?: () => boolean;
 };
 
-export const use = function (this: Swup, plugin: Plugin) {
-	if (!plugin.isSwupPlugin) {
+const isSwupPlugin = (maybeInvalidPlugin: unknown): maybeInvalidPlugin is Plugin => {
+	// @ts-ignore
+	return maybeInvalidPlugin?.isSwupPlugin;
+};
+
+export const use = function (this: Swup, plugin: unknown) {
+	if (!isSwupPlugin(plugin)) {
 		console.error('Not a swup plugin instance', plugin);
 		return;
 	}
