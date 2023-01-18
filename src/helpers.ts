@@ -11,4 +11,3 @@ export { getCurrentUrl } from './helpers/getCurrentUrl.js';
 export { Location } from './helpers/Location.js';
 export { markSwupElements } from './helpers/markSwupElements.js';
 export { cleanupAnimationClasses } from './helpers/cleanupAnimationClasses.js';
-export { versionSatisfies } from './helpers/versionSatisfies.js';
