@@ -1,7 +1,7 @@
 {
   "name": "swup",
   "amdName": "Swup",
-  "version": "3.0.0-rc.3",
+  "version": "3.0.0-rc.4",
   "description": "Complete, flexible, extensible, and easy-to-use page transition library for your server-side rendered website.",
   "type": "module",
   "source": "src/Swup.ts",
