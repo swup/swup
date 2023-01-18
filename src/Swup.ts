@@ -21,11 +21,9 @@ import { fetchPage } from './modules/fetchPage';
 import { leavePage } from './modules/leavePage';
 import { loadPage } from './modules/loadPage';
 import { replaceContent } from './modules/replaceContent';
-import { off } from './modules/off';
-import { on, Handlers } from './modules/on';
+import { on, off, triggerEvent, Handlers } from './modules/events';
 import { use, unuse, findPlugin, Plugin } from './modules/plugins';
 import { renderPage } from './modules/renderPage';
-import { triggerEvent } from './modules/triggerEvent';
 import { updateTransition } from './modules/updateTransition';
 
 import { queryAll } from './utils';
