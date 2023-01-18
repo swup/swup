@@ -1,5 +1,5 @@
-import Swup from '../Swup.js';
-import { TransitionOptions } from './loadPage.js';
+import Swup from '../Swup';
+import { TransitionOptions } from './loadPage';
 
 export const leavePage = function (
 	this: Swup,

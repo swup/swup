@@ -1,4 +1,4 @@
-import Swup from '../Swup.js';
+import Swup from '../Swup';
 
 export const updateTransition = function (
 	this: Swup,
