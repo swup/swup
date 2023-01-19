@@ -4,6 +4,8 @@ console.log = jest.fn();
 console.warn = jest.fn();
 console.error = jest.fn();
 
+const baseUrl = window.location.origin;
+
 describe('exports', () => {
 	it('exports Swup, and Options/Plugin types', () => {
 		class SwupPlugin implements Plugin {
@@ -18,7 +20,7 @@ describe('exports', () => {
 			animationSelector: '[class*="transition-"]',
 			cache: true,
 			containers: ['#swup'],
-			ignoreVisit: (href, { el } = {}) => !!el?.closest('[data-no-swup]'),
+			ignoreVisit: (url, { el } = {}) => !!el?.closest('[data-no-swup]'),
 			linkSelector: 'a[href]',
 			plugins: [new SwupPlugin()],
 			resolveUrl: (url) => url,
@@ -32,5 +34,19 @@ describe('exports', () => {
 		const swup = new Swup(options);
 
 		expect(swup.version).not.toBeUndefined();
+	});
+
+	it('passes relative URL to ignoreVisit', () => {
+		let ignorableUrl = 'nothing';
+		const swup = new Swup({
+			ignoreVisit: (url, { el } = {}) => {
+				ignorableUrl = url;
+				return false;
+			}
+		});
+
+		swup.shouldIgnoreVisit(baseUrl + '/path/?query#hash');
+
+		expect(ignorableUrl).toEqual('/path/?query#hash');
 	});
 });
