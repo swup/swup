@@ -11,7 +11,7 @@ export type PageLoadOptions = {
 	url: string;
 	event?: Event;
 	customTransition?: string;
-} & TransitionOptions;
+};
 
 export function loadPage(this: Swup, data: TransitionOptions) {
 	const { url } = data;
