@@ -282,19 +282,20 @@ describe('Ignoring visits', function () {
 	});
 
 	it('should ignore links via custom ignored path', function () {
-		this.swup.options.ignoreVisit = (url) => url.startsWith('/page-2');
-		cy.shouldHaveReloadedAfterAction(() => {
-			cy.get('[data-cy="ignore-path-start"]').first().click();
-		});
-		cy.shouldBeAtPage('/page-2.html');
-	});
-
-	it('should ignore links via custom ignored path', function () {
-		this.swup.options.ignoreVisit = (url) => url.endsWith('.html#hash');
+		this.swup.options.ignoreVisit = (url) => url.endsWith('#hash');
 		cy.shouldHaveReloadedAfterAction(() => {
 			cy.get('[data-cy="ignore-path-end"]').first().click();
 		});
 		cy.shouldBeAtPage('/page-2.html#hash');
+	});
+
+	it('should ignore visits via loadPage', function () {
+		this.swup.options.ignoreVisit = () => true;
+		cy.shouldHaveReloadedAfterAction(() => {
+			this.swup.loadPage({ url: '/page-2.html' })
+			cy.get('[data-cy="ignore-path-end"]').first().click();
+		});
+		cy.shouldBeAtPage('/ignore-visits.html');
 	});
 });
 
