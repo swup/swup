@@ -5,17 +5,20 @@ import { PageRecord } from './Cache';
 export type TransitionOptions = {
 	url: string;
 	customTransition?: string;
+	skipChecks?: boolean;
 };
 
-export const loadPage = function (
-	this: Swup,
-	data: TransitionOptions,
-	popstate: PopStateEvent | null
-) {
-	const { url, customTransition } = data;
+export const loadPage = function (this: Swup, data: TransitionOptions, popstate?: PopStateEvent) {
+	const { url, customTransition, skipChecks = false } = data;
+
+	// Check if the visit should be ignored
+	if (!skipChecks && this.shouldIgnoreVisit(url)) {
+		return;
+	}
+
 	const skipTransition = !!(popstate && !this.options.animateHistoryBrowsing);
 
-	this.triggerEvent('transitionStart', popstate || undefined);
+	this.triggerEvent('transitionStart', popstate);
 
 	// set transition object
 	this.updateTransition(getCurrentUrl(), url, customTransition);
@@ -24,7 +27,7 @@ export const loadPage = function (
 	}
 
 	// start/skip animation
-	const animationPromises = this.leavePage(data, { popstate, skipTransition });
+	const animationPromises = this.leavePage(data, { popstate: popstate || null, skipTransition });
 
 	// create history record if this is not a popstate call (with or without anchor)
 	if (!popstate) {
@@ -39,7 +42,7 @@ export const loadPage = function (
 	// when everything is ready, render the page
 	Promise.all<PageRecord | void>([fetchPromise, ...animationPromises])
 		.then(([pageData]) => {
-			this.renderPage(pageData as PageRecord, { popstate, skipTransition });
+			this.renderPage(pageData as PageRecord, { popstate: popstate || null, skipTransition });
 		})
 		.catch((errorUrl) => {
 			// Return early if errorUrl is not defined (probably aborted preload request)

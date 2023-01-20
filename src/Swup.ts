@@ -274,7 +274,7 @@ export default class Swup {
 		const customTransition = linkEl.getAttribute('data-swup-transition') || undefined;
 
 		// Finally, proceed with loading the page
-		this.loadPage({ url, customTransition }, null);
+		this.loadPage({ url, customTransition, skipChecks: true });
 	}
 
 	handleLinkToSamePage(url: string, hash: string, event: MouseEvent) {
@@ -330,7 +330,7 @@ export default class Swup {
 			cleanupAnimationClasses();
 		}
 
-		this.loadPage({ url }, event);
+		this.loadPage({ url, skipChecks: true }, event);
 	}
 
 	/**
