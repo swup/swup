@@ -1,12 +1,10 @@
 import { nextTick } from '../utils';
 import Swup from '../Swup';
+import { PageRenderOptions } from './renderPage';
 
-export const enterPage = function (
-	this: Swup,
-	{ popstate, skipTransition }: { popstate?: PopStateEvent; skipTransition?: boolean }
-) {
+export const enterPage = function (this: Swup, { event, skipTransition }: PageRenderOptions = {}) {
 	if (skipTransition) {
-		this.triggerEvent('transitionEnd', popstate);
+		this.triggerEvent('transitionEnd', event);
 		this.cleanupAnimationClasses();
 		return [Promise.resolve()];
 	}
@@ -19,7 +17,7 @@ export const enterPage = function (
 	const animationPromises = this.getAnimationPromises('in');
 	Promise.all(animationPromises).then(() => {
 		this.triggerEvent('animationInDone');
-		this.triggerEvent('transitionEnd', popstate);
+		this.triggerEvent('transitionEnd', event);
 		this.cleanupAnimationClasses();
 	});
 	return animationPromises;

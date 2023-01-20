@@ -19,12 +19,12 @@ import { getAnimationPromises } from './modules/getAnimationPromises';
 import { getPageData } from './modules/getPageData';
 import { fetchPage } from './modules/fetchPage';
 import { leavePage } from './modules/leavePage';
-import { loadPage } from './modules/loadPage';
+import { loadPage, performPageLoad } from './modules/loadPage';
 import { replaceContent } from './modules/replaceContent';
 import { on, off, triggerEvent, Handlers } from './modules/events';
 import { use, unuse, findPlugin, Plugin } from './modules/plugins';
 import { renderPage } from './modules/renderPage';
-import { updateTransition } from './modules/updateTransition';
+import { updateTransition, shouldSkipTransition } from './modules/transitions';
 
 import { queryAll } from './utils';
 
@@ -95,6 +95,7 @@ export default class Swup {
 	boundPopStateHandler: (event: PopStateEvent) => void;
 
 	loadPage = loadPage;
+	performPageLoad = performPageLoad;
 	leavePage = leavePage;
 	renderPage = renderPage;
 	replaceContent = replaceContent;
@@ -104,6 +105,7 @@ export default class Swup {
 	on = on;
 	off = off;
 	updateTransition = updateTransition;
+	shouldSkipTransition = shouldSkipTransition;
 	getAnimationPromises = getAnimationPromises;
 	getPageData = getPageData;
 	fetchPage = fetchPage;
@@ -274,7 +276,7 @@ export default class Swup {
 		const customTransition = linkEl.getAttribute('data-swup-transition') || undefined;
 
 		// Finally, proceed with loading the page
-		this.loadPage({ url, customTransition, skipChecks: true });
+		this.performPageLoad({ url, customTransition });
 	}
 
 	handleLinkToSamePage(url: string, hash: string, event: MouseEvent) {
@@ -337,7 +339,7 @@ export default class Swup {
 			cleanupAnimationClasses();
 		}
 
-		this.loadPage({ url, skipChecks: true }, event);
+		this.performPageLoad({ url, event });
 	}
 
 	/**

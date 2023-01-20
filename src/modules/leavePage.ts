@@ -1,13 +1,9 @@
 import Swup from '../Swup';
-import { TransitionOptions } from './loadPage';
+import { PageRenderOptions } from './renderPage';
 
-export const leavePage = function (
-	this: Swup,
-	data: TransitionOptions,
-	{ popstate, skipTransition }: { popstate: PopStateEvent | null; skipTransition?: boolean } = {
-		popstate: null
-	}
-) {
+export const leavePage = function (this: Swup, { event, skipTransition }: PageRenderOptions = {}) {
+	const isHistoryVisit = event instanceof PopStateEvent;
+
 	if (skipTransition) {
 		this.triggerEvent('animationSkipped');
 		return [Promise.resolve()];
@@ -17,7 +13,7 @@ export const leavePage = function (
 
 	// handle classes
 	document.documentElement.classList.add('is-changing', 'is-leaving', 'is-animating');
-	if (popstate) {
+	if (isHistoryVisit) {
 		document.documentElement.classList.add('is-popstate');
 	}
 
