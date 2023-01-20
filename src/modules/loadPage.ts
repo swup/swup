@@ -13,6 +13,7 @@ export const loadPage = function (this: Swup, data: TransitionOptions, popstate?
 
 	// Check if the visit should be ignored
 	if (!skipChecks && this.shouldIgnoreVisit(url)) {
+		window.location.href = url;
 		return;
 	}
 
