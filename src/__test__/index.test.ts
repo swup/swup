@@ -52,4 +52,13 @@ describe('exports', () => {
 		expect(ignoreVisit.mock.lastCall).toBeDefined();
 		expect((ignoreVisit.mock.lastCall as any)[0]).toEqual('/path/?query#hash');
 	});
+
+	it('calls ignoreVisit from loadPage method', () => {
+		const ignoreVisit = jest.fn(() => true);
+		const swup = new Swup({ ignoreVisit });
+
+		swup.loadPage({ url: '/path/' });
+
+		expect(ignoreVisit.mock.calls).toHaveLength(1);
+	});
 });
