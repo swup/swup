@@ -52,7 +52,7 @@
     "transition"
   ],
   "dependencies": {
-    "delegate-it": "^4.0.0",
+    "delegate-it": "^5.0.0",
     "opencollective-postinstall": "^2.0.2"
   },
   "devDependencies": {

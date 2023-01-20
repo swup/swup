@@ -10,12 +10,13 @@ export const delegateEvent = <Selector extends string, TEvent extends EventType>
 	callback: DelegateEventHandler<GlobalEventHandlersEventMap[TEvent]>,
 	{ base = document, ...eventOptions } = {}
 ): Unsubscribe => {
-	const delegation = delegate<string, ParseSelector<Selector, HTMLElement>, TEvent>(
+	const controller = new AbortController();
+	delegate<string, ParseSelector<Selector, HTMLElement>, TEvent>(
 		base,
 		selector,
 		type,
 		callback,
 		eventOptions
 	);
-	return { destroy: () => delegation.abort() };
+	return { destroy: () => controller.abort() };
 };
