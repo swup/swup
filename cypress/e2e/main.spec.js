@@ -21,10 +21,6 @@ describe('Instance', function () {
 		cy.wrapSwupInstance();
 	});
 
-	it('should have a version property', function () {
-		expect(this.swup.version).to.not.be.empty;
-	});
-
 	it('should mount and unmount plugins', function () {
 		const plugin = createPlugin();
 		cy.spy(plugin, 'mount');
@@ -286,19 +282,19 @@ describe('Ignoring visits', function () {
 	});
 
 	it('should ignore links via custom ignored path', function () {
-		this.swup.options.ignoreVisit = (url) => url.startsWith('/page-2');
-		cy.shouldHaveReloadedAfterAction(() => {
-			cy.get('[data-cy="ignore-path-start"]').first().click();
-		});
-		cy.shouldBeAtPage('/page-2.html');
-	});
-
-	it('should ignore links via custom ignored path', function () {
-		this.swup.options.ignoreVisit = (url) => url.endsWith('.html#hash');
+		this.swup.options.ignoreVisit = (url) => url.endsWith('#hash');
 		cy.shouldHaveReloadedAfterAction(() => {
 			cy.get('[data-cy="ignore-path-end"]').first().click();
 		});
 		cy.shouldBeAtPage('/page-2.html#hash');
+	});
+
+	it('should ignore visits via loadPage', function () {
+		this.swup.options.ignoreVisit = (url) => true;
+		cy.shouldHaveReloadedAfterAction(() => {
+			this.swup.loadPage({ url: '/page-2.html' });
+		});
+		cy.shouldBeAtPage('/page-2.html');
 	});
 });
 

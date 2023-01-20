@@ -2,12 +2,15 @@ import { Location, updateHistoryRecord, getCurrentUrl } from '../helpers';
 import Swup from '../Swup';
 import { PageRecord } from './Cache';
 
+export type PageRenderOptions = {
+	event?: Event;
+	skipTransition?: boolean;
+};
+
 export const renderPage = function (
 	this: Swup,
 	page: PageRecord,
-	{ popstate, skipTransition }: { popstate: PopStateEvent | null; skipTransition?: boolean } = {
-		popstate: null
-	}
+	{ event, skipTransition }: PageRenderOptions = {}
 ) {
 	document.documentElement.classList.remove('is-leaving');
 
@@ -30,11 +33,11 @@ export const renderPage = function (
 		document.documentElement.classList.add('is-rendering');
 	}
 
-	this.triggerEvent('willReplaceContent', popstate || undefined);
+	this.triggerEvent('willReplaceContent', event);
 
 	this.replaceContent(page).then(() => {
-		this.triggerEvent('contentReplaced', popstate || undefined);
-		this.triggerEvent('pageView', popstate || undefined);
+		this.triggerEvent('contentReplaced', event);
+		this.triggerEvent('pageView', event);
 
 		// empty cache if it's disabled (in case preload plugin filled it)
 		if (!this.options.cache) {
@@ -42,7 +45,7 @@ export const renderPage = function (
 		}
 
 		// Perform in transition
-		this.enterPage({ popstate: popstate || undefined, skipTransition });
+		this.enterPage({ event, skipTransition });
 
 		// reset scroll-to element
 		this.scrollToElement = null;

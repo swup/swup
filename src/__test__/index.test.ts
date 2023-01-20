@@ -1,3 +1,4 @@
+import pckg from '../../package.json';
 import Swup, { Options, Plugin } from '../index';
 
 console.log = jest.fn();
@@ -32,21 +33,32 @@ describe('exports', () => {
 		};
 
 		const swup = new Swup(options);
-
-		expect(swup.version).not.toBeUndefined();
+		expect(swup).toBeInstanceOf(Swup);
 	});
 
-	it('passes relative URL to ignoreVisit', () => {
-		let ignorableUrl = 'nothing';
-		const swup = new Swup({
-			ignoreVisit: (url, { el } = {}) => {
-				ignorableUrl = url;
-				return false;
-			}
-		});
+	it('defines a version', () => {
+		const swup = new Swup();
+		expect(swup.version).not.toBeUndefined();
+		expect(swup.version).toEqual(pckg.version);
+	});
+
+	it('calls and passes relative URL to ignoreVisit', () => {
+		const ignoreVisit = jest.fn(() => true);
+		const swup = new Swup({ ignoreVisit });
 
 		swup.shouldIgnoreVisit(baseUrl + '/path/?query#hash');
 
-		expect(ignorableUrl).toEqual('/path/?query#hash');
+		expect(ignoreVisit.mock.calls).toHaveLength(1);
+		expect(ignoreVisit.mock.lastCall).toBeDefined();
+		expect((ignoreVisit.mock.lastCall as any)[0]).toEqual('/path/?query#hash');
+	});
+
+	it('calls ignoreVisit from loadPage method', () => {
+		const ignoreVisit = jest.fn(() => true);
+		const swup = new Swup({ ignoreVisit });
+
+		swup.loadPage({ url: '/path/' });
+
+		expect(ignoreVisit.mock.calls).toHaveLength(1);
 	});
 });

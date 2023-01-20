@@ -7,15 +7,30 @@ export type TransitionOptions = {
 	customTransition?: string;
 };
 
-export const loadPage = function (
-	this: Swup,
-	data: TransitionOptions,
-	popstate: PopStateEvent | null
-) {
-	const { url, customTransition } = data;
-	const skipTransition = !!(popstate && !this.options.animateHistoryBrowsing);
+export type PageLoadOptions = {
+	url: string;
+	event?: Event;
+	customTransition?: string;
+};
 
-	this.triggerEvent('transitionStart', popstate || undefined);
+export function loadPage(this: Swup, data: TransitionOptions) {
+	const { url } = data;
+
+	// Check if the visit should be ignored
+	if (this.shouldIgnoreVisit(url)) {
+		window.location.href = url;
+	} else {
+		this.performPageLoad(data);
+	}
+}
+
+export function performPageLoad(this: Swup, data: PageLoadOptions) {
+	const { url, event, customTransition } = data ?? {};
+
+	const isHistoryVisit = event instanceof PopStateEvent;
+	const skipTransition = this.shouldSkipTransition({ url, event });
+
+	this.triggerEvent('transitionStart', event);
 
 	// set transition object
 	this.updateTransition(getCurrentUrl(), url, customTransition);
@@ -24,10 +39,10 @@ export const loadPage = function (
 	}
 
 	// start/skip animation
-	const animationPromises = this.leavePage(data, { popstate, skipTransition });
+	const animationPromises = this.leavePage({ event, skipTransition });
 
 	// create history record if this is not a popstate call (with or without anchor)
-	if (!popstate) {
+	if (!isHistoryVisit) {
 		createHistoryRecord(url + (this.scrollToElement || ''));
 	}
 
@@ -39,7 +54,7 @@ export const loadPage = function (
 	// when everything is ready, render the page
 	Promise.all<PageRecord | void>([fetchPromise, ...animationPromises])
 		.then(([pageData]) => {
-			this.renderPage(pageData as PageRecord, { popstate, skipTransition });
+			this.renderPage(pageData as PageRecord, { event, skipTransition });
 		})
 		.catch((errorUrl) => {
 			// Return early if errorUrl is not defined (probably aborted preload request)
@@ -54,4 +69,4 @@ export const loadPage = function (
 			// Go back to the actual page we're still at
 			history.go(-1);
 		});
-};
+}
