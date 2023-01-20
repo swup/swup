@@ -315,7 +315,14 @@ export default class Swup {
 			return;
 		}
 
-		const { url, hash } = Location.fromUrl(event.state?.url ?? location.href);
+		const href = event.state?.url ?? location.href;
+
+		// Exit early if the link should be ignored
+		if (this.shouldIgnoreVisit(href)) {
+			return;
+		}
+
+		const { url, hash } = Location.fromUrl(href);
 
 		if (hash) {
 			this.scrollToElement = hash;
