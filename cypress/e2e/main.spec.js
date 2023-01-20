@@ -290,11 +290,9 @@ describe('Ignoring visits', function () {
 	});
 
 	it('should ignore visits via loadPage', function () {
-		this.swup.options.ignoreVisit = () => true;
-		cy.shouldHaveReloadedAfterAction(() => {
-			this.swup.loadPage({ url: '/page-2.html' })
-			cy.get('[data-cy="ignore-path-end"]').first().click();
-		});
+		this.swup.options.ignoreVisit = (url) => true;
+		this.swup.loadPage({ url: '/page-2.html' });
+		cy.wait(300);
 		cy.shouldBeAtPage('/ignore-visits.html');
 	});
 });
