@@ -1,4 +1,4 @@
-import delegate from 'delegate-it';
+import { DelegateEvent } from 'delegate-it';
 
 import version from './config/version';
 
@@ -237,7 +237,7 @@ export default class Swup {
 		return false;
 	}
 
-	linkClickHandler(event: delegate.Event<MouseEvent>) {
+	linkClickHandler(event: DelegateEvent<MouseEvent>) {
 		const linkEl = event.delegateTarget;
 		const { href, url, hash } = Location.fromElement(linkEl as HTMLAnchorElement);
 
