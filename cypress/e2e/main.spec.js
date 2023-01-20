@@ -21,10 +21,6 @@ describe('Instance', function () {
 		cy.wrapSwupInstance();
 	});
 
-	it('should have a version property', function () {
-		expect(this.swup.version).to.not.be.empty;
-	});
-
 	it('should mount and unmount plugins', function () {
 		const plugin = createPlugin();
 		cy.spy(plugin, 'mount');

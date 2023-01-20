@@ -1,3 +1,4 @@
+import pckg from '../../package.json';
 import Swup, { Options, Plugin } from '../index';
 
 console.log = jest.fn();
@@ -32,8 +33,13 @@ describe('exports', () => {
 		};
 
 		const swup = new Swup(options);
+		expect(swup).toBeInstanceOf(Swup);
+	});
 
+	it('defines a version', () => {
+		const swup = new Swup();
 		expect(swup.version).not.toBeUndefined();
+		expect(swup.version).toEqual(pckg.version);
 	});
 
 	it('passes relative URL to ignoreVisit', () => {
