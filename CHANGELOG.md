@@ -2,7 +2,11 @@
 
 <!-- ## [Unreleased] -->
 
-## [3.0.0] - 2023-01
+## [3.0.1] - 2023-01-20
+
+- Fix: remove origin from ignoreVisit parameter
+
+## [3.0.0] - 2023-01-19
 
 - Support CSS animations and keyframes
 - Allow ignoring visits via callback function
@@ -60,8 +64,9 @@ for details.
 
 - Fix bug where animateHistoryBrowsing option was ignored for OUT animations
 
-[Unreleased]: https://github.com/swup/swup/compare/3.0.0...HEAD
+[Unreleased]: https://github.com/swup/swup/compare/3.0.1...HEAD
 
+[3.0.1]: https://github.com/swup/swup/releases/tag/3.0.1
 [3.0.0]: https://github.com/swup/swup/releases/tag/3.0.0
 [2.0.19]: https://github.com/swup/swup/releases/tag/2.0.19
 [2.0.18]: https://github.com/swup/swup/releases/tag/2.0.18
