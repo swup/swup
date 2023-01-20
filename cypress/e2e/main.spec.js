@@ -268,20 +268,37 @@ describe('Link resolution', function () {
 describe('Ignoring visits', function () {
 	beforeEach(() => {
 		cy.visit('/ignore-visits.html');
+		cy.wrapSwupInstance();
 	});
 
 	it('should ignore links with data-no-swup attr', function () {
 		cy.shouldHaveReloadedAfterAction(() => {
-			cy.get(`a[data-no-swup]`).first().click();
+			cy.get('[data-cy="ignore-element"]').first().click();
 		});
 		cy.shouldBeAtPage('/page-2.html');
 	});
 
 	it('should ignore links with data-no-swup parent', function () {
 		cy.shouldHaveReloadedAfterAction(() => {
-			cy.get(`li[data-no-swup] a`).first().click();
+			cy.get('[data-cy="ignore-parent"]').first().click();
 		});
 		cy.shouldBeAtPage('/page-2.html');
+	});
+
+	it('should ignore links via custom ignored path', function () {
+		this.swup.options.ignoreVisit = (url) => url.startsWith('/page-2');
+		cy.shouldHaveReloadedAfterAction(() => {
+			cy.get('[data-cy="ignore-path-start"]').first().click();
+		});
+		cy.shouldBeAtPage('/page-2.html');
+	});
+
+	it('should ignore links via custom ignored path', function () {
+		this.swup.options.ignoreVisit = (url) => url.endsWith('.html#hash');
+		cy.shouldHaveReloadedAfterAction(() => {
+			cy.get('[data-cy="ignore-path-end"]').first().click();
+		});
+		cy.shouldBeAtPage('/page-2.html#hash');
 	});
 });
 

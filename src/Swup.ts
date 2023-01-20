@@ -47,7 +47,7 @@ export type Options = {
 	requestHeaders: Record<string, string>;
 	plugins: Plugin[];
 	skipPopStateHandling: (event: any) => boolean;
-	ignoreVisit: (href: string, { el }: { el?: Element }) => boolean;
+	ignoreVisit: (url: string, { el }: { el?: Element }) => boolean;
 	resolveUrl: (url: string) => string;
 };
 
@@ -120,7 +120,7 @@ export default class Swup {
 		animationSelector: '[class*="transition-"]',
 		cache: true,
 		containers: ['#swup'],
-		ignoreVisit: (href, { el } = {}) => !!el?.closest('[data-no-swup]'),
+		ignoreVisit: (url, { el } = {}) => !!el?.closest('[data-no-swup]'),
 		linkSelector: 'a[href]',
 		plugins: [],
 		resolveUrl: (url) => url,
@@ -214,9 +214,9 @@ export default class Swup {
 	}
 
 	shouldIgnoreVisit(href: string, { el }: { el?: Element } = {}) {
-		const { origin } = Location.fromUrl(href);
+		const { origin, url, hash } = Location.fromUrl(href);
 
-		// Ignore if the new URL's origin doesn't match the current one
+		// Ignore if the new origin doesn't match the current one
 		if (origin !== window.location.origin) {
 			return true;
 		}
@@ -227,7 +227,7 @@ export default class Swup {
 		}
 
 		// Ignore if the visit should be ignored as per user options
-		if (this.options.ignoreVisit(href, { el })) {
+		if (this.options.ignoreVisit(url + hash, { el })) {
 			return true;
 		}
 
