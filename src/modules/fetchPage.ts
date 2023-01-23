@@ -9,7 +9,7 @@ export function fetchPage(this: Swup, data: TransitionOptions): Promise<PageReco
 
 	if (this.cache.exists(url)) {
 		this.triggerEvent('pageRetrievedFromCache');
-		return Promise.resolve(this.cache.getPage(url) as PageRecord);
+		return Promise.resolve(this.cache.getPage(url));
 	}
 
 	return new Promise((resolve, reject) => {
