@@ -29,7 +29,7 @@ export class Cache {
 
 		this.last = this.getPage(page.url);
 
-		this.swup.log(`Cache (${Object.keys(this.pages).length})`, this.pages);
+		this.swup.log(`Cache (${this.pages.size})`, this.pages);
 	}
 
 	getPage(url: string): PageRecord | null {
