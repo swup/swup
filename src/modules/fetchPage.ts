@@ -7,9 +7,11 @@ export function fetchPage(this: Swup, data: TransitionOptions): Promise<PageReco
 	const headers = this.options.requestHeaders;
 	const { url } = data;
 
-	if (this.cache.exists(url)) {
+	const cachedPage = this.cache.getPage(url);
+
+	if (cachedPage !== null) {
 		this.triggerEvent('pageRetrievedFromCache');
-		return Promise.resolve(this.cache.getPage(url) as PageRecord);
+		return Promise.resolve(cachedPage);
 	}
 
 	return new Promise((resolve, reject) => {
