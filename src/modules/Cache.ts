@@ -21,12 +21,14 @@ export class Cache {
 
 	cacheUrl(page: PageRecord) {
 		page.url = this.getCacheUrl(page.url);
-		console.log( page.url in this.pages );
-		if (page.url in this.pages === false) {
+		page.responseURL = this.getCacheUrl(page.responseURL);
+
+		if (!this.exists(page.url)) {
 			this.pages.set(page.url, page);
 		}
-		page.responseURL = this.getCacheUrl(page.responseURL);
-		this.last = this.pages.get(page.url) || null;
+
+		this.last = this.getPage(page.url);
+
 		this.swup.log(`Cache (${Object.keys(this.pages).length})`, this.pages);
 	}
 
