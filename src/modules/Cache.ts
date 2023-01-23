@@ -31,12 +31,11 @@ export class Cache {
 	}
 
 	getPage(url: string): PageRecord | null {
-		url = this.getCacheUrl(url);
-		return this.pages.get(url) || null;
+		return this.pages.get(this.getCacheUrl(url)) || null;
 	}
 
 	getCurrentPage(): PageRecord | null {
-		return this.getPage(this.getCacheUrl(getCurrentUrl()));
+		return this.getPage(getCurrentUrl());
 	}
 
 	exists(url: string): boolean {
