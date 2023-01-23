@@ -7,7 +7,7 @@ export interface PageRecord extends PageData {
 	responseURL: string;
 }
 export class Cache {
-	pages: Record<string, PageRecord> = {};
+	pages: Map<string, PageRecord> = new Map();
 	last: PageRecord | null = null;
 	swup: Swup;
 
@@ -21,35 +21,35 @@ export class Cache {
 
 	cacheUrl(page: PageRecord) {
 		page.url = this.getCacheUrl(page.url);
+		console.log( page.url in this.pages );
 		if (page.url in this.pages === false) {
-			this.pages[page.url] = page;
+			this.pages.set(page.url, page);
 		}
 		page.responseURL = this.getCacheUrl(page.responseURL);
-		this.last = this.pages[page.url];
+		this.last = this.pages.get(page.url) || null;
 		this.swup.log(`Cache (${Object.keys(this.pages).length})`, this.pages);
 	}
 
-	getPage(url: string): PageRecord {
+	getPage(url: string): PageRecord | null {
 		url = this.getCacheUrl(url);
-		return this.pages[url];
+		return this.pages.get(url) || null;
 	}
 
-	getCurrentPage(): PageRecord {
-		return this.getPage(getCurrentUrl());
+	getCurrentPage(): PageRecord | null {
+		return this.getPage(this.getCacheUrl(getCurrentUrl()));
 	}
 
 	exists(url: string): boolean {
-		url = this.getCacheUrl(url);
-		return url in this.pages;
+		return this.pages.has(this.getCacheUrl(url));
 	}
 
 	empty(): void {
-		this.pages = {};
+		this.pages.clear();
 		this.last = null;
 		this.swup.log('Cache cleared');
 	}
 
 	remove(url: string): void {
-		delete this.pages[this.getCacheUrl(url)];
+		this.pages.delete(this.getCacheUrl(url));
 	}
 }
