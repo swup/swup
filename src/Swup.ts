@@ -12,7 +12,7 @@ import {
 } from './helpers';
 import { Unsubscribe } from './helpers/delegateEvent';
 
-import { Cache } from './modules/Cache';
+import { Cache, PageRecord } from './modules/Cache';
 import { enterPage } from './modules/enterPage';
 import { getAnchorElement } from './modules/getAnchorElement';
 import { getAnimationPromises } from './modules/getAnimationPromises';
@@ -49,6 +49,7 @@ export type Options = {
 	skipPopStateHandling: (event: any) => boolean;
 	ignoreVisit: (url: string, { el }: { el?: Element }) => boolean;
 	resolveUrl: (url: string) => string;
+	getTimeToLive: (page: PageRecord) => number;
 };
 
 export default class Swup {
@@ -130,7 +131,8 @@ export default class Swup {
 			'X-Requested-With': 'swup',
 			Accept: 'text/html, application/xhtml+xml'
 		},
-		skipPopStateHandling: (event) => event.state?.source !== 'swup'
+		skipPopStateHandling: (event) => event.state?.source !== 'swup',
+		getTimeToLive: (page) => 600
 	};
 
 	constructor(options: Partial<Options> = {}) {

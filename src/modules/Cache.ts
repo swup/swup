@@ -76,17 +76,8 @@ export class Cache {
 	 * Will return true if the page was saved more then 10 minutes ago
 	 */
 	isExpiredPage(page: PageRecord): boolean {
-		const ttl = this.getTimeToLive(page);
+		const ttl = this.swup.options.getTimeToLive(page);
 		if (ttl === 0) return false;
 		return new Date(Date.now() - page.timestamp).getSeconds() > ttl;
-	}
-
-	/**
-	 * Get the time to live for a page record.
-	 * Defaults to 600 seconds (10 minutes).
-	 * If this returns 0 the cache for the requested page will never expire
-	 */
-	getTimeToLive(page: PageRecord): number {
-		return 600;
 	}
 }
