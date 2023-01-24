@@ -4,6 +4,7 @@ import { PageHtmlData } from '../helpers/getDataFromHtml';
 
 export type PageData = PageHtmlData & {
 	responseURL: string;
+	timestamp: number;
 };
 export const getPageData = function (this: Swup, request: XMLHttpRequest): PageData | null {
 	// this method can be replaced in case other content than html is expected to be received from server
@@ -19,6 +20,7 @@ export const getPageData = function (this: Swup, request: XMLHttpRequest): PageD
 
 	return {
 		...pageHtmlData,
-		responseURL: request.responseURL || window.location.href
+		responseURL: request.responseURL || window.location.href,
+		timestamp: Date.now()
 	};
 };
