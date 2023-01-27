@@ -3,7 +3,7 @@ import Swup from '../Swup';
 import { PageRecord } from './Cache';
 
 export type PageRenderOptions = {
-	event?: Event;
+	event?: PopStateEvent;
 	skipTransition?: boolean;
 };
 

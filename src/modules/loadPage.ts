@@ -9,7 +9,7 @@ export type TransitionOptions = {
 
 export type PageLoadOptions = {
 	url: string;
-	event?: Event;
+	event?: PopStateEvent;
 	customTransition?: string;
 };
 

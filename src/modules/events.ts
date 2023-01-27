@@ -1,42 +1,60 @@
 import Swup from '../Swup';
 
-export type EventType =
-	| 'animationInDone'
-	| 'animationInStart'
-	| 'animationOutDone'
-	| 'animationOutStart'
-	| 'animationSkipped'
-	| 'clickLink'
-	| 'contentReplaced'
-	| 'disabled'
-	| 'enabled'
-	| 'openPageInNewTab'
-	| 'pageLoaded'
-	| 'pageRetrievedFromCache'
-	| 'pageView'
-	| 'popState'
-	| 'samePage'
-	| 'samePageWithHash'
-	| 'serverError'
-	| 'transitionStart'
-	| 'transitionEnd'
-	| 'willReplaceContent';
-export type Handler = (event?: Event) => void;
-export type Handlers = Record<EventType, Handler[]>;
+type HandlersEventMap = {
+	animationInDone: undefined;
+	animationInStart: undefined;
+	animationOutDone: undefined;
+	animationOutStart: undefined;
+	animationSkipped: undefined;
+	clickLink: MouseEvent;
+	contentReplaced: PopStateEvent | undefined;
+	disabled: undefined;
+	enabled: undefined;
+	openPageInNewTab: MouseEvent;
+	pageLoaded: undefined;
+	pageRetrievedFromCache: undefined;
+	pageView: PopStateEvent | undefined;
+	popState: PopStateEvent;
+	samePage: MouseEvent;
+	samePageWithHash: MouseEvent;
+	serverError: undefined;
+	transitionStart: PopStateEvent | undefined;
+	transitionEnd: PopStateEvent | undefined;
+	willReplaceContent: PopStateEvent | undefined;
+};
+type EventTypes = HandlersEventMap[keyof HandlersEventMap];
+type AvailableEventNames = keyof HandlersEventMap;
 
-export function on(this: Swup, event: EventType, handler: Handler) {
-	if (this._handlers[event]) {
-		this._handlers[event].push(handler);
+export type Handler<T extends EventTypes = undefined> = (event: T) => void;
+export type Handlers = {
+	[Key in keyof HandlersEventMap as `${Key}`]: Handler<HandlersEventMap[Key]>[];
+};
+
+export function on<TEventType extends AvailableEventNames>(
+	this: Swup,
+	event: TEventType,
+	handler: Handler<HandlersEventMap[TEventType]>
+): void {
+	const eventHandlers = this._handlers[event] as Handler<HandlersEventMap[TEventType]>[];
+
+	if (eventHandlers) {
+		eventHandlers.push(handler);
 	} else {
 		console.warn(`Unsupported event ${event}.`);
 	}
 }
 
-export function off(this: Swup, event?: EventType, handler?: Handler) {
+export function off<TEventType extends AvailableEventNames>(
+	this: Swup,
+	event?: TEventType,
+	handler?: Handler<HandlersEventMap[TEventType]>
+) {
 	if (event && handler) {
+		const eventHandlers = this._handlers[event] as Handler<HandlersEventMap[TEventType]>[];
 		// Remove specific handler
-		if (this._handlers[event].includes(handler)) {
-			this._handlers[event] = this._handlers[event].filter((h) => h !== handler);
+		if (eventHandlers.includes(handler)) {
+			(this._handlers[event] as Handler<HandlersEventMap[TEventType]>[]) =
+				eventHandlers.filter((h) => h !== handler);
 		} else {
 			console.warn(`Handler for event '${event}' not found.`);
 		}
@@ -46,16 +64,22 @@ export function off(this: Swup, event?: EventType, handler?: Handler) {
 	} else {
 		// Remove all handlers for all events
 		Object.keys(this._handlers).forEach((event) => {
-			this._handlers[event as EventType] = [];
+			this._handlers[event as keyof HandlersEventMap] = [];
 		});
 	}
 }
 
-export function triggerEvent(this: Swup, eventName: EventType, originalEvent?: Event): void {
+export function triggerEvent<TEventType extends AvailableEventNames>(
+	this: Swup,
+	eventName: TEventType,
+	originalEvent?: HandlersEventMap[TEventType]
+): void {
+	const eventHandlers = this._handlers[eventName] as Handler<HandlersEventMap[TEventType]>[];
+
 	// call saved handlers with "on" method and pass originalEvent object if available
-	this._handlers[eventName].forEach((handler) => {
+	eventHandlers.forEach((handler) => {
 		try {
-			handler(originalEvent);
+			handler(originalEvent as HandlersEventMap[TEventType]);
 		} catch (error) {
 			console.error(error);
 		}
