@@ -279,7 +279,7 @@ export default class Swup {
 		this.performPageLoad({ url, customTransition });
 	}
 
-	handleLinkToSamePage(url: string, hash: string, event: MouseEvent) {
+	handleLinkToSamePage(url: string, hash: string, event: delegate.Event<MouseEvent>) {
 		// Emit event and exit early if the url points to the same page without hash
 		if (!hash) {
 			this.triggerEvent('samePage', event);
