@@ -54,7 +54,7 @@ describe('events', () => {
 		expect(handler).toBeCalledWith(event);
 	});
 
-	it('should trigger event handler with event', () => {
+	it('types work and error when necessary', () => {
 		const swup = new Swup();
 
 		// @ts-expect-no-error
