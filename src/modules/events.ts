@@ -1,4 +1,5 @@
 import Swup from '../Swup';
+import delegate from 'delegate-it';
 
 type HandlersEventMap = {
 	animationInDone: undefined;
@@ -6,17 +7,17 @@ type HandlersEventMap = {
 	animationOutDone: undefined;
 	animationOutStart: undefined;
 	animationSkipped: undefined;
-	clickLink: MouseEvent;
+	clickLink: delegate.Event<MouseEvent>;
 	contentReplaced: PopStateEvent | undefined;
 	disabled: undefined;
 	enabled: undefined;
-	openPageInNewTab: MouseEvent;
+	openPageInNewTab: delegate.Event<MouseEvent>;
 	pageLoaded: undefined;
 	pageRetrievedFromCache: undefined;
 	pageView: PopStateEvent | undefined;
 	popState: PopStateEvent;
-	samePage: MouseEvent;
-	samePageWithHash: MouseEvent;
+	samePage: delegate.Event<MouseEvent>;
+	samePageWithHash: delegate.Event<MouseEvent>;
 	serverError: undefined;
 	transitionStart: PopStateEvent | undefined;
 	transitionEnd: PopStateEvent | undefined;
