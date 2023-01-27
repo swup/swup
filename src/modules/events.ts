@@ -23,20 +23,19 @@ type HandlersEventMap = {
 	transitionEnd: PopStateEvent | undefined;
 	willReplaceContent: PopStateEvent | undefined;
 };
-type EventTypes = HandlersEventMap[keyof HandlersEventMap];
 type AvailableEventNames = keyof HandlersEventMap;
 
-export type Handler<T extends EventTypes = undefined> = (event: T) => void;
+export type Handler<T extends keyof HandlersEventMap> = (event: HandlersEventMap[T]) => void;
 export type Handlers = {
-	[Key in keyof HandlersEventMap as `${Key}`]: Handler<HandlersEventMap[Key]>[];
+	[Key in keyof HandlersEventMap]: Handler<Key>[];
 };
 
 export function on<TEventType extends AvailableEventNames>(
 	this: Swup,
 	event: TEventType,
-	handler: Handler<HandlersEventMap[TEventType]>
+	handler: Handler<TEventType>
 ): void {
-	const eventHandlers = this._handlers[event] as Handler<HandlersEventMap[TEventType]>[];
+	const eventHandlers = this._handlers[event] as Handler<TEventType>[];
 
 	if (eventHandlers) {
 		eventHandlers.push(handler);
@@ -48,14 +47,15 @@ export function on<TEventType extends AvailableEventNames>(
 export function off<TEventType extends AvailableEventNames>(
 	this: Swup,
 	event?: TEventType,
-	handler?: Handler<HandlersEventMap[TEventType]>
+	handler?: Handler<TEventType>
 ) {
 	if (event && handler) {
-		const eventHandlers = this._handlers[event] as Handler<HandlersEventMap[TEventType]>[];
+		const eventHandlers = this._handlers[event] as Handler<TEventType>[];
 		// Remove specific handler
 		if (eventHandlers.includes(handler)) {
-			(this._handlers[event] as Handler<HandlersEventMap[TEventType]>[]) =
-				eventHandlers.filter((h) => h !== handler);
+			(this._handlers[event] as Handler<TEventType>[]) = eventHandlers.filter(
+				(h) => h !== handler
+			);
 		} else {
 			console.warn(`Handler for event '${event}' not found.`);
 		}
@@ -75,7 +75,7 @@ export function triggerEvent<TEventType extends AvailableEventNames>(
 	eventName: TEventType,
 	originalEvent?: HandlersEventMap[TEventType]
 ): void {
-	const eventHandlers = this._handlers[eventName] as Handler<HandlersEventMap[TEventType]>[];
+	const eventHandlers = this._handlers[eventName] as Handler<TEventType>[];
 
 	// call saved handlers with "on" method and pass originalEvent object if available
 	eventHandlers.forEach((handler) => {

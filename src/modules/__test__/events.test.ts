@@ -1,4 +1,5 @@
 import Swup from '../../Swup';
+import { Handler } from '../events';
 
 describe('events', () => {
 	it('should add event handlers to handlers array', () => {
@@ -45,7 +46,7 @@ describe('events', () => {
 
 	it('should trigger event handler with event', () => {
 		const swup = new Swup();
-		const handler = jest.fn();
+		const handler: Handler<'popState'> = jest.fn();
 		const event = new PopStateEvent('');
 
 		swup.on('popState', handler);
