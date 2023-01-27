@@ -2,6 +2,14 @@
 
 <!-- ## [Unreleased] -->
 
+## [3.0.3] - 2023-01-27
+
+- Use shared browserslist config
+
+## [3.0.2] - 2023-01-20
+
+- Make sure ignoreVisit option is called when visiting pages programmatically
+
 ## [3.0.1] - 2023-01-20
 
 - Fix: remove origin from ignoreVisit parameter
@@ -64,8 +72,10 @@ for details.
 
 - Fix bug where animateHistoryBrowsing option was ignored for OUT animations
 
-[Unreleased]: https://github.com/swup/swup/compare/3.0.1...HEAD
+[Unreleased]: https://github.com/swup/swup/compare/3.0.3...HEAD
 
+[3.0.3]: https://github.com/swup/swup/releases/tag/3.0.3
+[3.0.2]: https://github.com/swup/swup/releases/tag/3.0.2
 [3.0.1]: https://github.com/swup/swup/releases/tag/3.0.1
 [3.0.0]: https://github.com/swup/swup/releases/tag/3.0.0
 [2.0.19]: https://github.com/swup/swup/releases/tag/2.0.19
