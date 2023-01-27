@@ -12,5 +12,6 @@ export default {
 			},
 		],
 	},
-	rootDir: 'src'
+	setupFilesAfterEnv: ['./setup-jest.ts'],
+	modulePathIgnorePatterns: ['<rootDir>/cypress/'],
 };

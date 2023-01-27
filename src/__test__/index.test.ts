@@ -1,10 +1,6 @@
 import pckg from '../../package.json';
 import Swup, { Options, Plugin } from '../index';
 
-console.log = jest.fn();
-console.warn = jest.fn();
-console.error = jest.fn();
-
 const baseUrl = window.location.origin;
 
 function createPlugin(plugin = {}) {
