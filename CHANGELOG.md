@@ -2,6 +2,10 @@
 
 <!-- ## [Unreleased] -->
 
+## [3.0.4] - 2023-01-29
+
+- Clarify/improve event typings for Swup event handlers
+
 ## [3.0.3] - 2023-01-27
 
 - Use shared browserslist config
