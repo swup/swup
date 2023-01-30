@@ -27,6 +27,22 @@ describe('Cache', function () {
 	});
 });
 
+describe('Request', function () {
+	beforeEach(() => {
+		cy.visit('/page-1.html');
+		cy.wrapSwupInstance();
+	});
+
+	it('should time out after configurable delay', function () {
+		cy.intercept('GET', '*', { delay: 2000 });
+		cy.shouldHaveReloadedAfterAction(() => {
+			this.swup.options.timeout = 1;
+			this.swup.loadPage({ url: '/page-2.html' });
+		});
+		cy.shouldBeAtPage('/page-2.html');
+	});
+});
+
 describe('Markup', function () {
 	beforeEach(() => {
 		cy.visit('/page-1.html');
