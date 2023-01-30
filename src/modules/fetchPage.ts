@@ -4,7 +4,7 @@ import { TransitionOptions } from './loadPage';
 import { PageRecord } from './Cache';
 
 export function fetchPage(this: Swup, data: TransitionOptions): Promise<PageRecord> {
-	const headers = this.options.requestHeaders;
+	const { timeout, requestHeaders: headers } = this.options;
 	const { url } = data;
 
 	if (this.cache.exists(url)) {
@@ -13,7 +13,7 @@ export function fetchPage(this: Swup, data: TransitionOptions): Promise<PageReco
 	}
 
 	return new Promise((resolve, reject) => {
-		fetch({ ...data, headers }, (response) => {
+		fetch({ ...data, timeout, headers }, (response) => {
 			if (response.status === 500) {
 				this.triggerEvent('serverError');
 				reject(url);

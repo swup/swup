@@ -2,7 +2,10 @@ import { TransitionOptions } from '../modules/loadPage';
 import { Options } from '../Swup';
 
 export const fetch = (
-	options: TransitionOptions & { headers: Options['requestHeaders'] },
+	options: TransitionOptions & {
+		timeout: Options['timeout'];
+		headers: Options['requestHeaders'];
+	},
 	callback: (request: XMLHttpRequest) => void
 ): XMLHttpRequest => {
 	const defaults = {
@@ -12,7 +15,7 @@ export const fetch = (
 		headers: {}
 	};
 
-	const { url, method, headers, data } = { ...defaults, ...options };
+	const { url, method, timeout, headers, data } = { ...defaults, ...options };
 
 	const request = new XMLHttpRequest();
 
@@ -23,7 +26,12 @@ export const fetch = (
 		}
 	};
 
+	request.ontimeout = function () {
+		window.location.href = url;
+	};
+
 	request.open(method, url, true);
+	request.timeout = timeout * 1000;
 	Object.entries(headers).forEach(([key, header]) => {
 		request.setRequestHeader(key, header);
 	});
