@@ -49,6 +49,7 @@ export type Options = {
 	skipPopStateHandling: (event: any) => boolean;
 	ignoreVisit: (url: string, { el }: { el?: Element }) => boolean;
 	resolveUrl: (url: string) => string;
+	timeout: number;
 };
 
 export default class Swup {
@@ -120,6 +121,7 @@ export default class Swup {
 	defaults: Options = {
 		animateHistoryBrowsing: false,
 		animationSelector: '[class*="transition-"]',
+		timeout: 30,
 		cache: true,
 		containers: ['#swup'],
 		ignoreVisit: (url, { el } = {}) => !!el?.closest('[data-no-swup]'),
