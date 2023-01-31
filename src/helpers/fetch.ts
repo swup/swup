@@ -31,10 +31,10 @@ export const fetch = (
 	};
 
 	request.open(method, url, true);
-	request.timeout = timeout * 1000;
 	Object.entries(headers).forEach(([key, header]) => {
 		request.setRequestHeader(key, header);
 	});
+		request.timeout = timeout;
 	request.send(data);
 
 	return request;
