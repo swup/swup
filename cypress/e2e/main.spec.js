@@ -4,6 +4,25 @@
 
 const baseUrl = Cypress.config('baseUrl');
 
+describe('Request', function () {
+	beforeEach(() => {
+		cy.visit('/page-1.html');
+		cy.wrapSwupInstance();
+	});
+
+	it('should reload after timeout', function () {
+		cy.intercept('GET', '/*', async (req) => {
+			const { pathname: fixture } = new URL(req.url);
+			req.reply({ fixture, delay: 2000 });
+		});
+		this.swup.options.timeout = 1000;
+		cy.shouldHaveReloadedAfterAction(() => {
+			this.swup.loadPage({ url: '/page-2.html' });
+		});
+		cy.shouldBeAtPage('/page-2.html');
+	});
+});
+
 describe('Cache', function () {
 	beforeEach(() => {
 		cy.visit('/page-1.html');
@@ -24,25 +43,6 @@ describe('Cache', function () {
 		cy.window().should(() => {
 			expect(this.swup.cache.getCurrentPage()).not.to.be.undefined;
 		});
-	});
-});
-
-describe('Request', function () {
-	beforeEach(() => {
-		cy.visit('/page-1.html');
-		cy.wrapSwupInstance();
-	});
-
-	it('should reload after timeout', function () {
-		cy.intercept('GET', '/*', async (req) => {
-			const { pathname: fixture } = new URL(req.url);
-			req.reply({ fixture, delay: 2000 });
-		});
-		this.swup.options.timeout = 1000;
-		cy.shouldHaveReloadedAfterAction(() => {
-			this.swup.loadPage({ url: '/page-2.html' });
-		});
-		cy.shouldBeAtPage('/page-2.html');
 	});
 });
 
