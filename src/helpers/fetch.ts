@@ -26,15 +26,18 @@ export const fetch = (
 		}
 	};
 
-	request.ontimeout = function () {
-		window.location.href = url;
-	};
-
 	request.open(method, url, true);
 	Object.entries(headers).forEach(([key, header]) => {
 		request.setRequestHeader(key, header);
 	});
+
+	if (timeout > 0) {
 		request.timeout = timeout;
+		request.ontimeout = function () {
+			window.location.href = url;
+		};
+	}
+
 	request.send(data);
 
 	return request;
