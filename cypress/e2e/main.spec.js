@@ -33,10 +33,13 @@ describe('Request', function () {
 		cy.wrapSwupInstance();
 	});
 
-	it('should time out after configurable delay', function () {
-		cy.intercept('GET', '*', { delay: 2000 });
+	it('should reload after timeout', function () {
+		cy.intercept('GET', '/*', async (req) => {
+			const { pathname: fixture } = new URL(req.url);
+			req.reply({ fixture, delay: 2000 });
+		});
+		this.swup.options.timeout = 1000;
 		cy.shouldHaveReloadedAfterAction(() => {
-			this.swup.options.timeout = 1;
 			this.swup.loadPage({ url: '/page-2.html' });
 		});
 		cy.shouldBeAtPage('/page-2.html');
