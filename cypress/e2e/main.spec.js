@@ -4,6 +4,20 @@
 
 const baseUrl = Cypress.config('baseUrl');
 
+describe('Request', function () {
+	beforeEach(() => {
+		cy.visit('/page-1.html');
+		cy.wrapSwupInstance();
+	});
+
+	it('should send the correct referer', function () {
+		cy.intercept('GET', '/page-2.html').as('request');
+		cy.triggerClickOnLink('/page-2.html');
+		const referer = `${baseUrl}/page-1.html`;
+		cy.wait('@request').its('request.headers.referer').should('eq', referer);
+	});
+});
+
 describe('Cache', function () {
 	beforeEach(() => {
 		cy.visit('/page-1.html');
