@@ -11,10 +11,21 @@ describe('Request', function () {
 	});
 
 	it('should send the correct referer', function () {
+		const referer = `${baseUrl}/page-1.html`;
 		cy.intercept('GET', '/page-2.html').as('request');
 		cy.triggerClickOnLink('/page-2.html');
-		const referer = `${baseUrl}/page-1.html`;
 		cy.wait('@request').its('request.headers.referer').should('eq', referer);
+	});
+
+	it('should send the correct request headers', function () {
+		const expected = this.swup.options.requestHeaders;
+		cy.intercept('GET', '/page-3.html').as('request');
+		cy.triggerClickOnLink('/page-3.html');
+		cy.wait('@request').its('request.headers').then((headers) => {
+			Object.entries(expected).forEach(([header, value]) => {
+				cy.wrap(headers).its(header.toLowerCase()).should('eq', value);
+			});
+		});
 	});
 });
 
