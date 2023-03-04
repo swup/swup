@@ -121,7 +121,7 @@ export default class Swup {
 	defaults: Options = {
 		animateHistoryBrowsing: false,
 		animationSelector: '[class*="transition-"]',
-		timeout: 30000,
+		timeout: 0,
 		cache: true,
 		containers: ['#swup'],
 		ignoreVisit: (url, { el } = {}) => !!el?.closest('[data-no-swup]'),
