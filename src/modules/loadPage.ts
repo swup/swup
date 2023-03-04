@@ -4,12 +4,14 @@ import { PageRecord } from './Cache';
 
 export type TransitionOptions = {
 	url: string;
+	timeout?: number;
 	customTransition?: string;
 };
 
 export type PageLoadOptions = {
 	url: string;
 	event?: PopStateEvent;
+	timeout?: number;
 	customTransition?: string;
 };
 

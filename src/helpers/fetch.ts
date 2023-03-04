@@ -33,9 +33,7 @@ export const fetch = (
 
 	if (timeout > 0) {
 		request.timeout = timeout;
-		request.ontimeout = function () {
-			window.location.href = url;
-		};
+		request.ontimeout = () => (window.location.href = url);
 	}
 
 	request.send(data);

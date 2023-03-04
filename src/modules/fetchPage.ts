@@ -4,8 +4,8 @@ import { TransitionOptions } from './loadPage';
 import { PageRecord } from './Cache';
 
 export function fetchPage(this: Swup, data: TransitionOptions): Promise<PageRecord> {
-	const { timeout, requestHeaders: headers } = this.options;
-	const { url } = data;
+	const { timeout: defaultTimeout, requestHeaders: headers } = this.options;
+	const { url, timeout = defaultTimeout } = data;
 
 	if (this.cache.exists(url)) {
 		this.triggerEvent('pageRetrievedFromCache');
