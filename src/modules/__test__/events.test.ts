@@ -1,5 +1,5 @@
-import Swup from '../../Swup';
-import { Handler } from '../events';
+import Swup from '../../Swup.js';
+import { Handler } from '../events.js';
 
 describe('events', () => {
 	it('should add event handlers to handlers array', () => {

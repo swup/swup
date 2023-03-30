@@ -1,5 +1,5 @@
-import Swup from '../Swup';
-import { PageRenderOptions } from './renderPage';
+import Swup from '../Swup.js';
+import { PageRenderOptions } from './renderPage.js';
 
 export const leavePage = function (this: Swup, { event, skipTransition }: PageRenderOptions = {}) {
 	const isHistoryVisit = event instanceof PopStateEvent;

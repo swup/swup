@@ -1,7 +1,7 @@
 import delegate from 'delegate-it';
 
 import pckg from '../../package.json';
-import Swup, { Options, Plugin } from '../index';
+import Swup, { Options, Plugin } from '../index.js';
 
 const baseUrl = window.location.origin;
 
