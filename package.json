@@ -27,7 +27,7 @@
     "postinstall": "opencollective-postinstall || true",
     "test": "npm run test:unit && npm run test:e2e",
     "test:ci": "npm run test:unit && npm run test:e2e:ci",
-    "test:unit": "jest",
+    "test:unit": "vitest run",
     "test:e2e": "start-server-and-test test:e2e:start 8274 cy:run",
     "test:e2e:ci": "start-server-and-test test:e2e:start 8274 cy:run:record",
     "test:e2e:dev": "start-server-and-test test:e2e:start 8274 cy:open",
@@ -71,7 +71,9 @@
     "nyc": "^15.1.0",
     "prettier": "^2.8.2",
     "start-server-and-test": "^1.14.0",
-    "ts-jest": "^29.0.5"
+    "ts-jest": "^29.0.5",
+    "ts-jest-resolver": "^2.0.1",
+    "vitest": "^0.29.8"
   },
   "collective": {
     "type": "opencollective",

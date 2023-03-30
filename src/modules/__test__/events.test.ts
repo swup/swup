@@ -1,10 +1,11 @@
+import { describe, expect, it, vi } from 'vitest';
 import Swup from '../../Swup.js';
 import { Handler } from '../events.js';
 
 describe('events', () => {
 	it('should add event handlers to handlers array', () => {
 		const swup = new Swup();
-		const handler = jest.fn();
+		const handler = vi.fn();
 
 		swup.on('enabled', handler);
 
@@ -13,7 +14,7 @@ describe('events', () => {
 
 	it('should remove event handlers from handlers array', () => {
 		const swup = new Swup();
-		const handler = jest.fn();
+		const handler = vi.fn();
 
 		swup.on('enabled', handler);
 		swup.on('animationInDone', handler);
@@ -35,7 +36,7 @@ describe('events', () => {
 
 	it('should trigger event handler', () => {
 		const swup = new Swup();
-		const handler = jest.fn();
+		const handler = vi.fn();
 
 		swup.on('enabled', handler);
 
@@ -46,7 +47,7 @@ describe('events', () => {
 
 	it('should trigger event handler with event', () => {
 		const swup = new Swup();
-		const handler: Handler<'popState'> = jest.fn();
+		const handler: Handler<'popState'> = vi.fn();
 		const event = new PopStateEvent('');
 
 		swup.on('popState', handler);
