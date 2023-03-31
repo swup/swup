@@ -4,12 +4,18 @@
   "version": "3.0.5",
   "description": "Complete, flexible, extensible, and easy-to-use page transition library for your server-side rendered website.",
   "type": "module",
-  "source": "src/Swup.ts",
-  "main": "dist/Swup.cjs",
-  "module": "dist/Swup.module.js",
-  "exports": "./dist/Swup.modern.js",
-  "unpkg": "dist/Swup.umd.js",
-  "types": "dist/types/index.d.ts",
+  "source": "./src/Swup.ts",
+  "main": "./dist/Swup.cjs",
+  "module": "./dist/Swup.module.js",
+  "unpkg": "./dist/Swup.umd.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/Swup.cjs",
+      "import": "./dist/Swup.module.js",
+      "types": "./dist/types/index.d.ts"
+    }
+  },
   "files": [
     "src",
     "dist"
