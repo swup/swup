@@ -33,7 +33,7 @@
     "postinstall": "opencollective-postinstall || true",
     "test": "npm run test:unit && npm run test:e2e",
     "test:ci": "npm run test:unit && npm run test:e2e:ci",
-    "test:unit": "vitest run",
+    "test:unit": "vitest run --config ./vitest/vitest.config.ts",
     "test:e2e": "start-server-and-test test:e2e:start 8274 cy:run",
     "test:e2e:ci": "start-server-and-test test:e2e:start 8274 cy:run:record",
     "test:e2e:dev": "start-server-and-test test:e2e:start 8274 cy:open",
