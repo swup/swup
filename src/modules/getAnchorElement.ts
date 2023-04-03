@@ -1,4 +1,4 @@
-import { escapeCssIdentifier, query } from '../utils';
+import { escapeCssIdentifier, query } from '../utils.js';
 
 export const getAnchorElement = (hash: string): Element | null => {
 	if (!hash) {

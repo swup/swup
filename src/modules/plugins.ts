@@ -1,4 +1,4 @@
-import Swup from '../Swup';
+import Swup from '../Swup.js';
 
 export type Plugin = {
 	name: string;

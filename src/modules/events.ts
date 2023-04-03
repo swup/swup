@@ -1,4 +1,4 @@
-import Swup from '../Swup';
+import Swup from '../Swup.js';
 import delegate from 'delegate-it';
 
 type HandlersEventMap = {
