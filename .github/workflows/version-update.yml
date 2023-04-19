@@ -33,3 +33,4 @@ jobs:
           title: 'Update package version (automated)'
           commit-message: 'Update package version'
           body: 'Automated update to ${{ inputs.segment }} version'
+          token: ${{ secrets.GH_TOKEN }}
