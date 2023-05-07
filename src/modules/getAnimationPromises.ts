@@ -45,7 +45,7 @@ export function getAnimationPromises(
 }
 
 const isTransitionOrAnimationEvent = (event: any): event is TransitionEvent | AnimationEvent =>
-	!!event.elapsedTime;
+	event.elapsedTime === 0 || !!event.elapsedTime;
 
 function getAnimationPromiseForElement(
 	element: Element,
