@@ -434,6 +434,16 @@ describe('Scroll Plugin', function () {
 		cy.shouldHaveElementInViewport('[data-cy=anchor-by-name]');
 	});
 
+	it('should prefer undecoded id attributes', function () {
+		cy.get('[data-cy=link-to-anchor-encoded]').click();
+		cy.shouldHaveElementInViewport('[data-cy=anchor-encoded]');
+	});
+
+	it('should accept unencoded anchor links', function () {
+		cy.get('[data-cy=link-to-anchor-unencoded]').click();
+		cy.shouldHaveElementInViewport('[data-cy=anchor-unencoded]');
+	});
+
 	it('should scroll to anchor with special characters', function () {
 		cy.get('[data-cy=link-to-anchor-with-colon]').click();
 		cy.shouldHaveElementInViewport('[data-cy=anchor-with-colon]');
