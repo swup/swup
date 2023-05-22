@@ -79,7 +79,7 @@ function getAnimationPromiseForElement(
 			}
 
 			if (!isTransitionOrAnimationEvent(event)) {
-				return console.warn('Not a transition or animation event', event);
+				throw new Error('Not a transition or animation event.');
 			}
 
 			// Skip transitions that happened before we started listening
