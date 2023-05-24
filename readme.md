@@ -1,7 +1,7 @@
 <br>
 
 <p align="center">
-  <img width="280" alt="swup" src="https://swup.js.org/assets/images/swup-logo.svg">
+  <img width="280" alt="swup" src="https://swup.js.org/assets/images/swup-logo-blue.svg">
 </p>
 
 <p align="center">
