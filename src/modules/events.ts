@@ -1,5 +1,5 @@
 import Swup from '../Swup.js';
-import delegate, { DelegateEvent } from 'delegate-it';
+import { DelegateEvent } from 'delegate-it';
 
 type HandlersEventMap = {
 	animationInDone: undefined;
