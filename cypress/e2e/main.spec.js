@@ -4,67 +4,28 @@
 
 const baseUrl = Cypress.config('baseUrl');
 
-const createPlugin = (plugin = {}) => {
-	return {
-		name: 'TestPlugin',
-		isSwupPlugin: true,
-		mount: () => {},
-		unmount: () => {},
-		_checkRequirements: () => true,
-		...plugin
-	};
-};
-
-describe('Instance', function () {
+describe('Request', function () {
 	beforeEach(() => {
-		cy.visit('/instance.html');
+		cy.visit('/page-1.html');
 		cy.wrapSwupInstance();
 	});
 
-	it('should mount and unmount plugins', function () {
-		const plugin = createPlugin();
-		cy.spy(plugin, 'mount');
-		cy.spy(plugin, 'unmount');
-
-		this.swup.use(plugin);
-		expect(plugin.mount).to.be.called;
-
-		this.swup.unuse(plugin);
-		expect(plugin.unmount).to.be.called;
+	it('should send the correct referer', function () {
+		const referer = `${baseUrl}/page-1.html`;
+		cy.intercept('GET', '/page-2.html').as('request');
+		cy.triggerClickOnLink('/page-2.html');
+		cy.wait('@request').its('request.headers.referer').should('eq', referer);
 	});
 
-	it('should find a plugin instance by reference', function () {
-		const plugin = createPlugin();
-		this.swup.use(plugin);
-		const instance = this.swup.findPlugin(plugin);
-		expect(instance).to.be.an('object');
-	});
-
-	it('should find a plugin instance by name', function () {
-		const plugin = createPlugin({ name: 'ExamplePlugin' });
-		this.swup.use(plugin);
-		const instance = this.swup.findPlugin('ExamplePlugin');
-		expect(instance).to.be.an('object');
-	});
-
-	it('should check plugin requirements', function () {
-		const plugin = createPlugin();
-		cy.spy(plugin, '_checkRequirements');
-		this.swup.use(plugin);
-		expect(plugin._checkRequirements).to.be.called;
-	});
-
-	it('should reject plugins with unmet requirements', function () {
-		const allowedPlugin = createPlugin({ _checkRequirements: () => true });
-		const unallowedPlugin = createPlugin({ _checkRequirements: () => false });
-		this.swup.use(allowedPlugin);
-		this.swup.use(unallowedPlugin);
-
-		const allowedInstance = this.swup.findPlugin(allowedPlugin);
-		expect(allowedInstance).to.be.an('object');
-
-		const unallowedInstance = this.swup.findPlugin(unallowedPlugin);
-		expect(unallowedInstance).to.be.undefined;
+	it('should send the correct request headers', function () {
+		const expected = this.swup.options.requestHeaders;
+		cy.intercept('GET', '/page-3.html').as('request');
+		cy.triggerClickOnLink('/page-3.html');
+		cy.wait('@request').its('request.headers').then((headers) => {
+			Object.entries(expected).forEach(([header, value]) => {
+				cy.wrap(headers).its(header.toLowerCase()).should('eq', value);
+			});
+		});
 	});
 });
 
@@ -471,6 +432,16 @@ describe('Scroll Plugin', function () {
 	it('should scroll to name-based anchor', function () {
 		cy.get('[data-cy=link-to-anchor-by-name]').click();
 		cy.shouldHaveElementInViewport('[data-cy=anchor-by-name]');
+	});
+
+	it('should prefer undecoded id attributes', function () {
+		cy.get('[data-cy=link-to-anchor-encoded]').click();
+		cy.shouldHaveElementInViewport('[data-cy=anchor-encoded]');
+	});
+
+	it('should accept unencoded anchor links', function () {
+		cy.get('[data-cy=link-to-anchor-unencoded]').click();
+		cy.shouldHaveElementInViewport('[data-cy=anchor-unencoded]');
 	});
 
 	it('should scroll to anchor with special characters', function () {

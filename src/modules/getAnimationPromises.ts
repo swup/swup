@@ -1,5 +1,5 @@
-import { queryAll, toMs } from '../utils';
-import Swup from '../Swup';
+import { queryAll, toMs } from '../utils.js';
+import Swup from '../Swup.js';
 
 // Transition property/event sniffing
 let transitionProp = 'transition';
@@ -45,7 +45,7 @@ export function getAnimationPromises(
 }
 
 const isTransitionOrAnimationEvent = (event: any): event is TransitionEvent | AnimationEvent =>
-	!!event.elapsedTime;
+	[transitionEndEvent, animationEndEvent].includes(event.type);
 
 function getAnimationPromiseForElement(
 	element: Element,

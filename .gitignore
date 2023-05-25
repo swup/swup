@@ -21,3 +21,4 @@ coverage
 /cypress/fixtures/dist
 /cypress/videos
 /cypress/screenshots
+*.tgz

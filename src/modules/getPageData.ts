@@ -1,6 +1,6 @@
-import { getDataFromHtml } from '../helpers';
-import Swup from '../Swup';
-import { PageHtmlData } from '../helpers/getDataFromHtml';
+import { getDataFromHtml } from '../helpers.js';
+import Swup from '../Swup.js';
+import { PageHtmlData } from '../helpers/getDataFromHtml.js';
 
 export type PageData = PageHtmlData & {
 	responseURL: string;
