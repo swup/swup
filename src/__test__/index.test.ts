@@ -1,4 +1,4 @@
-import delegate from 'delegate-it';
+import { DelegateEvent } from 'delegate-it';
 import { describe, expect, it, vi } from 'vitest';
 
 import pckg from '../../package.json';
@@ -66,7 +66,7 @@ describe('ignoreVisit', () => {
 	it('should have access to element and event params', () => {
 		const el = document.createElement('a');
 		el.href = `${baseUrl}/path/?query#hash`;
-		const event = new MouseEvent('click') as delegate.Event<MouseEvent>;
+		const event = new MouseEvent('click') as DelegateEvent<MouseEvent>;
 		event.delegateTarget = el;
 
 		const ignoreVisit = vi.fn(() => true);

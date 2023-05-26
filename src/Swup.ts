@@ -1,4 +1,4 @@
-import delegate from 'delegate-it';
+import { DelegateEvent } from 'delegate-it';
 
 import version from './config/version.js';
 
@@ -237,7 +237,7 @@ export default class Swup {
 		return false;
 	}
 
-	linkClickHandler(event: delegate.Event<MouseEvent>) {
+	linkClickHandler(event: DelegateEvent<MouseEvent>) {
 		const linkEl = event.delegateTarget;
 		const { href, url, hash } = Location.fromElement(linkEl as HTMLAnchorElement);
 
@@ -279,7 +279,7 @@ export default class Swup {
 		this.performPageLoad({ url, customTransition });
 	}
 
-	handleLinkToSamePage(url: string, hash: string, event: delegate.Event<MouseEvent>) {
+	handleLinkToSamePage(url: string, hash: string, event: DelegateEvent<MouseEvent>) {
 		// Emit event and exit early if the url points to the same page without hash
 		if (!hash) {
 			this.triggerEvent('samePage', event);

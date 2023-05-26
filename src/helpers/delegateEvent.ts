@@ -1,21 +1,22 @@
-import delegate, { EventType } from 'delegate-it';
+import delegate, { DelegateEventHandler, DelegateOptions, EventType } from 'delegate-it';
 import { ParseSelector } from 'typed-query-selector/parser.js';
 
 export type Unsubscribe = {
 	destroy: () => void;
 };
+
 export const delegateEvent = <Selector extends string, TEvent extends EventType>(
 	selector: Selector,
 	type: TEvent,
-	callback: delegate.EventHandler<GlobalEventHandlersEventMap[TEvent]>,
-	{ base = document, ...eventOptions } = {}
+	callback: DelegateEventHandler<GlobalEventHandlersEventMap[TEvent]>,
+	options?: DelegateOptions
 ): Unsubscribe => {
-	const delegation = delegate<string, ParseSelector<Selector, HTMLElement>, TEvent>(
-		base,
+	const controller = new AbortController();
+	delegate<string, ParseSelector<Selector, HTMLElement>, TEvent>(
 		selector,
 		type,
 		callback,
-		eventOptions
+		options
 	);
-	return { destroy: () => delegation.destroy() };
+	return { destroy: () => controller.abort() };
 };
