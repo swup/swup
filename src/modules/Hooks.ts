@@ -1,6 +1,7 @@
 import { DelegateEvent } from 'delegate-it';
 
 import Swup from '../Swup.js';
+import { runAsPromise } from '../utils.js';
 
 export type PageContext = {
 	url: string;
@@ -40,58 +41,115 @@ export type HookDefinitions = {
 	willReplaceContent: HookContext<PopStateEvent | undefined>;
 };
 
-type HookName = keyof HookDefinitions;
+export type HookName = keyof HookDefinitions;
 
-export type Handler<T extends HookName> = (swup: Swup, context: HookDefinitions[T]) => Promise<void> | void;
+export type Handler<T extends HookName> = (context: HookDefinitions[T]) => Promise<void> | void;
 
 export type Handlers = {
 	[Key in HookName]: Handler<Key>[];
+};
+
+export type HookOptions = {
+	once?: boolean;
+	before?: boolean;
+	replace?: boolean;
+	priority?: number;
+	raw?: boolean;
 };
 
 type HookRegistration<T extends HookName> = {
 	id: string;
 	hook: T;
 	handler: Handler<T>;
-	before?: boolean;
-	after?: boolean;
-	priority?: number;
-};
+} & HookOptions;
 
 type HookLedger<T extends HookName> = Map<Handler<T>, HookRegistration<T>>;
 type HookRegistry = Map<HookName, HookLedger<HookName>>;
 
+type HookData<T extends HookName> = HookDefinitions[T] | Event | undefined;
+
 export class Hooks {
-	registry: HookRegistry;
-	swup: Swup;
+	private registry: HookRegistry;
+	private swup: Swup;
 
 	constructor(swup: Swup) {
 		this.swup = swup;
 		this.registry = new Map();
 	}
 
-	add<THook extends HookName>(hook: THook, handler: Handler<THook>) {
+	add<THook extends HookName>(hook: THook, handler: Handler<THook>, options: HookOptions = {}) {
 		const ledger = this.registry.get(hook) || new Map();
 		this.registry.set(hook, ledger);
 
+		// TODO: check for undefined hooks at runtime
+		// console.warn(`Unsupported event ${event}.`);
+
 		const id = ledger.size.toString();
-		const registration: HookRegistration<THook> = { id, hook, handler };
+		const registration: HookRegistration<THook> = { id, hook, handler, ...options };
 		ledger.set(handler, registration);
 	}
 
-	call<T extends HookName>(hook: T, data: HookDefinitions[T], handler?: Function) {
+	remove<THook extends HookName>(hook: THook, handler?: Handler<THook>) {
 		const ledger = this.registry.get(hook);
-		if (ledger) {
-			ledger.forEach((entry) => {
-				entry.handler(this.swup, data);
-			});
+
+		if (ledger && handler) {
+			if (!ledger.delete(handler)) {
+				console.warn(`Handler for hook '${hook}' not found.`);
+			}
+		} else if (ledger) {
+			ledger.clear();
+		} else {
+			// console.warn(`Hook '${hook}' not found.`);
 		}
+	}
+
+	clear() {
+		// TODO: clear all hooks
+	}
+
+	async call<T extends HookName>(hook: T, data: HookData<T>, handler?: Function) {
+		const ledger = this.registry.get(hook);
+		if (!ledger) {
+			return;
+		}
+
+		const entries = Array.from(ledger.values());
+		const { before, after } = this.bisect(entries);
+
+		await this.execute(before, data);
+		if (handler) {
+			await runAsPromise(handler, [data]);
+		}
+		await this.execute(after, data);
+	}
+
+	bisect<T extends HookName>(ledger: HookRegistration<T>[]) {
+		const before = this.sort(ledger.filter(({ before }) => before));
+		const after = this.sort(ledger.filter(({ before }) => !before));
+		return { before, after };
+	}
+
+	sort<T extends HookName>(registrations: HookRegistration<T>[]) {
+		return registrations.sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0));
+	}
+
+	execute<T extends HookName>(ledger: HookRegistration<T>[], data: HookData<T>): Promise<any> {
+		const promises = ledger.map(({ handler, raw }) => {
+			try {
+				return runAsPromise(handler, [data]);
+			} catch (error) {
+				console.error(error);
+				return Promise.resolve();
+			}
+		});
+		return Promise.all(promises);
 	}
 
 	// async wait<T extends HookName>(hook: T, data: HookDefinitions[T], handler: Function) {
 	// 	const collection = this.registry.get(hook);
 	// 	if (collection) {
 	// 		for (const registration of collection.values()) {
-	// 			await registration.handler(this.swup, data);
+	// 			await registration.handler(data);
 	// 		}
 	// 	}
 	// }
