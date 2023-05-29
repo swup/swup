@@ -13,6 +13,7 @@ import {
 import { Unsubscribe } from './helpers/delegateEvent.js';
 
 import { Cache } from './modules/Cache.js';
+import { Hooks } from './modules/Hooks.js';
 import { enterPage } from './modules/enterPage.js';
 import { getAnchorElement } from './modules/getAnchorElement.js';
 import { getAnimationPromises } from './modules/getAnimationPromises.js';
@@ -87,6 +88,8 @@ export default class Swup {
 	transition: Transition = {};
 	// cache instance
 	cache: Cache;
+	// hooks registry
+	hooks: Hooks;
 	// allows us to compare the current and new path inside popStateHandler
 	currentPageUrl = getCurrentUrl();
 	// variable for keeping event listeners from "delegate"
@@ -140,6 +143,7 @@ export default class Swup {
 		this.boundPopStateHandler = this.popStateHandler.bind(this);
 
 		this.cache = new Cache(this);
+		this.hooks = new Hooks(this);
 
 		this.enable();
 	}
