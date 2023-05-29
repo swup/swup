@@ -68,8 +68,8 @@ type HookLedger<T extends HookName> = Map<Handler<T>, HookRegistration<T>>;
 type HookRegistry = Map<HookName, HookLedger<HookName>>;
 
 export class Hooks {
-	private registry: HookRegistry;
-	private swup: Swup;
+	registry: HookRegistry;
+	swup: Swup;
 
 	constructor(swup: Swup) {
 		this.swup = swup;
@@ -110,7 +110,7 @@ export class Hooks {
 		this.registry.forEach(ledger => ledger.clear());
 	}
 
-	async call<T extends HookName>(hook: T, data: HookData<T>, handler?: Function) {
+	async call<T extends HookName>(hook: T, data?: HookData<T>, handler?: Function) {
 		const ledger = this.registry.get(hook);
 		if (!ledger) {
 			return;

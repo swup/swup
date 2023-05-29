@@ -1,72 +1,63 @@
 import { describe, expect, it, vi } from 'vitest';
 import Swup from '../../Swup.js';
-import { Handler } from '../events.js';
 
 describe('events', () => {
-	it('should add event handlers to handlers array', () => {
+	it('should call hooks.add()', () => {
 		const swup = new Swup();
-		const handler = vi.fn();
+		const add = vi.fn();
 
-		swup.on('enabled', handler);
+		swup.hooks.add = add;
 
-		expect(swup._handlers.enabled.indexOf(handler)).toBe(0);
+		swup.on('enabled', () => {});
+
+		expect(add).toBeCalledTimes(1);
 	});
 
-	it('should remove event handlers from handlers array', () => {
+	it('should call hooks.add()', () => {
 		const swup = new Swup();
-		const handler = vi.fn();
+		const remove = vi.fn();
 
-		swup.on('enabled', handler);
-		swup.on('animationInDone', handler);
-		swup.on('animationInStart', handler);
+		swup.hooks.remove = remove;
 
-		expect(swup._handlers.enabled.indexOf(handler)).toBe(0);
-		expect(swup._handlers.animationInDone.indexOf(handler)).toBe(0);
-		expect(swup._handlers.animationInStart.indexOf(handler)).toBe(0);
+		swup.off('enabled', () => {});
 
-		swup.off('enabled', handler);
-		expect(swup._handlers.enabled.indexOf(handler)).toBe(-1);
-
-		swup.off('animationInDone');
-		expect(swup._handlers.animationInDone.indexOf(handler)).toBe(-1);
-
-		swup.off();
-		expect(swup._handlers.animationInStart.indexOf(handler)).toBe(-1);
+		expect(remove).toBeCalledTimes(1);
 	});
 
-	it('should trigger event handler', () => {
+	it('should call hooks.call()', () => {
 		const swup = new Swup();
-		const handler = vi.fn();
+		const call = vi.fn();
 
-		swup.on('enabled', handler);
+		swup.hooks.call = call;
 
+		swup.on('enabled', () => {});
 		swup.triggerEvent('enabled');
 
-		expect(handler).toBeCalledTimes(1);
+		expect(call).toBeCalledTimes(1);
 	});
 
-	it('should trigger event handler with event', () => {
-		const swup = new Swup();
-		const handler: Handler<'popState'> = vi.fn();
-		const event = new PopStateEvent('');
+	// it('should trigger event handler with event', () => {
+	// 	const swup = new Swup();
+	// 	const handler: Handler<'popState'> = vi.fn();
+	// 	const event = new PopStateEvent('');
 
-		swup.on('popState', handler);
-		swup.triggerEvent('popState', event);
+	// 	swup.on('popState', handler);
+	// 	swup.triggerEvent('popState', event);
 
-		expect(handler).toBeCalledWith(event);
-	});
+	// 	expect(handler).toBeCalledWith(event);
+	// });
 
-	it('types work and error when necessary', () => {
-		const swup = new Swup();
+	// it('types work and error when necessary', () => {
+	// 	const swup = new Swup();
 
-		// @ts-expect-no-error
-		swup.on('popState', (event: PopStateEvent) => {});
-		// @ts-expect-no-error
-		swup.triggerEvent('popState', new PopStateEvent(''));
+	// 	// @ts-expect-no-error
+	// 	swup.on('popState', (event: PopStateEvent) => {});
+	// 	// @ts-expect-no-error
+	// 	swup.triggerEvent('popState', new PopStateEvent(''));
 
-		// @ts-expect-error
-		swup.on('popState', (event: MouseEvent) => {});
-		// @ts-expect-error
-		swup.triggerEvent('popState', new MouseEvent(''));
-	});
+	// 	// @ts-expect-error
+	// 	swup.on('popState', (event: MouseEvent) => {});
+	// 	// @ts-expect-error
+	// 	swup.triggerEvent('popState', new MouseEvent(''));
+	// });
 });

@@ -25,7 +25,7 @@ export function off<THook extends HookName>(
 export function triggerEvent<TEvent extends HookName>(
 	this: Swup,
 	eventName: TEvent,
-	data: HookData<TEvent>
+	data?: HookData<TEvent>
 ) {
 	return this.hooks.call(eventName, data);
 }
