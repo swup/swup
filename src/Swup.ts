@@ -22,7 +22,7 @@ import { fetchPage } from './modules/fetchPage.js';
 import { leavePage } from './modules/leavePage.js';
 import { loadPage, performPageLoad } from './modules/loadPage.js';
 import { replaceContent } from './modules/replaceContent.js';
-import { on, off, triggerEvent, Handlers } from './modules/events.js';
+import { on, off, triggerEvent } from './modules/events.js';
 import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
 import { renderPage } from './modules/renderPage.js';
 import { updateTransition, shouldSkipTransition } from './modules/transitions.js';
@@ -55,28 +55,8 @@ export type Options = {
 export default class Swup {
 	version = version;
 
-	_handlers: Handlers = {
-		animationInDone: [],
-		animationInStart: [],
-		animationOutDone: [],
-		animationOutStart: [],
-		animationSkipped: [],
-		clickLink: [],
-		contentReplaced: [],
-		disabled: [],
-		enabled: [],
-		openPageInNewTab: [],
-		pageLoaded: [],
-		pageRetrievedFromCache: [],
-		pageView: [],
-		popState: [],
-		samePage: [],
-		samePageWithHash: [],
-		serverError: [],
-		transitionStart: [],
-		transitionEnd: [],
-		willReplaceContent: []
-	};
+	// keep old event handler map for backwards compatibility
+	_handlers = {};
 
 	// variable for anchor to scroll to after render
 	scrollToElement: string | null = null;

@@ -93,7 +93,11 @@ export class Hooks {
 		const ledger = this.registry.get(hook);
 
 		if (ledger && handler) {
-			if (!ledger.delete(handler)) {
+			const registrations = Array.from(ledger.values());
+			const registration = registrations.find(reg => reg.handler === handler);
+			if (registration) {
+				ledger.delete(registration.handler);
+			} else {
 				console.warn(`Handler for hook '${hook}' not found.`);
 			}
 		} else if (ledger) {

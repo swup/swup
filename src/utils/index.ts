@@ -36,7 +36,7 @@ export function isPromise<T>(obj: any): obj is PromiseLike<T> {
 }
 
 export function runAsPromise(
-	func: (...args: any[]) => void | Promise<any>,
+	func: Function,
 	args: any[] = [],
 	ctx: any = {}
 ): Promise<any> {
