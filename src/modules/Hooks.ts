@@ -76,6 +76,10 @@ export class Hooks {
 		this.registry = new Map();
 	}
 
+	// create<THook extends string>(hook: THook) {
+	// 	this.registry.set(hook, this.registry.get(hook) || new Map());
+	// }
+
 	add<THook extends HookName>(hook: THook, handler: Handler<THook>, options: HookOptions = {}) {
 		const ledger = this.registry.get(hook) || new Map();
 		this.registry.set(hook, ledger);
@@ -111,11 +115,7 @@ export class Hooks {
 	}
 
 	async call<T extends HookName>(hook: T, data?: HookData<T>, handler?: Function) {
-		const ledger = this.registry.get(hook);
-		if (!ledger) {
-			return;
-		}
-
+		const ledger = this.registry.get(hook) || new Map();
 		const entries = Array.from(ledger.values());
 		const { before, after } = this.bisect(entries);
 
@@ -128,7 +128,7 @@ export class Hooks {
 
 	execute<T extends HookName>(ledger: HookRegistration<T>[], data: HookData<T>): Promise<any> {
 		const promises = ledger.map(({ handler, raw }) => {
-			if (raw) {
+			if (raw && data instanceof Event) {
 				data = data as HookDefinitions[T];
 			}
 			try {

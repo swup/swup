@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import Swup from '../../Swup.js';
+import { HookData, Handler } from './Hooks.js';
 
 describe('hooks', () => {
 	it('should add handlers to the registry', () => {
@@ -24,8 +25,10 @@ describe('hooks', () => {
 
 		swup.on('enabled', handler);
 
-		await swup.hooks.call('enabled');
+		const data = { swup, hook: 'enabled' } as HookData<'enabled'>;
+		await swup.hooks.call('enabled', data);
 
 		expect(handler).toBeCalledTimes(1);
+		expect(handler).toBeCalledWith(data);
 	});
 });

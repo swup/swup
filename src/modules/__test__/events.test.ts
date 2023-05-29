@@ -13,7 +13,7 @@ describe('events', () => {
 		expect(add).toBeCalledTimes(1);
 	});
 
-	it('should call hooks.add()', () => {
+	it('should call hooks.remove()', () => {
 		const swup = new Swup();
 		const remove = vi.fn();
 
