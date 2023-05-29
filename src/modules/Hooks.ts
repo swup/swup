@@ -43,6 +43,8 @@ export type HookDefinitions = {
 
 export type HookName = keyof HookDefinitions;
 
+export type HookData<T extends HookName> = HookDefinitions[T] | Event | undefined;
+
 export type Handler<T extends HookName> = (context: HookDefinitions[T]) => Promise<void> | void;
 
 export type Handlers = {
@@ -62,11 +64,8 @@ type HookRegistration<T extends HookName> = {
 	hook: T;
 	handler: Handler<T>;
 } & HookOptions;
-
 type HookLedger<T extends HookName> = Map<Handler<T>, HookRegistration<T>>;
 type HookRegistry = Map<HookName, HookLedger<HookName>>;
-
-type HookData<T extends HookName> = HookDefinitions[T] | Event | undefined;
 
 export class Hooks {
 	private registry: HookRegistry;
@@ -108,7 +107,7 @@ export class Hooks {
 	}
 
 	clear() {
-		// TODO: clear all hooks
+		this.registry.forEach(ledger => ledger.clear());
 	}
 
 	async call<T extends HookName>(hook: T, data: HookData<T>, handler?: Function) {
@@ -127,18 +126,11 @@ export class Hooks {
 		await this.execute(after, data);
 	}
 
-	bisect<T extends HookName>(ledger: HookRegistration<T>[]) {
-		const before = this.sort(ledger.filter(({ before }) => before));
-		const after = this.sort(ledger.filter(({ before }) => !before));
-		return { before, after };
-	}
-
-	sort<T extends HookName>(registrations: HookRegistration<T>[]) {
-		return registrations.sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0));
-	}
-
 	execute<T extends HookName>(ledger: HookRegistration<T>[], data: HookData<T>): Promise<any> {
 		const promises = ledger.map(({ handler, raw }) => {
+			if (raw) {
+				data = data as HookDefinitions[T];
+			}
 			try {
 				return runAsPromise(handler, [data]);
 			} catch (error) {
@@ -149,12 +141,13 @@ export class Hooks {
 		return Promise.all(promises);
 	}
 
-	// async wait<T extends HookName>(hook: T, data: HookDefinitions[T], handler: Function) {
-	// 	const collection = this.registry.get(hook);
-	// 	if (collection) {
-	// 		for (const registration of collection.values()) {
-	// 			await registration.handler(data);
-	// 		}
-	// 	}
-	// }
+	bisect<T extends HookName>(ledger: HookRegistration<T>[]) {
+		const before = this.sort(ledger.filter(({ before }) => before));
+		const after = this.sort(ledger.filter(({ before }) => !before));
+		return { before, after };
+	}
+
+	sort<T extends HookName>(registrations: HookRegistration<T>[]) {
+		return registrations.sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0));
+	}
 }

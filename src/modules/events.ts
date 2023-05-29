@@ -1,5 +1,5 @@
 import Swup from '../Swup.js';
-import { HookName, Handler, HookOptions } from './Hooks.js';
+import { HookDefinitions, HookData, HookName, Handler, HookOptions } from './Hooks.js';
 
 export function on<THook extends HookName>(
 	this: Swup,
@@ -25,7 +25,7 @@ export function off<THook extends HookName>(
 export function triggerEvent<TEvent extends HookName>(
 	this: Swup,
 	eventName: TEvent,
-	originalEvent?: Event
+	data: HookData<TEvent>
 ) {
-	return this.hooks.call(eventName, originalEvent);
+	return this.hooks.call(eventName, data);
 }
