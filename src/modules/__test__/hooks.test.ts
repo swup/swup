@@ -37,12 +37,24 @@ describe('hooks', () => {
 		const swup = new Swup();
 		const handler = vi.fn();
 
-		swup.hooks.add('enabled', () => {});
-
 		const data = { swup, hook: 'enabled' } as HookData<'enabled'>;
 		await swup.hooks.call('enabled', data, handler);
 
 		expect(handler).toBeCalledTimes(1);
 		expect(handler).toBeCalledWith(data);
+	});
+
+	it('should preserve original handler this context', async () => {
+		const swup = new Swup();
+		let thisArg;
+		const handler = vi.fn(function(this: Swup) {
+			thisArg = this;
+		});
+
+		const data = { swup, hook: 'enabled' } as HookData<'enabled'>;
+		await swup.hooks.call('enabled', data, handler);
+
+		expect(thisArg).toBeInstanceOf(Swup);
+		expect(thisArg).toBe(swup);
 	});
 });

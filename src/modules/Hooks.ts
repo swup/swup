@@ -68,8 +68,8 @@ type HookLedger<T extends HookName> = Map<Handler<T>, HookRegistration<T>>;
 type HookRegistry = Map<HookName, HookLedger<HookName>>;
 
 export class Hooks {
-	registry: HookRegistry;
 	swup: Swup;
+	registry: HookRegistry;
 
 	constructor(swup: Swup) {
 		this.swup = swup;
@@ -121,24 +121,19 @@ export class Hooks {
 
 		await this.execute(before, data);
 		if (handler) {
-			await runAsPromise(handler, [data]);
+			await runAsPromise(handler, [data], this.swup);
 		}
 		await this.execute(after, data);
 	}
 
-	execute<T extends HookName>(ledger: HookRegistration<T>[], data: HookData<T>): Promise<any> {
-		const promises = ledger.map(({ handler, raw }) => {
-			if (raw && data instanceof Event) {
-				data = data as HookDefinitions[T];
-			}
+	async execute<T extends HookName>(ledger: HookRegistration<T>[], data: HookData<T>): Promise<any> {
+		for (const { handler } of ledger) {
 			try {
-				return runAsPromise(handler, [data]);
+				await runAsPromise(handler, [data], this.swup);
 			} catch (error) {
 				console.error(error);
-				return Promise.resolve();
 			}
-		});
-		return Promise.all(promises);
+		}
 	}
 
 	bisect<T extends HookName>(ledger: HookRegistration<T>[]) {
