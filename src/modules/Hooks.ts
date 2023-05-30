@@ -97,7 +97,7 @@ export class Hooks {
 
 		if (ledger && handler) {
 			const registrations = Array.from(ledger.values());
-			const registration = registrations.find(reg => reg.handler === handler);
+			const registration = registrations.find((reg) => reg.handler === handler);
 			if (registration) {
 				ledger.delete(registration.handler);
 			} else {
@@ -111,7 +111,7 @@ export class Hooks {
 	}
 
 	clear() {
-		this.registry.forEach(ledger => ledger.clear());
+		this.registry.forEach((ledger) => ledger.clear());
 	}
 
 	async call<T extends HookName>(hook: T, data?: HookData<T>, handler?: Function) {

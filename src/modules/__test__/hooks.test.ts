@@ -15,7 +15,7 @@ describe('hooks', () => {
 		expect(ledger!.size).toBe(1);
 
 		const registrations = Array.from(ledger!.values());
-		const registration = registrations.find(reg => reg.handler === handler);
+		const registration = registrations.find((reg) => reg.handler === handler);
 
 		expect(registration?.handler).toEqual(handler);
 	});

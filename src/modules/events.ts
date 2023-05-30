@@ -10,11 +10,7 @@ export function on<THook extends HookName>(
 	return this.hooks.add(hook, handler, { ...options, raw: true });
 }
 
-export function off<THook extends HookName>(
-	this: Swup,
-	hook?: THook,
-	handler?: Handler<THook>
-) {
+export function off<THook extends HookName>(this: Swup, hook?: THook, handler?: Handler<THook>) {
 	if (hook) {
 		return this.hooks.remove(hook, handler);
 	} else {
@@ -25,7 +21,7 @@ export function off<THook extends HookName>(
 export function triggerEvent<TEvent extends HookName>(
 	this: Swup,
 	eventName: TEvent,
-	data?: HookData<TEvent>,
+	data?: HookData<TEvent>
 	// originalEvent?: HookContext<TEvent>['originalEvent'],
 ) {
 	return this.hooks.call(eventName, data);
