@@ -7,6 +7,9 @@ export async function fetchPage(this: Swup, data: TransitionOptions): Promise<Pa
 	const headers = this.options.requestHeaders;
 	const { url } = data;
 
+	console.log('Request headers');
+	console.log(JSON.stringify(headers));
+
 	if (this.cache.exists(url)) {
 		await this.hooks.call('pageRetrievedFromCache');
 		return this.cache.getPage(url);

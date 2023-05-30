@@ -236,12 +236,13 @@ export default class Swup {
 			return;
 		}
 
-		await this.hooks.call('clickLink', event, async () => {
+		await this.hooks.call('clickLink', event, () => {
 			event.preventDefault();
+			console.log(event.defaultPrevented ? 'Prevented' : 'Not prevented');
 
 			// Handle links to the same page and exit early, where applicable
 			if (!url || url === getCurrentUrl()) {
-				await this.handleLinkToSamePage(url, hash, event);
+				this.handleLinkToSamePage(url, hash, event);
 				return;
 			}
 
