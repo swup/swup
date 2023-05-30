@@ -24,13 +24,13 @@ export function loadPage(this: Swup, data: TransitionOptions) {
 	}
 }
 
-export function performPageLoad(this: Swup, data: PageLoadOptions) {
+export async function performPageLoad(this: Swup, data: PageLoadOptions) {
 	const { url, event, customTransition } = data ?? {};
 
 	const isHistoryVisit = event instanceof PopStateEvent;
 	const skipTransition = this.shouldSkipTransition({ url, event });
 
-	this.triggerEvent('transitionStart', event);
+	await this.hooks.call('transitionStart', event);
 
 	// set transition object
 	this.updateTransition(getCurrentUrl(), url, customTransition);
@@ -39,7 +39,7 @@ export function performPageLoad(this: Swup, data: PageLoadOptions) {
 	}
 
 	// start/skip animation
-	const animationPromises = this.leavePage({ event, skipTransition });
+	const animationPromise = this.leavePage({ event, skipTransition });
 
 	// Load page data
 	const fetchPromise = this.fetchPage(data);
@@ -52,21 +52,20 @@ export function performPageLoad(this: Swup, data: PageLoadOptions) {
 	this.currentPageUrl = getCurrentUrl();
 
 	// when everything is ready, render the page
-	Promise.all<PageRecord | void>([fetchPromise, ...animationPromises])
-		.then(([pageData]) => {
-			this.renderPage(pageData as PageRecord, { event, skipTransition });
-		})
-		.catch((errorUrl) => {
-			// Return early if errorUrl is not defined (probably aborted preload request)
-			if (errorUrl === undefined) return;
+	const [pageData] = await Promise.all<PageRecord | void>([fetchPromise, animationPromise]);
+	try {
+		this.renderPage(pageData as PageRecord, { event, skipTransition });
+	} catch (errorUrl: any) {
+		// Return early if errorUrl is not defined (probably aborted preload request)
+		if (errorUrl === undefined) return;
 
-			// Rewrite `skipPopStateHandling` to redirect manually when `history.go` is processed
-			this.options.skipPopStateHandling = () => {
-				window.location = errorUrl;
-				return true;
-			};
+		// Rewrite `skipPopStateHandling` to redirect manually when `history.go` is processed
+		this.options.skipPopStateHandling = () => {
+			window.location = errorUrl;
+			return true;
+		};
 
-			// Go back to the actual page we're still at
-			history.go(-1);
-		});
+		// Go back to the actual page we're still at
+		history.go(-1);
+	}
 }

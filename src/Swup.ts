@@ -264,16 +264,13 @@ export default class Swup {
 	}
 
 	async handleLinkToSamePage(url: string, hash: string, event: DelegateEvent<MouseEvent>) {
-		// Emit event and exit early if the url points to the same page without hash
-		if (!hash) {
-			this.hooks.call('samePage', event);
-			return;
+		if (hash) {
+			await this.hooks.call('samePageWithHash', event, () => {
+				updateHistoryRecord(url + hash);
+			});
+		} else {
+			await this.hooks.call('samePage', event);
 		}
-
-		// link to the same URL with hash
-		await this.hooks.call('samePageWithHash', event, () => {
-			updateHistoryRecord(url + hash);
-		});
 	}
 
 	triggerWillOpenNewWindow(triggerEl: Element) {

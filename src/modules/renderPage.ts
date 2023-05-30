@@ -7,7 +7,7 @@ export type PageRenderOptions = {
 	skipTransition?: boolean;
 };
 
-export const renderPage = function (
+export const renderPage = async function (
 	this: Swup,
 	page: PageRecord,
 	{ event, skipTransition }: PageRenderOptions = {}
@@ -33,21 +33,19 @@ export const renderPage = function (
 		document.documentElement.classList.add('is-rendering');
 	}
 
-	this.triggerEvent('willReplaceContent', event);
+	await this.hooks.call('willReplaceContent', event);
+	await this.replaceContent(page);
+	await this.hooks.call('contentReplaced', event);
+	await this.hooks.call('pageView', event);
 
-	this.replaceContent(page).then(() => {
-		this.triggerEvent('contentReplaced', event);
-		this.triggerEvent('pageView', event);
+	// empty cache if it's disabled (in case preload plugin filled it)
+	if (!this.options.cache) {
+		this.cache.empty();
+	}
 
-		// empty cache if it's disabled (in case preload plugin filled it)
-		if (!this.options.cache) {
-			this.cache.empty();
-		}
+	// Perform in transition
+	this.enterPage({ event, skipTransition });
 
-		// Perform in transition
-		this.enterPage({ event, skipTransition });
-
-		// reset scroll-to element
-		this.scrollToElement = null;
-	});
+	// reset scroll-to element
+	this.scrollToElement = null;
 };

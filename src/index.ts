@@ -1,6 +1,6 @@
 import Swup, { Options } from './Swup.js';
 import { Plugin } from './modules/plugins.js';
-import { Handler } from './modules/hooks.js';
+import { Handler } from './modules/Hooks.js';
 
 export default Swup;
 

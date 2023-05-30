@@ -3,19 +3,19 @@ import { fetch } from '../helpers.js';
 import { TransitionOptions } from './loadPage.js';
 import { PageRecord } from './Cache.js';
 
-export function fetchPage(this: Swup, data: TransitionOptions): Promise<PageRecord> {
+export async function fetchPage(this: Swup, data: TransitionOptions): Promise<PageRecord> {
 	const headers = this.options.requestHeaders;
 	const { url } = data;
 
 	if (this.cache.exists(url)) {
-		this.triggerEvent('pageRetrievedFromCache');
-		return Promise.resolve(this.cache.getPage(url));
+		await this.hooks.call('pageRetrievedFromCache');
+		return this.cache.getPage(url);
 	}
 
 	return new Promise((resolve, reject) => {
 		fetch({ ...data, headers }, (response) => {
 			if (response.status === 500) {
-				this.triggerEvent('serverError');
+				this.hooks.call('serverError');
 				reject(url);
 				return;
 			}
@@ -28,7 +28,7 @@ export function fetchPage(this: Swup, data: TransitionOptions): Promise<PageReco
 			// render page
 			const cacheablePageData = { ...page, url };
 			this.cache.cacheUrl(cacheablePageData);
-			this.triggerEvent('pageLoaded');
+			this.hooks.call('pageLoaded');
 			resolve(cacheablePageData);
 		});
 	});

@@ -2,23 +2,25 @@ import { nextTick } from '../utils.js';
 import Swup from '../Swup.js';
 import { PageRenderOptions } from './renderPage.js';
 
-export const enterPage = function (this: Swup, { event, skipTransition }: PageRenderOptions = {}) {
+export const enterPage = async function (
+	this: Swup,
+	{ event, skipTransition }: PageRenderOptions = {}
+) {
 	if (skipTransition) {
-		this.triggerEvent('transitionEnd', event);
+		await this.hooks.call('transitionEnd', event);
 		this.cleanupAnimationClasses();
-		return [Promise.resolve()];
+		return;
 	}
 
-	nextTick(() => {
-		this.triggerEvent('animationInStart');
+	const tick: Promise<void> = new Promise((resolve) => nextTick(() => resolve()));
+	await tick;
+	await this.hooks.call('animationInStart', undefined, () => {
 		document.documentElement.classList.remove('is-animating');
 	});
 
 	const animationPromises = this.getAnimationPromises('in');
-	Promise.all(animationPromises).then(() => {
-		this.triggerEvent('animationInDone');
-		this.triggerEvent('transitionEnd', event);
-		this.cleanupAnimationClasses();
-	});
-	return animationPromises;
+	await Promise.all(animationPromises);
+	await this.hooks.call('animationInDone');
+	await this.hooks.call('transitionEnd', event);
+	this.cleanupAnimationClasses();
 };
