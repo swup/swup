@@ -12,7 +12,7 @@
   "exports": {
     ".": {
       "require": "./dist/Swup.cjs",
-      "import": "./dist/Swup.module.js",
+      "import": "./dist/Swup.modern.js",
       "types": "./dist/types/index.d.ts"
     }
   },
