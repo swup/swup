@@ -218,7 +218,7 @@ export default class Swup {
 		return false;
 	}
 
-	linkClickHandler(event: DelegateEvent<MouseEvent>) {
+	async linkClickHandler(event: DelegateEvent<MouseEvent>) {
 		const linkEl = event.delegateTarget;
 		const { href, url, hash } = Location.fromElement(linkEl as HTMLAnchorElement);
 
@@ -229,7 +229,7 @@ export default class Swup {
 
 		// Exit early if control key pressed
 		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
-			this.triggerEvent('openPageInNewTab', event);
+			this.hooks.call('openPageInNewTab', event);
 			return;
 		}
 
@@ -238,46 +238,42 @@ export default class Swup {
 			return;
 		}
 
-		this.triggerEvent('clickLink', event);
-		event.preventDefault();
+		await this.hooks.call('clickLink', event, async () => {
+			event.preventDefault();
 
-		// Handle links to the same page and exit early, where applicable
-		if (!url || url === getCurrentUrl()) {
-			this.handleLinkToSamePage(url, hash, event);
-			return;
-		}
+			// Handle links to the same page and exit early, where applicable
+			if (!url || url === getCurrentUrl()) {
+				await this.handleLinkToSamePage(url, hash, event);
+				return;
+			}
 
-		// Exit early if the resolved path hasn't changed
-		if (this.isSameResolvedUrl(url, getCurrentUrl())) return;
+			// Exit early if the resolved path hasn't changed
+			if (this.isSameResolvedUrl(url, getCurrentUrl())) {
+				return;
+			}
 
-		// Store the element that should be scrolled to after loading the next page
-		this.scrollToElement = hash || null;
+			// Store the element that should be scrolled to after loading the next page
+			this.scrollToElement = hash || null;
 
-		// Get the custom transition name, if present
-		const customTransition = linkEl.getAttribute('data-swup-transition') || undefined;
+			// Get the custom transition name, if present
+			const customTransition = linkEl.getAttribute('data-swup-transition') || undefined;
 
-		// Finally, proceed with loading the page
-		this.performPageLoad({ url, customTransition });
+			// Finally, proceed with loading the page
+			this.performPageLoad({ url, customTransition });
+		});
 	}
 
-	handleLinkToSamePage(url: string, hash: string, event: DelegateEvent<MouseEvent>) {
+	async handleLinkToSamePage(url: string, hash: string, event: DelegateEvent<MouseEvent>) {
 		// Emit event and exit early if the url points to the same page without hash
 		if (!hash) {
-			this.triggerEvent('samePage', event);
+			this.hooks.call('samePage', event);
 			return;
 		}
 
 		// link to the same URL with hash
-		this.triggerEvent('samePageWithHash', event);
-
-		const element = getAnchorElement(hash);
-
-		// Warn and exit early if no matching element was found for the hash
-		if (!element) {
-			return console.warn(`Element for offset not found (#${hash})`);
-		}
-
-		updateHistoryRecord(url + hash);
+		await this.hooks.call('samePageWithHash', event, () => {
+			updateHistoryRecord(url + hash);
+		});
 	}
 
 	triggerWillOpenNewWindow(triggerEl: Element) {
@@ -313,14 +309,13 @@ export default class Swup {
 			event.preventDefault();
 		}
 
-		this.triggerEvent('popState', event);
-
-		if (!this.options.animateHistoryBrowsing) {
-			document.documentElement.classList.remove('is-animating');
-			cleanupAnimationClasses();
-		}
-
-		this.performPageLoad({ url, event });
+		this.hooks.call('popState', event, () => {
+			if (!this.options.animateHistoryBrowsing) {
+				document.documentElement.classList.remove('is-animating');
+				cleanupAnimationClasses();
+			}
+			this.performPageLoad({ url, event });
+		});
 	}
 
 	/**
