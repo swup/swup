@@ -14,3 +14,9 @@ export const markSwupElements = (element: Element, containers: string[]): void =
 		}
 	});
 };
+
+export const unmarkSwupElements = (element: Element): void => {
+	queryAll('[data-swup]', element).forEach((container) => {
+		container.removeAttribute('data-swup');
+	});
+};

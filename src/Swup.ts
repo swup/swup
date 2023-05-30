@@ -28,6 +28,7 @@ import { renderPage } from './modules/renderPage.js';
 import { updateTransition, shouldSkipTransition } from './modules/transitions.js';
 
 import { queryAll } from './utils.js';
+import { unmarkSwupElements } from './helpers/markSwupElements.js';
 
 export type Transition = {
 	from?: string;
@@ -189,9 +190,7 @@ export default class Swup {
 		});
 
 		// remove swup data atributes from blocks
-		queryAll('[data-swup]').forEach((element) => {
-			element.removeAttribute('data-swup');
-		});
+		unmarkSwupElements(document.documentElement);
 
 		// remove handlers
 		this.hooks.clear();
