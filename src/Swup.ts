@@ -185,21 +185,19 @@ export default class Swup {
 		this.cache.empty();
 
 		// unmount plugins
-		this.options.plugins.forEach((plugin) => {
-			this.unuse(plugin);
-		});
+		this.options.plugins.forEach((plugin) => this.unuse(plugin));
 
 		// remove swup data atributes from blocks
 		unmarkSwupElements(document.documentElement);
-
-		// remove handlers
-		this.hooks.clear();
 
 		// trigger disable event
 		await this.hooks.call('disabled', undefined, () => {
 			// remove swup-enabled class from html tag
 			document.documentElement.classList.remove('swup-enabled');
 		});
+
+		// remove handlers
+		this.hooks.clear();
 	}
 
 	shouldIgnoreVisit(href: string, { el, event }: { el?: Element; event?: Event } = {}) {
