@@ -38,7 +38,7 @@
     "test:e2e:ci": "start-server-and-test test:e2e:start 8274 cy:run:record",
     "test:e2e:dev": "start-server-and-test test:e2e:start 8274 cy:open",
     "test:e2e:instrument": "nyc instrument --compact=false dist cypress/fixtures/dist",
-    "test:e2e:server": "http-server --silent --port 8274 cypress/fixtures",
+    "test:e2e:server": "http-server --silent --port 8274 -c-1 cypress/fixtures",
     "test:e2e:start": "npm run test:e2e:instrument && npm run test:e2e:server",
     "cy:run": "cypress run",
     "cy:run:record": "cypress run --record",
