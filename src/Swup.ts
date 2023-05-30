@@ -73,8 +73,6 @@ export default class Swup {
 	delegatedListeners: DelegatedListeners = {};
 	// keep old event handler map for backwards compatibility
 	_handlers = {};
-	// so we are able to remove the listener
-	boundPopStateHandler: (event: PopStateEvent) => void;
 
 	loadPage = loadPage;
 	performPageLoad = performPageLoad;
@@ -119,7 +117,8 @@ export default class Swup {
 		// Merge defaults and options
 		this.options = { ...this.defaults, ...options };
 
-		this.boundPopStateHandler = this.popStateHandler.bind(this);
+		this.linkClickHandler = this.linkClickHandler.bind(this);
+		this.popStateHandler = this.popStateHandler.bind(this);
 
 		this.cache = new Cache(this);
 		this.hooks = new Hooks(this);
@@ -141,13 +140,10 @@ export default class Swup {
 
 	async enable() {
 		// Add event listeners
-		this.delegatedListeners.click = delegateEvent(
-			this.options.linkSelector,
-			'click',
-			this.linkClickHandler.bind(this)
-		);
+		const { linkSelector } = this.options;
+		this.delegatedListeners.click = delegateEvent(linkSelector, 'click', this.linkClickHandler);
 
-		window.addEventListener('popstate', this.boundPopStateHandler);
+		window.addEventListener('popstate', this.popStateHandler);
 
 		// Initial save to cache
 		if (this.options.cache) {
@@ -179,7 +175,7 @@ export default class Swup {
 		this.delegatedListeners.click!.destroy();
 
 		// remove popstate listener
-		window.removeEventListener('popstate', this.boundPopStateHandler);
+		window.removeEventListener('popstate', this.popStateHandler);
 
 		// empty cache
 		this.cache.empty();
