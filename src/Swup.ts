@@ -54,10 +54,6 @@ export type Options = {
 
 export default class Swup {
 	version = version;
-
-	// keep old event handler map for backwards compatibility
-	_handlers = {};
-
 	// variable for anchor to scroll to after render
 	scrollToElement: string | null = null;
 	// variable for save options
@@ -74,6 +70,8 @@ export default class Swup {
 	currentPageUrl = getCurrentUrl();
 	// variable for keeping event listeners from "delegate"
 	delegatedListeners: DelegatedListeners = {};
+	// keep old event handler map for backwards compatibility
+	_handlers = {};
 	// so we are able to remove the listener
 	boundPopStateHandler: (event: PopStateEvent) => void;
 
@@ -117,10 +115,6 @@ export default class Swup {
 	};
 
 	constructor(options: Partial<Options> = {}) {
-		if (!this.checkRequirements()) {
-			return;
-		}
-
 		// Merge defaults and options
 		this.options = { ...this.defaults, ...options };
 
@@ -128,6 +122,10 @@ export default class Swup {
 
 		this.cache = new Cache(this);
 		this.hooks = new Hooks(this);
+
+		if (!this.checkRequirements()) {
+			return;
+		}
 
 		this.enable();
 	}
