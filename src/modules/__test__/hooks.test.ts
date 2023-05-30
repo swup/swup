@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import Swup from '../../Swup.js';
-import { HookData, Handler } from '../Hooks.js';
+import { HookData } from '../Hooks.js';
 
 describe('hooks', () => {
-	it('should add handlers to the registry', () => {
+	it('should add custom handlers to the registry', () => {
 		const swup = new Swup();
 		const handler = vi.fn();
 
@@ -20,14 +20,27 @@ describe('hooks', () => {
 		expect(registration?.handler).toEqual(handler);
 	});
 
-	it('should trigger handlers', async () => {
+	it('should trigger custom handlers', async () => {
 		const swup = new Swup();
 		const handler = vi.fn();
 
-		swup.on('enabled', handler);
+		swup.hooks.add('enabled', handler);
 
 		const data = { swup, hook: 'enabled' } as HookData<'enabled'>;
 		await swup.hooks.call('enabled', data);
+
+		expect(handler).toBeCalledTimes(1);
+		expect(handler).toBeCalledWith(data);
+	});
+
+	it('should trigger original handlers', async () => {
+		const swup = new Swup();
+		const handler = vi.fn();
+
+		swup.hooks.add('enabled', () => {});
+
+		const data = { swup, hook: 'enabled' } as HookData<'enabled'>;
+		await swup.hooks.call('enabled', data, handler);
 
 		expect(handler).toBeCalledTimes(1);
 		expect(handler).toBeCalledWith(data);
