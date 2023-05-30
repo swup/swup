@@ -128,7 +128,7 @@ export default class Swup {
 		this.enable();
 	}
 
-	enable() {
+	async enable() {
 		// Check for Promise support
 		if (typeof Promise === 'undefined') {
 			console.warn('Promise is not supported');
@@ -160,16 +160,16 @@ export default class Swup {
 		updateHistoryRecord();
 
 		// Trigger enabled event
-		this.triggerEvent('enabled');
-
-		// Add swup-enabled class to html tag
-		document.documentElement.classList.add('swup-enabled');
+		await this.hooks.call('enabled', undefined, () => {
+			// Add swup-enabled class to html tag
+			document.documentElement.classList.add('swup-enabled');
+		});
 
 		// Trigger page view event
-		this.triggerEvent('pageView');
+		await this.hooks.call('pageView');
 	}
 
-	destroy() {
+	async destroy() {
 		// remove delegated listeners
 		this.delegatedListeners.click!.destroy();
 
@@ -190,13 +190,13 @@ export default class Swup {
 		});
 
 		// remove handlers
-		this.off();
+		this.hooks.clear();
 
 		// trigger disable event
-		this.triggerEvent('disabled');
-
-		// remove swup-enabled class from html tag
-		document.documentElement.classList.remove('swup-enabled');
+		await this.hooks.call('disabled', undefined, () => {
+			// remove swup-enabled class from html tag
+			document.documentElement.classList.remove('swup-enabled');
+		});
 	}
 
 	shouldIgnoreVisit(href: string, { el, event }: { el?: Element; event?: Event } = {}) {
