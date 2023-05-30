@@ -11,6 +11,7 @@ import {
 	updateHistoryRecord
 } from './helpers.js';
 import { Unsubscribe } from './helpers/delegateEvent.js';
+import { unmarkSwupElements } from './helpers/markSwupElements.js';
 
 import { Cache } from './modules/Cache.js';
 import { Hooks } from './modules/Hooks.js';
@@ -26,8 +27,6 @@ import { on, off, triggerEvent } from './modules/events.js';
 import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
 import { renderPage } from './modules/renderPage.js';
 import { updateTransition, shouldSkipTransition } from './modules/transitions.js';
-
-import { unmarkSwupElements } from './helpers/markSwupElements.js';
 
 export type Transition = {
 	from?: string;

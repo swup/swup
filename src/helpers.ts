@@ -1,5 +1,5 @@
 // Re-export all helpers to allow custom package export path
-// e.g. import { getPageData } from 'swup/helpers'
+// e.g. import { getPageData } from 'swup'
 
 export { classify } from './helpers/classify.js';
 export { createHistoryRecord } from './helpers/createHistoryRecord.js';
