@@ -27,7 +27,6 @@ import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
 import { renderPage } from './modules/renderPage.js';
 import { updateTransition, shouldSkipTransition } from './modules/transitions.js';
 
-import { queryAll } from './utils.js';
 import { unmarkSwupElements } from './helpers/markSwupElements.js';
 
 export type Transition = {
