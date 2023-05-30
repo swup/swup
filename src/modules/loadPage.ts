@@ -52,8 +52,8 @@ export async function performPageLoad(this: Swup, data: PageLoadOptions) {
 	this.currentPageUrl = getCurrentUrl();
 
 	// when everything is ready, render the page
-	const [pageData] = await Promise.all<PageRecord | void>([fetchPromise, animationPromise]);
 	try {
+		const [pageData] = await Promise.all<PageRecord | void>([fetchPromise, animationPromise]);
 		this.renderPage(pageData as PageRecord, { event, skipTransition });
 	} catch (errorUrl: any) {
 		// Return early if errorUrl is not defined (probably aborted preload request)

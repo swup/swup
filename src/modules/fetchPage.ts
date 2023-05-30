@@ -12,7 +12,7 @@ export async function fetchPage(this: Swup, data: TransitionOptions): Promise<Pa
 		return this.cache.getPage(url);
 	}
 
-	return new Promise((resolve, reject) => {
+	const page = await new Promise<PageRecord>((resolve, reject) => {
 		fetch({ ...data, headers }, (response) => {
 			if (response.status === 500) {
 				this.hooks.call('serverError');
@@ -32,4 +32,6 @@ export async function fetchPage(this: Swup, data: TransitionOptions): Promise<Pa
 			resolve(cacheablePageData);
 		});
 	});
+
+	return page;
 }
