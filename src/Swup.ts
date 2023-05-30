@@ -117,6 +117,10 @@ export default class Swup {
 	};
 
 	constructor(options: Partial<Options> = {}) {
+		if (!this.checkRequirements()) {
+			return;
+		}
+
 		// Merge defaults and options
 		this.options = { ...this.defaults, ...options };
 
@@ -128,13 +132,15 @@ export default class Swup {
 		this.enable();
 	}
 
-	async enable() {
-		// Check for Promise support
+	checkRequirements() {
 		if (typeof Promise === 'undefined') {
 			console.warn('Promise is not supported');
-			return;
+			return false;
 		}
+		return true;
+	}
 
+	async enable() {
 		// Add event listeners
 		this.delegatedListeners.click = delegateEvent(
 			this.options.linkSelector,
