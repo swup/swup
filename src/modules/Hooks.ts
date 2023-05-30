@@ -5,7 +5,7 @@ import { runAsPromise } from '../utils.js';
 
 export type PageContext = {
 	url: string;
-	response: string;
+	payload: string;
 	title: string;
 	blocks: HTMLElement[];
 };
@@ -16,6 +16,7 @@ export type HookContext<TEvent = undefined> = {
 	from?: PageContext;
 	to?: PageContext;
 	originalEvent?: TEvent;
+	triggerElement?: Element;
 };
 
 export type HookDefinitions = {
@@ -116,8 +117,8 @@ export class Hooks {
 
 	async call<T extends HookName>(hook: T, data?: HookData<T>, handler?: Function) {
 		const ledger = this.registry.get(hook) || new Map();
-		const entries = Array.from(ledger.values());
-		const { before, after } = this.bisect(entries);
+		const registrations = Array.from(ledger.values());
+		const { before, after } = this.bisect(registrations);
 
 		await this.execute(before, data);
 		if (handler) {
@@ -126,8 +127,8 @@ export class Hooks {
 		await this.execute(after, data);
 	}
 
-	async execute<T extends HookName>(ledger: HookRegistration<T>[], data: HookData<T>): Promise<any> {
-		for (const { handler } of ledger) {
+	async execute<T extends HookName>(registrations: HookRegistration<T>[], data: HookData<T>): Promise<any> {
+		for (const { handler } of registrations) {
 			try {
 				await runAsPromise(handler, [data], this.swup);
 			} catch (error) {
@@ -136,9 +137,9 @@ export class Hooks {
 		}
 	}
 
-	bisect<T extends HookName>(ledger: HookRegistration<T>[]) {
-		const before = this.sort(ledger.filter(({ before }) => before));
-		const after = this.sort(ledger.filter(({ before }) => !before));
+	bisect<T extends HookName>(registrations: HookRegistration<T>[]) {
+		const before = this.sort(registrations.filter(({ before }) => before));
+		const after = this.sort(registrations.filter(({ before }) => !before));
 		return { before, after };
 	}
 
