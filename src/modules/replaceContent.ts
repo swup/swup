@@ -1,5 +1,5 @@
 import Swup from '../Swup.js';
-import { PageData } from './getPageData.js';
+import { PageData } from './fetchPage.js';
 
 /**
  * Perform the replacement of content after loading a page.

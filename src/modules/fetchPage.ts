@@ -1,7 +1,11 @@
 import Swup from '../Swup.js';
 import { fetch } from '../helpers.js';
 import { TransitionOptions } from './loadPage.js';
-import { PageData } from './getPageData.js';
+
+export type PageData = {
+	url: string;
+	html: string;
+};
 
 export function fetchPage(this: Swup, data: TransitionOptions): Promise<PageData> {
 	const headers = this.options.requestHeaders;
@@ -14,16 +18,21 @@ export function fetchPage(this: Swup, data: TransitionOptions): Promise<PageData
 
 	return new Promise((resolve, reject) => {
 		fetch({ ...data, headers }, (response) => {
-			if (response.status === 500) {
+			const {
+				status,
+				responseText: html,
+				responseURL: url = window.location.href
+			} = response;
+			if (status === 500) {
 				this.triggerEvent('serverError');
 				reject(url);
 				return;
 			}
-			const page = this.getPageData(response);
-			if (!page) {
+			if (!html) {
 				reject(url);
 				return;
 			}
+			const page = { url, html };
 			this.cache.cacheUrl(page);
 			this.triggerEvent('pageLoaded');
 			resolve(page);

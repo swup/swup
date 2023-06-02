@@ -15,7 +15,6 @@ import { Cache } from './modules/Cache.js';
 import { enterPage } from './modules/enterPage.js';
 import { getAnchorElement } from './modules/getAnchorElement.js';
 import { getAnimationPromises } from './modules/getAnimationPromises.js';
-import { getPageData } from './modules/getPageData.js';
 import { fetchPage } from './modules/fetchPage.js';
 import { leavePage } from './modules/leavePage.js';
 import { loadPage, performPageLoad } from './modules/loadPage.js';
@@ -106,7 +105,6 @@ export default class Swup {
 	updateTransition = updateTransition;
 	shouldSkipTransition = shouldSkipTransition;
 	getAnimationPromises = getAnimationPromises;
-	getPageData = getPageData;
 	fetchPage = fetchPage;
 	getAnchorElement = getAnchorElement;
 	log: (message: string, context?: any) => void = () => {}; // here so it can be used by plugins

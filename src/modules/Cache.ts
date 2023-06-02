@@ -1,6 +1,6 @@
 import { getCurrentUrl, Location } from '../helpers.js';
 import Swup from '../Swup.js';
-import { PageData } from './getPageData.js';
+import { PageData } from './fetchPage.js';
 
 export class Cache {
 	swup: Swup;
