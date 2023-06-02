@@ -1,6 +1,6 @@
 import { classify, createHistoryRecord, getCurrentUrl } from '../helpers.js';
 import Swup from '../Swup.js';
-import { PageRecord } from './Cache.js';
+import { PageData } from './getPageData.js';
 
 export type TransitionOptions = {
 	url: string;
@@ -52,9 +52,9 @@ export function performPageLoad(this: Swup, data: PageLoadOptions) {
 	this.currentPageUrl = getCurrentUrl();
 
 	// when everything is ready, render the page
-	Promise.all<PageRecord | void>([fetchPromise, ...animationPromises])
+	Promise.all<PageData | void>([fetchPromise, ...animationPromises])
 		.then(([pageData]) => {
-			this.renderPage(pageData as PageRecord, { event, skipTransition });
+			this.renderPage(pageData as PageData, { event, skipTransition });
 		})
 		.catch((errorUrl) => {
 			// Return early if errorUrl is not defined (probably aborted preload request)

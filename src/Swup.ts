@@ -7,7 +7,6 @@ import {
 	delegateEvent,
 	getCurrentUrl,
 	Location,
-	markSwupElements,
 	updateHistoryRecord
 } from './helpers.js';
 import { Unsubscribe } from './helpers/delegateEvent.js';
@@ -165,9 +164,6 @@ export default class Swup {
 			// Disabled to avoid caching modified dom state: logic moved to preload plugin
 			// https://github.com/swup/swup/issues/475
 		}
-
-		// Mark swup blocks in html
-		markSwupElements(document.documentElement, this.options.containers);
 
 		// Mount plugins
 		this.options.plugins.forEach((plugin) => this.use(plugin));

@@ -1,9 +1,9 @@
 import Swup from '../Swup.js';
 import { fetch } from '../helpers.js';
 import { TransitionOptions } from './loadPage.js';
-import { PageRecord } from './Cache.js';
+import { PageData } from './getPageData.js';
 
-export function fetchPage(this: Swup, data: TransitionOptions): Promise<PageRecord> {
+export function fetchPage(this: Swup, data: TransitionOptions): Promise<PageData> {
 	const headers = this.options.requestHeaders;
 	const { url } = data;
 
@@ -19,17 +19,14 @@ export function fetchPage(this: Swup, data: TransitionOptions): Promise<PageReco
 				reject(url);
 				return;
 			}
-			// get json data
 			const page = this.getPageData(response);
-			if (!page || !page.blocks.length) {
+			if (!page) {
 				reject(url);
 				return;
 			}
-			// render page
-			const cacheablePageData = { ...page, url };
-			this.cache.cacheUrl(cacheablePageData);
+			this.cache.cacheUrl(page);
 			this.triggerEvent('pageLoaded');
-			resolve(cacheablePageData);
+			resolve(page);
 		});
 	});
 }
