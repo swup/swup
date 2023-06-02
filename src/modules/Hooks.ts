@@ -73,6 +73,9 @@ type HookRegistry = Map<HookName, HookLedger<HookName>>;
 export class Hooks {
 	swup: Swup;
 	registry: HookRegistry;
+
+	// Can we deduplicate this somehow? Or make it error when not in sync with HookDefinitions?
+	// https://stackoverflow.com/questions/53387838/how-to-ensure-an-arrays-values-the-keys-of-a-typescript-interface/53395649
 	defaultHooks: HookName[] = [
 		'animationInDone',
 		'animationInStart',
@@ -114,11 +117,11 @@ export class Hooks {
 
 	get<THook extends HookName>(hook: THook): HookLedger<THook> | undefined {
 		const ledger = this.registry.get(hook) as HookLedger<THook> | undefined;
-		if (!ledger) {
+		if (ledger) {
+			return ledger;
+		} else {
 			console.error(`Unknown hook ${hook}.`);
-			return;
 		}
-		return ledger;
 	}
 
 	add<THook extends HookName>(hook: THook, handler: Handler<THook>, options: HookOptions = {}) {
@@ -127,8 +130,8 @@ export class Hooks {
 			return;
 		}
 
-		const id = ledger.size.toString();
-		const registration: HookRegistration<THook> = { id, hook, handler, ...options };
+		const id = String(ledger.size + 1);
+		const registration: HookRegistration<THook> = { ...options, id, hook, handler };
 		ledger.set(handler, registration);
 	}
 
@@ -136,11 +139,8 @@ export class Hooks {
 		const ledger = this.get(hook);
 
 		if (ledger && handler) {
-			const registrations = Array.from(ledger.values());
-			const registration = registrations.find((reg) => reg.handler === handler);
-			if (registration) {
-				ledger.delete(registration.handler);
-			} else {
+			const deleted = ledger.delete(handler);
+			if (!deleted) {
 				console.warn(`Handler for hook '${hook}' not found.`);
 			}
 		} else if (ledger) {
@@ -176,17 +176,20 @@ export class Hooks {
 		registrations: HookRegistration<T>[],
 		data: HookData<T>
 	): Promise<any> {
-		for (const { handler } of registrations) {
+		for (const { hook, handler, once } of registrations) {
 			try {
 				await runAsPromise(handler, [data], this.swup);
 			} catch (error) {
 				console.error(error);
 			}
+			if (once) {
+				this.remove(hook, handler);
+			}
 		}
 	}
 
 	executeSync<T extends HookName>(registrations: HookRegistration<T>[], data: HookData<T>): void {
-		for (const { hook, handler } of registrations) {
+		for (const { hook, handler, once } of registrations) {
 			try {
 				const result = handler(data);
 				if (isPromise(result)) {
@@ -197,6 +200,9 @@ export class Hooks {
 				}
 			} catch (error) {
 				console.error(error);
+			}
+			if (once) {
+				this.remove(hook, handler);
 			}
 		}
 	}
