@@ -23,7 +23,7 @@ import { fetchPage } from './modules/fetchPage.js';
 import { leavePage } from './modules/leavePage.js';
 import { loadPage, performPageLoad } from './modules/loadPage.js';
 import { replaceContent } from './modules/replaceContent.js';
-import { on, off, triggerEvent } from './modules/events.js';
+import { on, off, triggerEvent, createEventHandlerProxy, EventHandlerProxy } from './modules/events.js';
 import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
 import { renderPage } from './modules/renderPage.js';
 import { updateTransition, shouldSkipTransition } from './modules/transitions.js';
@@ -69,8 +69,8 @@ export default class Swup {
 	currentPageUrl = getCurrentUrl();
 	// variable for keeping event listeners from "delegate"
 	delegatedListeners: DelegatedListeners = {};
-	// keep old event handler map for backwards compatibility
-	_handlers = {};
+	// event handler proxy for backwards compatibility
+	_handlers: EventHandlerProxy;
 
 	loadPage = loadPage;
 	performPageLoad = performPageLoad;
@@ -120,6 +120,7 @@ export default class Swup {
 
 		this.cache = new Cache(this);
 		this.hooks = new Hooks(this);
+		this._handlers = createEventHandlerProxy(this);
 
 		if (!this.checkRequirements()) {
 			return;
