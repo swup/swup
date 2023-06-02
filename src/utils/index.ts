@@ -20,11 +20,6 @@ export const nextTick = (callback: () => void) => {
 export function runAsPromise(func: Function, args: any[] = [], ctx: any = {}): Promise<any> {
 	return new Promise((resolve, reject) => {
 		const result = func.apply(ctx, args);
-		if (result) {
-			console.log('Promise result');
-			console.log(result);
-		}
-
 		if (isPromise(result)) {
 			result.then(resolve, reject);
 		} else {

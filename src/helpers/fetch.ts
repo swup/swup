@@ -26,8 +26,6 @@ export const fetch = (
 	request.open(method, url, true);
 	Object.entries(headers).forEach(([key, header]) => {
 		request.setRequestHeader(key, header);
-		console.log(`Request header -- ${key}: ${header}`);
-
 	});
 	request.send(data);
 
