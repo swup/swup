@@ -146,6 +146,14 @@ export class Hooks {
 		return this.add(hook, handler, { ...options, before: true });
 	}
 
+	replace<THook extends HookName>(
+		hook: THook,
+		handler: Handler<THook>,
+		options: HookOptions = {}
+	) {
+		return this.add(hook, handler, { ...options, replace: true });
+	}
+
 	once<THook extends HookName>(hook: THook, handler: Handler<THook>, options: HookOptions = {}) {
 		return this.add(hook, handler, { ...options, once: true });
 	}
@@ -168,32 +176,31 @@ export class Hooks {
 	}
 
 	async run<T extends HookName>(hook: T, data?: HookData<T>, handler?: Function) {
-		const { before, after } = this.getHandlers(hook);
-
-		await this.execute(before, data);
-		if (handler) {
-			await runAsPromise(handler, [data], this.swup);
-		}
-		await this.execute(after, data);
+		const { before, after, replace } = this.getHandlers(hook);
+		return [
+			...(await this.execute(before, data)),
+			handler && !replace ? await runAsPromise(handler, [data], this.swup) : undefined,
+			...(await this.execute(after, data))
+		];
 	}
 
 	runSync<T extends HookName>(hook: T, data?: HookData<T>, handler?: Function) {
-		const { before, after } = this.getHandlers(hook);
-
-		this.executeSync(before, data);
-		if (handler) {
-			handler(data);
-		}
-		this.executeSync(after, data);
+		const { before, after, replace } = this.getHandlers(hook);
+		return [
+			...this.executeSync(before, data),
+			handler && !replace ? handler(data) : undefined,
+			...this.executeSync(after, data)
+		];
 	}
 
 	async execute<T extends HookName>(
 		registrations: HookRegistration<T>[],
 		data: HookData<T>
 	): Promise<any> {
+		const results = [];
 		for (const { hook, handler, once } of registrations) {
 			try {
-				await runAsPromise(handler, [data], this.swup);
+				results.push(await runAsPromise(handler, [data], this.swup));
 			} catch (error) {
 				console.error(error);
 			}
@@ -201,9 +208,14 @@ export class Hooks {
 				this.remove(hook, handler);
 			}
 		}
+		return results;
 	}
 
-	executeSync<T extends HookName>(registrations: HookRegistration<T>[], data: HookData<T>): void {
+	executeSync<T extends HookName>(
+		registrations: HookRegistration<T>[],
+		data: HookData<T>
+	): any[] {
+		const results = [];
 		for (const { hook, handler, once } of registrations) {
 			try {
 				const result = handler(data);
@@ -213,6 +225,7 @@ export class Hooks {
 							`Swup will not wait for it to resolve.`
 					);
 				}
+				results.push(result);
 			} catch (error) {
 				console.error(error);
 			}
@@ -220,6 +233,7 @@ export class Hooks {
 				this.remove(hook, handler);
 			}
 		}
+		return results;
 	}
 
 	getHandlers(hook: HookName) {
@@ -231,8 +245,9 @@ export class Hooks {
 		const registrations = Array.from(ledger.values());
 		const before = this.sort(registrations.filter(({ before, replace }) => before || replace));
 		const after = this.sort(registrations.filter(({ before, replace }) => !before && !replace));
+		const replace = registrations.some(({ replace }) => replace);
 
-		return { found: true, before, after };
+		return { found: true, before, after, replace };
 	}
 
 	sort<T extends HookName>(registrations: HookRegistration<T>[]) {

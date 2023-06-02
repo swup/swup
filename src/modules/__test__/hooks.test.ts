@@ -149,4 +149,18 @@ describe('Hooks', () => {
 
 		expect(called).toEqual([2, 1, 3, 4, 6, 5]);
 	});
+
+	it('should allow replacing original handlers', async () => {
+		const swup = new Swup();
+		const listener = vi.fn();
+		const handler = vi.fn();
+
+		swup.hooks.add('enabled', listener, { replace: true });
+
+		const data = { swup, hook: 'enabled' } as HookData<'enabled'>;
+		await swup.hooks.run('enabled', data, handler);
+
+		expect(handler).toBeCalledTimes(0);
+		expect(listener).toBeCalledTimes(1);
+	});
 });
