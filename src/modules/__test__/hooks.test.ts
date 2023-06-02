@@ -99,4 +99,37 @@ describe('Hooks', () => {
 
 		expect(called).toEqual(['before', 'original', 'normal', 'after']);
 	});
+
+	it('should sort custom handlers by priority', async () => {
+		const swup = new Swup();
+
+		let called: Array<number> = [];
+		const handlers = {
+			1: () => {
+				called.push(1);
+			},
+			2: () => {
+				called.push(2);
+			},
+			3: () => {
+				called.push(3);
+			},
+			4: () => {
+				called.push(4);
+			},
+			5: () => {
+				called.push(5);
+			}
+		};
+
+		swup.hooks.add('disabled', handlers['1'], { priority: 1, before: true });
+		swup.hooks.add('disabled', handlers['2'], { priority: 2, before: true });
+		swup.hooks.add('disabled', handlers['4'], { priority: 5 });
+		swup.hooks.add('disabled', handlers['5'], { priority: 4 });
+
+		const data = { swup, hook: 'disabled' } as HookData<'disabled'>;
+		await swup.hooks.call('disabled', data, handlers['3']);
+
+		expect(called).toEqual([2, 1, 3, 4, 5]);
+	});
 });

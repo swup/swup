@@ -221,6 +221,6 @@ export class Hooks {
 	}
 
 	sort<T extends HookName>(registrations: HookRegistration<T>[]) {
-		return registrations.sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0));
+		return registrations.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
 	}
 }
