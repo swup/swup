@@ -24,11 +24,11 @@ describe('events', () => {
 		expect(remove).toBeCalledTimes(1);
 	});
 
-	it('should call hooks.call()', () => {
+	it('should call hooks.run()', () => {
 		const swup = new Swup();
 		const call = vi.fn();
 
-		swup.hooks.call = call;
+		swup.hooks.run = call;
 
 		swup.on('enabled', () => {});
 		swup.triggerEvent('enabled');

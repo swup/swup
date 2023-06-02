@@ -8,14 +8,14 @@ export async function fetchPage(this: Swup, data: TransitionOptions): Promise<Pa
 	const { url } = data;
 
 	if (this.cache.exists(url)) {
-		await this.hooks.call('pageRetrievedFromCache');
+		await this.hooks.run('pageRetrievedFromCache');
 		return this.cache.getPage(url);
 	}
 
 	const page = await new Promise<PageRecord>((resolve, reject) => {
 		fetch({ ...data, headers }, (response) => {
 			if (response.status === 500) {
-				this.hooks.call('serverError');
+				this.hooks.run('serverError');
 				reject(url);
 				return;
 			}
@@ -28,7 +28,7 @@ export async function fetchPage(this: Swup, data: TransitionOptions): Promise<Pa
 			// render page
 			const cacheablePageData = { ...page, url };
 			this.cache.cacheUrl(cacheablePageData);
-			this.hooks.call('pageLoaded');
+			this.hooks.run('pageLoaded');
 			resolve(cacheablePageData);
 		});
 	});

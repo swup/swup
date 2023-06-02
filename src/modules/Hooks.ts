@@ -167,7 +167,7 @@ export class Hooks {
 		this.registry.forEach((ledger) => ledger.clear());
 	}
 
-	async call<T extends HookName>(hook: T, data?: HookData<T>, handler?: Function) {
+	async run<T extends HookName>(hook: T, data?: HookData<T>, handler?: Function) {
 		const { before, after } = this.getHandlers(hook);
 
 		await this.execute(before, data);
@@ -177,7 +177,7 @@ export class Hooks {
 		await this.execute(after, data);
 	}
 
-	callSync<T extends HookName>(hook: T, data?: HookData<T>, handler?: Function) {
+	runSync<T extends HookName>(hook: T, data?: HookData<T>, handler?: Function) {
 		const { before, after } = this.getHandlers(hook);
 
 		this.executeSync(before, data);
@@ -229,8 +229,8 @@ export class Hooks {
 		}
 
 		const registrations = Array.from(ledger.values());
-		const before = this.sort(registrations.filter(({ before }) => before));
-		const after = this.sort(registrations.filter(({ before }) => !before));
+		const before = this.sort(registrations.filter(({ before, replace }) => before || replace));
+		const after = this.sort(registrations.filter(({ before, replace }) => !before && !replace));
 
 		return { found: true, before, after };
 	}

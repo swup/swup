@@ -30,7 +30,7 @@ export async function performPageLoad(this: Swup, data: PageLoadOptions) {
 	const isHistoryVisit = event instanceof PopStateEvent;
 	const skipTransition = this.shouldSkipTransition({ url, event });
 
-	await this.hooks.call('transitionStart', event);
+	await this.hooks.run('transitionStart', event);
 
 	// set transition object
 	this.updateTransition(getCurrentUrl(), url, customTransition);

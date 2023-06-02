@@ -37,7 +37,7 @@ export function triggerEvent<TEvent extends HookName>(
 	data?: HookData<TEvent>
 	// originalEvent?: HookContext<TEvent>['originalEvent'],
 ) {
-	return this.hooks.call(eventName, data);
+	return this.hooks.run(eventName, data);
 }
 
 /**

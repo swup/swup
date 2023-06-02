@@ -166,13 +166,13 @@ export default class Swup {
 		updateHistoryRecord();
 
 		// Trigger enabled event
-		await this.hooks.call('enabled', undefined, () => {
+		await this.hooks.run('enabled', undefined, () => {
 			// Add swup-enabled class to html tag
 			document.documentElement.classList.add('swup-enabled');
 		});
 
 		// Trigger page view event
-		this.hooks.call('pageView');
+		this.hooks.run('pageView');
 	}
 
 	async destroy() {
@@ -192,7 +192,7 @@ export default class Swup {
 		unmarkSwupElements(document.documentElement);
 
 		// trigger disable event
-		await this.hooks.call('disabled', undefined, () => {
+		await this.hooks.run('disabled', undefined, () => {
 			// remove swup-enabled class from html tag
 			document.documentElement.classList.remove('swup-enabled');
 		});
@@ -234,7 +234,7 @@ export default class Swup {
 
 		// Exit early if control key pressed
 		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
-			this.hooks.call('openPageInNewTab', event);
+			this.hooks.run('openPageInNewTab', event);
 			return;
 		}
 
@@ -243,7 +243,7 @@ export default class Swup {
 			return;
 		}
 
-		this.hooks.callSync('clickLink', event, () => {
+		this.hooks.runSync('clickLink', event, () => {
 			event.preventDefault();
 
 			// Handle links to the same page and exit early, where applicable
@@ -270,11 +270,11 @@ export default class Swup {
 
 	async handleLinkToSamePage(url: string, hash: string, event: DelegateEvent<MouseEvent>) {
 		if (hash) {
-			await this.hooks.call('samePageWithHash', event, () => {
+			await this.hooks.run('samePageWithHash', event, () => {
 				updateHistoryRecord(url + hash);
 			});
 		} else {
-			await this.hooks.call('samePage', event);
+			await this.hooks.run('samePage', event);
 		}
 	}
 
@@ -311,7 +311,7 @@ export default class Swup {
 			event.preventDefault();
 		}
 
-		this.hooks.callSync('popState', event, () => {
+		this.hooks.runSync('popState', event, () => {
 			if (!this.options.animateHistoryBrowsing) {
 				document.documentElement.classList.remove('is-animating');
 				cleanupAnimationClasses();

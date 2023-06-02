@@ -27,7 +27,7 @@ describe('Hooks', () => {
 		swup.hooks.add('enabled', handler);
 
 		const data = { swup, hook: 'enabled' } as HookData<'enabled'>;
-		await swup.hooks.call('enabled', data);
+		await swup.hooks.run('enabled', data);
 
 		expect(handler).toBeCalledTimes(1);
 		expect(handler).toBeCalledWith(data);
@@ -40,8 +40,8 @@ describe('Hooks', () => {
 		swup.hooks.add('enabled', handler, { once: true });
 
 		const data = { swup, hook: 'enabled' } as HookData<'enabled'>;
-		await swup.hooks.call('enabled', data, () => {});
-		await swup.hooks.call('enabled', data, () => {});
+		await swup.hooks.run('enabled', data, () => {});
+		await swup.hooks.run('enabled', data, () => {});
 
 		expect(handler).toBeCalledTimes(1);
 	});
@@ -53,8 +53,8 @@ describe('Hooks', () => {
 		swup.hooks.once('enabled', handler);
 
 		const data = { swup, hook: 'enabled' } as HookData<'enabled'>;
-		await swup.hooks.call('enabled', data, () => {});
-		await swup.hooks.call('enabled', data, () => {});
+		await swup.hooks.run('enabled', data, () => {});
+		await swup.hooks.run('enabled', data, () => {});
 
 		expect(handler).toBeCalledTimes(1);
 	});
@@ -64,7 +64,7 @@ describe('Hooks', () => {
 		const handler = vi.fn();
 
 		const data = { swup, hook: 'enabled' } as HookData<'enabled'>;
-		await swup.hooks.call('enabled', data, handler);
+		await swup.hooks.run('enabled', data, handler);
 
 		expect(handler).toBeCalledTimes(1);
 		expect(handler).toBeCalledWith(data);
@@ -78,7 +78,7 @@ describe('Hooks', () => {
 		});
 
 		const data = { swup, hook: 'enabled' } as HookData<'enabled'>;
-		await swup.hooks.call('enabled', data, handler);
+		await swup.hooks.run('enabled', data, handler);
 
 		expect(thisArg).toBeInstanceOf(Swup);
 		expect(thisArg).toBe(swup);
@@ -108,7 +108,7 @@ describe('Hooks', () => {
 		swup.hooks.add('disabled', handlers.after, {});
 
 		const data = { swup, hook: 'disabled' } as HookData<'disabled'>;
-		await swup.hooks.call('disabled', data, handlers.original);
+		await swup.hooks.run('disabled', data, handlers.original);
 
 		expect(called).toEqual(['before', 'original', 'normal', 'after']);
 	});
@@ -145,7 +145,7 @@ describe('Hooks', () => {
 		swup.hooks.add('disabled', handlers['5'], { priority: 4 });
 
 		const data = { swup, hook: 'disabled' } as HookData<'disabled'>;
-		await swup.hooks.call('disabled', data, handlers['3']);
+		await swup.hooks.run('disabled', data, handlers['3']);
 
 		expect(called).toEqual([2, 1, 3, 4, 6, 5]);
 	});
