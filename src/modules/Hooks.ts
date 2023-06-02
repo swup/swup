@@ -61,7 +61,7 @@ export type HookOptions = {
 };
 
 export type HookRegistration<T extends HookName> = {
-	id: string;
+	id: number;
 	hook: T;
 	handler: Handler<T>;
 } & HookOptions;
@@ -130,7 +130,7 @@ export class Hooks {
 			return;
 		}
 
-		const id = String(ledger.size + 1);
+		const id = ledger.size + 1;
 		const registration: HookRegistration<THook> = { ...options, id, hook, handler };
 		ledger.set(handler, registration);
 	}
@@ -221,6 +221,11 @@ export class Hooks {
 	}
 
 	sort<T extends HookName>(registrations: HookRegistration<T>[]) {
-		return registrations.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
+		// sort by priority first, by id second
+		return registrations.sort((a, b) => {
+			const priority = (b.priority ?? 0) - (a.priority ?? 0);
+			const id = a.id - b.id;
+			return priority || id || 0;
+		});
 	}
 }

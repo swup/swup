@@ -119,17 +119,21 @@ describe('Hooks', () => {
 			},
 			5: () => {
 				called.push(5);
+			},
+			6: () => {
+				called.push(6);
 			}
 		};
 
 		swup.hooks.add('disabled', handlers['1'], { priority: 1, before: true });
 		swup.hooks.add('disabled', handlers['2'], { priority: 2, before: true });
 		swup.hooks.add('disabled', handlers['4'], { priority: 5 });
+		swup.hooks.add('disabled', handlers['6'], { priority: 4 });
 		swup.hooks.add('disabled', handlers['5'], { priority: 4 });
 
 		const data = { swup, hook: 'disabled' } as HookData<'disabled'>;
 		await swup.hooks.call('disabled', data, handlers['3']);
 
-		expect(called).toEqual([2, 1, 3, 4, 5]);
+		expect(called).toEqual([2, 1, 3, 4, 6, 5]);
 	});
 });
