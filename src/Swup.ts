@@ -311,7 +311,7 @@ export default class Swup {
 			event.preventDefault();
 		}
 
-		this.hooks.call('popState', event, () => {
+		this.hooks.callSync('popState', event, () => {
 			if (!this.options.animateHistoryBrowsing) {
 				document.documentElement.classList.remove('is-animating');
 				cleanupAnimationClasses();
