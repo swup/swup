@@ -216,7 +216,7 @@ export default class Swup {
 		return false;
 	}
 
-	async linkClickHandler(event: DelegateEvent<MouseEvent>) {
+	linkClickHandler(event: DelegateEvent<MouseEvent>) {
 		const linkEl = event.delegateTarget;
 		const { href, url, hash } = Location.fromElement(linkEl as HTMLAnchorElement);
 
@@ -236,10 +236,8 @@ export default class Swup {
 			return;
 		}
 
-		await this.hooks.call('clickLink', event, () => {
-			event.preventDefault();
-			console.log(event.defaultPrevented ? 'Prevented' : 'Not prevented');
-
+		event.preventDefault();
+		this.hooks.call('clickLink', event, () => {
 			// Handle links to the same page and exit early, where applicable
 			if (!url || url === getCurrentUrl()) {
 				this.handleLinkToSamePage(url, hash, event);
