@@ -46,13 +46,15 @@ export function triggerEvent<TEvent extends HookName>(
  * Mostly here for backwards compatibility with older plugins.
  */
 export function createEventHandlerProxy(swup: Swup): EventHandlerProxy {
-	return new Proxy({}, {
-		set: (target: any, hook: HookName, value: any): boolean => {
-			console.warn('Writing to `swup._handlers` is no longer supported. Please use `swup.hooks.create()` instead.');
-			if (!swup.hooks.has(hook)) {
-				swup.hooks.create(hook);
-			}
-			return false;
+	function set(target: any, hook: HookName, value: any): boolean {
+		console.warn(
+			'Writing to `swup._handlers` is no longer supported. ' +
+				'Use `swup.hooks.create()` instead.'
+		);
+		if (!swup.hooks.has(hook)) {
+			swup.hooks.create(hook);
 		}
-	});
-};
+		return true;
+	}
+	return new Proxy({}, { set });
+}

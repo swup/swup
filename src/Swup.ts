@@ -23,7 +23,13 @@ import { fetchPage } from './modules/fetchPage.js';
 import { leavePage } from './modules/leavePage.js';
 import { loadPage, performPageLoad } from './modules/loadPage.js';
 import { replaceContent } from './modules/replaceContent.js';
-import { on, off, triggerEvent, createEventHandlerProxy, EventHandlerProxy } from './modules/events.js';
+import {
+	on,
+	off,
+	triggerEvent,
+	createEventHandlerProxy,
+	EventHandlerProxy
+} from './modules/events.js';
 import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
 import { renderPage } from './modules/renderPage.js';
 import { updateTransition, shouldSkipTransition } from './modules/transitions.js';
@@ -166,7 +172,7 @@ export default class Swup {
 		});
 
 		// Trigger page view event
-		await this.hooks.call('pageView');
+		this.hooks.call('pageView');
 	}
 
 	async destroy() {
@@ -237,8 +243,9 @@ export default class Swup {
 			return;
 		}
 
-		event.preventDefault();
-		this.hooks.call('clickLink', event, () => {
+		this.hooks.callSync('clickLink', event, () => {
+			event.preventDefault();
+
 			// Handle links to the same page and exit early, where applicable
 			if (!url || url === getCurrentUrl()) {
 				this.handleLinkToSamePage(url, hash, event);

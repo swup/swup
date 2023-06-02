@@ -1,7 +1,7 @@
 import { DelegateEvent } from 'delegate-it';
 
 import Swup from '../Swup.js';
-import { runAsPromise } from '../utils.js';
+import { isPromise, runAsPromise } from '../utils.js';
 
 export type PageContext = {
 	url: string;
@@ -46,7 +46,7 @@ export type HookName = keyof HookDefinitions;
 
 export type HookData<T extends HookName> = HookDefinitions[T] | Event | undefined;
 
-export type Handler<T extends HookName> = (context: HookDefinitions[T]) => Promise<void> | void;
+export type Handler<T extends HookName> = (context: HookData<T>) => Promise<void> | void;
 
 export type Handlers = {
 	[Key in HookName]: Handler<Key>[];
@@ -60,33 +60,72 @@ export type HookOptions = {
 	raw?: boolean;
 };
 
-type HookRegistration<T extends HookName> = {
+export type HookRegistration<T extends HookName> = {
 	id: string;
 	hook: T;
 	handler: Handler<T>;
 } & HookOptions;
+
 type HookLedger<T extends HookName> = Map<Handler<T>, HookRegistration<T>>;
+
 type HookRegistry = Map<HookName, HookLedger<HookName>>;
 
 export class Hooks {
 	swup: Swup;
 	registry: HookRegistry;
+	defaultHooks: HookName[] = [
+		'animationInDone',
+		'animationInStart',
+		'animationOutDone',
+		'animationOutStart',
+		'animationSkipped',
+		'clickLink',
+		'contentReplaced',
+		'disabled',
+		'enabled',
+		'openPageInNewTab',
+		'pageLoaded',
+		'pageRetrievedFromCache',
+		'pageView',
+		'popState',
+		'samePage',
+		'samePageWithHash',
+		'serverError',
+		'transitionStart',
+		'transitionEnd',
+		'willReplaceContent'
+	];
 
 	constructor(swup: Swup) {
 		this.swup = swup;
 		this.registry = new Map();
+		this.defaultHooks.forEach((hook) => this.create(hook));
 	}
 
-	// create<THook extends string>(hook: THook) {
-	// 	this.registry.set(hook, this.registry.get(hook) || new Map());
-	// }
+	create(hook: HookName) {
+		if (!this.registry.has(hook)) {
+			this.registry.set(hook, new Map());
+		}
+	}
+
+	has(hook: HookName): boolean {
+		return this.registry.has(hook);
+	}
+
+	get<THook extends HookName>(hook: THook): HookLedger<THook> | undefined {
+		const ledger = this.registry.get(hook) as HookLedger<THook> | undefined;
+		if (!ledger) {
+			console.error(`Unknown hook ${hook}.`);
+			return;
+		}
+		return ledger;
+	}
 
 	add<THook extends HookName>(hook: THook, handler: Handler<THook>, options: HookOptions = {}) {
-		const ledger = this.registry.get(hook) || new Map();
-		this.registry.set(hook, ledger);
-
-		// TODO: check for undefined hooks at runtime
-		// console.warn(`Unsupported event ${event}.`);
+		const ledger = this.get(hook);
+		if (!ledger) {
+			return;
+		}
 
 		const id = ledger.size.toString();
 		const registration: HookRegistration<THook> = { id, hook, handler, ...options };
@@ -94,7 +133,7 @@ export class Hooks {
 	}
 
 	remove<THook extends HookName>(hook: THook, handler?: Handler<THook>) {
-		const ledger = this.registry.get(hook);
+		const ledger = this.get(hook);
 
 		if (ledger && handler) {
 			const registrations = Array.from(ledger.values());
@@ -106,8 +145,6 @@ export class Hooks {
 			}
 		} else if (ledger) {
 			ledger.clear();
-		} else {
-			// console.warn(`Hook '${hook}' not found.`);
 		}
 	}
 
@@ -116,9 +153,7 @@ export class Hooks {
 	}
 
 	async call<T extends HookName>(hook: T, data?: HookData<T>, handler?: Function) {
-		const ledger = this.registry.get(hook) || new Map();
-		const registrations = Array.from(ledger.values());
-		const { before, after } = this.bisect(registrations);
+		const { before, after } = this.getHandlers(hook);
 
 		await this.execute(before, data);
 		if (handler) {
@@ -127,7 +162,20 @@ export class Hooks {
 		await this.execute(after, data);
 	}
 
-	async execute<T extends HookName>(registrations: HookRegistration<T>[], data: HookData<T>): Promise<any> {
+	callSync<T extends HookName>(hook: T, data?: HookData<T>, handler?: Function) {
+		const { before, after } = this.getHandlers(hook);
+
+		this.executeSync(before, data);
+		if (handler) {
+			handler(data);
+		}
+		this.executeSync(after, data);
+	}
+
+	async execute<T extends HookName>(
+		registrations: HookRegistration<T>[],
+		data: HookData<T>
+	): Promise<any> {
 		for (const { handler } of registrations) {
 			try {
 				await runAsPromise(handler, [data], this.swup);
@@ -137,10 +185,33 @@ export class Hooks {
 		}
 	}
 
-	bisect<T extends HookName>(registrations: HookRegistration<T>[]) {
+	executeSync<T extends HookName>(registrations: HookRegistration<T>[], data: HookData<T>): void {
+		for (const { hook, handler } of registrations) {
+			try {
+				const result = handler(data);
+				if (isPromise(result)) {
+					console.warn(
+						`Promise returned from handler for synchronous hook '${hook}'.` +
+							`Swup will not wait for it to resolve.`
+					);
+				}
+			} catch (error) {
+				console.error(error);
+			}
+		}
+	}
+
+	getHandlers(hook: HookName) {
+		const ledger = this.get(hook);
+		if (!ledger) {
+			return { found: false, before: [], after: [] };
+		}
+
+		const registrations = Array.from(ledger.values());
 		const before = this.sort(registrations.filter(({ before }) => before));
 		const after = this.sort(registrations.filter(({ before }) => !before));
-		return { before, after };
+
+		return { found: true, before, after };
 	}
 
 	sort<T extends HookName>(registrations: HookRegistration<T>[]) {

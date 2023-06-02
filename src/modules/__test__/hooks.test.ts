@@ -47,7 +47,7 @@ describe('hooks', () => {
 	it('should preserve original handler this context', async () => {
 		const swup = new Swup();
 		let thisArg;
-		const handler = vi.fn(function(this: Swup) {
+		const handler = vi.fn(function (this: Swup) {
 			thisArg = this;
 		});
 
