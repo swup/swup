@@ -72,7 +72,7 @@ type HookRegistry = Map<HookName, HookLedger<HookName>>;
 
 export class Hooks {
 	swup: Swup;
-	registry: HookRegistry;
+	registry: HookRegistry = new Map();
 
 	// Can we deduplicate this somehow? Or make it error when not in sync with HookDefinitions?
 	// https://stackoverflow.com/questions/53387838/how-to-ensure-an-arrays-values-the-keys-of-a-typescript-interface/53395649
@@ -101,7 +101,10 @@ export class Hooks {
 
 	constructor(swup: Swup) {
 		this.swup = swup;
-		this.registry = new Map();
+		this.init();
+	}
+
+	init() {
 		this.defaultHooks.forEach((hook) => this.create(hook));
 	}
 
