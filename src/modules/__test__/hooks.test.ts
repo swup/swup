@@ -37,11 +37,11 @@ describe('Hooks', () => {
 		const swup = new Swup();
 		const handler = vi.fn();
 
-		swup.hooks.add('disabled', handler, { once: true });
+		swup.hooks.add('enabled', handler, { once: true });
 
-		const data = { swup, hook: 'disabled' } as HookData<'disabled'>;
-		await swup.hooks.call('disabled', data, () => {});
-		await swup.hooks.call('disabled', data, () => {});
+		const data = { swup, hook: 'enabled' } as HookData<'enabled'>;
+		await swup.hooks.call('enabled', data, () => {});
+		await swup.hooks.call('enabled', data, () => {});
 
 		expect(handler).toBeCalledTimes(1);
 	});
@@ -69,5 +69,34 @@ describe('Hooks', () => {
 
 		expect(thisArg).toBeInstanceOf(Swup);
 		expect(thisArg).toBe(swup);
+	});
+
+	it('should allow triggering custom handlers before original handler', async () => {
+		const swup = new Swup();
+
+		let called: Array<string> = [];
+		const handlers = {
+			before: () => {
+				called.push('before');
+			},
+			original: () => {
+				called.push('original');
+			},
+			normal: () => {
+				called.push('normal');
+			},
+			after: () => {
+				called.push('after');
+			}
+		};
+
+		swup.hooks.add('disabled', handlers.before, { before: true });
+		swup.hooks.add('disabled', handlers.normal, {});
+		swup.hooks.add('disabled', handlers.after, {});
+
+		const data = { swup, hook: 'disabled' } as HookData<'disabled'>;
+		await swup.hooks.call('disabled', data, handlers.original);
+
+		expect(called).toEqual(['before', 'original', 'normal', 'after']);
 	});
 });
