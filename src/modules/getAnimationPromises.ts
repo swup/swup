@@ -57,7 +57,8 @@ function getAnimationPromiseForElement(
 	// Resolve immediately if no transition defined
 	if (!type || !timeout) {
 		console.warn(
-			`[swup] No CSS transition duration defined for element of selector ${selector}`
+			`[swup] No CSS transition duration defined for element of selector ${selector}`,
+			element
 		);
 		return Promise.resolve();
 	}

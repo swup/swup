@@ -21,6 +21,5 @@ export const leavePage = async function (
 
 	const animationPromises = this.getAnimationPromises('out');
 	await Promise.all(animationPromises);
-
 	await this.hooks.call('animationOutDone');
 };
