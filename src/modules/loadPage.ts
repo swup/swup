@@ -1,6 +1,6 @@
-import { classify, createHistoryRecord, getCurrentUrl } from '../helpers';
-import Swup from '../Swup';
-import { PageRecord } from './Cache';
+import { classify, createHistoryRecord, getCurrentUrl } from '../helpers.js';
+import Swup from '../Swup.js';
+import { PageRecord } from './Cache.js';
 
 export type TransitionOptions = {
 	url: string;
@@ -9,7 +9,7 @@ export type TransitionOptions = {
 
 export type PageLoadOptions = {
 	url: string;
-	event?: Event;
+	event?: PopStateEvent;
 	customTransition?: string;
 };
 
@@ -41,15 +41,15 @@ export function performPageLoad(this: Swup, data: PageLoadOptions) {
 	// start/skip animation
 	const animationPromises = this.leavePage({ event, skipTransition });
 
+	// Load page data
+	const fetchPromise = this.fetchPage(data);
+
 	// create history record if this is not a popstate call (with or without anchor)
 	if (!isHistoryVisit) {
 		createHistoryRecord(url + (this.scrollToElement || ''));
 	}
 
 	this.currentPageUrl = getCurrentUrl();
-
-	// Load page data
-	const fetchPromise = this.fetchPage(data);
 
 	// when everything is ready, render the page
 	Promise.all<PageRecord | void>([fetchPromise, ...animationPromises])

@@ -1,9 +1,9 @@
-import { Location, updateHistoryRecord, getCurrentUrl } from '../helpers';
-import Swup from '../Swup';
-import { PageRecord } from './Cache';
+import { Location, updateHistoryRecord, getCurrentUrl } from '../helpers.js';
+import Swup from '../Swup.js';
+import { PageRecord } from './Cache.js';
 
 export type PageRenderOptions = {
-	event?: Event;
+	event?: PopStateEvent;
 	skipTransition?: boolean;
 };
 

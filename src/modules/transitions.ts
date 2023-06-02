@@ -1,4 +1,4 @@
-import Swup from '../Swup';
+import Swup from '../Swup.js';
 
 export function updateTransition(this: Swup, from: string, to: string, custom?: string): void {
 	this.transition = { from, to, custom };

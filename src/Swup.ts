@@ -1,6 +1,6 @@
-import delegate from 'delegate-it';
+import { DelegateEvent } from 'delegate-it';
 
-import version from './config/version';
+import version from './config/version.js';
 
 import {
 	cleanupAnimationClasses,
@@ -9,24 +9,24 @@ import {
 	Location,
 	markSwupElements,
 	updateHistoryRecord
-} from './helpers';
-import { Unsubscribe } from './helpers/delegateEvent';
+} from './helpers.js';
+import { Unsubscribe } from './helpers/delegateEvent.js';
 
-import { Cache } from './modules/Cache';
-import { enterPage } from './modules/enterPage';
-import { getAnchorElement } from './modules/getAnchorElement';
-import { getAnimationPromises } from './modules/getAnimationPromises';
-import { getPageData } from './modules/getPageData';
-import { fetchPage } from './modules/fetchPage';
-import { leavePage } from './modules/leavePage';
-import { loadPage, performPageLoad } from './modules/loadPage';
-import { replaceContent } from './modules/replaceContent';
-import { on, off, triggerEvent, Handlers } from './modules/events';
-import { use, unuse, findPlugin, Plugin } from './modules/plugins';
-import { renderPage } from './modules/renderPage';
-import { updateTransition, shouldSkipTransition } from './modules/transitions';
+import { Cache } from './modules/Cache.js';
+import { enterPage } from './modules/enterPage.js';
+import { getAnchorElement } from './modules/getAnchorElement.js';
+import { getAnimationPromises } from './modules/getAnimationPromises.js';
+import { getPageData } from './modules/getPageData.js';
+import { fetchPage } from './modules/fetchPage.js';
+import { leavePage } from './modules/leavePage.js';
+import { loadPage, performPageLoad } from './modules/loadPage.js';
+import { replaceContent } from './modules/replaceContent.js';
+import { on, off, triggerEvent, Handlers } from './modules/events.js';
+import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
+import { renderPage } from './modules/renderPage.js';
+import { updateTransition, shouldSkipTransition } from './modules/transitions.js';
 
-import { queryAll } from './utils';
+import { queryAll } from './utils.js';
 
 export type Transition = {
 	from?: string;
@@ -47,7 +47,7 @@ export type Options = {
 	requestHeaders: Record<string, string>;
 	plugins: Plugin[];
 	skipPopStateHandling: (event: any) => boolean;
-	ignoreVisit: (url: string, { el }: { el?: Element }) => boolean;
+	ignoreVisit: (url: string, { el, event }: { el?: Element; event?: Event }) => boolean;
 	resolveUrl: (url: string) => string;
 };
 
@@ -122,7 +122,7 @@ export default class Swup {
 		animationSelector: '[class*="transition-"]',
 		cache: true,
 		containers: ['#swup'],
-		ignoreVisit: (url, { el } = {}) => !!el?.closest('[data-no-swup]'),
+		ignoreVisit: (url, { el, event } = {}) => !!el?.closest('[data-no-swup]'),
 		linkSelector: 'a[href]',
 		plugins: [],
 		resolveUrl: (url) => url,
@@ -215,7 +215,7 @@ export default class Swup {
 		document.documentElement.classList.remove('swup-enabled');
 	}
 
-	shouldIgnoreVisit(href: string, { el }: { el?: Element } = {}) {
+	shouldIgnoreVisit(href: string, { el, event }: { el?: Element; event?: Event } = {}) {
 		const { origin, url, hash } = Location.fromUrl(href);
 
 		// Ignore if the new origin doesn't match the current one
@@ -229,7 +229,7 @@ export default class Swup {
 		}
 
 		// Ignore if the visit should be ignored as per user options
-		if (this.options.ignoreVisit(url + hash, { el })) {
+		if (this.options.ignoreVisit(url + hash, { el, event })) {
 			return true;
 		}
 
@@ -237,12 +237,12 @@ export default class Swup {
 		return false;
 	}
 
-	linkClickHandler(event: delegate.Event<MouseEvent>) {
+	linkClickHandler(event: DelegateEvent<MouseEvent>) {
 		const linkEl = event.delegateTarget;
 		const { href, url, hash } = Location.fromElement(linkEl as HTMLAnchorElement);
 
 		// Exit early if the link should be ignored
-		if (this.shouldIgnoreVisit(href, { el: linkEl })) {
+		if (this.shouldIgnoreVisit(href, { el: linkEl, event })) {
 			return;
 		}
 
@@ -279,7 +279,7 @@ export default class Swup {
 		this.performPageLoad({ url, customTransition });
 	}
 
-	handleLinkToSamePage(url: string, hash: string, event: MouseEvent) {
+	handleLinkToSamePage(url: string, hash: string, event: DelegateEvent<MouseEvent>) {
 		// Emit event and exit early if the url points to the same page without hash
 		if (!hash) {
 			this.triggerEvent('samePage', event);
@@ -320,7 +320,7 @@ export default class Swup {
 		const href = event.state?.url ?? location.href;
 
 		// Exit early if the link should be ignored
-		if (this.shouldIgnoreVisit(href)) {
+		if (this.shouldIgnoreVisit(href, { event })) {
 			return;
 		}
 
