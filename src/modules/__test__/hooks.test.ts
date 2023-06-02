@@ -46,6 +46,19 @@ describe('Hooks', () => {
 		expect(handler).toBeCalledTimes(1);
 	});
 
+	it('should only trigger custom handlers once if using alias', async () => {
+		const swup = new Swup();
+		const handler = vi.fn();
+
+		swup.hooks.once('enabled', handler);
+
+		const data = { swup, hook: 'enabled' } as HookData<'enabled'>;
+		await swup.hooks.call('enabled', data, () => {});
+		await swup.hooks.call('enabled', data, () => {});
+
+		expect(handler).toBeCalledTimes(1);
+	});
+
 	it('should trigger original handlers', async () => {
 		const swup = new Swup();
 		const handler = vi.fn();

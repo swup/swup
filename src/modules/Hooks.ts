@@ -138,6 +138,10 @@ export class Hooks {
 		ledger.set(handler, registration);
 	}
 
+	once<THook extends HookName>(hook: THook, handler: Handler<THook>, options: HookOptions = {}) {
+		return this.add(hook, handler, { ...options, once: true });
+	}
+
 	remove<THook extends HookName>(hook: THook, handler?: Handler<THook>) {
 		const ledger = this.get(hook);
 
