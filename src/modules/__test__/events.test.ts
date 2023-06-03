@@ -6,7 +6,7 @@ describe('Event registry', () => {
 		const swup = new Swup();
 		const handler = vi.fn();
 
-		swup.events.add('enabled', handler);
+		swup.events.on('enabled', handler);
 		const ledger = swup.events.registry.get('enabled');
 
 		expect(ledger).toBeDefined();
@@ -23,9 +23,9 @@ describe('Event registry', () => {
 		const swup = new Swup();
 		const handler = vi.fn();
 
-		swup.events.add('enabled', handler);
+		swup.events.on('enabled', handler);
 
-		await swup.events.run('enabled');
+		await swup.events.trigger('enabled');
 
 		expect(handler).toBeCalledTimes(1);
 	});
@@ -34,10 +34,10 @@ describe('Event registry', () => {
 		const swup = new Swup();
 		const handler = vi.fn();
 
-		swup.events.add('enabled', handler, { once: true });
+		swup.events.on('enabled', handler, { once: true });
 
-		await swup.events.run('enabled', undefined, () => {});
-		await swup.events.run('enabled', undefined, () => {});
+		await swup.events.trigger('enabled', undefined, () => {});
+		await swup.events.trigger('enabled', undefined, () => {});
 
 		expect(handler).toBeCalledTimes(1);
 	});
@@ -48,8 +48,8 @@ describe('Event registry', () => {
 
 		swup.events.once('enabled', handler);
 
-		await swup.events.run('enabled', undefined, () => {});
-		await swup.events.run('enabled', undefined, () => {});
+		await swup.events.trigger('enabled', undefined, () => {});
+		await swup.events.trigger('enabled', undefined, () => {});
 
 		expect(handler).toBeCalledTimes(1);
 	});
@@ -58,7 +58,7 @@ describe('Event registry', () => {
 		const swup = new Swup();
 		const handler = vi.fn();
 
-		await swup.events.run('enabled', undefined, handler);
+		await swup.events.trigger('enabled', undefined, handler);
 
 		expect(handler).toBeCalledTimes(1);
 	});
@@ -70,7 +70,7 @@ describe('Event registry', () => {
 			thisArg = this;
 		});
 
-		await swup.events.run('enabled', undefined, handler);
+		await swup.events.trigger('enabled', undefined, handler);
 
 		expect(thisArg).toBeInstanceOf(Swup);
 		expect(thisArg).toBe(swup);
@@ -95,11 +95,11 @@ describe('Event registry', () => {
 			}
 		};
 
-		swup.events.add('disabled', handlers.before, { before: true });
-		swup.events.add('disabled', handlers.normal, {});
-		swup.events.add('disabled', handlers.after, {});
+		swup.events.on('disabled', handlers.before, { before: true });
+		swup.events.on('disabled', handlers.normal, {});
+		swup.events.on('disabled', handlers.after, {});
 
-		await swup.events.run('disabled', undefined, handlers.original);
+		await swup.events.trigger('disabled', undefined, handlers.original);
 
 		expect(called).toEqual(['before', 'original', 'normal', 'after']);
 	});
@@ -129,13 +129,13 @@ describe('Event registry', () => {
 			}
 		};
 
-		swup.events.add('disabled', handlers['1'], { priority: 1, before: true });
-		swup.events.add('disabled', handlers['2'], { priority: 2, before: true });
-		swup.events.add('disabled', handlers['4'], { priority: 5 });
-		swup.events.add('disabled', handlers['6'], { priority: 4 });
-		swup.events.add('disabled', handlers['5'], { priority: 4 });
+		swup.events.on('disabled', handlers['1'], { priority: 1, before: true });
+		swup.events.on('disabled', handlers['2'], { priority: 2, before: true });
+		swup.events.on('disabled', handlers['4'], { priority: 5 });
+		swup.events.on('disabled', handlers['6'], { priority: 4 });
+		swup.events.on('disabled', handlers['5'], { priority: 4 });
 
-		await swup.events.run('disabled', undefined, handlers['3']);
+		await swup.events.trigger('disabled', undefined, handlers['3']);
 
 		expect(called).toEqual([2, 1, 3, 4, 6, 5]);
 	});
@@ -145,9 +145,9 @@ describe('Event registry', () => {
 		const listener = vi.fn();
 		const handler = vi.fn();
 
-		swup.events.add('enabled', listener, { replace: true });
+		swup.events.on('enabled', listener, { replace: true });
 
-		await swup.events.run('enabled', undefined, handler);
+		await swup.events.trigger('enabled', undefined, handler);
 
 		expect(handler).toBeCalledTimes(0);
 		expect(listener).toBeCalledTimes(1);
@@ -155,38 +155,38 @@ describe('Event registry', () => {
 });
 
 describe('Event aliases', () => {
-	it('should call events.add()', () => {
+	it('should call events.on()', () => {
 		const swup = new Swup();
-		const add = vi.fn();
+		const on = vi.fn();
 
-		swup.events.add = add;
+		swup.events.on = on;
 
 		swup.on('enabled', () => {});
 
-		expect(add).toBeCalledTimes(1);
+		expect(on).toBeCalledTimes(1);
 	});
 
-	it('should call events.remove()', () => {
+	it('should call events.off()', () => {
 		const swup = new Swup();
-		const remove = vi.fn();
+		const off = vi.fn();
 
-		swup.events.remove = remove;
+		swup.events.off = off;
 
 		swup.off('enabled', () => {});
 
-		expect(remove).toBeCalledTimes(1);
+		expect(off).toBeCalledTimes(1);
 	});
 
-	it('should call events.run()', () => {
+	it('should call events.trigger()', () => {
 		const swup = new Swup();
-		const call = vi.fn();
+		const trigger = vi.fn();
 
-		swup.events.run = call;
+		swup.events.trigger = trigger;
 
 		swup.on('enabled', () => {});
 		swup.triggerEvent('enabled');
 
-		expect(call).toBeCalledTimes(1);
+		expect(trigger).toBeCalledTimes(1);
 	});
 
 	// it('should trigger event handler with event', () => {

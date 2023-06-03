@@ -33,10 +33,10 @@ export const renderPage = async function (
 		document.documentElement.classList.add('is-rendering');
 	}
 
-	await this.events.run('willReplaceContent', event);
+	await this.events.trigger('willReplaceContent', event);
 	await this.replaceContent(page);
-	await this.events.run('contentReplaced', event);
-	await this.events.run('pageView', event);
+	await this.events.trigger('contentReplaced', event);
+	await this.events.trigger('pageView', event);
 
 	// empty cache if it's disabled (in case preload plugin filled it)
 	if (!this.options.cache) {

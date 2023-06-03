@@ -112,7 +112,7 @@ export class Events {
 		}
 	}
 
-	add<TEvent extends EventName>(
+	on<TEvent extends EventName>(
 		event: TEvent,
 		handler: Handler<TEvent>,
 		options: EventOptions = {}
@@ -132,7 +132,7 @@ export class Events {
 		handler: Handler<TEvent>,
 		options: EventOptions = {}
 	) {
-		return this.add(event, handler, { ...options, before: true });
+		return this.on(event, handler, { ...options, before: true });
 	}
 
 	replace<TEvent extends EventName>(
@@ -140,7 +140,7 @@ export class Events {
 		handler: Handler<TEvent>,
 		options: EventOptions = {}
 	) {
-		return this.add(event, handler, { ...options, replace: true });
+		return this.on(event, handler, { ...options, replace: true });
 	}
 
 	once<TEvent extends EventName>(
@@ -148,10 +148,10 @@ export class Events {
 		handler: Handler<TEvent>,
 		options: EventOptions = {}
 	) {
-		return this.add(event, handler, { ...options, once: true });
+		return this.on(event, handler, { ...options, once: true });
 	}
 
-	remove<TEvent extends EventName>(event: TEvent, handler?: Handler<TEvent>) {
+	off<TEvent extends EventName>(event: TEvent, handler?: Handler<TEvent>) {
 		const ledger = this.get(event);
 
 		if (ledger && handler) {
@@ -168,7 +168,7 @@ export class Events {
 		this.registry.forEach((ledger) => ledger.clear());
 	}
 
-	async run<TEvent extends EventName>(
+	async trigger<TEvent extends EventName>(
 		event: TEvent,
 		data?: EventArgument<TEvent>,
 		handler?: Function
@@ -179,11 +179,11 @@ export class Events {
 			...(handler && !replace ? [await runAsPromise(handler, [data], this.swup)] : []),
 			...(await this.execute(after, data))
 		];
-		this.triggerDomEvent(event);
+		this.dispatchDomEvent(event);
 		return results;
 	}
 
-	runSync<TEvent extends EventName>(
+	triggerSync<TEvent extends EventName>(
 		event: TEvent,
 		data?: EventArgument<TEvent>,
 		handler?: Function
@@ -194,7 +194,7 @@ export class Events {
 			...(handler && !replace ? [handler(data)] : []),
 			...this.executeSync(after, data)
 		];
-		this.triggerDomEvent(event);
+		this.dispatchDomEvent(event);
 		return results;
 	}
 
@@ -210,7 +210,7 @@ export class Events {
 				console.error(error);
 			}
 			if (once) {
-				this.remove(event, handler);
+				this.off(event, handler);
 			}
 		}
 		return results;
@@ -235,15 +235,10 @@ export class Events {
 				console.error(error);
 			}
 			if (once) {
-				this.remove(event, handler);
+				this.off(event, handler);
 			}
 		}
 		return results;
-	}
-
-	// Trigger event on document with prefix `swup:`
-	triggerDomEvent<TEvent extends EventName>(event: TEvent) {
-		document.dispatchEvent(new CustomEvent(`swup:${event}`, { detail: event }));
 	}
 
 	getHandlers(event: EventName) {
@@ -253,20 +248,29 @@ export class Events {
 		}
 
 		const registrations = Array.from(ledger.values());
-		const before = this.sort(registrations.filter(({ before, replace }) => before || replace));
-		const after = this.sort(registrations.filter(({ before, replace }) => !before && !replace));
+		const before = this.sortHandlers(
+			registrations.filter(({ before, replace }) => before || replace)
+		);
+		const after = this.sortHandlers(
+			registrations.filter(({ before, replace }) => !before && !replace)
+		);
 		const replace = registrations.some(({ replace }) => replace);
 
 		return { found: true, before, after, replace };
 	}
 
-	sort<TEvent extends EventName>(registrations: EventRegistration<TEvent>[]) {
+	sortHandlers<TEvent extends EventName>(registrations: EventRegistration<TEvent>[]) {
 		// sort by priority first, by id second
 		return registrations.sort((a, b) => {
 			const priority = (b.priority ?? 0) - (a.priority ?? 0);
 			const id = a.id - b.id;
 			return priority || id || 0;
 		});
+	}
+
+	// Trigger event on document with prefix `swup:`
+	dispatchDomEvent<TEvent extends EventName>(event: TEvent) {
+		document.dispatchEvent(new CustomEvent(`swup:${event}`, { detail: event }));
 	}
 }
 

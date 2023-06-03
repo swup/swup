@@ -164,13 +164,13 @@ export default class Swup {
 		updateHistoryRecord();
 
 		// Trigger enabled event
-		await this.events.run('enabled', undefined, () => {
+		await this.events.trigger('enabled', undefined, () => {
 			// Add swup-enabled class to html tag
 			document.documentElement.classList.add('swup-enabled');
 		});
 
 		// Trigger page view event
-		this.events.run('pageView');
+		this.events.trigger('pageView');
 	}
 
 	async destroy() {
@@ -192,7 +192,7 @@ export default class Swup {
 		});
 
 		// trigger disable event
-		await this.events.run('disabled', undefined, () => {
+		await this.events.trigger('disabled', undefined, () => {
 			// remove swup-enabled class from html tag
 			document.documentElement.classList.remove('swup-enabled');
 		});
@@ -209,7 +209,7 @@ export default class Swup {
 		handler: Handler<TEvent>,
 		options: EventOptions = {}
 	) {
-		return this.events.add(event, handler, options);
+		return this.events.on(event, handler, options);
 	}
 
 	/**
@@ -228,7 +228,7 @@ export default class Swup {
 	 */
 	off<TEvent extends EventName>(event?: TEvent, handler?: Handler<TEvent>) {
 		if (event) {
-			return this.events.remove(event, handler);
+			return this.events.off(event, handler);
 		} else {
 			return this.events.clear();
 		}
@@ -238,7 +238,7 @@ export default class Swup {
 	 * Alias function to call all event handlers.
 	 */
 	triggerEvent<TEvent extends EventName>(eventName: TEvent, data?: EventArgument<TEvent>) {
-		return this.events.run(eventName, data);
+		return this.events.trigger(eventName, data);
 	}
 
 	shouldIgnoreVisit(href: string, { el, event }: { el?: Element; event?: Event } = {}) {
@@ -274,7 +274,7 @@ export default class Swup {
 
 		// Exit early if control key pressed
 		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
-			this.events.run('openPageInNewTab', event);
+			this.events.trigger('openPageInNewTab', event);
 			return;
 		}
 
@@ -283,7 +283,7 @@ export default class Swup {
 			return;
 		}
 
-		this.events.runSync('clickLink', event, () => {
+		this.events.triggerSync('clickLink', event, () => {
 			event.preventDefault();
 
 			// Handle links to the same page and exit early, where applicable
@@ -310,11 +310,11 @@ export default class Swup {
 
 	async handleLinkToSamePage(url: string, hash: string, event: DelegateEvent<MouseEvent>) {
 		if (hash) {
-			await this.events.run('samePageWithHash', event, () => {
+			await this.events.trigger('samePageWithHash', event, () => {
 				updateHistoryRecord(url + hash);
 			});
 		} else {
-			await this.events.run('samePage', event);
+			await this.events.trigger('samePage', event);
 		}
 	}
 
@@ -351,7 +351,7 @@ export default class Swup {
 			event.preventDefault();
 		}
 
-		this.events.runSync('popState', event, () => {
+		this.events.triggerSync('popState', event, () => {
 			if (!this.options.animateHistoryBrowsing) {
 				document.documentElement.classList.remove('is-animating');
 				cleanupAnimationClasses();
