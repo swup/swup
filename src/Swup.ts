@@ -11,7 +11,6 @@ import {
 	updateHistoryRecord
 } from './helpers.js';
 import { Unsubscribe } from './helpers/delegateEvent.js';
-import { unmarkSwupElements } from './helpers/markSwupElements.js';
 
 import { Cache } from './modules/Cache.js';
 import { enterPage } from './modules/enterPage.js';
@@ -33,6 +32,8 @@ import {
 import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
 import { renderPage } from './modules/renderPage.js';
 import { updateTransition, shouldSkipTransition } from './modules/transitions.js';
+
+import { queryAll } from './utils.js';
 
 export type Transition = {
 	from?: string;
@@ -186,7 +187,9 @@ export default class Swup {
 		this.options.plugins.forEach((plugin) => this.unuse(plugin));
 
 		// remove swup data atributes from blocks
-		unmarkSwupElements(document.documentElement);
+		queryAll('[data-swup]').forEach((element) => {
+			element.removeAttribute('data-swup');
+		});
 
 		// trigger disable event
 		await this.events.run('disabled', undefined, () => {
