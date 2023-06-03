@@ -12,7 +12,7 @@
   "exports": {
     ".": {
       "require": "./dist/Swup.cjs",
-      "import": "./dist/Swup.modern.js",
+      "import": "./dist/Swup.module.js",
       "types": "./dist/types/index.d.ts"
     }
   },
@@ -24,7 +24,7 @@
     "build": "npm run build:module && npm run build:bundle",
     "build:module": "BROWSERSLIST_ENV=modern microbundle src/index.ts -f modern,esm,cjs",
     "build:bundle": "BROWSERSLIST_ENV=production microbundle src/Swup.ts -f umd --external none",
-    "dev": "BROWSERSLIST_ENV=development microbundle src/Swup.ts -f esm -w",
+    "dev": "BROWSERSLIST_ENV=development microbundle src/*.ts -w",
     "lint": "npm run lint:ts && npm run lint:prettier -- --check",
     "format": "npm run lint:ts && npm run lint:prettier -- --write",
     "lint:ts": "tsc --noEmit --skipLibCheck",
@@ -38,7 +38,7 @@
     "test:e2e:ci": "start-server-and-test test:e2e:start 8274 cy:run:record",
     "test:e2e:dev": "start-server-and-test test:e2e:start 8274 cy:open",
     "test:e2e:instrument": "nyc instrument --compact=false dist cypress/fixtures/dist",
-    "test:e2e:server": "http-server --silent --port 8274 -c-1 cypress/fixtures",
+    "test:e2e:server": "http-server --silent --port 8274 cypress/fixtures",
     "test:e2e:start": "npm run test:e2e:instrument && npm run test:e2e:server",
     "cy:run": "cypress run",
     "cy:run:record": "cypress run --record",
