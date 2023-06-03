@@ -14,7 +14,6 @@ import { Unsubscribe } from './helpers/delegateEvent.js';
 import { unmarkSwupElements } from './helpers/markSwupElements.js';
 
 import { Cache } from './modules/Cache.js';
-import { Hooks } from './modules/Hooks.js';
 import { enterPage } from './modules/enterPage.js';
 import { getAnchorElement } from './modules/getAnchorElement.js';
 import { getAnimationPromises } from './modules/getAnimationPromises.js';
@@ -24,11 +23,12 @@ import { leavePage } from './modules/leavePage.js';
 import { loadPage, performPageLoad } from './modules/loadPage.js';
 import { replaceContent } from './modules/replaceContent.js';
 import {
-	on,
-	off,
-	triggerEvent,
-	createEventHandlerProxy,
-	EventHandlerProxy
+	Events,
+	EventArgument,
+	EventName,
+	EventOptions,
+	Handler,
+	HandlersProxy
 } from './modules/events.js';
 import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
 import { renderPage } from './modules/renderPage.js';
@@ -69,14 +69,14 @@ export default class Swup {
 	transition: Transition = {};
 	// cache instance
 	cache: Cache;
-	// hooks registry
-	hooks: Hooks;
-	// allows us to compare the current and new path inside popStateHandler
-	currentPageUrl = getCurrentUrl();
+	// event registry
+	events: Events;
+	// event handler proxy for backwards compatibility
+	_handlers: HandlersProxy;
 	// variable for keeping event listeners from "delegate"
 	delegatedListeners: DelegatedListeners = {};
-	// event handler proxy for backwards compatibility
-	_handlers: EventHandlerProxy;
+	// allows us to compare the current and new path inside popStateHandler
+	currentPageUrl = getCurrentUrl();
 
 	loadPage = loadPage;
 	performPageLoad = performPageLoad;
@@ -84,10 +84,7 @@ export default class Swup {
 	renderPage = renderPage;
 	replaceContent = replaceContent;
 	enterPage = enterPage;
-	triggerEvent = triggerEvent;
 	delegateEvent = delegateEvent;
-	on = on;
-	off = off;
 	updateTransition = updateTransition;
 	shouldSkipTransition = shouldSkipTransition;
 	getAnimationPromises = getAnimationPromises;
@@ -125,8 +122,8 @@ export default class Swup {
 		this.popStateHandler = this.popStateHandler.bind(this);
 
 		this.cache = new Cache(this);
-		this.hooks = new Hooks(this);
-		this._handlers = createEventHandlerProxy(this);
+		this.events = new Events(this);
+		this._handlers = new HandlersProxy(this);
 
 		if (!this.checkRequirements()) {
 			return;
@@ -166,13 +163,13 @@ export default class Swup {
 		updateHistoryRecord();
 
 		// Trigger enabled event
-		await this.hooks.run('enabled', undefined, () => {
+		await this.events.run('enabled', undefined, () => {
 			// Add swup-enabled class to html tag
 			document.documentElement.classList.add('swup-enabled');
 		});
 
 		// Trigger page view event
-		this.hooks.run('pageView');
+		this.events.run('pageView');
 	}
 
 	async destroy() {
@@ -192,13 +189,53 @@ export default class Swup {
 		unmarkSwupElements(document.documentElement);
 
 		// trigger disable event
-		await this.hooks.run('disabled', undefined, () => {
+		await this.events.run('disabled', undefined, () => {
 			// remove swup-enabled class from html tag
 			document.documentElement.classList.remove('swup-enabled');
 		});
 
 		// remove handlers
-		this.hooks.clear();
+		this.events.clear();
+	}
+
+	/**
+	 * Alias function to add a new event handler.
+	 */
+	on<TEvent extends EventName>(
+		event: TEvent,
+		handler: Handler<TEvent>,
+		options: EventOptions = {}
+	) {
+		return this.events.add(event, handler, options);
+	}
+
+	/**
+	 * Alias function to add a new event handler to run once.
+	 */
+	once<TEvent extends EventName>(
+		event: TEvent,
+		handler: Handler<TEvent>,
+		options: EventOptions = {}
+	) {
+		return this.events.once(event, handler, options);
+	}
+
+	/**
+	 * Alias function to remove event handlers.
+	 */
+	off<TEvent extends EventName>(event?: TEvent, handler?: Handler<TEvent>) {
+		if (event) {
+			return this.events.remove(event, handler);
+		} else {
+			return this.events.clear();
+		}
+	}
+
+	/**
+	 * Alias function to call all event handlers.
+	 */
+	triggerEvent<TEvent extends EventName>(eventName: TEvent, data?: EventArgument<TEvent>) {
+		return this.events.run(eventName, data);
 	}
 
 	shouldIgnoreVisit(href: string, { el, event }: { el?: Element; event?: Event } = {}) {
@@ -234,7 +271,7 @@ export default class Swup {
 
 		// Exit early if control key pressed
 		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
-			this.hooks.run('openPageInNewTab', event);
+			this.events.run('openPageInNewTab', event);
 			return;
 		}
 
@@ -243,7 +280,7 @@ export default class Swup {
 			return;
 		}
 
-		this.hooks.runSync('clickLink', event, () => {
+		this.events.runSync('clickLink', event, () => {
 			event.preventDefault();
 
 			// Handle links to the same page and exit early, where applicable
@@ -270,11 +307,11 @@ export default class Swup {
 
 	async handleLinkToSamePage(url: string, hash: string, event: DelegateEvent<MouseEvent>) {
 		if (hash) {
-			await this.hooks.run('samePageWithHash', event, () => {
+			await this.events.run('samePageWithHash', event, () => {
 				updateHistoryRecord(url + hash);
 			});
 		} else {
-			await this.hooks.run('samePage', event);
+			await this.events.run('samePage', event);
 		}
 	}
 
@@ -311,7 +348,7 @@ export default class Swup {
 			event.preventDefault();
 		}
 
-		this.hooks.runSync('popState', event, () => {
+		this.events.runSync('popState', event, () => {
 			if (!this.options.animateHistoryBrowsing) {
 				document.documentElement.classList.remove('is-animating');
 				cleanupAnimationClasses();

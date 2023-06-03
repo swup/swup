@@ -1,34 +1,187 @@
 import { describe, expect, it, vi } from 'vitest';
 import Swup from '../../Swup.js';
 
-describe('events', () => {
-	it('should call hooks.add()', () => {
+describe('Event registry', () => {
+	it('should add custom handlers', () => {
+		const swup = new Swup();
+		const handler = vi.fn();
+
+		swup.events.add('enabled', handler);
+		const ledger = swup.events.registry.get('enabled');
+
+		expect(ledger).toBeDefined();
+		expect(ledger).toBeInstanceOf(Map);
+		expect(ledger!.size).toBe(1);
+
+		const registrations = Array.from(ledger!.values());
+		const registration = registrations.find((reg) => reg.handler === handler);
+
+		expect(registration?.handler).toEqual(handler);
+	});
+
+	it('should trigger custom handlers', async () => {
+		const swup = new Swup();
+		const handler = vi.fn();
+
+		swup.events.add('enabled', handler);
+
+		await swup.events.run('enabled');
+
+		expect(handler).toBeCalledTimes(1);
+	});
+
+	it('should only trigger custom handlers once if requested', async () => {
+		const swup = new Swup();
+		const handler = vi.fn();
+
+		swup.events.add('enabled', handler, { once: true });
+
+		await swup.events.run('enabled', undefined, () => {});
+		await swup.events.run('enabled', undefined, () => {});
+
+		expect(handler).toBeCalledTimes(1);
+	});
+
+	it('should only trigger custom handlers once if using alias', async () => {
+		const swup = new Swup();
+		const handler = vi.fn();
+
+		swup.events.once('enabled', handler);
+
+		await swup.events.run('enabled', undefined, () => {});
+		await swup.events.run('enabled', undefined, () => {});
+
+		expect(handler).toBeCalledTimes(1);
+	});
+
+	it('should trigger original handlers', async () => {
+		const swup = new Swup();
+		const handler = vi.fn();
+
+		await swup.events.run('enabled', undefined, handler);
+
+		expect(handler).toBeCalledTimes(1);
+	});
+
+	it('should preserve original handler this context', async () => {
+		const swup = new Swup();
+		let thisArg;
+		const handler = vi.fn(function (this: Swup) {
+			thisArg = this;
+		});
+
+		await swup.events.run('enabled', undefined, handler);
+
+		expect(thisArg).toBeInstanceOf(Swup);
+		expect(thisArg).toBe(swup);
+	});
+
+	it('should allow triggering custom handlers before original handler', async () => {
+		const swup = new Swup();
+
+		let called: Array<string> = [];
+		const handlers = {
+			before: () => {
+				called.push('before');
+			},
+			original: () => {
+				called.push('original');
+			},
+			normal: () => {
+				called.push('normal');
+			},
+			after: () => {
+				called.push('after');
+			}
+		};
+
+		swup.events.add('disabled', handlers.before, { before: true });
+		swup.events.add('disabled', handlers.normal, {});
+		swup.events.add('disabled', handlers.after, {});
+
+		await swup.events.run('disabled', undefined, handlers.original);
+
+		expect(called).toEqual(['before', 'original', 'normal', 'after']);
+	});
+
+	it('should sort custom handlers by priority', async () => {
+		const swup = new Swup();
+
+		let called: Array<number> = [];
+		const handlers = {
+			1: () => {
+				called.push(1);
+			},
+			2: () => {
+				called.push(2);
+			},
+			3: () => {
+				called.push(3);
+			},
+			4: () => {
+				called.push(4);
+			},
+			5: () => {
+				called.push(5);
+			},
+			6: () => {
+				called.push(6);
+			}
+		};
+
+		swup.events.add('disabled', handlers['1'], { priority: 1, before: true });
+		swup.events.add('disabled', handlers['2'], { priority: 2, before: true });
+		swup.events.add('disabled', handlers['4'], { priority: 5 });
+		swup.events.add('disabled', handlers['6'], { priority: 4 });
+		swup.events.add('disabled', handlers['5'], { priority: 4 });
+
+		await swup.events.run('disabled', undefined, handlers['3']);
+
+		expect(called).toEqual([2, 1, 3, 4, 6, 5]);
+	});
+
+	it('should allow replacing original handlers', async () => {
+		const swup = new Swup();
+		const listener = vi.fn();
+		const handler = vi.fn();
+
+		swup.events.add('enabled', listener, { replace: true });
+
+		await swup.events.run('enabled', undefined, handler);
+
+		expect(handler).toBeCalledTimes(0);
+		expect(listener).toBeCalledTimes(1);
+	});
+});
+
+describe('Event aliases', () => {
+	it('should call events.add()', () => {
 		const swup = new Swup();
 		const add = vi.fn();
 
-		swup.hooks.add = add;
+		swup.events.add = add;
 
 		swup.on('enabled', () => {});
 
 		expect(add).toBeCalledTimes(1);
 	});
 
-	it('should call hooks.remove()', () => {
+	it('should call events.remove()', () => {
 		const swup = new Swup();
 		const remove = vi.fn();
 
-		swup.hooks.remove = remove;
+		swup.events.remove = remove;
 
 		swup.off('enabled', () => {});
 
 		expect(remove).toBeCalledTimes(1);
 	});
 
-	it('should call hooks.run()', () => {
+	it('should call events.run()', () => {
 		const swup = new Swup();
 		const call = vi.fn();
 
-		swup.hooks.run = call;
+		swup.events.run = call;
 
 		swup.on('enabled', () => {});
 		swup.triggerEvent('enabled');
