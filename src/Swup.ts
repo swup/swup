@@ -124,7 +124,7 @@ export default class Swup {
 
 		this.cache = new Cache(this);
 		this.events = new Events(this);
-		this._handlers = new HandlersProxy(this);
+		this._handlers = new HandlersProxy(this.events);
 
 		if (!this.checkRequirements()) {
 			return;

@@ -280,11 +280,14 @@ export class Events {
  * Mostly here for backwards compatibility with older plugins.
  */
 export class HandlersProxy {
-	swup: Swup;
+	events: Events;
 
-	constructor(swup: Swup) {
-		this.swup = swup;
-		return new Proxy<HandlersProxy>(this, { set: this.set, get: this.get });
+	constructor(events: Events) {
+		this.events = events;
+		return new Proxy<HandlersProxy>(this, {
+			set: this.set.bind(this),
+			get: this.get.bind(this)
+		});
 	}
 
 	set(target: any, event: EventName, value: any): boolean {
@@ -292,13 +295,16 @@ export class HandlersProxy {
 			'Writing to `swup._handlers` is no longer supported. ' +
 				'Use `swup.events.create()` instead.'
 		);
-		if (!this.swup.events.has(event)) {
-			this.swup.events.create(event);
+		if (!this.events.has(event)) {
+			this.events.create(event);
 		}
 		return true;
 	}
 
-	get(target: any, event: EventName, value: any): [] {
+	get(target: any, prop: string, value: any): [] {
+		if (['events'].includes(prop)) {
+			return target[prop];
+		}
 		console.warn(
 			'Reading from `swup._handlers` is no longer supported. ' +
 				'Use `swup.events.get()` instead.'
