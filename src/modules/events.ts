@@ -174,11 +174,13 @@ export class Events {
 		handler?: Function
 	) {
 		const { before, after, replace } = this.getHandlers(event);
-		return [
+		const results = [
 			...(await this.execute(before, data)),
 			...(handler && !replace ? [await runAsPromise(handler, [data], this.swup)] : []),
 			...(await this.execute(after, data))
 		];
+		this.triggerDomEvent(event);
+		return results;
 	}
 
 	runSync<TEvent extends EventName>(
@@ -187,11 +189,13 @@ export class Events {
 		handler?: Function
 	) {
 		const { before, after, replace } = this.getHandlers(event);
-		return [
+		const results = [
 			...this.executeSync(before, data),
 			...(handler && !replace ? [handler(data)] : []),
 			...this.executeSync(after, data)
 		];
+		this.triggerDomEvent(event);
+		return results;
 	}
 
 	async execute<TEvent extends EventName>(
@@ -235,6 +239,11 @@ export class Events {
 			}
 		}
 		return results;
+	}
+
+	// Trigger event on document with prefix `swup:`
+	triggerDomEvent<TEvent extends EventName>(event: TEvent) {
+		document.dispatchEvent(new CustomEvent(`swup:${event}`, { detail: event }));
 	}
 
 	getHandlers(event: EventName) {
