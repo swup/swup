@@ -361,6 +361,39 @@ describe('History', function () {
 		});
 	});
 
+	it('should replace the current history state via data attribute', function () {
+		cy.visit('/history.html');
+
+		cy.triggerClickOnLink('/page-2.html');
+		cy.shouldBeAtPage('/page-2.html');
+
+		cy.get('[data-cy=update-link]').first().click();
+		cy.shouldBeAtPage('/page-3.html');
+		cy.window().then((window) => {
+			window.history.back();
+			cy.window().should(() => {
+				expect(window.history.state.url).to.equal('/history.html');
+			});
+		});
+	});
+
+	it('should replace the current history state via API', function () {
+		cy.window().then(() => {
+			this.swup.loadPage({ url: '/page-2.html' });
+		});
+		cy.shouldBeAtPage('/page-2.html');
+		cy.window().then(() => {
+			this.swup.loadPage({ url: '/page-3.html', history: 'replace' });
+		});
+		cy.shouldBeAtPage('/page-3.html');
+		cy.window().then((window) => {
+			window.history.back();
+			cy.window().should(() => {
+				expect(window.history.state.url).to.equal('/page-1.html');
+			});
+		});
+	});
+
 	it('should transition to previous page on popstate', function () {
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
@@ -395,23 +428,6 @@ describe('History', function () {
 			cy.window().should(() => {
 				expect(window.history.state.url, 'page url not saved').to.equal('/page-1.html');
 				expect(window.history.state.source, 'state source not saved').to.equal('swup');
-			});
-		});
-	});
-
-	it('should replace history state via API', function () {
-		cy.window().then(() => {
-			this.swup.loadPage({ url: '/page-2.html' });
-		});
-		cy.shouldBeAtPage('/page-2.html');
-		cy.window().then(() => {
-			this.swup.loadPage({ url: '/page-3.html', history: 'replace' });
-		});
-		cy.shouldBeAtPage('/page-3.html');
-		cy.window().then((window) => {
-			window.history.back();
-			cy.window().should(() => {
-				expect(window.history.state.url).to.equal('/page-1.html');
 			});
 		});
 	});
