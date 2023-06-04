@@ -383,6 +383,23 @@ describe('History', function () {
 		});
 	});
 
+	it('should replace history state via API', function () {
+		cy.window().then(() => {
+			this.swup.loadPage({ url: '/page-2.html' });
+		});
+		cy.shouldBeAtPage('/page-2.html');
+		cy.window().then(() => {
+			this.swup.loadPage({ url: '/page-3.html', history: 'replace' });
+		});
+		cy.shouldBeAtPage('/page-3.html');
+		cy.window().then((window) => {
+			window.history.back();
+			cy.window().should(() => {
+				expect(window.history.state.url).to.equal('/page-1.html');
+			});
+		});
+	});
+
 	it('should trigger a custom popState event', function () {
 		const handlers = { popstate() {} };
 		cy.spy(handlers, 'popstate');
