@@ -46,7 +46,9 @@ export function getAnimationPromises(
 		.filter(Boolean) as Promise<void>[];
 
 	if (!animationPromises.length) {
-		console.warn(`[swup] No CSS transition or animation duration defined for any of the elements matching ${selector}`);
+		console.warn(
+			`[swup] No CSS transition or animation duration defined for any of the elements matching ${selector}`
+		);
 		return [Promise.resolve()];
 	}
 
