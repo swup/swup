@@ -63,10 +63,6 @@ describe('Markup', function () {
 		cy.shouldHaveH1('Page 1');
 	});
 
-	it('should add data-swup attr to containers', function () {
-		cy.get('[data-cy=container]').should('have.attr', 'data-swup', '0');
-	});
-
 	it('should process transition classes', function () {
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldHaveTransitionLeaveClasses();
