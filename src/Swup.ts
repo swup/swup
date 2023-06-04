@@ -19,7 +19,7 @@ import { getAnimationPromises } from './modules/getAnimationPromises.js';
 import { getPageData } from './modules/getPageData.js';
 import { fetchPage } from './modules/fetchPage.js';
 import { leavePage } from './modules/leavePage.js';
-import { loadPage, performPageLoad } from './modules/loadPage.js';
+import { HistoryAction, loadPage, performPageLoad } from './modules/loadPage.js';
 import { replaceContent } from './modules/replaceContent.js';
 import { on, off, triggerEvent, Handlers } from './modules/events.js';
 import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
@@ -275,8 +275,15 @@ export default class Swup {
 		// Get the custom transition name, if present
 		const customTransition = linkEl.getAttribute('data-swup-transition') || undefined;
 
+		// Get the history action, if set
+		let history: HistoryAction | undefined;
+		const historyAttr = linkEl.getAttribute('data-swup-history');
+		if (historyAttr && ['push', 'replace'].includes(historyAttr)) {
+			history = historyAttr as HistoryAction;
+		}
+
 		// Finally, proceed with loading the page
-		this.performPageLoad({ url, customTransition });
+		this.performPageLoad({ url, customTransition, history });
 	}
 
 	handleLinkToSamePage(url: string, hash: string, event: DelegateEvent<MouseEvent>) {
