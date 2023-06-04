@@ -35,13 +35,22 @@ export function getAnimationPromises(
 
 	const animatedElements = queryAll(selector, document.body);
 
-	// Warn if no animated containers found on page, but keep things going
+	// Warn if no elements match the animationSelector, but keep things going
 	if (!animatedElements.length) {
-		console.warn(`[swup] No animated elements found by selector ${selector}`);
+		console.warn(`[swup] No elements found for animationSelector \`${selector}\``);
 		return [Promise.resolve()];
 	}
 
-	return animatedElements.map((element) => getAnimationPromiseForElement(element, selector));
+	const animationPromises = animatedElements
+		.map((element) => getAnimationPromiseForElement(element, selector))
+		.filter(Boolean) as Promise<void>[];
+
+	if (!animationPromises.length) {
+		console.warn(`[swup] No CSS transition or animation duration defined for any of the elements matching ${selector}`);
+		return [Promise.resolve()];
+	}
+
+	return animationPromises;
 }
 
 const isTransitionOrAnimationEvent = (event: any): event is TransitionEvent | AnimationEvent =>
@@ -51,15 +60,12 @@ function getAnimationPromiseForElement(
 	element: Element,
 	selector: string,
 	expectedType: 'animation' | 'transition' | null = null
-): Promise<void> {
+): Promise<void> | undefined {
 	const { type, timeout, propCount } = getTransitionInfo(element, expectedType);
 
 	// Resolve immediately if no transition defined
 	if (!type || !timeout) {
-		console.warn(
-			`[swup] No CSS transition duration defined for element of selector ${selector}`
-		);
-		return Promise.resolve();
+		return undefined;
 	}
 
 	return new Promise((resolve) => {
