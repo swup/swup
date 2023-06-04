@@ -1,16 +1,20 @@
-import { classify, createHistoryRecord, getCurrentUrl } from '../helpers.js';
+import { classify, createHistoryRecord, updateHistoryRecord, getCurrentUrl } from '../helpers.js';
 import Swup from '../Swup.js';
 import { PageRecord } from './Cache.js';
+
+export type HistoryAction = 'push' | 'replace';
 
 export type TransitionOptions = {
 	url: string;
 	customTransition?: string;
+	history?: HistoryAction;
 };
 
 export type PageLoadOptions = {
 	url: string;
-	event?: PopStateEvent;
 	customTransition?: string;
+	history?: HistoryAction;
+	event?: PopStateEvent;
 };
 
 export function loadPage(this: Swup, data: TransitionOptions) {
@@ -25,7 +29,7 @@ export function loadPage(this: Swup, data: TransitionOptions) {
 }
 
 export function performPageLoad(this: Swup, data: PageLoadOptions) {
-	const { url, event, customTransition } = data ?? {};
+	const { url, event, customTransition, history: historyAction = 'push' } = data ?? {};
 
 	const isHistoryVisit = event instanceof PopStateEvent;
 	const skipTransition = this.shouldSkipTransition({ url, event });
@@ -46,7 +50,12 @@ export function performPageLoad(this: Swup, data: PageLoadOptions) {
 
 	// create history record if this is not a popstate call (with or without anchor)
 	if (!isHistoryVisit) {
-		createHistoryRecord(url + (this.scrollToElement || ''));
+		const historyUrl = url + (this.scrollToElement || '');
+		if (historyAction === 'replace') {
+			updateHistoryRecord(historyUrl);
+		} else {
+			createHistoryRecord(historyUrl);
+		}
 	}
 
 	this.currentPageUrl = getCurrentUrl();
