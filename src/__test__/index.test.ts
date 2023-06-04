@@ -1,7 +1,8 @@
-import delegate from 'delegate-it';
+import { DelegateEvent } from 'delegate-it';
+import { describe, expect, it, vi } from 'vitest';
 
 import pckg from '../../package.json';
-import Swup, { Options, Plugin } from '../index';
+import Swup, { Options, Plugin } from '../index.js';
 
 const baseUrl = window.location.origin;
 
@@ -9,9 +10,9 @@ function createPlugin(plugin = {}) {
 	return {
 		name: 'TestPlugin',
 		isSwupPlugin: true as const,
-		mount: jest.fn(() => {}),
-		unmount: jest.fn(() => {}),
-		_checkRequirements: jest.fn(() => true),
+		mount: vi.fn(() => {}),
+		unmount: vi.fn(() => {}),
+		_checkRequirements: vi.fn(() => true),
 		...plugin
 	};
 }
@@ -54,7 +55,7 @@ describe('Exports', () => {
 
 describe('ignoreVisit', () => {
 	it('should be called with relative URL', () => {
-		const ignoreVisit = jest.fn(() => true);
+		const ignoreVisit = vi.fn(() => true);
 		const swup = new Swup({ ignoreVisit });
 		swup.shouldIgnoreVisit(`${baseUrl}/path/?query#hash`);
 
@@ -65,10 +66,10 @@ describe('ignoreVisit', () => {
 	it('should have access to element and event params', () => {
 		const el = document.createElement('a');
 		el.href = `${baseUrl}/path/?query#hash`;
-		const event = new MouseEvent('click') as delegate.Event<MouseEvent>;
+		const event = new MouseEvent('click') as DelegateEvent<MouseEvent>;
 		event.delegateTarget = el;
 
-		const ignoreVisit = jest.fn(() => true);
+		const ignoreVisit = vi.fn(() => true);
 		const swup = new Swup({ ignoreVisit });
 		swup.linkClickHandler(event);
 
@@ -79,7 +80,7 @@ describe('ignoreVisit', () => {
 	});
 
 	it('should be called from loadPage method', () => {
-		const ignoreVisit = jest.fn(() => true);
+		const ignoreVisit = vi.fn(() => true);
 		const swup = new Swup({ ignoreVisit });
 		swup.loadPage({ url: '/path/' });
 

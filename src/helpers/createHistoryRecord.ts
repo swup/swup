@@ -1,4 +1,4 @@
-import { getCurrentUrl } from './getCurrentUrl';
+import { getCurrentUrl } from './getCurrentUrl.js';
 
 export const createHistoryRecord = (
 	url: string,

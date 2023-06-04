@@ -161,6 +161,26 @@ describe('Transition timing', function () {
 		cy.transitionWithExpectedDuration(600);
 	});
 
+	it('should warn about missing transition timing', function () {
+		cy.visit('/transition-none.html', {
+			onBeforeLoad: (win) =>  cy.stub(win.console, 'warn').as('consoleWarn')
+		});
+		cy.triggerClickOnLink('/page-2.html');
+		cy.shouldBeAtPage('/page-2.html');
+		cy.shouldHaveH1('Page 2');
+		cy.get('@consoleWarn').should('be.calledOnceWith', '[swup] No CSS animation duration defined on elements matching `[class*=\"transition-\"]`');
+	});
+
+	it('should not warn about partial transition timing', function () {
+		cy.visit('/transition-partial.html', {
+			onBeforeLoad: (win) =>  cy.stub(win.console, 'warn').as('consoleWarn')
+		});
+		cy.triggerClickOnLink('/page-2.html');
+		cy.shouldBeAtPage('/page-2.html');
+		cy.shouldHaveH1('Page 2');
+		cy.get('@consoleWarn').should('have.callCount', 0);
+	});
+
 	it('should detect keyframe timing', function () {
 		cy.visit('/transition-keyframes.html');
 		cy.transitionWithExpectedDuration(700);
@@ -444,6 +464,16 @@ describe('Scroll Plugin', function () {
 	it('should scroll to name-based anchor', function () {
 		cy.get('[data-cy=link-to-anchor-by-name]').click();
 		cy.shouldHaveElementInViewport('[data-cy=anchor-by-name]');
+	});
+
+	it('should prefer undecoded id attributes', function () {
+		cy.get('[data-cy=link-to-anchor-encoded]').click();
+		cy.shouldHaveElementInViewport('[data-cy=anchor-encoded]');
+	});
+
+	it('should accept unencoded anchor links', function () {
+		cy.get('[data-cy=link-to-anchor-unencoded]').click();
+		cy.shouldHaveElementInViewport('[data-cy=anchor-unencoded]');
 	});
 
 	it('should scroll to anchor with special characters', function () {

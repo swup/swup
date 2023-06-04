@@ -1,5 +1,5 @@
-import { TransitionOptions } from '../modules/loadPage';
-import { Options } from '../Swup';
+import { TransitionOptions } from '../modules/loadPage.js';
+import { Options } from '../Swup.js';
 
 export const fetch = (
 	options: TransitionOptions & {

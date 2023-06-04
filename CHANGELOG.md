@@ -2,6 +2,22 @@
 
 <!-- ## [Unreleased] -->
 
+## [3.0.7] - 2023-05-26
+
+- Update event delegation library
+- Fix edge case in detecting transition events
+- Improve selection of scroll anchor targets
+
+## [3.0.6] - 2023-04-06
+
+- Fix `exports` field in package.json
+- Fully qualify imports to support TypeScript `moduleResolution: node16`
+- Switch to Vitest for unit tests
+
+## [3.0.5] - 2023-03-02
+
+- Ensure correct `Referer` request header
+
 ## [3.0.4] - 2023-01-29
 
 - Clarify/improve event typings for Swup event handlers
@@ -76,8 +92,12 @@ for details.
 
 - Fix bug where animateHistoryBrowsing option was ignored for OUT animations
 
-[Unreleased]: https://github.com/swup/swup/compare/3.0.3...HEAD
+[Unreleased]: https://github.com/swup/swup/compare/3.0.7...HEAD
 
+[3.0.7]: https://github.com/swup/swup/releases/tag/3.0.7
+[3.0.6]: https://github.com/swup/swup/releases/tag/3.0.6
+[3.0.5]: https://github.com/swup/swup/releases/tag/3.0.5
+[3.0.4]: https://github.com/swup/swup/releases/tag/3.0.4
 [3.0.3]: https://github.com/swup/swup/releases/tag/3.0.3
 [3.0.2]: https://github.com/swup/swup/releases/tag/3.0.2
 [3.0.1]: https://github.com/swup/swup/releases/tag/3.0.1

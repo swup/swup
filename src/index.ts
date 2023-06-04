@@ -1,10 +1,10 @@
-import Swup, { Options } from './Swup';
-import { Plugin } from './modules/plugins';
-import { Handler } from './modules/events';
+import Swup, { Options } from './Swup.js';
+import { Plugin } from './modules/plugins.js';
+import { Handler } from './modules/events.js';
 
 export default Swup;
 
-export * from './helpers';
-export * from './utils';
+export * from './helpers.js';
+export * from './utils.js';
 
 export type { Options, Plugin, Handler };
