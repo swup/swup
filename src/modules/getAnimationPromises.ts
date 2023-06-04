@@ -42,7 +42,7 @@ export function getAnimationPromises(
 	}
 
 	const animationPromises = animatedElements
-		.map((element) => getAnimationPromiseForElement(element, selector))
+		.map((element) => getAnimationPromiseForElement(element))
 		.filter(Boolean) as Promise<void>[];
 
 	if (!animationPromises.length) {
@@ -58,12 +58,8 @@ export function getAnimationPromises(
 const isTransitionOrAnimationEvent = (event: any): event is TransitionEvent | AnimationEvent =>
 	[transitionEndEvent, animationEndEvent].includes(event.type);
 
-function getAnimationPromiseForElement(
-	element: Element,
-	selector: string,
-	expectedType: 'animation' | 'transition' | null = null
-): Promise<void> | undefined {
-	const { type, timeout, propCount } = getTransitionInfo(element, expectedType);
+function getAnimationPromiseForElement(element: Element): Promise<void> | undefined {
+	const { type, timeout, propCount } = getTransitionInfo(element);
 
 	// Resolve immediately if no transition defined
 	if (!type || !timeout) {
