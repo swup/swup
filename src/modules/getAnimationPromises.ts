@@ -37,7 +37,7 @@ export function getAnimationPromises(
 
 	// Warn if no elements match the animationSelector, but keep things going
 	if (!animatedElements.length) {
-		console.warn(`[swup] No elements found for animationSelector \`${selector}\``);
+		console.warn(`[swup] No elements found matching animationSelector \`${selector}\``);
 		return [Promise.resolve()];
 	}
 
@@ -47,7 +47,7 @@ export function getAnimationPromises(
 
 	if (!animationPromises.length) {
 		console.warn(
-			`[swup] No CSS transition or animation duration defined for any of the elements matching ${selector}`
+			`[swup] No CSS animation duration defined on elements matching \`${selector}\``
 		);
 		return [Promise.resolve()];
 	}
