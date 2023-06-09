@@ -11,7 +11,7 @@ export function fetchPage(this: Swup, data: TransitionOptions): Promise<PageData
 	const headers = this.options.requestHeaders;
 	const { url: requestURL } = Location.fromUrl(data.url);
 
-	const cachedPage = this.cache.get(requestURL);
+	const cachedPage = this.cache.getPage(requestURL);
 	if (cachedPage) {
 		this.triggerEvent('pageRetrievedFromCache');
 		return Promise.resolve(cachedPage);
@@ -38,7 +38,7 @@ export function fetchPage(this: Swup, data: TransitionOptions): Promise<PageData
 
 			// Only save cache entry for non-redirects
 			if (requestURL === url) {
-				this.cache.save(url, page);
+				this.cache.cacheUrl(page);
 			}
 
 			this.triggerEvent('pageLoaded');

@@ -11,28 +11,28 @@ export class Cache {
 		this.swup = swup;
 	}
 
-	resolve(urlToResolve: string): string {
+	getCacheUrl(urlToResolve: string): string {
 		const { url } = Location.fromUrl(urlToResolve);
 		return this.swup.resolveUrl(url);
 	}
 
-	save(url: string, page: PageData) {
-		url = this.resolve(url);
-		this.pages.set(url, page);
-		this.last = this.get(url);
+	cacheUrl(page: PageData) {
+		page.url = this.getCacheUrl(page.url);
+		this.pages.set(page.url, page);
+		this.last = this.getPage(page.url);
 		this.swup.log(`Cache (${this.pages.size})`, this.pages);
 	}
 
-	get(url: string): PageData | undefined {
-		return this.pages.get(this.resolve(url));
+	getPage(url: string): PageData | undefined {
+		return this.pages.get(this.getCacheUrl(url));
 	}
 
 	getCurrentPage(): PageData | undefined {
-		return this.get(getCurrentUrl());
+		return this.getPage(getCurrentUrl());
 	}
 
 	exists(url: string): boolean {
-		return this.pages.has(this.resolve(url));
+		return this.pages.has(this.getCacheUrl(url));
 	}
 
 	empty(): void {
@@ -42,6 +42,6 @@ export class Cache {
 	}
 
 	remove(url: string): void {
-		this.pages.delete(this.resolve(url));
+		this.pages.delete(this.getCacheUrl(url));
 	}
 }
