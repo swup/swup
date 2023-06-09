@@ -13,7 +13,7 @@ export async function fetchPage(this: Swup, data: TransitionOptions): Promise<Pa
 
 	const cachedPage = this.cache.getPage(url);
 	if (cachedPage) {
-		await this.events.trigger('pageRetrievedFromCache');
+		await this.hooks.trigger('pageRetrievedFromCache');
 		return Promise.resolve(cachedPage);
 	}
 
@@ -25,7 +25,7 @@ export async function fetchPage(this: Swup, data: TransitionOptions): Promise<Pa
 				responseURL: url = window.location.href
 			} = response;
 			if (status === 500) {
-				this.events.trigger('serverError');
+				this.hooks.trigger('serverError');
 				reject(url);
 				return;
 			}
@@ -35,7 +35,7 @@ export async function fetchPage(this: Swup, data: TransitionOptions): Promise<Pa
 			}
 			const page = { url, html };
 			this.cache.cacheUrl(page);
-			this.events.trigger('pageLoaded');
+			this.hooks.trigger('pageLoaded');
 			resolve(page);
 		});
 	});

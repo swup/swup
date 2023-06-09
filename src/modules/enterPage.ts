@@ -6,20 +6,20 @@ export const enterPage = async function (
 	{ event, skipTransition }: PageRenderOptions = {}
 ) {
 	if (skipTransition) {
-		await this.events.trigger('transitionEnd', event);
+		await this.hooks.trigger('transitionEnd', event);
 		this.cleanupAnimationClasses();
 		return;
 	}
 
 	const animationPromises = this.getAnimationPromises('in');
 
-	await this.events.trigger('animationInStart', undefined, () => {
+	await this.hooks.trigger('animationInStart', undefined, () => {
 		document.documentElement.classList.remove('is-animating');
 	});
 
 	await Promise.all(animationPromises);
-	await this.events.trigger('animationInDone');
+	await this.hooks.trigger('animationInDone');
 
-	await this.events.trigger('transitionEnd', event);
+	await this.hooks.trigger('transitionEnd', event);
 	this.cleanupAnimationClasses();
 };

@@ -3,7 +3,7 @@ import { DelegateEvent } from 'delegate-it';
 import Swup from '../Swup.js';
 import { isPromise, runAsPromise } from '../utils.js';
 
-export type EventDefinitions = {
+export type HookDefinitions = {
 	animationInDone: undefined;
 	animationInStart: undefined;
 	animationOutDone: undefined;
@@ -26,42 +26,40 @@ export type EventDefinitions = {
 	willReplaceContent: PopStateEvent | undefined;
 };
 
-export type EventArgument<TEvent extends EventName> = EventDefinitions[TEvent];
+export type HookArgument<T extends HookName> = HookDefinitions[T];
 
-export type EventName = keyof EventDefinitions;
+export type HookName = keyof HookDefinitions;
 
-export type Handler<TEvent extends EventName> = (
-	data: EventArgument<TEvent>
-) => Promise<void> | void;
+export type Handler<T extends HookName> = (data: HookArgument<T>) => Promise<void> | void;
 
 export type Handlers = {
-	[Key in EventName]: Handler<Key>[];
+	[K in HookName]: Handler<K>[];
 };
 
-export type EventOptions = {
+export type HookOptions = {
 	once?: boolean;
 	before?: boolean;
 	priority?: number;
 	replace?: boolean;
 };
 
-export type EventRegistration<TEvent extends EventName> = {
+export type HookRegistration<T extends HookName> = {
 	id: number;
-	event: TEvent;
-	handler: Handler<TEvent>;
-} & EventOptions;
+	hook: T;
+	handler: Handler<T>;
+} & HookOptions;
 
-type EventLedger<TEvent extends EventName> = Map<Handler<TEvent>, EventRegistration<TEvent>>;
+type HookLedger<T extends HookName> = Map<Handler<T>, HookRegistration<T>>;
 
-type EventRegistry = Map<EventName, EventLedger<EventName>>;
+type HookRegistry = Map<HookName, HookLedger<HookName>>;
 
-export class Events {
+export class Hooks {
 	swup: Swup;
-	registry: EventRegistry = new Map();
+	registry: HookRegistry = new Map();
 
-	// Can we deduplicate this somehow? Or make it error when not in sync with EventDefinitions?
+	// Can we deduplicate this somehow? Or make it error when not in sync with HookDefinitions?
 	// https://stackoverflow.com/questions/53387838/how-to-ensure-an-arrays-values-the-keys-of-a-typescript-interface/53395649
-	defaultEvents: EventName[] = [
+	defaultHooks: HookName[] = [
 		'animationInDone',
 		'animationInStart',
 		'animationOutDone',
@@ -90,74 +88,58 @@ export class Events {
 	}
 
 	init() {
-		this.defaultEvents.forEach((event) => this.create(event));
+		this.defaultHooks.forEach((hook) => this.create(hook));
 	}
 
-	create(event: EventName) {
-		if (!this.registry.has(event)) {
-			this.registry.set(event, new Map());
+	create(hook: HookName) {
+		if (!this.registry.has(hook)) {
+			this.registry.set(hook, new Map());
 		}
 	}
 
-	has(event: EventName): boolean {
-		return this.registry.has(event);
+	has(hook: HookName): boolean {
+		return this.registry.has(hook);
 	}
 
-	get<TEvent extends EventName>(event: TEvent): EventLedger<TEvent> | undefined {
-		const ledger = this.registry.get(event) as EventLedger<TEvent> | undefined;
+	get<T extends HookName>(hook: T): HookLedger<T> | undefined {
+		const ledger = this.registry.get(hook) as HookLedger<T> | undefined;
 		if (ledger) {
 			return ledger;
 		} else {
-			console.error(`Unknown event ${event}.`);
+			console.error(`Unknown hook '${hook}'`);
 		}
 	}
 
-	on<TEvent extends EventName>(
-		event: TEvent,
-		handler: Handler<TEvent>,
-		options: EventOptions = {}
-	) {
-		const ledger = this.get(event);
+	on<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions = {}) {
+		const ledger = this.get(hook);
 		if (!ledger) {
 			return;
 		}
 
 		const id = ledger.size + 1;
-		const registration: EventRegistration<TEvent> = { ...options, id, event, handler };
+		const registration: HookRegistration<T> = { ...options, id, hook, handler };
 		ledger.set(handler, registration);
 	}
 
-	before<TEvent extends EventName>(
-		event: TEvent,
-		handler: Handler<TEvent>,
-		options: EventOptions = {}
-	) {
-		return this.on(event, handler, { ...options, before: true });
+	before<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions = {}) {
+		return this.on(hook, handler, { ...options, before: true });
 	}
 
-	replace<TEvent extends EventName>(
-		event: TEvent,
-		handler: Handler<TEvent>,
-		options: EventOptions = {}
-	) {
-		return this.on(event, handler, { ...options, replace: true });
+	replace<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions = {}) {
+		return this.on(hook, handler, { ...options, replace: true });
 	}
 
-	once<TEvent extends EventName>(
-		event: TEvent,
-		handler: Handler<TEvent>,
-		options: EventOptions = {}
-	) {
-		return this.on(event, handler, { ...options, once: true });
+	once<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions = {}) {
+		return this.on(hook, handler, { ...options, once: true });
 	}
 
-	off<TEvent extends EventName>(event: TEvent, handler?: Handler<TEvent>) {
-		const ledger = this.get(event);
+	off<T extends HookName>(hook: T, handler?: Handler<T>) {
+		const ledger = this.get(hook);
 
 		if (ledger && handler) {
 			const deleted = ledger.delete(handler);
 			if (!deleted) {
-				console.warn(`Handler for event '${event}' not found.`);
+				console.warn(`Handler for hook '${event}' not found.`);
 			}
 		} else if (ledger) {
 			ledger.clear();
@@ -168,65 +150,57 @@ export class Events {
 		this.registry.forEach((ledger) => ledger.clear());
 	}
 
-	async trigger<TEvent extends EventName>(
-		event: TEvent,
-		data?: EventArgument<TEvent>,
-		handler?: Function
-	) {
-		const { before, after, replace } = this.getHandlers(event);
+	async trigger<T extends HookName>(hook: T, data?: HookArgument<T>, handler?: Function) {
+		const { before, after, replace } = this.getHandlers(hook);
 		const results = [
 			...(await this.execute(before, data)),
 			...(handler && !replace ? [await runAsPromise(handler, [data], this.swup)] : []),
 			...(await this.execute(after, data))
 		];
-		this.dispatchDomEvent(event);
+		this.dispatchDomEvent(hook);
 		return results;
 	}
 
-	triggerSync<TEvent extends EventName>(
-		event: TEvent,
-		data?: EventArgument<TEvent>,
-		handler?: Function
-	) {
-		const { before, after, replace } = this.getHandlers(event);
+	triggerSync<T extends HookName>(hook: T, data?: HookArgument<T>, handler?: Function) {
+		const { before, after, replace } = this.getHandlers(hook);
 		const results = [
 			...this.executeSync(before, data),
 			...(handler && !replace ? [handler(data)] : []),
 			...this.executeSync(after, data)
 		];
-		this.dispatchDomEvent(event);
+		this.dispatchDomEvent(hook);
 		return results;
 	}
 
-	async execute<TEvent extends EventName>(
-		registrations: EventRegistration<TEvent>[],
-		data: EventArgument<TEvent>
+	async execute<T extends HookName>(
+		registrations: HookRegistration<T>[],
+		data: HookArgument<T>
 	): Promise<any> {
 		const results = [];
-		for (const { event, handler, once } of registrations) {
+		for (const { hook, handler, once } of registrations) {
 			try {
 				results.push(await runAsPromise(handler, [data], this.swup));
 			} catch (error) {
 				console.error(error);
 			}
 			if (once) {
-				this.off(event, handler);
+				this.off(hook, handler);
 			}
 		}
 		return results;
 	}
 
-	executeSync<TEvent extends EventName>(
-		registrations: EventRegistration<TEvent>[],
-		data: EventArgument<TEvent>
+	executeSync<T extends HookName>(
+		registrations: HookRegistration<T>[],
+		data: HookArgument<T>
 	): any[] {
 		const results = [];
-		for (const { event, handler, once } of registrations) {
+		for (const { hook, handler, once } of registrations) {
 			try {
 				const result = handler(data);
 				if (isPromise(result)) {
 					console.warn(
-						`Promise returned from handler for synchronous event '${event}'.` +
+						`Promise returned from handler for synchronous hook '${hook}'.` +
 							`Swup will not wait for it to resolve.`
 					);
 				}
@@ -235,13 +209,13 @@ export class Events {
 				console.error(error);
 			}
 			if (once) {
-				this.off(event, handler);
+				this.off(hook, handler);
 			}
 		}
 		return results;
 	}
 
-	getHandlers(event: EventName) {
+	getHandlers(event: HookName) {
 		const ledger = this.get(event);
 		if (!ledger) {
 			return { found: false, before: [], after: [] };
@@ -259,7 +233,7 @@ export class Events {
 		return { found: true, before, after, replace };
 	}
 
-	sortHandlers<TEvent extends EventName>(registrations: EventRegistration<TEvent>[]) {
+	sortHandlers<T extends HookName>(registrations: HookRegistration<T>[]) {
 		// sort by priority first, by id second
 		return registrations.sort((a, b) => {
 			const priority = (b.priority ?? 0) - (a.priority ?? 0);
@@ -269,45 +243,45 @@ export class Events {
 	}
 
 	// Trigger event on document with prefix `swup:`
-	dispatchDomEvent<TEvent extends EventName>(event: TEvent) {
-		document.dispatchEvent(new CustomEvent(`swup:${event}`, { detail: event }));
+	dispatchDomEvent<T extends HookName>(hook: T) {
+		document.dispatchEvent(new CustomEvent(`swup:${hook}`, { detail: hook }));
 	}
 }
 
 /**
  * Return a proxy object that allows writing to `swup._handlers`.
- * When setting a property on this proxy, it will instead create a new event with the given name.
+ * When setting a property on this proxy, it will instead create a new hook with the given name.
  * Mostly here for backwards compatibility with older plugins.
  */
 export class HandlersProxy {
-	events: Events;
+	hooks: Hooks;
 
-	constructor(events: Events) {
-		this.events = events;
+	constructor(hooks: Hooks) {
+		this.hooks = hooks;
 		return new Proxy<HandlersProxy>(this, {
 			set: this.set.bind(this),
 			get: this.get.bind(this)
 		});
 	}
 
-	set(target: any, event: EventName, value: any): boolean {
+	set(target: any, hook: HookName, value: any): boolean {
 		console.warn(
 			'Writing to `swup._handlers` is no longer supported. ' +
-				'Use `swup.events.create()` instead.'
+				'Use `swup.hooks.create()` instead.'
 		);
-		if (!this.events.has(event)) {
-			this.events.create(event);
+		if (!this.hooks.has(hook)) {
+			this.hooks.create(hook);
 		}
 		return true;
 	}
 
 	get(target: any, prop: string, value: any): [] {
-		if (['events'].includes(prop)) {
+		if (['hooks'].includes(prop)) {
 			return target[prop];
 		}
 		console.warn(
 			'Reading from `swup._handlers` is no longer supported. ' +
-				'Use `swup.events.get()` instead.'
+				'Use `swup.hooks.get()` instead.'
 		);
 		return [];
 	}

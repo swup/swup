@@ -8,11 +8,11 @@ export const leavePage = async function (
 	const isHistoryVisit = event instanceof PopStateEvent;
 
 	if (skipTransition) {
-		await this.events.trigger('animationSkipped');
+		await this.hooks.trigger('animationSkipped');
 		return;
 	}
 
-	await this.events.trigger('animationOutStart', undefined, () => {
+	await this.hooks.trigger('animationOutStart', undefined, () => {
 		document.documentElement.classList.add('is-changing', 'is-leaving', 'is-animating');
 		if (isHistoryVisit) {
 			document.documentElement.classList.add('is-popstate');
@@ -21,5 +21,5 @@ export const leavePage = async function (
 
 	const animationPromises = this.getAnimationPromises('out');
 	await Promise.all(animationPromises);
-	await this.events.trigger('animationOutDone');
+	await this.hooks.trigger('animationOutDone');
 };
