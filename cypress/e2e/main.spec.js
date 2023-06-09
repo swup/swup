@@ -63,10 +63,6 @@ describe('Markup', function () {
 		cy.shouldHaveH1('Page 1');
 	});
 
-	it('should add data-swup attr to containers', function () {
-		cy.get('[data-cy=container]').should('have.attr', 'data-swup', '0');
-	});
-
 	it('should process transition classes', function () {
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldHaveTransitionLeaveClasses();
@@ -147,6 +143,26 @@ describe('Transition timing', function () {
 	it('should detect complex transition timing', function () {
 		cy.visit('/transition-complex.html');
 		cy.transitionWithExpectedDuration(600);
+	});
+
+	it('should warn about missing transition timing', function () {
+		cy.visit('/transition-none.html', {
+			onBeforeLoad: (win) =>  cy.stub(win.console, 'warn').as('consoleWarn')
+		});
+		cy.triggerClickOnLink('/page-2.html');
+		cy.shouldBeAtPage('/page-2.html');
+		cy.shouldHaveH1('Page 2');
+		cy.get('@consoleWarn').should('be.calledOnceWith', '[swup] No CSS animation duration defined on elements matching `[class*=\"transition-\"]`');
+	});
+
+	it('should not warn about partial transition timing', function () {
+		cy.visit('/transition-partial.html', {
+			onBeforeLoad: (win) =>  cy.stub(win.console, 'warn').as('consoleWarn')
+		});
+		cy.triggerClickOnLink('/page-2.html');
+		cy.shouldBeAtPage('/page-2.html');
+		cy.shouldHaveH1('Page 2');
+		cy.get('@consoleWarn').should('have.callCount', 0);
 	});
 
 	it('should detect keyframe timing', function () {

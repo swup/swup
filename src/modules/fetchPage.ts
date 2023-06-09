@@ -1,35 +1,42 @@
 import Swup from '../Swup.js';
 import { fetch } from '../helpers.js';
 import { TransitionOptions } from './loadPage.js';
-import { PageRecord } from './Cache.js';
 
-export async function fetchPage(this: Swup, data: TransitionOptions): Promise<PageRecord> {
+export type PageData = {
+	url: string;
+	html: string;
+};
+
+export async function fetchPage(this: Swup, data: TransitionOptions): Promise<PageData> {
 	const headers = this.options.requestHeaders;
 	const { url } = data;
 
-	if (this.cache.exists(url)) {
+	const cachedPage = this.cache.getPage(url);
+	if (cachedPage) {
 		await this.events.trigger('pageRetrievedFromCache');
-		return this.cache.getPage(url);
+		return Promise.resolve(cachedPage);
 	}
 
-	const page = await new Promise<PageRecord>((resolve, reject) => {
+	const page = await new Promise<PageData>((resolve, reject) => {
 		fetch({ ...data, headers }, (response) => {
-			if (response.status === 500) {
+			const {
+				status,
+				responseText: html,
+				responseURL: url = window.location.href
+			} = response;
+			if (status === 500) {
 				this.events.trigger('serverError');
 				reject(url);
 				return;
 			}
-			// get json data
-			const page = this.getPageData(response);
-			if (!page || !page.blocks.length) {
+			if (!html) {
 				reject(url);
 				return;
 			}
-			// render page
-			const cacheablePageData = { ...page, url };
-			this.cache.cacheUrl(cacheablePageData);
+			const page = { url, html };
+			this.cache.cacheUrl(page);
 			this.events.trigger('pageLoaded');
-			resolve(cacheablePageData);
+			resolve(page);
 		});
 	});
 

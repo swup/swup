@@ -1,15 +1,11 @@
-import { getCurrentUrl, Location } from '../helpers.js';
 import Swup from '../Swup.js';
-import { PageData } from './getPageData.js';
+import { getCurrentUrl, Location } from '../helpers.js';
+import { PageData } from './fetchPage.js';
 
-export interface PageRecord extends PageData {
-	url: string;
-	responseURL: string;
-}
 export class Cache {
-	pages: Record<string, PageRecord> = {};
-	last: PageRecord | null = null;
 	swup: Swup;
+	pages: Map<string, PageData> = new Map();
+	last?: PageData;
 
 	constructor(swup: Swup) {
 		this.swup = swup;
@@ -19,37 +15,34 @@ export class Cache {
 		return this.swup.resolveUrl(Location.fromUrl(url).url);
 	}
 
-	cacheUrl(page: PageRecord) {
+	cacheUrl(page: PageData) {
 		page.url = this.getCacheUrl(page.url);
-		if (page.url in this.pages === false) {
-			this.pages[page.url] = page;
+		if (!this.exists(page.url)) {
+			this.pages.set(page.url, page);
 		}
-		page.responseURL = this.getCacheUrl(page.responseURL);
-		this.last = this.pages[page.url];
-		this.swup.log(`Cache (${Object.keys(this.pages).length})`, this.pages);
+		this.last = this.getPage(page.url);
+		this.swup.log(`Cache (${this.pages.size})`, this.pages);
 	}
 
-	getPage(url: string): PageRecord {
-		url = this.getCacheUrl(url);
-		return this.pages[url];
+	getPage(url: string): PageData | undefined {
+		return this.pages.get(this.getCacheUrl(url));
 	}
 
-	getCurrentPage(): PageRecord {
+	getCurrentPage(): PageData | undefined {
 		return this.getPage(getCurrentUrl());
 	}
 
 	exists(url: string): boolean {
-		url = this.getCacheUrl(url);
-		return url in this.pages;
+		return this.pages.has(this.getCacheUrl(url));
 	}
 
 	empty(): void {
-		this.pages = {};
-		this.last = null;
+		this.pages.clear();
+		delete this.last;
 		this.swup.log('Cache cleared');
 	}
 
 	remove(url: string): void {
-		delete this.pages[this.getCacheUrl(url)];
+		this.pages.delete(this.getCacheUrl(url));
 	}
 }

@@ -1,6 +1,6 @@
 import { Location, updateHistoryRecord, getCurrentUrl } from '../helpers.js';
 import Swup from '../Swup.js';
-import { PageRecord } from './Cache.js';
+import { PageData } from './fetchPage.js';
 
 export type PageRenderOptions = {
 	event?: PopStateEvent;
@@ -9,7 +9,7 @@ export type PageRenderOptions = {
 
 export const renderPage = async function (
 	this: Swup,
-	page: PageRecord,
+	page: PageData,
 	{ event, skipTransition }: PageRenderOptions = {}
 ) {
 	document.documentElement.classList.remove('is-leaving');
@@ -19,7 +19,7 @@ export const renderPage = async function (
 		return;
 	}
 
-	const { url } = Location.fromUrl(page.responseURL);
+	const { url } = Location.fromUrl(page.url);
 
 	// update cache and state if the url was redirected
 	if (!this.isSameResolvedUrl(getCurrentUrl(), url)) {
