@@ -154,63 +154,27 @@ describe('Event registry', () => {
 	});
 });
 
-describe('Event aliases', () => {
-	it('should call events.on()', () => {
-		const swup = new Swup();
-		const on = vi.fn();
+// it('should trigger event handler with event', () => {
+// 	const swup = new Swup();
+// 	const handler: Handler<'popState'> = vi.fn();
+// 	const event = new PopStateEvent('');
 
-		swup.hooks.on = on;
+// 	swup.on('popState', handler);
+// 	swup.triggerEvent('popState', event);
 
-		swup.on('enabled', () => {});
+// 	expect(handler).toBeCalledWith(event);
+// });
 
-		expect(on).toBeCalledTimes(1);
-	});
+// it('types work and error when necessary', () => {
+// 	const swup = new Swup();
 
-	it('should call events.off()', () => {
-		const swup = new Swup();
-		const off = vi.fn();
+// 	// @ts-expect-no-error
+// 	swup.on('popState', (event: PopStateEvent) => {});
+// 	// @ts-expect-no-error
+// 	swup.triggerEvent('popState', new PopStateEvent(''));
 
-		swup.hooks.off = off;
-
-		swup.off('enabled', () => {});
-
-		expect(off).toBeCalledTimes(1);
-	});
-
-	it('should call events.trigger()', () => {
-		const swup = new Swup();
-		const trigger = vi.fn();
-
-		swup.hooks.trigger = trigger;
-
-		swup.on('enabled', () => {});
-		swup.triggerEvent('enabled');
-
-		expect(trigger).toBeCalledTimes(1);
-	});
-
-	// it('should trigger event handler with event', () => {
-	// 	const swup = new Swup();
-	// 	const handler: Handler<'popState'> = vi.fn();
-	// 	const event = new PopStateEvent('');
-
-	// 	swup.on('popState', handler);
-	// 	swup.triggerEvent('popState', event);
-
-	// 	expect(handler).toBeCalledWith(event);
-	// });
-
-	// it('types work and error when necessary', () => {
-	// 	const swup = new Swup();
-
-	// 	// @ts-expect-no-error
-	// 	swup.on('popState', (event: PopStateEvent) => {});
-	// 	// @ts-expect-no-error
-	// 	swup.triggerEvent('popState', new PopStateEvent(''));
-
-	// 	// @ts-expect-error
-	// 	swup.on('popState', (event: MouseEvent) => {});
-	// 	// @ts-expect-error
-	// 	swup.triggerEvent('popState', new MouseEvent(''));
-	// });
-});
+// 	// @ts-expect-error
+// 	swup.on('popState', (event: MouseEvent) => {});
+// 	// @ts-expect-error
+// 	swup.triggerEvent('popState', new MouseEvent(''));
+// });

@@ -102,7 +102,7 @@ describe('Events', function () {
 		const handlers = { click() {} };
 		cy.spy(handlers, 'click');
 
-		this.swup.on('clickLink', handlers.click);
+		this.swup.hooks.on('clickLink', handlers.click);
 		cy.triggerClickOnLink('/page-2.html');
 		cy.window().should(() => {
 			expect(handlers.click).to.be.called;
@@ -114,8 +114,8 @@ describe('Events', function () {
 		cy.spy(handlers, 'transition');
 		cy.spy(handlers, 'content');
 
-		this.swup.on('transitionStart', handlers.transition);
-		this.swup.on('contentReplaced', handlers.content);
+		this.swup.hooks.on('transitionStart', handlers.transition);
+		this.swup.hooks.on('contentReplaced', handlers.content);
 
 		cy.triggerClickOnLink('/page-2.html');
 		cy.window().should(() => {
@@ -124,7 +124,7 @@ describe('Events', function () {
 		});
 
 		cy.window().then(() => {
-			this.swup.off('transitionStart', handlers.transition);
+			this.swup.hooks.off('transitionStart', handlers.transition);
 		});
 		cy.triggerClickOnLink('/page-3.html');
 		cy.window().should(() => {
@@ -383,7 +383,7 @@ describe('History', function () {
 		const handlers = { popstate() {} };
 		cy.spy(handlers, 'popstate');
 
-		this.swup.on('popState', handlers.popstate);
+		this.swup.hooks.on('popState', handlers.popstate);
 
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');

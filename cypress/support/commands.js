@@ -93,10 +93,10 @@ Cypress.Commands.add('transitionWithExpectedDuration', function (durationInMs, u
 	let durationIn = 0;
 
 	cy.window().then((window) => {
-		this.swup.on('animationOutStart', () => (startOut = performance.now()));
-		this.swup.on('animationOutDone', () => (durationOut = performance.now() - startOut));
-		this.swup.on('animationInStart', () => (startIn = performance.now()));
-		this.swup.on('animationInDone', () => (durationIn = performance.now() - startIn));
+		this.swup.hooks.on('animationOutStart', () => (startOut = performance.now()));
+		this.swup.hooks.on('animationOutDone', () => (durationOut = performance.now() - startOut));
+		this.swup.hooks.on('animationInStart', () => (startIn = performance.now()));
+		this.swup.hooks.on('animationInDone', () => (durationIn = performance.now() - startIn));
 		url = url || window.location.href;
 		this.swup.loadPage({ url });
 	});

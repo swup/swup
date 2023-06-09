@@ -19,14 +19,7 @@ import { fetchPage } from './modules/fetchPage.js';
 import { leavePage } from './modules/leavePage.js';
 import { loadPage, performPageLoad } from './modules/loadPage.js';
 import { replaceContent } from './modules/replaceContent.js';
-import {
-	Hooks,
-	HookArgument,
-	HookName,
-	HookOptions,
-	Handler,
-	HandlersProxy
-} from './modules/Hooks.js';
+import { Hooks } from './modules/Hooks.js';
 import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
 import { renderPage } from './modules/renderPage.js';
 import { updateTransition, shouldSkipTransition } from './modules/transitions.js';
@@ -70,8 +63,6 @@ export default class Swup {
 	cache: Cache;
 	// hook registry
 	hooks: Hooks;
-	// hook handler proxy for backwards compatibility
-	_handlers: HandlersProxy;
 	// variable for keeping event listeners from "delegate"
 	delegatedListeners: DelegatedListeners = {};
 	// allows us to compare the current and new path inside popStateHandler
@@ -121,7 +112,6 @@ export default class Swup {
 
 		this.cache = new Cache(this);
 		this.hooks = new Hooks(this);
-		this._handlers = new HandlersProxy(this.hooks);
 
 		if (!this.checkRequirements()) {
 			return;
@@ -193,38 +183,6 @@ export default class Swup {
 
 		// remove handlers
 		this.hooks.clear();
-	}
-
-	/**
-	 * Alias function to add a new hook handler.
-	 */
-	on<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions = {}) {
-		return this.hooks.on(hook, handler, options);
-	}
-
-	/**
-	 * Alias function to add a new event handler to run once.
-	 */
-	once<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions = {}) {
-		return this.hooks.once(hook, handler, options);
-	}
-
-	/**
-	 * Alias function to remove event handlers.
-	 */
-	off<T extends HookName>(hook?: T, handler?: Handler<T>) {
-		if (hook) {
-			return this.hooks.off(hook, handler);
-		} else {
-			return this.hooks.clear();
-		}
-	}
-
-	/**
-	 * Alias function to call all hook handlers.
-	 */
-	triggerEvent<T extends HookName>(hook: T, data?: HookArgument<T>) {
-		return this.hooks.trigger(hook, data);
 	}
 
 	shouldIgnoreVisit(href: string, { el, event }: { el?: Element; event?: Event } = {}) {
