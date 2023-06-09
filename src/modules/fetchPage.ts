@@ -20,32 +20,25 @@ export function fetchPage(this: Swup, data: TransitionOptions): Promise<PageData
 	return new Promise((resolve, reject) => {
 		fetch({ ...data, headers }, (response) => {
 			const { status, responseText, responseURL } = response;
-			const isError = [500].includes(status);
-			const isRedirect = [301, 302, 303, 307, 308].includes(status);
-			const isPermanentRedirect = [301, 308].includes(status);
-			const isEmpty = !responseText;
 
-			if (isError) {
+			if (status === 500) {
 				this.triggerEvent('serverError');
 				reject(requestURL);
 				return;
 			}
 
-			if (isEmpty && !isRedirect) {
+			if (!responseText) {
 				reject(requestURL);
 				return;
 			}
 
 			const html = responseText;
 			const { url } = Location.fromUrl(responseURL || requestURL);
-
-			// Save cache entry for loaded page
 			const page: PageData = { url, html };
-			this.cache.save(url, page);
 
-			// If there was a permanent redirect, save cache entry for that as well
-			if (isPermanentRedirect && requestURL !== url) {
-				this.cache.save(requestURL, page);
+			// Only save cache entry for non-redirects
+			if (requestURL === url) {
+				this.cache.save(url, page);
 			}
 
 			this.triggerEvent('pageLoaded');

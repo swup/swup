@@ -46,7 +46,7 @@ Cypress.Commands.add('shouldHaveCacheEntries', (urls) => {
 	cy.window().should((window) => {
 		const { cache } = window._swup;
 		const pages = Array.from(cache.pages.keys());
-		expect(pages).to.equal(urls);
+		expect(pages).to.have.members(urls);
 	});
 });
 

@@ -237,28 +237,22 @@ describe('Link resolution', function () {
 describe.only('Redirects', function () {
 	beforeEach(() => {
 		cy.visit('/page-1.html');
-	});
-
-	it('should follow redirects', function () {
 		cy.intercept('GET', '/page-2.html', (req) => {
 			req.redirect('/page-3.html', 302);
 		});
+	});
+
+	it('should follow redirects', function () {
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldBeAtPage('/page-3.html');
 		cy.shouldHaveH1('Page 3');
 	});
 
-	// it('should not cache 302 redirects', function () {
-	// 	this.swup.loadPage({ url: '/page-2.html' });
-	// 	cy.shouldBeAtPage('/page-2.html');
-	// 	cy.shouldHaveCacheEntries(['/page-3.html']);
-	// });
-
-	// it('should cache 301 redirects', function () {
-	// 	this.swup.loadPage({ url: '/page-2.html' });
-	// 	cy.shouldBeAtPage('/page-2.html');
-	// 	cy.shouldHaveCacheEntries(['/page-2.html', '/page-3.html']);
-	// });
+	it('should not cache redirects', function () {
+		cy.triggerClickOnLink('/page-2.html');
+		cy.shouldBeAtPage('/page-3.html');
+		cy.shouldHaveCacheEntries([]);
+	});
 });
 
 describe('Ignoring visits', function () {

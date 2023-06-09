@@ -18,9 +18,7 @@ export class Cache {
 
 	save(url: string, page: PageData) {
 		url = this.resolve(url);
-		if (!this.exists(url)) {
-			this.pages.set(url, page);
-		}
+		this.pages.set(url, page);
 		this.last = this.get(url);
 		this.swup.log(`Cache (${this.pages.size})`, this.pages);
 	}
