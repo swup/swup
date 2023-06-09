@@ -4,7 +4,6 @@ import { TransitionOptions } from './loadPage.js';
 
 export type PageData = {
 	url: string;
-	redirect?: string | false;
 	html: string;
 };
 
@@ -12,7 +11,7 @@ export function fetchPage(this: Swup, data: TransitionOptions): Promise<PageData
 	const headers = this.options.requestHeaders;
 	const { url: requestURL } = data;
 
-	const cachedPage = this.cache.getPage(requestURL);
+	const cachedPage = this.cache.get(requestURL);
 	if (cachedPage) {
 		this.triggerEvent('pageRetrievedFromCache');
 		return Promise.resolve(cachedPage);
@@ -35,9 +34,17 @@ export function fetchPage(this: Swup, data: TransitionOptions): Promise<PageData
 
 			const html = responseText;
 			const { url } = Location.fromUrl(responseURL || requestURL);
-			const redirect = requestURL !== url ? url : false;
-			const page: PageData = { url, redirect, html };
-			this.cache.cacheUrl(page);
+
+			// Save cache entry for loaded page
+			const page: PageData = { url, html };
+			this.cache.save(url, page);
+
+			// If there was a redirect, save cache entry for that as well
+			if (requestURL !== url && status === 301) {
+				const page: PageData = { url, html };
+				this.cache.save(requestURL, page);
+			}
+
 			this.triggerEvent('pageLoaded');
 			resolve(page);
 		});

@@ -21,9 +21,9 @@ export const renderPage = function (
 
 	const { url } = Location.fromUrl(page.url);
 
-	// update cache and state if the url was redirected
+	// update state if the url was redirected
 	if (!this.isSameResolvedUrl(getCurrentUrl(), url)) {
-		this.cache.cacheUrl({ ...page, url });
+		this.cache.save(url, { ...page, url });
 		this.currentPageUrl = getCurrentUrl();
 		updateHistoryRecord(url);
 	}
