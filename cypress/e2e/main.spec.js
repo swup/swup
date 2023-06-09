@@ -38,17 +38,13 @@ describe('Cache', function () {
 	it('should cache pages', function () {
 		this.swup.loadPage({ url: '/page-2.html' });
 		cy.shouldBeAtPage('/page-2.html');
-		cy.window().should(() => {
-			expect(this.swup.cache.getCurrentPage()).not.to.be.undefined;
-		});
+		cy.shouldHaveCacheEntry('/page-2.html');
 	});
 
 	it('should cache pages from absolute URLs', function () {
 		this.swup.loadPage({ url: `${baseUrl}/page-2.html` });
 		cy.shouldBeAtPage('/page-2.html');
-		cy.window().should(() => {
-			expect(this.swup.cache.getCurrentPage()).not.to.be.undefined;
-		});
+		cy.shouldHaveCacheEntry('/page-2.html');
 	});
 });
 
@@ -236,6 +232,33 @@ describe('Link resolution', function () {
 		cy.shouldBeAtPage('/nested/nested-2.html');
 		cy.shouldHaveH1('Nested Page 2');
 	});
+});
+
+describe.only('Redirects', function () {
+	beforeEach(() => {
+		cy.visit('/page-1.html');
+	});
+
+	it('should follow redirects', function () {
+		cy.intercept('GET', '/page-2.html', (req) => {
+			req.redirect('/page-3.html', 302);
+		});
+		cy.triggerClickOnLink('/page-2.html');
+		cy.shouldBeAtPage('/page-3.html');
+		cy.shouldHaveH1('Page 3');
+	});
+
+	// it('should not cache 302 redirects', function () {
+	// 	this.swup.loadPage({ url: '/page-2.html' });
+	// 	cy.shouldBeAtPage('/page-2.html');
+	// 	cy.shouldHaveCacheEntries(['/page-3.html']);
+	// });
+
+	// it('should cache 301 redirects', function () {
+	// 	this.swup.loadPage({ url: '/page-2.html' });
+	// 	cy.shouldBeAtPage('/page-2.html');
+	// 	cy.shouldHaveCacheEntries(['/page-2.html', '/page-3.html']);
+	// });
 });
 
 describe('Ignoring visits', function () {
