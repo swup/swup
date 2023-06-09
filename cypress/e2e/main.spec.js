@@ -234,7 +234,7 @@ describe('Link resolution', function () {
 	});
 });
 
-describe.only('Redirects', function () {
+describe('Redirects', function () {
 	beforeEach(() => {
 		cy.visit('/page-1.html');
 		cy.intercept('GET', '/page-2.html', (req) => {
