@@ -9,7 +9,7 @@ export type PageData = {
 
 export function fetchPage(this: Swup, data: TransitionOptions): Promise<PageData> {
 	const headers = this.options.requestHeaders;
-	const { url: requestURL } = data;
+	const { url: requestURL } = Location.fromUrl(data.url);
 
 	const cachedPage = this.cache.get(requestURL);
 	if (cachedPage) {
@@ -20,14 +20,18 @@ export function fetchPage(this: Swup, data: TransitionOptions): Promise<PageData
 	return new Promise((resolve, reject) => {
 		fetch({ ...data, headers }, (response) => {
 			const { status, responseText, responseURL } = response;
+			const isError = [500].includes(status);
+			const isRedirect = [301, 302, 303, 307, 308].includes(status);
+			const isPermanentRedirect = [301, 308].includes(status);
+			const isEmpty = !responseText;
 
-			if (status === 500) {
+			if (isError) {
 				this.triggerEvent('serverError');
 				reject(requestURL);
 				return;
 			}
 
-			if (!responseText) {
+			if (isEmpty && !isRedirect) {
 				reject(requestURL);
 				return;
 			}
@@ -39,9 +43,8 @@ export function fetchPage(this: Swup, data: TransitionOptions): Promise<PageData
 			const page: PageData = { url, html };
 			this.cache.save(url, page);
 
-			// If there was a redirect, save cache entry for that as well
-			if (requestURL !== url && status === 301) {
-				const page: PageData = { url, html };
+			// If there was a permanent redirect, save cache entry for that as well
+			if (isPermanentRedirect && requestURL !== url) {
 				this.cache.save(requestURL, page);
 			}
 

@@ -23,7 +23,6 @@ export const renderPage = function (
 
 	// update state if the url was redirected
 	if (!this.isSameResolvedUrl(getCurrentUrl(), url)) {
-		this.cache.save(url, { ...page, url });
 		this.currentPageUrl = getCurrentUrl();
 		updateHistoryRecord(url);
 	}
