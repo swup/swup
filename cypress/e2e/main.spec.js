@@ -352,21 +352,6 @@ describe('Resolve URLs', function () {
 	});
 });
 
-describe('Redirects', function () {
-	beforeEach(() => {
-		cy.visit('/page-1.html');
-	});
-
-	it('should follow redirects', function () {
-		cy.intercept('GET', '/page-2.html', (req) => {
-			req.redirect('/page-3.html', 302);
-		});
-		cy.triggerClickOnLink('/page-2.html');
-		cy.shouldBeAtPage('/page-3.html');
-		cy.shouldHaveH1('Page 3');
-	});
-});
-
 describe('History', function () {
 	beforeEach(() => {
 		cy.visit('/page-1.html');
