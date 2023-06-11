@@ -337,7 +337,7 @@ describe('Resolve URLs', function () {
 		this.swup.options.resolveUrl = () => '/page-1.html';
 		cy.triggerClickOnLink('/page-2.html');
 		cy.wait(200);
-        cy.shouldBeAtPage('/page-1.html');
+		cy.shouldBeAtPage('/page-1.html');
 	});
 
 	it('should skip popstate handling for equal resolved urls', function () {
