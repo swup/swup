@@ -47,9 +47,6 @@ export function getAnimationPromises(
 	return animationPromises;
 }
 
-const isTransitionOrAnimationEvent = (event: any): event is TransitionEvent | AnimationEvent =>
-	[`${TRANSITION}end`, `${ANIMATION}end`].includes(event.type);
-
 function getAnimationPromiseForElement(element: Element): Promise<void> | undefined {
 	const { type, timeout, propCount } = getTransitionInfo(element);
 
@@ -100,10 +97,6 @@ function getAnimationPromiseForElement(element: Element): Promise<void> | undefi
 	});
 }
 
-function getStyleProperties(styles: AnimationStyleDeclarations, key: AnimationStyleKeys) {
-	return (styles[key] || '').split(', ');
-}
-
 export function getTransitionInfo(element: Element, expectedType?: AnimationTypes) {
 	const styles = window.getComputedStyle(element) as AnimationStyleDeclarations;
 
@@ -145,6 +138,14 @@ export function getTransitionInfo(element: Element, expectedType?: AnimationType
 		timeout,
 		propCount
 	};
+}
+
+function isTransitionOrAnimationEvent(event: any): event is TransitionEvent | AnimationEvent {
+	return [`${TRANSITION}end`, `${ANIMATION}end`].includes(event.type);
+}
+
+function getStyleProperties(styles: AnimationStyleDeclarations, key: AnimationStyleKeys) {
+	return (styles[key] || '').split(', ');
 }
 
 function calculateTimeout(delays: string[], durations: string[]): number {
