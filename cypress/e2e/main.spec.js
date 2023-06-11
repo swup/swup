@@ -236,21 +236,22 @@ describe('Link resolution', function () {
 
 describe('Redirects', function () {
 	beforeEach(() => {
-		cy.intercept('GET', '**/page-2.html', (req) => {
-			req.redirect('/page-3.html', 302);
+		cy.intercept('GET', '/redirect-2.html', (req) => {
+			req.redirect('/redirect-3.html', 302);
 		});
-		cy.visit('/page-1.html');
+		cy.visit('/redirect-1.html');
 	});
 
 	it('should follow redirects', function () {
-		cy.triggerClickOnLink('/page-2.html');
-		cy.shouldBeAtPage('/page-3.html');
-		cy.shouldHaveH1('Page 3');
+		cy.triggerClickOnLink('/redirect-2.html');
+		cy.shouldBeAtPage('/redirect-3.html');
+		cy.shouldHaveH1('Redirect 3');
 	});
 
 	it('should not cache redirects', function () {
-		cy.triggerClickOnLink('/page-2.html');
-		cy.shouldBeAtPage('/page-3.html');
+		cy.triggerClickOnLink('/redirect-2.html');
+		cy.shouldBeAtPage('/redirect-3.html');
+		cy.shouldHaveH1('Redirect 3');
 		cy.shouldHaveCacheEntries([]);
 	});
 });
