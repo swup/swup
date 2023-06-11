@@ -42,6 +42,25 @@ Cypress.Commands.add('shouldBeAtPage', (href) => {
 	});
 });
 
+Cypress.Commands.add('shouldHaveCacheEntries', (urls) => {
+	cy.window().should((window) => {
+		const { cache } = window._swup;
+		const pages = Array.from(cache.pages.keys());
+		expect(pages).to.have.members(urls);
+	});
+});
+
+Cypress.Commands.add('shouldHaveCacheEntry', (url) => {
+	cy.window().should((window) => {
+		const { cache } = window._swup;
+		const exists = cache.exists(url);
+		const page = cache.getPage(url);
+		expect(url).to.be.a('string');
+		expect(exists).to.be.true;
+		expect(page).not.to.be.undefined;
+	});
+});
+
 Cypress.Commands.add('shouldHaveReloadedAfterAction', (action) => {
 	cy.window().then((window) => (window.beforeReload = true));
 	cy.window().should('have.prop', 'beforeReload', true);

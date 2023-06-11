@@ -52,9 +52,9 @@ export function performPageLoad(this: Swup, data: PageLoadOptions) {
 	this.currentPageUrl = getCurrentUrl();
 
 	// when everything is ready, render the page
-	Promise.all<PageData | void>([fetchPromise, ...animationPromises])
+	Promise.all([fetchPromise, ...animationPromises])
 		.then(([pageData]) => {
-			this.renderPage(pageData as PageData, { event, skipTransition });
+			this.renderPage(url, pageData, { event, skipTransition });
 		})
 		.catch((errorUrl) => {
 			// Return early if errorUrl is not defined (probably aborted preload request)

@@ -11,15 +11,14 @@ export class Cache {
 		this.swup = swup;
 	}
 
-	getCacheUrl(url: string): string {
-		return this.swup.resolveUrl(Location.fromUrl(url).url);
+	getCacheUrl(urlToResolve: string): string {
+		const { url } = Location.fromUrl(urlToResolve);
+		return this.swup.resolveUrl(url);
 	}
 
 	cacheUrl(page: PageData) {
 		page.url = this.getCacheUrl(page.url);
-		if (!this.exists(page.url)) {
-			this.pages.set(page.url, page);
-		}
+		this.pages.set(page.url, page);
 		this.last = this.getPage(page.url);
 		this.swup.log(`Cache (${this.pages.size})`, this.pages);
 	}

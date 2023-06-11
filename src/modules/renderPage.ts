@@ -9,21 +9,21 @@ export type PageRenderOptions = {
 
 export const renderPage = function (
 	this: Swup,
+	requestedUrl: string,
 	page: PageData,
 	{ event, skipTransition }: PageRenderOptions = {}
 ) {
 	document.documentElement.classList.remove('is-leaving');
 
 	// do nothing if another page was requested in the meantime
-	if (!this.isSameResolvedUrl(getCurrentUrl(), page.url)) {
+	if (!this.isSameResolvedUrl(getCurrentUrl(), requestedUrl)) {
 		return;
 	}
 
-	const { url } = Location.fromUrl(page.url);
+	const { url } = page;
 
-	// update cache and state if the url was redirected
+	// update state if the url was redirected
 	if (!this.isSameResolvedUrl(getCurrentUrl(), url)) {
-		this.cache.cacheUrl({ ...page, url });
 		this.currentPageUrl = getCurrentUrl();
 		updateHistoryRecord(url);
 	}
