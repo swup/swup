@@ -144,7 +144,7 @@ function isTransitionOrAnimationEvent(event: any): event is TransitionEvent | An
 	return [`${TRANSITION}end`, `${ANIMATION}end`].includes(event.type);
 }
 
-function getStyleProperties(styles: AnimationStyleDeclarations, key: AnimationStyleKeys) {
+function getStyleProperties(styles: AnimationStyleDeclarations, key: AnimationStyleKeys): string[] {
 	return (styles[key] || '').split(', ');
 }
 
