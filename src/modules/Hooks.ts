@@ -51,7 +51,12 @@ export type HookRegistration<T extends HookName> = {
 
 type HookLedger<T extends HookName> = Map<Handler<T>, HookRegistration<T>>;
 
-type HookRegistry = Map<HookName, HookLedger<HookName>>;
+// type HookRegistry = Map<HookName, HookLedger<HookName>>;
+
+interface HookRegistry extends Map<HookName, HookLedger<HookName>> {
+	get<K extends HookName>(key: K): HookLedger<K> | undefined;
+	set<K extends HookName>(key: K, value: HookLedger<K>): this;
+}
 
 export class Hooks {
 	swup: Swup;
@@ -102,7 +107,7 @@ export class Hooks {
 	}
 
 	get<T extends HookName>(hook: T): HookLedger<T> | undefined {
-		const ledger = this.registry.get(hook) as HookLedger<T> | undefined;
+		const ledger = this.registry.get(hook);
 		if (ledger) {
 			return ledger;
 		} else {
