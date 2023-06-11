@@ -7,15 +7,7 @@ let transitionEndEvent = 'transitionend';
 let animationProp = 'animation';
 let animationEndEvent = 'animationend';
 
-if (window.ontransitionend === undefined && window.onwebkittransitionend !== undefined) {
-	transitionProp = 'WebkitTransition';
-	transitionEndEvent = 'webkitTransitionEnd';
-}
 
-if (window.onanimationend === undefined && window.onwebkitanimationend !== undefined) {
-	animationProp = 'WebkitAnimation';
-	animationEndEvent = 'webkitAnimationEnd';
-}
 
 export function getAnimationPromises(
 	this: Swup,
