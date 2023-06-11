@@ -1,5 +1,5 @@
 import Swup from '../Swup.js';
-import { fetch } from '../helpers.js';
+import { Location, fetch } from '../helpers.js';
 import { TransitionOptions } from './loadPage.js';
 
 export type PageData = {
@@ -9,9 +9,9 @@ export type PageData = {
 
 export async function fetchPage(this: Swup, data: TransitionOptions): Promise<PageData> {
 	const headers = this.options.requestHeaders;
-	const { url } = data;
+	const { url: requestURL } = Location.fromUrl(data.url);
 
-	const cachedPage = this.cache.getPage(url);
+	const cachedPage = this.cache.getPage(requestURL);
 	if (cachedPage) {
 		await this.hooks.trigger('pageRetrievedFromCache');
 		return Promise.resolve(cachedPage);
@@ -19,22 +19,28 @@ export async function fetchPage(this: Swup, data: TransitionOptions): Promise<Pa
 
 	const page = await new Promise<PageData>((resolve, reject) => {
 		fetch({ ...data, headers }, (response) => {
-			const {
-				status,
-				responseText: html,
-				responseURL: url = window.location.href
-			} = response;
+			const { status, responseText, responseURL } = response;
+
 			if (status === 500) {
 				this.hooks.trigger('serverError');
-				reject(url);
+				reject(requestURL);
 				return;
 			}
-			if (!html) {
-				reject(url);
+
+			if (!responseText) {
+				reject(requestURL);
 				return;
 			}
-			const page = { url, html };
-			this.cache.cacheUrl(page);
+
+			const html = responseText;
+			const { url } = Location.fromUrl(responseURL || requestURL);
+			const page: PageData = { url, html };
+
+			// Only save cache entry for non-redirects
+			if (requestURL === url) {
+				this.cache.cacheUrl(page);
+			}
+
 			this.hooks.trigger('pageLoaded');
 			resolve(page);
 		});

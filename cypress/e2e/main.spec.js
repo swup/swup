@@ -38,17 +38,13 @@ describe('Cache', function () {
 	it('should cache pages', function () {
 		this.swup.loadPage({ url: '/page-2.html' });
 		cy.shouldBeAtPage('/page-2.html');
-		cy.window().should(() => {
-			expect(this.swup.cache.getCurrentPage()).not.to.be.undefined;
-		});
+		cy.shouldHaveCacheEntry('/page-2.html');
 	});
 
 	it('should cache pages from absolute URLs', function () {
 		this.swup.loadPage({ url: `${baseUrl}/page-2.html` });
 		cy.shouldBeAtPage('/page-2.html');
-		cy.window().should(() => {
-			expect(this.swup.cache.getCurrentPage()).not.to.be.undefined;
-		});
+		cy.shouldHaveCacheEntry('/page-2.html');
 	});
 });
 
@@ -238,6 +234,28 @@ describe('Link resolution', function () {
 	});
 });
 
+describe('Redirects', function () {
+	beforeEach(() => {
+		cy.intercept('GET', '/redirect-2.html', (req) => {
+			req.redirect('/redirect-3.html', 302);
+		});
+		cy.visit('/redirect-1.html');
+	});
+
+	it('should follow redirects', function () {
+		cy.triggerClickOnLink('/redirect-2.html');
+		cy.shouldBeAtPage('/redirect-3.html');
+		cy.shouldHaveH1('Redirect 3');
+	});
+
+	it('should not cache redirects', function () {
+		cy.triggerClickOnLink('/redirect-2.html');
+		cy.shouldBeAtPage('/redirect-3.html');
+		cy.shouldHaveH1('Redirect 3');
+		cy.shouldHaveCacheEntries([]);
+	});
+});
+
 describe('Ignoring visits', function () {
 	beforeEach(() => {
 		cy.visit('/ignore-visits.html');
@@ -320,7 +338,7 @@ describe('Resolve URLs', function () {
 		this.swup.options.resolveUrl = () => '/page-1.html';
 		cy.triggerClickOnLink('/page-2.html');
 		cy.wait(200);
-        cy.shouldBeAtPage('/page-1.html');
+		cy.shouldBeAtPage('/page-1.html');
 	});
 
 	it('should skip popstate handling for equal resolved urls', function () {
