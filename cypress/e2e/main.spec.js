@@ -236,10 +236,10 @@ describe('Link resolution', function () {
 
 describe('Redirects', function () {
 	beforeEach(() => {
-		cy.visit('/page-1.html');
 		cy.intercept('GET', '/page-2.html', (req) => {
 			req.redirect('/page-3.html', 302);
 		});
+		cy.visit('/page-1.html');
 	});
 
 	it('should follow redirects', function () {
