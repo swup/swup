@@ -1,14 +1,22 @@
 import { describe, expect, it, vi } from 'vitest';
 import Swup from '../../Swup.js';
-import { Handler } from '../Hooks.js';
+import { Handler, Hooks } from '../Hooks.js';
 
 describe('Hook registry', () => {
 	it('should add custom handlers', () => {
 		const swup = new Swup();
 		const handler = vi.fn();
 
-		swup.hooks.on('enabled', handler);
-		const ledger = swup.hooks.registry.get('enabled');
+		// Make private fields public for this test
+		const HooksWithAccess = class extends Hooks {
+			getRegistry() {
+				return this.registry;
+			}
+		};
+		const hooks = new HooksWithAccess(swup);
+
+		hooks.on('enabled', handler);
+		const ledger = hooks.getRegistry().get('enabled');
 
 		expect(ledger).toBeDefined();
 		expect(ledger).toBeInstanceOf(Map);

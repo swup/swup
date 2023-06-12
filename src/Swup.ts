@@ -200,12 +200,14 @@ export default class Swup {
 	 * Remove a hook handler (or all handlers).
 	 * @deprecated Use `swup.hooks.off()` instead.
 	 */
-	off<T extends HookName>(hook?: T, handler?: Handler<T>) {
+	off<T extends HookName>(hook?: T, handler?: Handler<T>): void {
 		console.warn(
 			'[swup] Methods `swup.on()` and `swup.off()` are deprecated and will be removed in the next major release. Use `swup.hooks.on()` instead.'
 		);
-		if (hook) {
+		if (hook && handler) {
 			return this.hooks.off(hook, handler);
+		} else if (hook) {
+			return this.hooks.off(hook);
 		} else {
 			return this.hooks.clear();
 		}
