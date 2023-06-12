@@ -153,29 +153,56 @@ describe('Hook registry', () => {
 		expect(handler).toBeCalledTimes(0);
 		expect(listener).toBeCalledTimes(1);
 	});
+
+	it('should trigger event handler with event', async () => {
+		const swup = new Swup();
+		const handler: Handler<'popState'> = vi.fn();
+		const event = new PopStateEvent('');
+
+		swup.hooks.on('popState', handler);
+		await swup.hooks.trigger('popState', event);
+
+		expect(handler).toBeCalledTimes(1);
+		expect(handler).toBeCalledWith(event);
+	});
 });
 
-// it('should trigger event handler with event', () => {
-// 	const swup = new Swup();
-// 	const handler: Handler<'popState'> = vi.fn();
-// 	const event = new PopStateEvent('');
+describe('Event aliases', () => {
+	it('should call events.on()', () => {
+		const swup = new Swup();
+		const on = vi.fn();
 
-// 	swup.on('popState', handler);
-// 	swup.triggerEvent('popState', event);
+		swup.hooks.on = on;
 
-// 	expect(handler).toBeCalledWith(event);
-// });
+		swup.on('enabled', () => {});
 
-// it('types work and error when necessary', () => {
-// 	const swup = new Swup();
+		expect(on).toBeCalledTimes(1);
+	});
 
-// 	// @ts-expect-no-error
-// 	swup.on('popState', (event: PopStateEvent) => {});
-// 	// @ts-expect-no-error
-// 	swup.triggerEvent('popState', new PopStateEvent(''));
+	it('should call events.off()', () => {
+		const swup = new Swup();
+		const off = vi.fn();
 
-// 	// @ts-expect-error
-// 	swup.on('popState', (event: MouseEvent) => {});
-// 	// @ts-expect-error
-// 	swup.triggerEvent('popState', new MouseEvent(''));
-// });
+		swup.hooks.off = off;
+
+		swup.off('enabled', () => {});
+
+		expect(off).toBeCalledTimes(1);
+	});
+});
+
+describe('Types', () => {
+	it('error when necessary', async () => {
+		const swup = new Swup();
+
+		// @ts-expect-no-error
+		swup.hooks.on('popState', (event: PopStateEvent) => {});
+		// @ts-expect-no-error
+		await swup.hooks.trigger('popState', new PopStateEvent(''));
+
+		// @ts-expect-error
+		swup.hooks.on('popState', (event: MouseEvent) => {});
+		// @ts-expect-error
+		await swup.hooks.trigger('popState', new MouseEvent(''));
+	});
+});
