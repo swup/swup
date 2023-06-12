@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import Swup from '../../Swup.js';
+import { Handler } from '../Hooks.js';
 
-describe('Event registry', () => {
+describe('Hook registry', () => {
 	it('should add custom handlers', () => {
 		const swup = new Swup();
 		const handler = vi.fn();
@@ -63,7 +64,7 @@ describe('Event registry', () => {
 		expect(handler).toBeCalledTimes(1);
 	});
 
-	it('should preserve original handler this context', async () => {
+	it('should preserve original handler `this` context', async () => {
 		const swup = new Swup();
 		let thisArg;
 		const handler = vi.fn(function (this: Swup) {

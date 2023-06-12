@@ -19,7 +19,7 @@ import { fetchPage } from './modules/fetchPage.js';
 import { leavePage } from './modules/leavePage.js';
 import { HistoryAction, loadPage, performPageLoad } from './modules/loadPage.js';
 import { replaceContent } from './modules/replaceContent.js';
-import { Hooks } from './modules/Hooks.js';
+import { Handler, HookName, Hooks } from './modules/Hooks.js';
 import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
 import { renderPage } from './modules/renderPage.js';
 import { updateTransition, shouldSkipTransition } from './modules/transitions.js';
@@ -183,6 +183,32 @@ export default class Swup {
 
 		// remove handlers
 		this.hooks.clear();
+	}
+
+	/**
+	 * Add a new hook handler.
+	 * @deprecated Use `swup.hooks.on()` instead.
+	 */
+	on<T extends HookName>(hook: T, handler: Handler<T>) {
+		console.warn(
+			'[swup] Methods `swup.on()` and `swup.off()` are deprecated and will be removed in the next major release. Use `swup.hooks.on()` instead.'
+		);
+		return this.hooks.on(hook, handler);
+	}
+
+	/**
+	 * Remove a hook handler (or all handlers).
+	 * @deprecated Use `swup.hooks.off()` instead.
+	 */
+	off<T extends HookName>(hook?: T, handler?: Handler<T>) {
+		console.warn(
+			'[swup] Methods `swup.on()` and `swup.off()` are deprecated and will be removed in the next major release. Use `swup.hooks.on()` instead.'
+		);
+		if (hook) {
+			return this.hooks.off(hook, handler);
+		} else {
+			return this.hooks.clear();
+		}
 	}
 
 	shouldIgnoreVisit(href: string, { el, event }: { el?: Element; event?: Event } = {}) {

@@ -118,6 +118,7 @@ export class Hooks {
 	on<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions = {}) {
 		const ledger = this.get(hook);
 		if (!ledger) {
+			console.warn(`Hook '${hook}' not found.`);
 			return;
 		}
 
@@ -144,7 +145,7 @@ export class Hooks {
 		if (ledger && handler) {
 			const deleted = ledger.delete(handler);
 			if (!deleted) {
-				console.warn(`Handler for hook '${event}' not found.`);
+				console.warn(`Handler for hook '${hook}' not found.`);
 			}
 		} else if (ledger) {
 			ledger.clear();
@@ -220,8 +221,8 @@ export class Hooks {
 		return results;
 	}
 
-	getHandlers(event: HookName) {
-		const ledger = this.get(event);
+	getHandlers(hook: HookName) {
+		const ledger = this.get(hook);
 		if (!ledger) {
 			return { found: false, before: [], after: [] };
 		}
@@ -250,44 +251,5 @@ export class Hooks {
 	// Trigger event on document with prefix `swup:`
 	dispatchDomEvent<T extends HookName>(hook: T) {
 		document.dispatchEvent(new CustomEvent(`swup:${hook}`, { detail: hook }));
-	}
-}
-
-/**
- * Return a proxy object that allows writing to `swup._handlers`.
- * When setting a property on this proxy, it will instead create a new hook with the given name.
- * Mostly here for backwards compatibility with older plugins.
- */
-export class HandlersProxy {
-	hooks: Hooks;
-
-	constructor(hooks: Hooks) {
-		this.hooks = hooks;
-		return new Proxy<HandlersProxy>(this, {
-			set: this.set.bind(this),
-			get: this.get.bind(this)
-		});
-	}
-
-	set(target: any, hook: HookName, value: any): boolean {
-		console.warn(
-			'Writing to `swup._handlers` is no longer supported. ' +
-				'Use `swup.hooks.create()` instead.'
-		);
-		if (!this.hooks.has(hook)) {
-			this.hooks.create(hook);
-		}
-		return true;
-	}
-
-	get(target: any, prop: string, value: any): [] {
-		if (['hooks'].includes(prop)) {
-			return target[prop];
-		}
-		console.warn(
-			'Reading from `swup._handlers` is no longer supported. ' +
-				'Use `swup.hooks.get()` instead.'
-		);
-		return [];
 	}
 }
