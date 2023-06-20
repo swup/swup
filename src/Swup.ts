@@ -333,7 +333,7 @@ export default class Swup {
 		this.hooks.triggerSync('popState', event, () => {
 			if (!this.options.animateHistoryBrowsing) {
 				document.documentElement.classList.remove('is-animating');
-				cleanupAnimationClasses();
+				this.cleanupAnimationClasses();
 			}
 			this.performPageLoad({ url, event });
 		});
