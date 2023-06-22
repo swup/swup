@@ -22,7 +22,6 @@ import { replaceContent } from './modules/replaceContent.js';
 import { Handler, HookName, Hooks } from './modules/Hooks.js';
 import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
 import { renderPage } from './modules/renderPage.js';
-import { updateTransition, shouldSkipTransition } from './modules/transitions.js';
 
 import { queryAll } from './utils.js';
 import { Context, createContext } from './modules/Context.js';
@@ -78,8 +77,6 @@ export default class Swup {
 	replaceContent = replaceContent;
 	enterPage = enterPage;
 	delegateEvent = delegateEvent;
-	updateTransition = updateTransition;
-	shouldSkipTransition = shouldSkipTransition;
 	getAnimationPromises = getAnimationPromises;
 	fetchPage = fetchPage;
 	getAnchorElement = getAnchorElement;
@@ -241,13 +238,25 @@ export default class Swup {
 	}
 
 	linkClickHandler(event: DelegateEvent<MouseEvent>) {
-		const linkEl = event.delegateTarget;
-		const { href, url, hash } = Location.fromElement(linkEl as HTMLAnchorElement);
+		const el = event.delegateTarget as HTMLAnchorElement;
+		const { href, url, hash } = Location.fromElement(el);
+
+		// Get the transition name, if specified
+		const transition = el.getAttribute('data-swup-transition') || undefined;
+
+		// Get the history action, if specified
+		let history: HistoryAction | undefined;
+		const historyAttr = el.getAttribute('data-swup-history');
+		if (historyAttr && ['push', 'replace'].includes(historyAttr)) {
+			history = historyAttr as HistoryAction;
+		}
 
 		// Exit early if the link should be ignored
-		if (this.shouldIgnoreVisit(href, { el: linkEl, event })) {
+		if (this.shouldIgnoreVisit(href, { el, event })) {
 			return;
 		}
+
+		this.context = this.createContext({ to: url, hash, transition, el, event });
 
 		// Exit early if control key pressed
 		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
@@ -263,32 +272,21 @@ export default class Swup {
 		this.hooks.triggerSync('clickLink', event, () => {
 			event.preventDefault();
 
+			const from = this.context.from?.url;
+
 			// Handle links to the same page and exit early, where applicable
-			if (!url || url === getCurrentUrl()) {
+			if (!url || url === from) {
 				this.handleLinkToSamePage(url, hash, event);
 				return;
 			}
 
 			// Exit early if the resolved path hasn't changed
-			if (this.isSameResolvedUrl(url, getCurrentUrl())) {
+			if (this.isSameResolvedUrl(url, from ?? '')) {
 				return;
 			}
 
-			// Store the element that should be scrolled to after loading the next page
-			this.scrollToElement = hash || null;
-
-			// Get the custom transition name, if present
-			const customTransition = linkEl.getAttribute('data-swup-transition') || undefined;
-
-			// Get the history action, if set
-			let history: HistoryAction | undefined;
-			const historyAttr = linkEl.getAttribute('data-swup-history');
-			if (historyAttr && ['push', 'replace'].includes(historyAttr)) {
-				history = historyAttr as HistoryAction;
-			}
-
 			// Finally, proceed with loading the page
-			this.performPageLoad({ url, customTransition, history });
+			this.performPageLoad(url, { transition, history });
 		});
 	}
 
@@ -310,6 +308,8 @@ export default class Swup {
 	}
 
 	popStateHandler(event: PopStateEvent) {
+		const href = event.state?.url ?? location.href;
+
 		// Exit early if this event should be ignored
 		if (this.options.skipPopStateHandling(event)) {
 			return;
@@ -320,27 +320,22 @@ export default class Swup {
 			return;
 		}
 
-		const href = event.state?.url ?? location.href;
-
 		// Exit early if the link should be ignored
 		if (this.shouldIgnoreVisit(href, { event })) {
 			return;
 		}
 
 		const { url, hash } = Location.fromUrl(href);
+		const animate = this.options.animateHistoryBrowsing;
+		this.context = this.createContext({ to: url, hash, event, animate, history: true });
 
-		if (hash) {
-			this.scrollToElement = hash;
-		} else {
+		// What does this do?
+		if (!hash) {
 			event.preventDefault();
 		}
 
 		this.hooks.triggerSync('popState', event, () => {
-			if (!this.options.animateHistoryBrowsing) {
-				document.documentElement.classList.remove('is-animating');
-				this.cleanupAnimationClasses();
-			}
-			this.performPageLoad({ url, event });
+			this.performPageLoad(url);
 		});
 	}
 

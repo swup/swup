@@ -61,7 +61,7 @@ describe('Body Class Plugin', function () {
 
 	it('should update the body class', function () {
 		cy.get('body').should('have.class', 'body-1');
-		this.swup.loadPage({ url: '/plugins/body-class-plugin-2.html' });
+		this.swup.loadPage('/plugins/body-class-plugin-2.html');
 		cy.get('body').should('have.class', 'body-2');
 		cy.get('body').should('not.have.class', 'body-1');
 	});

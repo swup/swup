@@ -117,7 +117,7 @@ Cypress.Commands.add('transitionWithExpectedDuration', function (durationInMs, u
 		this.swup.hooks.on('animationInStart', () => (startIn = performance.now()));
 		this.swup.hooks.on('animationInDone', () => (durationIn = performance.now() - startIn));
 		url = url || window.location.href;
-		this.swup.loadPage({ url });
+		this.swup.loadPage(url);
 	});
 
 	cy.window().should(() => {

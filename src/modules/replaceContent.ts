@@ -24,7 +24,7 @@ export const replaceContent = function (
 
 	// Update content containers
 	containers.forEach((selector) => {
-		const currentEl = window.document.querySelector(selector);
+		const currentEl = document.querySelector(selector);
 		const incomingEl = doc.querySelector(selector);
 		if (!currentEl) {
 			console.warn(`[swup] Container missing in current document: ${selector}`);

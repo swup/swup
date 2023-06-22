@@ -1,15 +1,19 @@
 import Swup from '../Swup.js';
 import { Location, fetch } from '../helpers.js';
-import { TransitionOptions } from './loadPage.js';
+import { PageLoadOptions } from './loadPage.js';
 
 export type PageData = {
 	url: string;
 	html: string;
 };
 
-export async function fetchPage(this: Swup, data: TransitionOptions): Promise<PageData> {
+export async function fetchPage(
+	this: Swup,
+	url: string,
+	data: PageLoadOptions = {}
+): Promise<PageData> {
 	const headers = this.options.requestHeaders;
-	const { url: requestURL } = Location.fromUrl(data.url);
+	const { url: requestURL } = Location.fromUrl(url);
 
 	const cachedPage = this.cache.getPage(requestURL);
 	if (cachedPage) {
@@ -18,7 +22,7 @@ export async function fetchPage(this: Swup, data: TransitionOptions): Promise<Pa
 	}
 
 	const page = await new Promise<PageData>((resolve, reject) => {
-		fetch({ ...data, headers }, (response) => {
+		fetch(url, { ...data, headers }, (response) => {
 			const { status, responseText, responseURL } = response;
 
 			if (status === 500) {

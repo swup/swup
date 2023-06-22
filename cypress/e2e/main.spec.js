@@ -36,13 +36,13 @@ describe('Cache', function () {
 	});
 
 	it('should cache pages', function () {
-		this.swup.loadPage({ url: '/page-2.html' });
+		this.swup.loadPage('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
 		cy.shouldHaveCacheEntry('/page-2.html');
 	});
 
 	it('should cache pages from absolute URLs', function () {
-		this.swup.loadPage({ url: `${baseUrl}/page-2.html` });
+		this.swup.loadPage(`${baseUrl}/page-2.html`);
 		cy.shouldBeAtPage('/page-2.html');
 		cy.shouldHaveCacheEntry('/page-2.html');
 	});
@@ -287,7 +287,7 @@ describe('Ignoring visits', function () {
 	it('should ignore visits via loadPage', function () {
 		this.swup.options.ignoreVisit = (url) => true;
 		cy.shouldHaveReloadedAfterAction(() => {
-			this.swup.loadPage({ url: '/page-2.html' });
+			this.swup.loadPage('/page-2.html');
 		});
 		cy.shouldBeAtPage('/page-2.html');
 	});
@@ -393,11 +393,11 @@ describe('History', function () {
 
 	it('should replace the current history state via API', function () {
 		cy.window().then(() => {
-			this.swup.loadPage({ url: '/page-2.html' });
+			this.swup.loadPage('/page-2.html');
 		});
 		cy.shouldBeAtPage('/page-2.html');
 		cy.window().then(() => {
-			this.swup.loadPage({ url: '/page-3.html', history: 'replace' });
+			this.swup.loadPage('/page-3.html', { history: 'replace' });
 		});
 		cy.shouldBeAtPage('/page-3.html');
 		cy.window().then((window) => {
@@ -481,7 +481,7 @@ describe('API', function () {
 	});
 
 	it('should transition to pages using swup API', function () {
-		this.swup.loadPage({ url: '/page-2.html' });
+		this.swup.loadPage('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
 		cy.shouldHaveH1('Page 2');
 	});
