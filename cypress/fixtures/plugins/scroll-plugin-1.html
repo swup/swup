@@ -57,6 +57,9 @@
                 <a href="#anchor" data-cy="link-to-anchor">Link to anchor</a>
             </li>
             <li>
+                <a href="#top" data-cy="link-to-top">Link to top</a>
+            </li>
+            <li>
                 <a href="/plugins/scroll-plugin-1.html#anchor" data-cy="link-to-self-anchor">Link to self with anchor</a>
             </li>
             <li>
@@ -84,7 +87,7 @@
     </main>
     <script>
         window._swup = new Swup({
-            plugins: [new SwupScrollPlugin()]
+            plugins: [new SwupScrollPlugin({ acceleration: 10, friction: 0 })]
         });
     </script>
 </body>
