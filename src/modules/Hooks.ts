@@ -3,7 +3,7 @@ import { DelegateEvent } from 'delegate-it';
 import Swup from '../Swup.js';
 import { isPromise, runAsPromise } from '../utils.js';
 
-export type HookDefinitions = {
+export interface HookDefinitions {
 	animationInDone: undefined;
 	animationInStart: undefined;
 	animationOutDone: undefined;
@@ -24,7 +24,7 @@ export type HookDefinitions = {
 	transitionStart: PopStateEvent | undefined;
 	transitionEnd: PopStateEvent | undefined;
 	willReplaceContent: PopStateEvent | undefined;
-};
+}
 
 export type HookArgument<T extends HookName> = HookDefinitions[T];
 
@@ -50,8 +50,6 @@ export type HookRegistration<T extends HookName> = {
 } & HookOptions;
 
 type HookLedger<T extends HookName> = Map<Handler<T>, HookRegistration<T>>;
-
-// type HookRegistry = Map<HookName, HookLedger<HookName>>;
 
 interface HookRegistry extends Map<HookName, HookLedger<HookName>> {
 	get<K extends HookName>(key: K): HookLedger<K> | undefined;
