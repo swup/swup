@@ -50,17 +50,13 @@ export type Options = {
 };
 
 export default class Swup {
-	version = version;
-	// variable for anchor to scroll to after render
-	scrollToElement: string | null = null;
+	version: string = version;
 	// variable for save options
 	options: Options;
 	// running plugin instances
 	plugins: Plugin[] = [];
 	// context data
 	context: Context;
-	// variable for current transition info object
-	transition: Transition = {};
 	// cache instance
 	cache: Cache;
 	// hook registry
