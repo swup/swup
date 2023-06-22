@@ -1,4 +1,4 @@
-import { updateHistoryRecord, getCurrentUrl, Location } from '../helpers.js';
+import { updateHistoryRecord, getCurrentUrl } from '../helpers.js';
 import Swup from '../Swup.js';
 import { PageData } from './fetchPage.js';
 
@@ -19,7 +19,7 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 	}
 
 	// only add for page loads with transitions
-	if (!this.context.animate) {
+	if (this.context.animate) {
 		document.documentElement.classList.add('is-rendering');
 	}
 
