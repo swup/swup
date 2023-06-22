@@ -6,7 +6,7 @@ import { PageData } from './fetchPage.js';
  *
  * This method can be replaced or augmented by plugins to allow pausing.
  *
- * It takes an object with the page data as return from `getPageData` and has to
+ * It takes an object with the page data as returned from `fetchPage` and has to
  * return a Promise that resolves once all content has been replaced and the
  * site is ready to start animating in the new page.
  *
