@@ -148,19 +148,21 @@ export class Hooks {
 	 *                - `before`: Execute the handler before the default handler
 	 *                - `priority`: Specify the order in which the handlers are executed
 	 *                - `replace`: Replace the default handler with this handler
+	 * @returns The handler function
 	 */
-	on<T extends HookName>(hook: T, handler: Handler<T>): void;
-	on<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions): void;
-	on<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions = {}): void {
+	on<T extends HookName>(hook: T, handler: Handler<T>): Handler<T>;
+	on<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions): Handler<T>;
+	on<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions = {}): Handler<T> {
 		const ledger = this.get(hook);
 		if (!ledger) {
 			console.warn(`Hook '${hook}' not found.`);
-			return;
+			return handler;
 		}
 
 		const id = ledger.size + 1;
 		const registration: HookRegistration<T> = { ...options, id, hook, handler };
 		ledger.set(handler, registration);
+		return handler;
 	}
 
 	/**
@@ -169,11 +171,16 @@ export class Hooks {
 	 * @param hook Name of the hook to listen for
 	 * @param handler The handler function to execute
 	 * @param options Any other event options (see `hooks.on()` for details)
+	 * @returns The handler function
 	 * @see on
 	 */
-	before<T extends HookName>(hook: T, handler: Handler<T>): void;
-	before<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions): void;
-	before<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions = {}): void {
+	before<T extends HookName>(hook: T, handler: Handler<T>): Handler<T>;
+	before<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions): Handler<T>;
+	before<T extends HookName>(
+		hook: T,
+		handler: Handler<T>,
+		options: HookOptions = {}
+	): Handler<T> {
 		return this.on(hook, handler, { ...options, before: true });
 	}
 
@@ -183,11 +190,16 @@ export class Hooks {
 	 * @param hook Name of the hook to listen for
 	 * @param handler The handler function to execute instead of the default handler
 	 * @param options Any other event options (see `hooks.on()` for details)
+	 * @returns The handler function
 	 * @see on
 	 */
-	replace<T extends HookName>(hook: T, handler: Handler<T>): void;
-	replace<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions): void;
-	replace<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions = {}): void {
+	replace<T extends HookName>(hook: T, handler: Handler<T>): Handler<T>;
+	replace<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions): Handler<T>;
+	replace<T extends HookName>(
+		hook: T,
+		handler: Handler<T>,
+		options: HookOptions = {}
+	): Handler<T> {
 		return this.on(hook, handler, { ...options, replace: true });
 	}
 
@@ -199,9 +211,9 @@ export class Hooks {
 	 * @param options Any other event options (see `hooks.on()` for details)
 	 * @see on
 	 */
-	once<T extends HookName>(hook: T, handler: Handler<T>): void;
-	once<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions): void;
-	once<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions = {}): void {
+	once<T extends HookName>(hook: T, handler: Handler<T>): Handler<T>;
+	once<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions): Handler<T>;
+	once<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions = {}): Handler<T> {
 		return this.on(hook, handler, { ...options, once: true });
 	}
 

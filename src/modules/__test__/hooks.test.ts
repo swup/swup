@@ -28,6 +28,15 @@ describe('Hook registry', () => {
 		expect(registration?.handler).toEqual(handler);
 	});
 
+	it('should return the passed handler', () => {
+		const swup = new Swup();
+		const handler = vi.fn();
+
+		const handlerReturned = swup.hooks.on('enabled', handler);
+
+		expect(handlerReturned).toEqual(handler);
+	});
+
 	it('should trigger custom handlers', async () => {
 		const swup = new Swup();
 		const handler = vi.fn();
