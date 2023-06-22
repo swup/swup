@@ -16,7 +16,7 @@ export const fetch = (
 
 	const request = new XMLHttpRequest();
 
-	request.onreadystatechange = function () {
+	request.onreadystatechange = () => {
 		if (request.readyState === 4) {
 			// if (request.status === 500) {} else {}
 			callback(request);

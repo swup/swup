@@ -29,7 +29,7 @@
             name = 'CustomBodyClassPlugin';
             isSwupPlugin = true;
             mount() {
-                this.swup.on('contentReplaced', () => {
+                this.swup.hooks.on('contentReplaced', () => {
                     const { html } = this.swup.cache.getCurrentPage();
                     const doc = new DOMParser().parseFromString(html, 'text/html');
                     const body = doc.querySelector('body');

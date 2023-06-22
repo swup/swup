@@ -7,22 +7,22 @@ export type PageData = {
 	html: string;
 };
 
-export function fetchPage(this: Swup, data: TransitionOptions): Promise<PageData> {
+export async function fetchPage(this: Swup, data: TransitionOptions): Promise<PageData> {
 	const headers = this.options.requestHeaders;
 	const { url: requestURL } = Location.fromUrl(data.url);
 
 	const cachedPage = this.cache.getPage(requestURL);
 	if (cachedPage) {
-		this.triggerEvent('pageRetrievedFromCache');
+		await this.hooks.trigger('pageRetrievedFromCache');
 		return Promise.resolve(cachedPage);
 	}
 
-	return new Promise((resolve, reject) => {
+	const page = await new Promise<PageData>((resolve, reject) => {
 		fetch({ ...data, headers }, (response) => {
 			const { status, responseText, responseURL } = response;
 
 			if (status === 500) {
-				this.triggerEvent('serverError');
+				this.hooks.trigger('serverError');
 				reject(requestURL);
 				return;
 			}
@@ -41,8 +41,10 @@ export function fetchPage(this: Swup, data: TransitionOptions): Promise<PageData
 				this.cache.cacheUrl(page);
 			}
 
-			this.triggerEvent('pageLoaded');
+			this.hooks.trigger('pageLoaded');
 			resolve(page);
 		});
 	});
+
+	return page;
 }

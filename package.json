@@ -70,11 +70,12 @@
     "http-server": "^14.1.1",
     "husky": "^8.0.0",
     "istanbul-lib-coverage": "^3.2.0",
+    "jsdom": "^22.1.0",
     "microbundle": "^0.15.0",
     "nyc": "^15.1.0",
     "prettier": "^2.8.2",
-    "start-server-and-test": "^1.14.0",
-    "vitest": "^0.29.8"
+    "start-server-and-test": "^2.0.0",
+    "vitest": "^0.31.2"
   },
   "collective": {
     "type": "opencollective",

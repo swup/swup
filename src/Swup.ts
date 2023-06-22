@@ -19,7 +19,7 @@ import { fetchPage } from './modules/fetchPage.js';
 import { leavePage } from './modules/leavePage.js';
 import { HistoryAction, loadPage, performPageLoad } from './modules/loadPage.js';
 import { replaceContent } from './modules/replaceContent.js';
-import { on, off, triggerEvent, Handlers } from './modules/events.js';
+import { Handler, HookName, Hooks } from './modules/Hooks.js';
 import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
 import { renderPage } from './modules/renderPage.js';
 import { updateTransition, shouldSkipTransition } from './modules/transitions.js';
@@ -51,30 +51,6 @@ export type Options = {
 
 export default class Swup {
 	version = version;
-
-	_handlers: Handlers = {
-		animationInDone: [],
-		animationInStart: [],
-		animationOutDone: [],
-		animationOutStart: [],
-		animationSkipped: [],
-		clickLink: [],
-		contentReplaced: [],
-		disabled: [],
-		enabled: [],
-		openPageInNewTab: [],
-		pageLoaded: [],
-		pageRetrievedFromCache: [],
-		pageView: [],
-		popState: [],
-		samePage: [],
-		samePageWithHash: [],
-		serverError: [],
-		transitionStart: [],
-		transitionEnd: [],
-		willReplaceContent: []
-	};
-
 	// variable for anchor to scroll to after render
 	scrollToElement: string | null = null;
 	// variable for save options
@@ -85,12 +61,12 @@ export default class Swup {
 	transition: Transition = {};
 	// cache instance
 	cache: Cache;
-	// allows us to compare the current and new path inside popStateHandler
-	currentPageUrl = getCurrentUrl();
+	// hook registry
+	hooks: Hooks;
 	// variable for keeping event listeners from "delegate"
 	delegatedListeners: DelegatedListeners = {};
-	// so we are able to remove the listener
-	boundPopStateHandler: (event: PopStateEvent) => void;
+	// allows us to compare the current and new path inside popStateHandler
+	currentPageUrl = getCurrentUrl();
 
 	loadPage = loadPage;
 	performPageLoad = performPageLoad;
@@ -98,10 +74,7 @@ export default class Swup {
 	renderPage = renderPage;
 	replaceContent = replaceContent;
 	enterPage = enterPage;
-	triggerEvent = triggerEvent;
 	delegateEvent = delegateEvent;
-	on = on;
-	off = off;
 	updateTransition = updateTransition;
 	shouldSkipTransition = shouldSkipTransition;
 	getAnimationPromises = getAnimationPromises;
@@ -134,28 +107,33 @@ export default class Swup {
 		// Merge defaults and options
 		this.options = { ...this.defaults, ...options };
 
-		this.boundPopStateHandler = this.popStateHandler.bind(this);
+		this.linkClickHandler = this.linkClickHandler.bind(this);
+		this.popStateHandler = this.popStateHandler.bind(this);
 
 		this.cache = new Cache(this);
+		this.hooks = new Hooks(this);
+
+		if (!this.checkRequirements()) {
+			return;
+		}
 
 		this.enable();
 	}
 
-	enable() {
-		// Check for Promise support
+	checkRequirements() {
 		if (typeof Promise === 'undefined') {
 			console.warn('Promise is not supported');
-			return;
+			return false;
 		}
+		return true;
+	}
 
+	async enable() {
 		// Add event listeners
-		this.delegatedListeners.click = delegateEvent(
-			this.options.linkSelector,
-			'click',
-			this.linkClickHandler.bind(this)
-		);
+		const { linkSelector } = this.options;
+		this.delegatedListeners.click = delegateEvent(linkSelector, 'click', this.linkClickHandler);
 
-		window.addEventListener('popstate', this.boundPopStateHandler);
+		window.addEventListener('popstate', this.popStateHandler);
 
 		// Initial save to cache
 		if (this.options.cache) {
@@ -170,43 +148,69 @@ export default class Swup {
 		updateHistoryRecord();
 
 		// Trigger enabled event
-		this.triggerEvent('enabled');
-
-		// Add swup-enabled class to html tag
-		document.documentElement.classList.add('swup-enabled');
+		await this.hooks.trigger('enabled', undefined, () => {
+			// Add swup-enabled class to html tag
+			document.documentElement.classList.add('swup-enabled');
+		});
 
 		// Trigger page view event
-		this.triggerEvent('pageView');
+		this.hooks.trigger('pageView');
 	}
 
-	destroy() {
+	async destroy() {
 		// remove delegated listeners
 		this.delegatedListeners.click!.destroy();
 
 		// remove popstate listener
-		window.removeEventListener('popstate', this.boundPopStateHandler);
+		window.removeEventListener('popstate', this.popStateHandler);
 
 		// empty cache
 		this.cache.empty();
 
 		// unmount plugins
-		this.options.plugins.forEach((plugin) => {
-			this.unuse(plugin);
-		});
+		this.options.plugins.forEach((plugin) => this.unuse(plugin));
 
 		// remove swup data atributes from blocks
 		queryAll('[data-swup]').forEach((element) => {
 			element.removeAttribute('data-swup');
 		});
 
-		// remove handlers
-		this.off();
-
 		// trigger disable event
-		this.triggerEvent('disabled');
+		await this.hooks.trigger('disabled', undefined, () => {
+			// remove swup-enabled class from html tag
+			document.documentElement.classList.remove('swup-enabled');
+		});
 
-		// remove swup-enabled class from html tag
-		document.documentElement.classList.remove('swup-enabled');
+		// remove handlers
+		this.hooks.clear();
+	}
+
+	/**
+	 * Add a new hook handler.
+	 * @deprecated Use `swup.hooks.on()` instead.
+	 */
+	on<T extends HookName>(hook: T, handler: Handler<T>) {
+		console.warn(
+			'[swup] Methods `swup.on()` and `swup.off()` are deprecated and will be removed in the next major release. Use `swup.hooks.on()` instead.'
+		);
+		return this.hooks.on(hook, handler);
+	}
+
+	/**
+	 * Remove a hook handler (or all handlers).
+	 * @deprecated Use `swup.hooks.off()` instead.
+	 */
+	off<T extends HookName>(hook?: T, handler?: Handler<T>): void {
+		console.warn(
+			'[swup] Methods `swup.on()` and `swup.off()` are deprecated and will be removed in the next major release. Use `swup.hooks.on()` instead.'
+		);
+		if (hook && handler) {
+			return this.hooks.off(hook, handler);
+		} else if (hook) {
+			return this.hooks.off(hook);
+		} else {
+			return this.hooks.clear();
+		}
 	}
 
 	shouldIgnoreVisit(href: string, { el, event }: { el?: Element; event?: Event } = {}) {
@@ -242,7 +246,7 @@ export default class Swup {
 
 		// Exit early if control key pressed
 		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
-			this.triggerEvent('openPageInNewTab', event);
+			this.hooks.trigger('openPageInNewTab', event);
 			return;
 		}
 
@@ -251,53 +255,46 @@ export default class Swup {
 			return;
 		}
 
-		this.triggerEvent('clickLink', event);
-		event.preventDefault();
+		this.hooks.triggerSync('clickLink', event, () => {
+			event.preventDefault();
 
-		// Handle links to the same page and exit early, where applicable
-		if (!url || url === getCurrentUrl()) {
-			this.handleLinkToSamePage(url, hash, event);
-			return;
-		}
+			// Handle links to the same page and exit early, where applicable
+			if (!url || url === getCurrentUrl()) {
+				this.handleLinkToSamePage(url, hash, event);
+				return;
+			}
 
-		// Exit early if the resolved path hasn't changed
-		if (this.isSameResolvedUrl(url, getCurrentUrl())) return;
+			// Exit early if the resolved path hasn't changed
+			if (this.isSameResolvedUrl(url, getCurrentUrl())) {
+				return;
+			}
 
-		// Store the element that should be scrolled to after loading the next page
-		this.scrollToElement = hash || null;
+			// Store the element that should be scrolled to after loading the next page
+			this.scrollToElement = hash || null;
 
-		// Get the custom transition name, if present
-		const customTransition = linkEl.getAttribute('data-swup-transition') || undefined;
+			// Get the custom transition name, if present
+			const customTransition = linkEl.getAttribute('data-swup-transition') || undefined;
 
-		// Get the history action, if set
-		let history: HistoryAction | undefined;
-		const historyAttr = linkEl.getAttribute('data-swup-history');
-		if (historyAttr && ['push', 'replace'].includes(historyAttr)) {
-			history = historyAttr as HistoryAction;
-		}
+			// Get the history action, if set
+			let history: HistoryAction | undefined;
+			const historyAttr = linkEl.getAttribute('data-swup-history');
+			if (historyAttr && ['push', 'replace'].includes(historyAttr)) {
+				history = historyAttr as HistoryAction;
+			}
 
-		// Finally, proceed with loading the page
-		this.performPageLoad({ url, customTransition, history });
+			// Finally, proceed with loading the page
+			this.performPageLoad({ url, customTransition, history });
+		});
 	}
 
-	handleLinkToSamePage(url: string, hash: string, event: DelegateEvent<MouseEvent>) {
-		// Emit event and exit early if the url points to the same page without hash
-		if (!hash) {
-			this.triggerEvent('samePage', event);
-			return;
+	async handleLinkToSamePage(url: string, hash: string, event: DelegateEvent<MouseEvent>) {
+		if (hash) {
+			await this.hooks.trigger('samePageWithHash', event, () => {
+				updateHistoryRecord(url + hash);
+			});
+		} else {
+			await this.hooks.trigger('samePage', event);
 		}
-
-		// link to the same URL with hash
-		this.triggerEvent('samePageWithHash', event);
-
-		const element = getAnchorElement(hash);
-
-		// Warn and exit early if no matching element was found for the hash
-		if (!element) {
-			return console.warn(`Element for offset not found (#${hash})`);
-		}
-
-		updateHistoryRecord(url + hash);
 	}
 
 	triggerWillOpenNewWindow(triggerEl: Element) {
@@ -333,14 +330,13 @@ export default class Swup {
 			event.preventDefault();
 		}
 
-		this.triggerEvent('popState', event);
-
-		if (!this.options.animateHistoryBrowsing) {
-			document.documentElement.classList.remove('is-animating');
-			cleanupAnimationClasses();
-		}
-
-		this.performPageLoad({ url, event });
+		this.hooks.triggerSync('popState', event, () => {
+			if (!this.options.animateHistoryBrowsing) {
+				document.documentElement.classList.remove('is-animating');
+				this.cleanupAnimationClasses();
+			}
+			this.performPageLoad({ url, event });
+		});
 	}
 
 	/**
