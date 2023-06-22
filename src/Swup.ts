@@ -25,6 +25,7 @@ import { renderPage } from './modules/renderPage.js';
 import { updateTransition, shouldSkipTransition } from './modules/transitions.js';
 
 import { queryAll } from './utils.js';
+import { Context, createContext } from './modules/Context.js';
 
 export type Transition = {
 	from?: string;
@@ -57,6 +58,8 @@ export default class Swup {
 	options: Options;
 	// running plugin instances
 	plugins: Plugin[] = [];
+	// context data
+	context: Context;
 	// variable for current transition info object
 	transition: Transition = {};
 	// cache instance
@@ -86,6 +89,7 @@ export default class Swup {
 	findPlugin = findPlugin;
 	getCurrentUrl = getCurrentUrl;
 	cleanupAnimationClasses = cleanupAnimationClasses;
+	createContext = createContext;
 
 	defaults: Options = {
 		animateHistoryBrowsing: false,
@@ -112,6 +116,7 @@ export default class Swup {
 
 		this.cache = new Cache(this);
 		this.hooks = new Hooks(this);
+		this.context = createContext();
 
 		if (!this.checkRequirements()) {
 			return;
