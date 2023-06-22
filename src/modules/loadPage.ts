@@ -1,10 +1,4 @@
-import {
-	classify,
-	createHistoryRecord,
-	updateHistoryRecord,
-	getCurrentUrl,
-	Location
-} from '../helpers.js';
+import { createHistoryRecord, updateHistoryRecord, getCurrentUrl, Location } from '../helpers.js';
 import Swup from '../Swup.js';
 
 export type HistoryAction = 'push' | 'replace';
@@ -12,6 +6,7 @@ export type HistoryAction = 'push' | 'replace';
 export type PageLoadOptions = {
 	transition?: string;
 	history?: HistoryAction;
+	animate?: boolean;
 };
 
 export function loadPage(this: Swup, url: string, options: PageLoadOptions = {}) {
@@ -19,35 +14,35 @@ export function loadPage(this: Swup, url: string, options: PageLoadOptions = {})
 	if (this.shouldIgnoreVisit(url)) {
 		window.location.href = url;
 	} else {
-		this.performPageLoad(url, options);
+		const { url: to, hash } = Location.fromUrl(url);
+		this.context = this.createContext({ to, hash });
+		this.performPageLoad(to, options);
 	}
 }
 
 export async function performPageLoad(this: Swup, url: string, options: PageLoadOptions = {}) {
-	const { transition, history: historyAction = 'push' } = options;
+	const { transition, animate, history: historyAction = 'push' } = options;
+
+	if (animate === false) {
+		this.context.animate = false;
+	}
 
 	if (!this.context.animate) {
 		document.documentElement.classList.remove('is-animating');
 		this.cleanupAnimationClasses();
+	} else if (transition) {
+		this.context.transition = transition;
 	}
 
 	await this.hooks.trigger('transitionStart');
 
-	// set transition object
-	if (transition) {
-		this.context.transition = transition;
-		document.documentElement.classList.add(`to-${classify(transition)}`);
-	}
-
-	// start/skip animation
 	const animationPromise = this.leavePage();
 
-	// Load page data
 	const fetchPromise = this.fetchPage(url, options);
 
 	// create history record if this is not a popstate call (with or without anchor)
 	if (!this.context.trigger.history) {
-		const historyUrl = url + (this.scrollToElement || '');
+		const historyUrl = url + (this.context.scroll.target || '');
 		if (historyAction === 'replace') {
 			updateHistoryRecord(historyUrl);
 		} else {

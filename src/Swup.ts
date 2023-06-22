@@ -109,7 +109,7 @@ export default class Swup {
 
 		this.cache = new Cache(this);
 		this.hooks = new Hooks(this);
-		this.context = createContext();
+		this.context = this.createContext();
 
 		if (!this.checkRequirements()) {
 			return;

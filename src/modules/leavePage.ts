@@ -1,4 +1,5 @@
 import Swup from '../Swup.js';
+import { classify } from '../helpers.js';
 
 export const leavePage = async function (this: Swup) {
 	if (!this.context.animate) {
@@ -10,6 +11,9 @@ export const leavePage = async function (this: Swup) {
 		document.documentElement.classList.add('is-changing', 'is-leaving', 'is-animating');
 		if (this.context.trigger.history) {
 			document.documentElement.classList.add('is-popstate');
+		}
+		if (this.context.transition) {
+			document.documentElement.classList.add(`to-${classify(this.context.transition)}`);
 		}
 	});
 
