@@ -487,7 +487,7 @@ describe('API', function () {
 	});
 });
 
-describe.only('Context', function () {
+describe('Context', function () {
 	beforeEach(() => {
 		cy.visit('/page-1.html');
 		cy.wrapSwupInstance();
