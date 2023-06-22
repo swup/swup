@@ -120,13 +120,6 @@ export class Hooks {
 	}
 
 	/**
-	 * Remove all handlers of all hooks.
-	 */
-	clear() {
-		this.registry.forEach((ledger) => ledger.clear());
-	}
-
-	/**
 	 * Get the ledger with all registrations for a hook.
 	 */
 	protected get<T extends HookName>(hook: T): HookLedger<T> | undefined {
@@ -136,6 +129,13 @@ export class Hooks {
 		} else {
 			console.error(`Unknown hook '${hook}'`);
 		}
+	}
+
+	/**
+	 * Remove all handlers of all hooks.
+	 */
+	clear() {
+		this.registry.forEach((ledger) => ledger.clear());
 	}
 
 	/**
@@ -333,30 +333,25 @@ export class Hooks {
 			return { found: false, before: [], after: [] };
 		}
 
+		const sort = this.sortRegistrations;
 		const registrations = Array.from(ledger.values());
-		const before = this.sortHandlers(
-			registrations.filter(({ before, replace }) => before || replace)
-		);
-		const after = this.sortHandlers(
-			registrations.filter((registration) => !before.includes(registration))
-		);
 		const replace = registrations.some(({ replace }) => replace);
+		const before = registrations.filter(({ before, replace }) => before || replace).sort(sort);
+		const after = registrations.filter((r) => !before.includes(r)).sort(sort);
 
 		return { found: true, before, after, replace };
 	}
 
 	/**
-	 * Sort hook registrations by priority and registration order.
-	 * @param registrations The registrations to sort
-	 * @returns The sorted list
+	 * Sort two hook registrations by priority and registration order.
+	 * @param a The registration object to compare
+	 * @param b The other registration object to compare with
+	 * @returns The sort direction
 	 */
-	sortHandlers<T extends HookName>(registrations: HookRegistration<T>[]): HookRegistration<T>[] {
-		// sort by priority first, by id second
-		return registrations.sort((a, b) => {
-			const priority = (b.priority ?? 0) - (a.priority ?? 0);
-			const id = a.id - b.id;
-			return priority || id || 0;
-		});
+	sortRegistrations<T extends HookName>(a: HookRegistration<T>, b: HookRegistration<T>): number {
+		const priority = (b.priority ?? 0) - (a.priority ?? 0);
+		const id = a.id - b.id;
+		return priority || id || 0;
 	}
 
 	/**
