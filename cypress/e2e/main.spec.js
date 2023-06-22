@@ -500,7 +500,7 @@ describe.only('Context', function () {
 			from = ctx.from.url;
 			to = ctx.to.url;
 		});
-		this.swup.loadPage('/page-2.html');
+		cy.triggerClickOnLink('/page-2.html');
 		cy.window().should(() => {
 			expect(from).to.eq('/page-1.html');
 			expect(to).to.eq('/page-2.html');
@@ -508,10 +508,46 @@ describe.only('Context', function () {
 	});
 
 	it('passes along the click trigger', function () {
+		let el = null;
 		this.swup.hooks.before('transitionStart', (context) => {
-			context.animate = false;
+			el = context.trigger.el;
 		});
-		cy.transitionWithExpectedDuration(0, '/page-2.html');
+		cy.triggerClickOnLink('/page-2.html');
+		cy.window().should((win) => {
+			expect(el).to.be.instanceof(win.HTMLAnchorElement)
+		});
+	});
+
+	it('passes along the click event', function () {
+		let event = null;
+		this.swup.hooks.before('transitionStart', (context) => {
+			event = context.trigger.event;
+		});
+		cy.triggerClickOnLink('/page-2.html');
+		cy.window().should((win) => {
+			expect(event).to.be.instanceof(win.MouseEvent)
+		});
+	});
+
+	it('passes along the popstate status', function () {
+		let event = null;
+		let historyVisit = null;
+		this.swup.hooks.before('transitionStart', (context) => {
+			event = context.trigger.event;
+			historyVisit = context.trigger.history;
+		});
+		cy.window().then(() => {
+			this.swup.loadPage('/page-2.html');
+		});
+		cy.shouldBeAtPage('/page-2.html');
+		cy.window().then((window) => {
+			window.history.back();
+		});
+		cy.shouldBeAtPage('/page-1.html');
+		cy.window().should((win) => {
+			expect(event).to.be.instanceof(win.PopStateEvent);
+			expect(historyVisit).to.be.true;
+		});
 	});
 
 	it('should allow disabling animations via context', function () {
