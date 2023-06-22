@@ -486,3 +486,38 @@ describe('API', function () {
 		cy.shouldHaveH1('Page 2');
 	});
 });
+
+describe.only('Context', function () {
+	beforeEach(() => {
+		cy.visit('/page-1.html');
+		cy.wrapSwupInstance();
+	});
+
+	it('has the current and next url', function () {
+		let from = '';
+		let to = '';
+		this.swup.hooks.before('transitionStart', (ctx) => {
+			from = ctx.from.url;
+			to = ctx.to.url;
+		});
+		this.swup.loadPage('/page-2.html');
+		cy.window().should(() => {
+			expect(from).to.eq('/page-1.html');
+			expect(to).to.eq('/page-2.html');
+		});
+	});
+
+	it('passes along the click trigger', function () {
+		this.swup.hooks.before('transitionStart', (context) => {
+			context.animate = false;
+		});
+		cy.transitionWithExpectedDuration(0, '/page-2.html');
+	});
+
+	it('should allow disabling animations via context', function () {
+		this.swup.hooks.before('transitionStart', (context) => {
+			context.animate = false;
+		});
+		cy.transitionWithExpectedDuration(0, '/page-2.html');
+	});
+});
