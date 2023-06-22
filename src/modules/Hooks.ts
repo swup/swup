@@ -338,7 +338,7 @@ export class Hooks {
 			registrations.filter(({ before, replace }) => before || replace)
 		);
 		const after = this.sortHandlers(
-			registrations.filter(({ before, replace }) => !before && !replace)
+			registrations.filter((registration) => !before.includes(registration))
 		);
 		const replace = registrations.some(({ replace }) => replace);
 
