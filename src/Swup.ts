@@ -150,7 +150,7 @@ export default class Swup {
 		updateHistoryRecord();
 
 		// Trigger enabled event
-		await this.hooks.trigger('enabled', undefined, () => {
+		await this.hooks.trigger('enabled', undefined, (ctx) => {
 			// Add swup-enabled class to html tag
 			document.documentElement.classList.add('swup-enabled');
 		});
@@ -260,7 +260,7 @@ export default class Swup {
 
 		// Exit early if control key pressed
 		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
-			this.hooks.trigger('openPageInNewTab', event);
+			this.hooks.trigger('openPageInNewTab');
 			return;
 		}
 
@@ -269,14 +269,14 @@ export default class Swup {
 			return;
 		}
 
-		this.hooks.triggerSync('clickLink', event, () => {
+		this.hooks.triggerSync('clickLink', { event }, () => {
 			event.preventDefault();
 
 			const from = this.context.from?.url;
 
 			// Handle links to the same page and exit early, where applicable
 			if (!url || url === from) {
-				this.handleLinkToSamePage(url, hash, event);
+				this.handleLinkToSamePage(url, hash);
 				return;
 			}
 
@@ -290,13 +290,13 @@ export default class Swup {
 		});
 	}
 
-	async handleLinkToSamePage(url: string, hash: string, event: DelegateEvent<MouseEvent>) {
+	async handleLinkToSamePage(url: string, hash: string) {
 		if (hash) {
-			await this.hooks.trigger('samePageWithHash', event, () => {
+			await this.hooks.trigger('samePageWithHash', undefined, () => {
 				updateHistoryRecord(url + hash);
 			});
 		} else {
-			await this.hooks.trigger('samePage', event);
+			await this.hooks.trigger('samePage');
 		}
 	}
 
@@ -334,7 +334,7 @@ export default class Swup {
 			event.preventDefault();
 		}
 
-		this.hooks.triggerSync('popState', event, () => {
+		this.hooks.triggerSync('popState', undefined, () => {
 			this.performPageLoad(url);
 		});
 	}

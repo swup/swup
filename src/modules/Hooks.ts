@@ -2,6 +2,7 @@ import { DelegateEvent } from 'delegate-it';
 
 import Swup from '../Swup.js';
 import { isPromise, runAsPromise } from '../utils.js';
+import { Context } from './Context.js';
 
 export interface HookDefinitions {
 	animationInDone: undefined;
@@ -9,28 +10,31 @@ export interface HookDefinitions {
 	animationOutDone: undefined;
 	animationOutStart: undefined;
 	animationSkipped: undefined;
-	clickLink: DelegateEvent<MouseEvent>;
-	contentReplaced: PopStateEvent | undefined;
+	clickLink: { event: DelegateEvent<MouseEvent> };
+	contentReplaced: undefined;
 	disabled: undefined;
 	enabled: undefined;
-	openPageInNewTab: DelegateEvent<MouseEvent>;
+	openPageInNewTab: undefined;
 	pageLoaded: undefined;
 	pageRetrievedFromCache: undefined;
-	pageView: PopStateEvent | undefined;
-	popState: PopStateEvent;
-	samePage: DelegateEvent<MouseEvent>;
-	samePageWithHash: DelegateEvent<MouseEvent>;
+	pageView: undefined;
+	popState: { event: PopStateEvent };
+	samePage: undefined;
+	samePageWithHash: undefined;
 	serverError: undefined;
-	transitionStart: PopStateEvent | undefined;
-	transitionEnd: PopStateEvent | undefined;
-	willReplaceContent: PopStateEvent | undefined;
+	transitionStart: undefined;
+	transitionEnd: undefined;
+	willReplaceContent: undefined;
 }
 
-export type HookArgument<T extends HookName> = HookDefinitions[T];
+export type HookData<T extends HookName> = HookDefinitions[T];
 
 export type HookName = keyof HookDefinitions;
 
-export type Handler<T extends HookName> = (data: HookArgument<T>) => Promise<void> | void;
+export type Handler<T extends HookName> = (
+	context: Context,
+	data: HookData<T>
+) => Promise<void> | void;
 
 export type Handlers = {
 	[K in HookName]: Handler<K>[];
@@ -248,13 +252,15 @@ export class Hooks {
 	 */
 	async trigger<T extends HookName>(
 		hook: T,
-		data?: HookArgument<T>,
-		handler?: Function
+		data?: HookData<T>,
+		handler?: Handler<T>
 	): Promise<any[]> {
 		const { before, after, replace } = this.getHandlers(hook);
 		const results = [
 			...(await this.execute(before, data)),
-			...(handler && !replace ? [await runAsPromise(handler, [data], this.swup)] : []),
+			...(handler && !replace
+				? [await runAsPromise(handler, [this.swup.context, data])]
+				: []),
 			...(await this.execute(after, data))
 		];
 		this.dispatchDomEvent(hook);
@@ -269,11 +275,11 @@ export class Hooks {
 	 * @param handler A default implementation of this hook to execute
 	 * @returns An array of all (possibly unresolved) return values of the executed handlers
 	 */
-	triggerSync<T extends HookName>(hook: T, data?: HookArgument<T>, handler?: Function): any[] {
+	triggerSync<T extends HookName>(hook: T, data?: HookData<T>, handler?: Handler<T>): any[] {
 		const { before, after, replace } = this.getHandlers(hook);
 		const results = [
 			...this.executeSync(before, data),
-			...(handler && !replace ? [handler(data)] : []),
+			...(handler && !replace ? [handler(this.swup.context, data as HookData<T>)] : []),
 			...this.executeSync(after, data)
 		];
 		this.dispatchDomEvent(hook);
@@ -287,12 +293,12 @@ export class Hooks {
 	 */
 	async execute<T extends HookName>(
 		registrations: HookRegistration<T>[],
-		data: HookArgument<T>
+		data: HookData<T>
 	): Promise<any> {
 		const results = [];
 		for (const { hook, handler, once } of registrations) {
 			try {
-				results.push(await runAsPromise(handler, [data], this.swup));
+				results.push(await runAsPromise(handler, [this.swup.context, data]));
 			} catch (error) {
 				console.error(error);
 			}
@@ -310,12 +316,12 @@ export class Hooks {
 	 */
 	executeSync<T extends HookName>(
 		registrations: HookRegistration<T>[],
-		data: HookArgument<T>
+		data: HookData<T>
 	): any[] {
 		const results = [];
 		for (const { hook, handler, once } of registrations) {
 			try {
-				const result = handler(data);
+				const result = handler(this.swup.context, data);
 				if (isPromise(result)) {
 					console.warn(
 						`Promise returned from handler for synchronous hook '${hook}'.` +
