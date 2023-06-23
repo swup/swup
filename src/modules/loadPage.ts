@@ -66,7 +66,6 @@ export async function performPageLoad(
 	}
 
 	this.currentPageUrl = getCurrentUrl();
-	await this.hooks.trigger('urlUpdated', { url: this.currentPageUrl });
 
 	// when everything is ready, render the page
 	try {
