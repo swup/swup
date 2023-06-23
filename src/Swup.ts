@@ -241,10 +241,10 @@ export default class Swup {
 		const transition = el.getAttribute('data-swup-transition') || undefined;
 
 		// Get the history action, if specified
-		let history: HistoryAction | undefined;
+		let historyAction: HistoryAction | undefined;
 		const historyAttr = el.getAttribute('data-swup-history');
 		if (historyAttr && ['push', 'replace'].includes(historyAttr)) {
-			history = historyAttr as HistoryAction;
+			historyAction = historyAttr as HistoryAction;
 		}
 
 		// Exit early if the link should be ignored
@@ -252,7 +252,14 @@ export default class Swup {
 			return;
 		}
 
-		this.context = this.createContext({ to: url, hash, transition, el, event });
+		this.context = this.createContext({
+			to: url,
+			hash,
+			transition,
+			el,
+			event,
+			action: historyAction
+		});
 
 		// Exit early if control key pressed
 		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
@@ -282,7 +289,7 @@ export default class Swup {
 			}
 
 			// Finally, proceed with loading the page
-			this.performPageLoad(url, { transition, history });
+			this.performPageLoad(url, { transition, history: historyAction });
 		});
 	}
 
@@ -323,7 +330,15 @@ export default class Swup {
 
 		const { url, hash } = Location.fromUrl(href);
 		const animate = this.options.animateHistoryBrowsing;
-		this.context = this.createContext({ to: url, hash, event, animate, history: true });
+		const resetScroll = this.options.animateHistoryBrowsing;
+		this.context = this.createContext({
+			to: url,
+			hash,
+			event,
+			animate,
+			resetScroll,
+			popstate: true
+		});
 
 		// What does this do?
 		if (!hash) {

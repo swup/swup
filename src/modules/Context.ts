@@ -1,14 +1,14 @@
-import { getCurrentUrl } from '../helpers.js';
+import Swup from '../Swup.js';
 import { HistoryAction } from './loadPage.js';
 
 export interface Context<TEvent = Event> {
-	from?: PageContext;
+	from: PageContext;
 	to?: PageContext;
 	animate: boolean;
 	transition?: string;
-	action?: HistoryAction;
-	scroll: ScrollContext;
 	trigger: TriggerContext<TEvent>;
+	history: HistoryContext;
+	scroll: ScrollContext;
 }
 
 export interface PageContext {
@@ -23,44 +23,57 @@ export interface ScrollContext {
 export interface TriggerContext<TEvent = Event> {
 	el?: Element;
 	event?: TEvent;
-	history: boolean;
 }
 
-export function createContext({
-	from,
-	to,
-	action,
-	event,
-	el,
-	hash: target,
-	animate = true,
-	transition,
-	history = false
-}: {
-	from?: string;
-	to?: string;
-	hash?: string;
-	event?: Event;
-	el?: Element;
-	animate?: boolean;
-	transition?: string;
-	history?: boolean;
-	action?: HistoryAction;
-} = {}): Context {
+export interface HistoryContext {
+	action: HistoryAction;
+	popstate: boolean;
+	// direction: 'forward' | 'backward' | undefined
+}
+
+export function createContext(
+	this: Swup,
+	{
+		to,
+		from = this.currentPageUrl,
+		hash: target,
+		el,
+		event,
+		animate = true,
+		transition,
+		popstate = false,
+		action = 'push',
+		resetScroll: reset = true
+	}: {
+		to: string | undefined;
+		from?: string;
+		hash?: string;
+		el?: Element;
+		event?: Event;
+		animate?: boolean;
+		transition?: string;
+		popstate?: boolean;
+		action?: HistoryAction;
+		resetScroll?: boolean;
+	}
+): Context {
 	return {
-		from: { url: from ?? getCurrentUrl() },
+		from: { url: from },
 		to: to ? { url: to } : undefined,
-		action,
 		animate,
 		transition,
-		scroll: {
-			reset: true,
-			target
-		},
 		trigger: {
 			el,
-			event,
-			history
+			event
+		},
+		history: {
+			action,
+			popstate
+			// direction: undefined
+		},
+		scroll: {
+			reset,
+			target
 		}
 	};
 }

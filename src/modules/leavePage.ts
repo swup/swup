@@ -9,7 +9,7 @@ export const leavePage = async function (this: Swup) {
 
 	await this.hooks.trigger('animationOutStart', undefined, () => {
 		document.documentElement.classList.add('is-changing', 'is-leaving', 'is-animating');
-		if (this.context.trigger.history) {
+		if (this.context.history.popstate) {
 			document.documentElement.classList.add('is-popstate');
 		}
 		if (this.context.transition) {

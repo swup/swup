@@ -41,7 +41,7 @@ export async function performPageLoad(this: Swup, url: string, options: PageLoad
 	const fetchPromise = this.fetchPage(url, options);
 
 	// create history record if this is not a popstate call (with or without anchor)
-	if (!this.context.trigger.history) {
+	if (!this.context.history.popstate) {
 		const historyUrl = url + (this.context.scroll.target || '');
 		if (historyAction === 'replace') {
 			updateHistoryRecord(historyUrl);
