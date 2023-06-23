@@ -16,6 +16,7 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 	if (!this.isSameResolvedUrl(getCurrentUrl(), url)) {
 		updateHistoryRecord(url);
 		this.currentPageUrl = getCurrentUrl();
+		this.context.to!.url = this.currentPageUrl;
 	}
 
 	await this.hooks.trigger('urlUpdated', { url: this.currentPageUrl });
@@ -30,7 +31,7 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 		this.replaceContent(page, { containers });
 	});
 
-	await this.hooks.trigger('pageView');
+	await this.hooks.trigger('pageView', { url: this.currentPageUrl });
 
 	// empty cache if it's disabled (in case preload plugin filled it)
 	if (!this.options.cache) {
