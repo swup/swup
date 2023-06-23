@@ -17,16 +17,17 @@ export async function fetchPage(
 
 	const cachedPage = this.cache.getPage(requestURL);
 	if (cachedPage) {
-		await this.hooks.trigger('pageRetrievedFromCache');
+		await this.hooks.trigger('pageRetrievedFromCache', { page: cachedPage });
 		return Promise.resolve(cachedPage);
 	}
 
 	const page = await new Promise<PageData>((resolve, reject) => {
-		fetch(url, { ...data, headers }, (response) => {
-			const { status, responseText, responseURL } = response;
+		fetch(url, { ...data, headers }, (request) => {
+			const { status, responseText, responseURL } = request;
+			const { url } = Location.fromUrl(responseURL || requestURL);
 
 			if (status === 500) {
-				this.hooks.trigger('serverError');
+				this.hooks.trigger('serverError', { url, status, request });
 				reject(requestURL);
 				return;
 			}
@@ -37,7 +38,6 @@ export async function fetchPage(
 			}
 
 			const html = responseText;
-			const { url } = Location.fromUrl(responseURL || requestURL);
 			const page: PageData = { url, html };
 
 			// Only save cache entry for non-redirects
@@ -45,7 +45,7 @@ export async function fetchPage(
 				this.cache.cacheUrl(page);
 			}
 
-			this.hooks.trigger('pageLoaded');
+			this.hooks.trigger('pageLoaded', { page });
 			resolve(page);
 		});
 	});

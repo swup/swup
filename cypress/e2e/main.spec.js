@@ -111,7 +111,7 @@ describe('Events', function () {
 		cy.spy(handlers, 'content');
 
 		this.swup.hooks.on('transitionStart', handlers.transition);
-		this.swup.hooks.on('contentReplaced', handlers.content);
+		this.swup.hooks.on('replaceContent', handlers.content);
 
 		cy.triggerClickOnLink('/page-2.html');
 		cy.window().should(() => {
@@ -493,7 +493,7 @@ describe('Context', function () {
 		cy.wrapSwupInstance();
 	});
 
-	it('has current and next url', function () {
+	it('has the current and next url', function () {
 		let from = '';
 		let to = '';
 		this.swup.hooks.before('transitionStart', (ctx) => {
@@ -528,29 +528,21 @@ describe('Context', function () {
 		});
 	});
 
-	it('passes along the click trigger', function () {
+	it('passes along the click trigger and event', function () {
 		let el = null;
-		this.swup.hooks.before('transitionStart', (context) => {
-			el = context.trigger.el;
-		});
-		cy.triggerClickOnLink('/page-2.html');
-		cy.window().should((win) => {
-			expect(el).to.be.instanceof(win.HTMLAnchorElement)
-		});
-	});
-
-	it('passes along the click event', function () {
 		let event = null;
 		this.swup.hooks.before('transitionStart', (context) => {
+			el = context.trigger.el;
 			event = context.trigger.event;
 		});
 		cy.triggerClickOnLink('/page-2.html');
 		cy.window().should((win) => {
+			expect(el).to.be.instanceof(win.HTMLAnchorElement)
 			expect(event).to.be.instanceof(win.MouseEvent)
 		});
 	});
 
-	it('passes along the popstate status', function () {
+	it('passes along the popstate status and event', function () {
 		let event = null;
 		let historyVisit = null;
 		this.swup.hooks.before('transitionStart', (context) => {
@@ -571,10 +563,35 @@ describe('Context', function () {
 		});
 	});
 
-	it('should allow disabling animations via context', function () {
+	it('should allow disabling animations', function () {
 		this.swup.hooks.before('transitionStart', (context) => {
 			context.transition.animate = false;
 		});
 		cy.transitionWithExpectedDuration(0, '/page-2.html');
+	});
+});
+
+describe('Containers', function () {
+	beforeEach(() => {
+		cy.visit('/containers-1.html');
+		cy.wrapSwupInstance();
+	});
+
+	it('should be customizable from context', function () {
+		this.swup.hooks.before('transitionStart', (context) => {
+			context.containers = ['#aside'];
+		});
+		this.swup.loadPage('/containers-2.html', { animate: false });
+		cy.get('h1').should('contain', 'Containers 1');
+		cy.get('h2').should('contain', 'Heading 2');
+	});
+
+	it('should be customizable from hook params', function () {
+		this.swup.hooks.before('replaceContent', (_, args) => {
+			args.containers = ['#main'];
+		});
+		this.swup.loadPage('/containers-2.html', { animate: false });
+		cy.get('h1').should('contain', 'Containers 2');
+		cy.get('h2').should('contain', 'Heading 1');
 	});
 });

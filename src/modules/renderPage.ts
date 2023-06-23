@@ -14,19 +14,28 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 
 	// update state if the url was redirected
 	if (!this.isSameResolvedUrl(getCurrentUrl(), url)) {
-		this.currentPageUrl = getCurrentUrl();
 		updateHistoryRecord(url);
+		this.currentPageUrl = getCurrentUrl();
+		this.context.to!.url = this.currentPageUrl;
 	}
+
+	await this.hooks.trigger('urlUpdated', { url: this.currentPageUrl });
 
 	// only add for page loads with transitions
 	if (this.context.transition.animate) {
 		document.documentElement.classList.add('is-rendering');
 	}
 
-	await this.hooks.trigger('willReplaceContent');
-	await this.replaceContent(page);
-	await this.hooks.trigger('contentReplaced');
-	await this.hooks.trigger('pageView');
+	// replace content: allow handlers and plugins to overwrite paga data and containers
+	await this.hooks.trigger(
+		'replaceContent',
+		{ page, containers: this.context.containers },
+		(_, { page, containers }) => {
+			this.replaceContent(page, { containers });
+		}
+	);
+
+	await this.hooks.trigger('pageView', { url: this.currentPageUrl, title: document.title });
 
 	// empty cache if it's disabled (in case preload plugin filled it)
 	if (!this.options.cache) {

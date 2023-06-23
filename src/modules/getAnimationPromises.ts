@@ -1,5 +1,5 @@
 import { queryAll, toMs } from '../utils.js';
-import Swup from '../Swup.js';
+import Swup, { Options } from '../Swup.js';
 
 const TRANSITION = 'transition';
 const ANIMATION = 'animation';
@@ -9,28 +9,42 @@ type AnimationProperties = 'Delay' | 'Duration';
 type AnimationStyleKeys = `${AnimationTypes}${AnimationProperties}` | 'transitionProperty';
 type AnimationStyleDeclarations = Pick<CSSStyleDeclaration, AnimationStyleKeys>;
 
+/**
+ * Get an array of Promises that resolve when all animations are done on the page.
+ * @note We don't make use of the `direction` argument, but it's required by JS plugin
+ */
 export function getAnimationPromises(
 	this: Swup,
-	// we don't use this argument, but JS plugin depends on it with
-	// its own version of getAnimationPromises, so it must be specified when
-	// getAnimationPromises is being used
-	animationType: 'in' | 'out'
+	{
+		elements,
+		selector
+	}: {
+		selector: Options['animationSelector'];
+		elements?: HTMLElement[];
+		direction?: 'in' | 'out';
+	}
 ): Promise<void>[] {
-	const selector = this.options.animationSelector;
+	// Use array of a single resolved promise instead of an empty array to allow
+	// possible future use with Promise.race() which requires an actual value
+	const resolved = [Promise.resolve()];
 
 	// Allow usage of swup without animations
 	if (selector === false) {
-		// Use array of a single resolved promise instead of an empty array to allow
-		// possible future use with Promise.race() which requires an actual value
-		return [Promise.resolve()];
+		return resolved;
 	}
 
-	const animatedElements = queryAll(selector, document.body);
+	// Allow passing in elements
+	let animatedElements: HTMLElement[] = [];
+	if (elements) {
+		animatedElements = elements;
+	} else if (selector) {
+		animatedElements = queryAll(selector, document.body);
+	}
 
-	// Warn if no elements match the animationSelector, but keep things going
+	// Warn if no elements match the selector, but keep things going
 	if (!animatedElements.length) {
 		console.warn(`[swup] No elements found matching animationSelector \`${selector}\``);
-		return [Promise.resolve()];
+		return resolved;
 	}
 
 	const animationPromises = animatedElements
@@ -41,7 +55,7 @@ export function getAnimationPromises(
 		console.warn(
 			`[swup] No CSS animation duration defined on elements matching \`${selector}\``
 		);
-		return [Promise.resolve()];
+		return resolved;
 	}
 
 	return animationPromises;

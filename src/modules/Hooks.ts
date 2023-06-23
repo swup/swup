@@ -1,8 +1,9 @@
 import { DelegateEvent } from 'delegate-it';
 
-import Swup from '../Swup.js';
+import Swup, { Options } from '../Swup.js';
 import { isPromise, runAsPromise } from '../utils.js';
 import { Context } from './Context.js';
+import { PageData } from './fetchPage.js';
 
 export interface HookDefinitions {
 	animationInDone: undefined;
@@ -10,21 +11,22 @@ export interface HookDefinitions {
 	animationOutDone: undefined;
 	animationOutStart: undefined;
 	animationSkipped: undefined;
+	awaitAnimation: { selector: Options['animationSelector'] };
 	clickLink: { event: DelegateEvent<MouseEvent> };
-	contentReplaced: undefined;
 	disabled: undefined;
 	enabled: undefined;
-	openPageInNewTab: undefined;
-	pageLoaded: undefined;
-	pageRetrievedFromCache: undefined;
-	pageView: undefined;
+	openPageInNewTab: { href: string };
+	pageLoaded: { page: PageData };
+	pageRetrievedFromCache: { page: PageData };
+	pageView: { url: string; title: string };
 	popState: { event: PopStateEvent };
+	replaceContent: { page: PageData; containers: Options['containers'] };
 	samePage: undefined;
-	samePageWithHash: undefined;
-	serverError: undefined;
+	samePageWithHash: { hash: string };
+	serverError: { url: string; status: number; request: XMLHttpRequest };
 	transitionStart: undefined;
 	transitionEnd: undefined;
-	willReplaceContent: undefined;
+	urlUpdated: { url: string };
 }
 
 export type HookData<T extends HookName> = HookDefinitions[T];
@@ -78,8 +80,8 @@ export class Hooks {
 		'animationOutDone',
 		'animationOutStart',
 		'animationSkipped',
+		'awaitAnimation',
 		'clickLink',
-		'contentReplaced',
 		'disabled',
 		'enabled',
 		'openPageInNewTab',
@@ -87,12 +89,13 @@ export class Hooks {
 		'pageRetrievedFromCache',
 		'pageView',
 		'popState',
+		'replaceContent',
 		'samePage',
 		'samePageWithHash',
 		'serverError',
 		'transitionStart',
 		'transitionEnd',
-		'willReplaceContent'
+		'urlUpdated'
 	];
 
 	constructor(swup: Swup) {
@@ -247,24 +250,20 @@ export class Hooks {
 	 * Will execute all handlers in order and `await` any `Promise`s they return.
 	 * @param hook Name of the hook to trigger
 	 * @param data Data to pass to the handler
-	 * @param handler A default implementation of this hook to execute
-	 * @returns An array of all resolved return values of the executed handlers
+	 * @param defaultHander A default implementation of this hook to execute
+	 * @returns The resolved return value of the executed default handler
 	 */
 	async trigger<T extends HookName>(
 		hook: T,
 		data?: HookData<T>,
-		handler?: Handler<T>
-	): Promise<any[]> {
-		const { before, after, replace } = this.getHandlers(hook);
-		const results = [
-			...(await this.execute(before, data)),
-			...(handler && !replace
-				? [await runAsPromise(handler, [this.swup.context, data])]
-				: []),
-			...(await this.execute(after, data))
-		];
+		defaultHander?: Handler<T>
+	): Promise<any> {
+		const { before, handler, after } = this.getHandlers(hook, defaultHander);
+		await this.execute(before, data);
+		const [result] = await this.execute(handler, data);
+		await this.execute(after, data);
 		this.dispatchDomEvent(hook);
-		return results;
+		return result;
 	}
 
 	/**
@@ -272,18 +271,16 @@ export class Hooks {
 	 * Will execute all handlers in order, but will **not** `await` any `Promise`s they return.
 	 * @param hook Name of the hook to trigger
 	 * @param data Data to pass to the handler
-	 * @param handler A default implementation of this hook to execute
-	 * @returns An array of all (possibly unresolved) return values of the executed handlers
+	 * @param defaultHander A default implementation of this hook to execute
+	 * @returns The (possibly unresolved) return value of the executed default handler
 	 */
-	triggerSync<T extends HookName>(hook: T, data?: HookData<T>, handler?: Handler<T>): any[] {
-		const { before, after, replace } = this.getHandlers(hook);
-		const results = [
-			...this.executeSync(before, data),
-			...(handler && !replace ? [handler(this.swup.context, data as HookData<T>)] : []),
-			...this.executeSync(after, data)
-		];
+	triggerSync<T extends HookName>(hook: T, data?: HookData<T>, defaultHander?: Handler<T>): any {
+		const { before, after, handler } = this.getHandlers(hook, defaultHander);
+		this.executeSync(before, data);
+		const [result] = this.executeSync(handler, data);
+		this.executeSync(after, data);
 		this.dispatchDomEvent(hook);
-		return results;
+		return result;
 	}
 
 	/**
@@ -293,7 +290,7 @@ export class Hooks {
 	 */
 	async execute<T extends HookName>(
 		registrations: HookRegistration<T>[],
-		data: HookData<T>
+		data?: HookData<T>
 	): Promise<any> {
 		const results = [];
 		for (const { hook, handler, once } of registrations) {
@@ -316,12 +313,12 @@ export class Hooks {
 	 */
 	executeSync<T extends HookName>(
 		registrations: HookRegistration<T>[],
-		data: HookData<T>
+		data?: HookData<T>
 	): any[] {
 		const results = [];
 		for (const { hook, handler, once } of registrations) {
 			try {
-				const result = handler(this.swup.context, data);
+				const result = handler(this.swup.context, data as HookData<T>);
 				if (isPromise(result)) {
 					console.warn(
 						`Promise returned from handler for synchronous hook '${hook}'.` +
@@ -342,22 +339,32 @@ export class Hooks {
 	/**
 	 * Get all registered handlers for a hook, sorted by priority and registration order.
 	 * @param hook Name of the hook
+	 * @param defaultHander The optional default handler of this hook
 	 * @returns An object with the handlers sorted into `before` and `after` arrays,
-	 *          as well as a flag indicating if the original handler should be replaced
+	 *          as well as a flag indicating if the original handler was replaced
 	 */
-	getHandlers(hook: HookName) {
+	getHandlers<T extends HookName>(hook: T, defaultHander?: Handler<T>) {
 		const ledger = this.get(hook);
 		if (!ledger) {
-			return { found: false, before: [], after: [] };
+			return { found: false, before: [], handler: [], after: [], replaced: false };
 		}
 
 		const sort = this.sortRegistrations;
 		const registrations = Array.from(ledger.values());
-		const replace = registrations.some(({ replace }) => replace);
-		const before = registrations.filter(({ before, replace }) => before || replace).sort(sort);
-		const after = registrations.filter((r) => !before.includes(r)).sort(sort);
 
-		return { found: true, before, after, replace };
+		const before = registrations.filter(({ before, replace }) => before && !replace).sort(sort);
+		const replace = registrations.filter(({ replace }) => replace).sort(sort);
+		const after = registrations.filter(({ before, replace }) => !before && !replace).sort(sort);
+		const replaced = replace.length > 0;
+
+		let handler: HookRegistration<T>[] = [];
+		if (replaced) {
+			handler = [{ id: 0, hook, handler: replace[0].handler }];
+		} else if (defaultHander) {
+			handler = [{ id: 0, hook, handler: defaultHander }];
+		}
+
+		return { found: true, before, handler, after, replaced };
 	}
 
 	/**

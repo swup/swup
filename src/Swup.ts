@@ -144,13 +144,13 @@ export default class Swup {
 		updateHistoryRecord();
 
 		// Trigger enabled event
-		await this.hooks.trigger('enabled', undefined, (ctx) => {
+		await this.hooks.trigger('enabled', undefined, () => {
 			// Add swup-enabled class to html tag
 			document.documentElement.classList.add('swup-enabled');
 		});
 
 		// Trigger page view event
-		this.hooks.trigger('pageView');
+		await this.hooks.trigger('pageView', { url: this.currentPageUrl, title: document.title });
 	}
 
 	async destroy() {
@@ -256,7 +256,7 @@ export default class Swup {
 
 		// Exit early if control key pressed
 		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
-			this.hooks.trigger('openPageInNewTab');
+			this.hooks.trigger('openPageInNewTab', { href });
 			return;
 		}
 
@@ -288,7 +288,7 @@ export default class Swup {
 
 	async handleLinkToSamePage(url: string, hash: string) {
 		if (hash) {
-			await this.hooks.trigger('samePageWithHash', undefined, () => {
+			await this.hooks.trigger('samePageWithHash', { hash }, (_, { hash }) => {
 				updateHistoryRecord(url + hash);
 			});
 		} else {
@@ -338,7 +338,7 @@ export default class Swup {
 		// 	event.preventDefault();
 		// }
 
-		this.hooks.triggerSync('popState', undefined, () => {
+		this.hooks.triggerSync('popState', { event }, () => {
 			this.performPageLoad(url);
 		});
 	}
