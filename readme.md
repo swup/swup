@@ -38,7 +38,7 @@ other quality-of-life improvements.
 - ✨ Auto-detects [CSS transitions](https://swup.js.org/getting-started/how-it-works) for perfect timing
 - 🔗 Updates URLs and preserves native browser history behavior
 - 📦 Uses a [cache](https://swup.js.org/api/cache) to speed up subsequent page loads
-- 💡 Offers [events](https://swup.js.org/events) for hooking into the lifecycle
+- 💡 Offers [hooks](https://swup.js.org/hooks) for customizing and extending the page load lifecycle
 - 🔌 Has a powerful [plugin system](https://swup.js.org/plugins) and many official and third-party plugins
 - 🎨 Provides ready-to-go [themes](https://swup.js.org/themes) to get started quickly
 
