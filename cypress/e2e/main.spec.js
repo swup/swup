@@ -493,6 +493,15 @@ describe('Scroll Plugin', function () {
 		cy.shouldHaveElementInViewport('[data-cy=anchor]');
 	});
 
+	it('should scroll to top', function () {
+		cy.get('[data-cy=link-to-self-anchor]').click();
+		cy.shouldHaveElementInViewport('[data-cy=anchor]');
+		cy.get('[data-cy=link-to-top]').click();
+		cy.window().should((window) => {
+			expect(window.scrollY).equal(0);
+		});
+	});
+
 	it('should scroll to id-based anchor', function () {
 		cy.get('[data-cy=link-to-anchor-by-id]').click();
 		cy.shouldHaveElementInViewport('[data-cy=anchor-by-id]');
