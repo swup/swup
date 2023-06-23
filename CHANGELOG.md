@@ -2,6 +2,19 @@
 
 <!-- ## [Unreleased] -->
 
+## [3.1.1] - 2023-06-23
+
+- Accept `#top` as special scroll target
+
+## [3.1.0] - 2023-06-13
+
+- Allow replacing the current history entry instead of pushing to it
+
+## [3.0.8] - 2023-06-04
+
+- Create smaller bundle for modern browsers
+- Make warning about missing transitions less strict
+
 ## [3.0.7] - 2023-05-26
 
 - Update event delegation library
@@ -92,8 +105,11 @@ for details.
 
 - Fix bug where animateHistoryBrowsing option was ignored for OUT animations
 
-[Unreleased]: https://github.com/swup/swup/compare/3.0.7...HEAD
+[Unreleased]: https://github.com/swup/swup/compare/3.1.1...HEAD
 
+[3.1.1]: https://github.com/swup/swup/releases/tag/3.1.1
+[3.1.0]: https://github.com/swup/swup/releases/tag/3.1.0
+[3.0.8]: https://github.com/swup/swup/releases/tag/3.0.8
 [3.0.7]: https://github.com/swup/swup/releases/tag/3.0.7
 [3.0.6]: https://github.com/swup/swup/releases/tag/3.0.6
 [3.0.5]: https://github.com/swup/swup/releases/tag/3.0.5
