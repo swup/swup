@@ -55,6 +55,7 @@ export async function performPageLoad(this: Swup, url: string, options: PageLoad
 	}
 
 	this.currentPageUrl = getCurrentUrl();
+	await this.hooks.trigger('urlUpdated', { url: this.currentPageUrl });
 
 	// when everything is ready, render the page
 	try {

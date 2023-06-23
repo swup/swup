@@ -23,9 +23,15 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 		document.documentElement.classList.add('is-rendering');
 	}
 
-	await this.hooks.trigger('willReplaceContent');
-	await this.replaceContent(page);
-	await this.hooks.trigger('contentReplaced');
+	// replace content: allow handlers and plugins to overwrite paga data and containers
+	await this.hooks.trigger(
+		'replaceContent',
+		{ page, containers: this.options.containers },
+		async (_, { page, containers }) => {
+			await this.replaceContent(page, { containers });
+		}
+	);
+
 	await this.hooks.trigger('pageView');
 
 	// empty cache if it's disabled (in case preload plugin filled it)
