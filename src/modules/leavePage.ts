@@ -17,9 +17,13 @@ export const leavePage = async function (this: Swup) {
 		}
 	});
 
-	await this.hooks.trigger('awaitAnimation', { selector: this.options.animationSelector }, async (_, { selector }) => {
-		await Promise.all(this.getAnimationPromises({ selector, direction: 'out' }));
-	});
+	await this.hooks.trigger(
+		'awaitAnimation',
+		{ selector: this.options.animationSelector },
+		async (_, { selector }) => {
+			await Promise.all(this.getAnimationPromises({ selector, direction: 'out' }));
+		}
+	);
 
 	await this.hooks.trigger('animationOutDone');
 };
