@@ -571,7 +571,7 @@ describe('Context', function () {
 	});
 });
 
-describe.only('Containers', function () {
+describe('Containers', function () {
 	beforeEach(() => {
 		cy.visit('/containers-1.html');
 		cy.wrapSwupInstance();
