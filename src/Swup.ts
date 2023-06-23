@@ -12,6 +12,7 @@ import {
 import { Unsubscribe } from './helpers/delegateEvent.js';
 
 import { Cache } from './modules/Cache.js';
+import { Context, createContext } from './modules/Context.js';
 import { enterPage } from './modules/enterPage.js';
 import { getAnchorElement } from './modules/getAnchorElement.js';
 import { getAnimationPromises } from './modules/getAnimationPromises.js';
@@ -22,9 +23,6 @@ import { replaceContent } from './modules/replaceContent.js';
 import { Handler, HookName, Hooks } from './modules/Hooks.js';
 import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
 import { renderPage } from './modules/renderPage.js';
-
-import { queryAll } from './utils.js';
-import { Context, createContext } from './modules/Context.js';
 
 export type Transition = {
 	from?: string;
@@ -167,11 +165,6 @@ export default class Swup {
 
 		// unmount plugins
 		this.options.plugins.forEach((plugin) => this.unuse(plugin));
-
-		// remove swup data atributes from blocks
-		queryAll('[data-swup]').forEach((element) => {
-			element.removeAttribute('data-swup');
-		});
 
 		// trigger disable event
 		await this.hooks.trigger('disabled', undefined, () => {

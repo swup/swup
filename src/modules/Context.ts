@@ -5,8 +5,7 @@ export interface Context<TEvent = Event> {
 	from: PageContext;
 	to?: PageContext;
 	containers: Options['containers'];
-	animate: boolean;
-	transition?: string;
+	transition: TransitionContext;
 	trigger: TriggerContext<TEvent>;
 	history: HistoryContext;
 	scroll: ScrollContext;
@@ -14,6 +13,11 @@ export interface Context<TEvent = Event> {
 
 export interface PageContext {
 	url: string;
+}
+
+export interface TransitionContext {
+	animate: boolean;
+	name?: string;
 }
 
 export interface ScrollContext {
@@ -32,40 +36,44 @@ export interface HistoryContext {
 	// direction: 'forward' | 'backward' | undefined
 }
 
+export interface ContextInitOptions {
+	to: string | undefined;
+	from?: string;
+	hash?: string;
+	containers?: Options['containers'];
+	animate?: boolean;
+	transition?: string;
+	el?: Element;
+	event?: Event;
+	popstate?: boolean;
+	action?: HistoryAction;
+	resetScroll?: boolean;
+}
+
 export function createContext(
 	this: Swup,
 	{
 		to,
 		from = this.currentPageUrl,
-		containers = this.options.containers,
 		hash: target,
-		el,
-		event,
+		containers = this.options.containers,
 		animate = true,
 		transition,
+		el,
+		event,
 		popstate = false,
 		action = 'push',
 		resetScroll: reset = true
-	}: {
-		to: string | undefined;
-		hash?: string;
-		from?: string;
-		containers?: Options['containers'];
-		el?: Element;
-		event?: Event;
-		animate?: boolean;
-		transition?: string;
-		popstate?: boolean;
-		action?: HistoryAction;
-		resetScroll?: boolean;
-	}
+	}: ContextInitOptions
 ): Context {
 	return {
 		from: { url: from },
 		to: to ? { url: to } : undefined,
 		containers,
-		animate,
-		transition,
+		transition: {
+			animate,
+			name: transition
+		},
 		trigger: {
 			el,
 			event

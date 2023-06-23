@@ -22,7 +22,7 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 	await this.hooks.trigger('urlUpdated', { url: this.currentPageUrl });
 
 	// only add for page loads with transitions
-	if (this.context.animate) {
+	if (this.context.transition.animate) {
 		document.documentElement.classList.add('is-rendering');
 	}
 

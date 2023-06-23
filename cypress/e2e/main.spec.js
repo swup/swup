@@ -573,7 +573,7 @@ describe('Context', function () {
 
 	it('should allow disabling animations via context', function () {
 		this.swup.hooks.before('transitionStart', (context) => {
-			context.animate = false;
+			context.transition.animate = false;
 		});
 		cy.transitionWithExpectedDuration(0, '/page-2.html');
 	});
