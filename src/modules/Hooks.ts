@@ -23,7 +23,7 @@ export interface HookDefinitions {
 	replaceContent: { page: PageData };
 	samePage: undefined;
 	samePageWithHash: { hash: string };
-	serverError: { request: XMLHttpRequest };
+	serverError: { url: string; status: number; request: XMLHttpRequest };
 	transitionStart: undefined;
 	transitionEnd: undefined;
 	urlUpdated: { url: string };

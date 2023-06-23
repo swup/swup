@@ -24,9 +24,10 @@ export async function fetchPage(
 	const page = await new Promise<PageData>((resolve, reject) => {
 		fetch(url, { ...data, headers }, (request) => {
 			const { status, responseText, responseURL } = request;
+			const { url } = Location.fromUrl(responseURL || requestURL);
 
 			if (status === 500) {
-				this.hooks.trigger('serverError', { request });
+				this.hooks.trigger('serverError', { url, status, request });
 				reject(requestURL);
 				return;
 			}
@@ -37,7 +38,6 @@ export async function fetchPage(
 			}
 
 			const html = responseText;
-			const { url } = Location.fromUrl(responseURL || requestURL);
 			const page: PageData = { url, html };
 
 			// Only save cache entry for non-redirects
