@@ -36,13 +36,13 @@ describe('Cache', function () {
 	});
 
 	it('should cache pages', function () {
-		this.swup.loadPage({ url: '/page-2.html' });
+		this.swup.loadPage('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
 		cy.shouldHaveCacheEntry('/page-2.html');
 	});
 
 	it('should cache pages from absolute URLs', function () {
-		this.swup.loadPage({ url: `${baseUrl}/page-2.html` });
+		this.swup.loadPage(`${baseUrl}/page-2.html`);
 		cy.shouldBeAtPage('/page-2.html');
 		cy.shouldHaveCacheEntry('/page-2.html');
 	});
@@ -287,7 +287,7 @@ describe('Ignoring visits', function () {
 	it('should ignore visits via loadPage', function () {
 		this.swup.options.ignoreVisit = (url) => true;
 		cy.shouldHaveReloadedAfterAction(() => {
-			this.swup.loadPage({ url: '/page-2.html' });
+			this.swup.loadPage('/page-2.html');
 		});
 		cy.shouldBeAtPage('/page-2.html');
 	});
@@ -393,11 +393,11 @@ describe('History', function () {
 
 	it('should replace the current history state via API', function () {
 		cy.window().then(() => {
-			this.swup.loadPage({ url: '/page-2.html' });
+			this.swup.loadPage('/page-2.html');
 		});
 		cy.shouldBeAtPage('/page-2.html');
 		cy.window().then(() => {
-			this.swup.loadPage({ url: '/page-3.html', history: 'replace' });
+			this.swup.loadPage('/page-3.html', { history: 'replace' });
 		});
 		cy.shouldBeAtPage('/page-3.html');
 		cy.window().then((window) => {
@@ -481,8 +481,100 @@ describe('API', function () {
 	});
 
 	it('should transition to pages using swup API', function () {
-		this.swup.loadPage({ url: '/page-2.html' });
+		this.swup.loadPage('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
 		cy.shouldHaveH1('Page 2');
+	});
+});
+
+describe('Context', function () {
+	beforeEach(() => {
+		cy.visit('/page-1.html');
+		cy.wrapSwupInstance();
+	});
+
+	it('has current and next url', function () {
+		let from = '';
+		let to = '';
+		this.swup.hooks.before('transitionStart', (ctx) => {
+			from = ctx.from.url;
+			to = ctx.to.url;
+		});
+		cy.triggerClickOnLink('/page-2.html');
+		cy.window().should(() => {
+			expect(from).to.eq('/page-1.html');
+			expect(to).to.eq('/page-2.html');
+		});
+	});
+
+	it('has the correct current url on history visits', function () {
+		let from = '';
+		let to = '';
+		this.swup.hooks.before('transitionStart', (ctx) => {
+			from = ctx.from.url;
+			to = ctx.to.url;
+		});
+		cy.triggerClickOnLink('/page-2.html');
+		cy.shouldBeAtPage('/page-2.html');
+		cy.shouldHaveH1('Page 2');
+		cy.window().then((window) => {
+			window.history.back();
+			cy.shouldBeAtPage('/page-1.html');
+			cy.shouldHaveH1('Page 1');
+			cy.window().should(() => {
+				expect(from).to.eq('/page-2.html');
+				expect(to).to.eq('/page-1.html');
+			});
+		});
+	});
+
+	it('passes along the click trigger', function () {
+		let el = null;
+		this.swup.hooks.before('transitionStart', (context) => {
+			el = context.trigger.el;
+		});
+		cy.triggerClickOnLink('/page-2.html');
+		cy.window().should((win) => {
+			expect(el).to.be.instanceof(win.HTMLAnchorElement)
+		});
+	});
+
+	it('passes along the click event', function () {
+		let event = null;
+		this.swup.hooks.before('transitionStart', (context) => {
+			event = context.trigger.event;
+		});
+		cy.triggerClickOnLink('/page-2.html');
+		cy.window().should((win) => {
+			expect(event).to.be.instanceof(win.MouseEvent)
+		});
+	});
+
+	it('passes along the popstate status', function () {
+		let event = null;
+		let historyVisit = null;
+		this.swup.hooks.before('transitionStart', (context) => {
+			event = context.trigger.event;
+			historyVisit = context.history.popstate;
+		});
+		cy.window().then(() => {
+			this.swup.loadPage('/page-2.html');
+		});
+		cy.shouldBeAtPage('/page-2.html');
+		cy.window().then((window) => {
+			window.history.back();
+		});
+		cy.shouldBeAtPage('/page-1.html');
+		cy.window().should((win) => {
+			expect(event).to.be.instanceof(win.PopStateEvent);
+			expect(historyVisit).to.be.true;
+		});
+	});
+
+	it('should allow disabling animations via context', function () {
+		this.swup.hooks.before('transitionStart', (context) => {
+			context.animate = false;
+		});
+		cy.transitionWithExpectedDuration(0, '/page-2.html');
 	});
 });

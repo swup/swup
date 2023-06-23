@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import Swup from '../../Swup.js';
 import { Handler, Hooks } from '../Hooks.js';
+import { Context } from '../Context.js';
 
 describe('Hook registry', () => {
 	it('should add custom handlers', () => {
@@ -81,19 +82,6 @@ describe('Hook registry', () => {
 		expect(handler).toBeCalledTimes(1);
 	});
 
-	it('should preserve original handler `this` context', async () => {
-		const swup = new Swup();
-		let thisArg;
-		const handler = vi.fn(function (this: Swup) {
-			thisArg = this;
-		});
-
-		await swup.hooks.trigger('enabled', undefined, handler);
-
-		expect(thisArg).toBeInstanceOf(Swup);
-		expect(thisArg).toBe(swup);
-	});
-
 	it('should allow triggering custom handlers before original handler', async () => {
 		const swup = new Swup();
 
@@ -171,16 +159,17 @@ describe('Hook registry', () => {
 		expect(listener).toBeCalledTimes(1);
 	});
 
-	it('should trigger event handler with event', async () => {
+	it('should trigger event handler with context and args', async () => {
 		const swup = new Swup();
 		const handler: Handler<'popState'> = vi.fn();
-		const event = new PopStateEvent('');
+		const ctx = swup.context;
+		const args = { event: new PopStateEvent('') };
 
 		swup.hooks.on('popState', handler);
-		await swup.hooks.trigger('popState', event);
+		await swup.hooks.trigger('popState', args);
 
 		expect(handler).toBeCalledTimes(1);
-		expect(handler).toBeCalledWith(event);
+		expect(handler).toBeCalledWith(ctx, args);
 	});
 });
 
@@ -213,13 +202,13 @@ describe('Types', () => {
 		const swup = new Swup();
 
 		// @ts-expect-no-error
-		swup.hooks.on('popState', (event: PopStateEvent) => {});
+		swup.hooks.on('popState', (ctx: Context, { event: PopStateEvent }) => {});
 		// @ts-expect-no-error
-		await swup.hooks.trigger('popState', new PopStateEvent(''));
+		await swup.hooks.trigger('popState', { event: new PopStateEvent('') });
 
 		// @ts-expect-error
-		swup.hooks.on('popState', (event: MouseEvent) => {});
+		swup.hooks.on('popState', ({ event: MouseEvent }) => {});
 		// @ts-expect-error
-		await swup.hooks.trigger('popState', new MouseEvent(''));
+		await swup.hooks.trigger('popState', { event: new MouseEvent('') });
 	});
 });

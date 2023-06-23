@@ -1,18 +1,19 @@
-import { TransitionOptions } from '../modules/loadPage.js';
 import { Options } from '../Swup.js';
 
+type Headers = Options['requestHeaders'];
+
+export type FetchOptions = {
+	method?: 'GET' | 'POST';
+	headers?: Headers;
+	data?: XMLHttpRequestBodyInit;
+};
+
 export const fetch = (
-	options: TransitionOptions & { headers: Options['requestHeaders'] },
+	url: string,
+	options: FetchOptions = {},
 	callback: (request: XMLHttpRequest) => void
 ): XMLHttpRequest => {
-	const defaults = {
-		url: window.location.pathname + window.location.search,
-		method: 'GET',
-		data: null,
-		headers: {}
-	};
-
-	const { url, method, headers, data } = { ...defaults, ...options };
+	const { method = 'GET', headers = {}, data = null } = options;
 
 	const request = new XMLHttpRequest();
 

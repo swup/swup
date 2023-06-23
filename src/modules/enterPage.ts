@@ -1,25 +1,16 @@
 import Swup from '../Swup.js';
-import { PageRenderOptions } from './renderPage.js';
 
-export const enterPage = async function (
-	this: Swup,
-	{ event, skipTransition }: PageRenderOptions = {}
-) {
-	if (skipTransition) {
-		await this.hooks.trigger('transitionEnd', event);
-		this.cleanupAnimationClasses();
-		return;
+export const enterPage = async function (this: Swup) {
+	if (this.context.animate) {
+		const animationPromises = this.getAnimationPromises('in');
+		await this.hooks.trigger('animationInStart', undefined, () => {
+			document.documentElement.classList.remove('is-animating');
+		});
+		await Promise.all(animationPromises);
+		await this.hooks.trigger('animationInDone');
 	}
 
-	const animationPromises = this.getAnimationPromises('in');
-
-	await this.hooks.trigger('animationInStart', undefined, () => {
-		document.documentElement.classList.remove('is-animating');
-	});
-
-	await Promise.all(animationPromises);
-	await this.hooks.trigger('animationInDone');
-
-	await this.hooks.trigger('transitionEnd', event);
+	await this.hooks.trigger('transitionEnd');
 	this.cleanupAnimationClasses();
+	this.context = this.createContext({ to: undefined });
 };

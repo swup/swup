@@ -1,62 +1,53 @@
-import {
-	classify,
-	createHistoryRecord,
-	updateHistoryRecord,
-	getCurrentUrl,
-	Location
-} from '../helpers.js';
 import Swup from '../Swup.js';
+import { createHistoryRecord, updateHistoryRecord, getCurrentUrl, Location } from '../helpers.js';
 
 export type HistoryAction = 'push' | 'replace';
 
-export type TransitionOptions = {
-	url: string;
-	customTransition?: string;
-	history?: HistoryAction;
-};
-
 export type PageLoadOptions = {
-	url: string;
-	customTransition?: string;
+	transition?: string;
 	history?: HistoryAction;
-	event?: PopStateEvent;
+	animate?: boolean;
 };
 
-export function loadPage(this: Swup, data: TransitionOptions) {
-	const { url } = data;
-
+export function loadPage(this: Swup, url: string, options: PageLoadOptions = {}) {
 	// Check if the visit should be ignored
 	if (this.shouldIgnoreVisit(url)) {
 		window.location.href = url;
 	} else {
-		this.performPageLoad(data);
+		const { url: to, hash } = Location.fromUrl(url);
+		this.context = this.createContext({ to, hash });
+		this.performPageLoad(to, options);
 	}
 }
 
-export async function performPageLoad(this: Swup, data: PageLoadOptions) {
-	const { url, event, customTransition, history: historyAction = 'push' } = data ?? {};
+export async function performPageLoad(this: Swup, url: string, options: PageLoadOptions = {}) {
+	const { transition, animate, history: historyAction } = options;
 
-	const isHistoryVisit = event instanceof PopStateEvent;
-	const skipTransition = this.shouldSkipTransition({ url, event });
-
-	await this.hooks.trigger('transitionStart', event);
-
-	// set transition object
-	this.updateTransition(getCurrentUrl(), url, customTransition);
-	if (customTransition != null) {
-		document.documentElement.classList.add(`to-${classify(customTransition)}`);
+	if (animate === false) {
+		this.context.animate = false;
 	}
 
-	// start/skip animation
-	const animationPromise = this.leavePage({ event, skipTransition });
+	if (historyAction) {
+		this.context.history.action = historyAction;
+	}
 
-	// Load page data
-	const fetchPromise = this.fetchPage(data);
+	if (!this.context.animate) {
+		document.documentElement.classList.remove('is-animating');
+		this.cleanupAnimationClasses();
+	} else if (transition) {
+		this.context.transition = transition;
+	}
+
+	await this.hooks.trigger('transitionStart');
+
+	const animationPromise = this.leavePage();
+
+	const fetchPromise = this.fetchPage(url, options);
 
 	// create history record if this is not a popstate call (with or without anchor)
-	if (!isHistoryVisit) {
-		const historyUrl = url + (this.scrollToElement || '');
-		if (historyAction === 'replace') {
+	if (!this.context.history.popstate) {
+		const historyUrl = url + (this.context.scroll.target || '');
+		if (this.context.history.action === 'replace') {
 			updateHistoryRecord(historyUrl);
 		} else {
 			createHistoryRecord(historyUrl);
@@ -69,7 +60,7 @@ export async function performPageLoad(this: Swup, data: PageLoadOptions) {
 	try {
 		const [page] = await Promise.all([fetchPromise, animationPromise]);
 		const { url: requestedUrl } = Location.fromUrl(url);
-		this.renderPage(requestedUrl, page, { event, skipTransition });
+		this.renderPage(requestedUrl, page);
 	} catch (errorUrl: any) {
 		// Return early if errorUrl is not defined (probably aborted preload request)
 		if (errorUrl === undefined) return;

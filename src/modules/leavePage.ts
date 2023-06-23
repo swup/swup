@@ -1,21 +1,19 @@
 import Swup from '../Swup.js';
-import { PageRenderOptions } from './renderPage.js';
+import { classify } from '../helpers.js';
 
-export const leavePage = async function (
-	this: Swup,
-	{ event, skipTransition }: PageRenderOptions = {}
-) {
-	const isHistoryVisit = event instanceof PopStateEvent;
-
-	if (skipTransition) {
+export const leavePage = async function (this: Swup) {
+	if (!this.context.animate) {
 		await this.hooks.trigger('animationSkipped');
 		return;
 	}
 
 	await this.hooks.trigger('animationOutStart', undefined, () => {
 		document.documentElement.classList.add('is-changing', 'is-leaving', 'is-animating');
-		if (isHistoryVisit) {
+		if (this.context.history.popstate) {
 			document.documentElement.classList.add('is-popstate');
+		}
+		if (this.context.transition) {
+			document.documentElement.classList.add(`to-${classify(this.context.transition)}`);
 		}
 	});
 
