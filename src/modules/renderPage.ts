@@ -14,9 +14,11 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 
 	// update state if the url was redirected
 	if (!this.isSameResolvedUrl(getCurrentUrl(), url)) {
-		this.currentPageUrl = getCurrentUrl();
 		updateHistoryRecord(url);
+		this.currentPageUrl = getCurrentUrl();
 	}
+
+	await this.hooks.trigger('urlUpdated', { url: this.currentPageUrl });
 
 	// only add for page loads with transitions
 	if (this.context.animate) {

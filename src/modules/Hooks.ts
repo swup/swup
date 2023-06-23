@@ -26,6 +26,7 @@ export interface HookDefinitions {
 	serverError: undefined;
 	transitionStart: undefined;
 	transitionEnd: undefined;
+	urlUpdated: { url: string };
 }
 
 export type HookData<T extends HookName> = HookDefinitions[T];
@@ -93,7 +94,8 @@ export class Hooks {
 		'samePageWithHash',
 		'serverError',
 		'transitionStart',
-		'transitionEnd'
+		'transitionEnd',
+		'urlUpdated'
 	];
 
 	constructor(swup: Swup) {
