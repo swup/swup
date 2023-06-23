@@ -111,7 +111,7 @@ describe('Events', function () {
 		cy.spy(handlers, 'content');
 
 		this.swup.hooks.on('transitionStart', handlers.transition);
-		this.swup.hooks.on('contentReplaced', handlers.content);
+		this.swup.hooks.on('replaceContent', handlers.content);
 
 		cy.triggerClickOnLink('/page-2.html');
 		cy.window().should(() => {
