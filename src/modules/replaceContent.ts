@@ -10,7 +10,7 @@ import { PageData } from './fetchPage.js';
 export const replaceContent = function (
 	this: Swup,
 	{ html }: PageData,
-	{ containers = [] }: { containers?: Options['containers'] } = this.options
+	{ containers }: { containers: Options['containers'] } = this.options
 ): void {
 	const doc = new DOMParser().parseFromString(html, 'text/html');
 

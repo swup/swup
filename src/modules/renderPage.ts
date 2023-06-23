@@ -27,9 +27,13 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 	}
 
 	// replace content: allow handlers and plugins to overwrite paga data and containers
-	await this.hooks.trigger('replaceContent', { page }, ({ containers }, { page }) => {
-		this.replaceContent(page, { containers });
-	});
+	await this.hooks.trigger(
+		'replaceContent',
+		{ page, containers: this.context.containers },
+		(_, { page, containers }) => {
+			this.replaceContent(page, { containers });
+		}
+	);
 
 	await this.hooks.trigger('pageView', { url: this.currentPageUrl, title: document.title });
 
