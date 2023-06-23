@@ -168,11 +168,6 @@ export default class Swup {
 		// unmount plugins
 		this.options.plugins.forEach((plugin) => this.unuse(plugin));
 
-		// remove swup data atributes from blocks
-		queryAll('[data-swup]').forEach((element) => {
-			element.removeAttribute('data-swup');
-		});
-
 		// trigger disable event
 		await this.hooks.trigger('disabled', undefined, () => {
 			// remove swup-enabled class from html tag
