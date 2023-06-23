@@ -11,7 +11,7 @@ export interface HookDefinitions {
 	animationOutDone: undefined;
 	animationOutStart: undefined;
 	animationSkipped: undefined;
-	awaitAnimations: undefined;
+	awaitAnimation: { selector: Options['animationSelector'] };
 	clickLink: { event: DelegateEvent<MouseEvent> };
 	disabled: undefined;
 	enabled: undefined;
@@ -27,7 +27,6 @@ export interface HookDefinitions {
 	transitionStart: undefined;
 	transitionEnd: undefined;
 	urlUpdated: { url: string };
-	willReplaceContent: undefined;
 }
 
 export type HookData<T extends HookName> = HookDefinitions[T];
@@ -81,6 +80,7 @@ export class Hooks {
 		'animationOutDone',
 		'animationOutStart',
 		'animationSkipped',
+		'awaitAnimation',
 		'clickLink',
 		'disabled',
 		'enabled',
