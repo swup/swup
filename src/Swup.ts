@@ -152,7 +152,7 @@ export default class Swup {
 		});
 
 		// Trigger page view event
-		await this.hooks.trigger('pageView', { url: this.currentPageUrl });
+		await this.hooks.trigger('pageView', { url: this.currentPageUrl, title: document.title });
 	}
 
 	async destroy() {

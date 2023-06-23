@@ -18,7 +18,7 @@ export interface HookDefinitions {
 	openPageInNewTab: { href: string };
 	pageLoaded: { page: PageData };
 	pageRetrievedFromCache: { page: PageData };
-	pageView: { url: string };
+	pageView: { url: string; title: string };
 	popState: { event: PopStateEvent };
 	replaceContent: { page: PageData };
 	samePage: undefined;
