@@ -20,7 +20,7 @@ export interface HookDefinitions {
 	pageRetrievedFromCache: undefined;
 	pageView: undefined;
 	popState: { event: PopStateEvent };
-	replaceContent: { page: PageData; containers: Options['containers'] };
+	replaceContent: { page: PageData };
 	samePage: undefined;
 	samePageWithHash: undefined;
 	serverError: undefined;

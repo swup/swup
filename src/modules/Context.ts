@@ -1,9 +1,10 @@
-import Swup from '../Swup.js';
+import Swup, { Options } from '../Swup.js';
 import { HistoryAction } from './loadPage.js';
 
 export interface Context<TEvent = Event> {
 	from: PageContext;
 	to?: PageContext;
+	containers: Options['containers'];
 	animate: boolean;
 	transition?: string;
 	trigger: TriggerContext<TEvent>;
@@ -36,6 +37,7 @@ export function createContext(
 	{
 		to,
 		from = this.currentPageUrl,
+		containers = this.options.containers,
 		hash: target,
 		el,
 		event,
@@ -46,8 +48,9 @@ export function createContext(
 		resetScroll: reset = true
 	}: {
 		to: string | undefined;
-		from?: string;
 		hash?: string;
+		from?: string;
+		containers?: Options['containers'];
 		el?: Element;
 		event?: Event;
 		animate?: boolean;
@@ -60,6 +63,7 @@ export function createContext(
 	return {
 		from: { url: from },
 		to: to ? { url: to } : undefined,
+		containers,
 		animate,
 		transition,
 		trigger: {
