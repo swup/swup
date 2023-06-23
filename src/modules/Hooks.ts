@@ -95,7 +95,7 @@ export class Hooks {
 		'serverError',
 		'transitionStart',
 		'transitionEnd',
-		'urlUpdated',
+		'urlUpdated'
 	];
 
 	constructor(swup: Swup) {
@@ -290,7 +290,7 @@ export class Hooks {
 	 */
 	async execute<T extends HookName>(
 		registrations: HookRegistration<T>[],
-		data: HookData<T>
+		data?: HookData<T>
 	): Promise<any> {
 		const results = [];
 		for (const { hook, handler, once } of registrations) {
@@ -313,12 +313,12 @@ export class Hooks {
 	 */
 	executeSync<T extends HookName>(
 		registrations: HookRegistration<T>[],
-		data: HookData<T>
+		data?: HookData<T>
 	): any[] {
 		const results = [];
 		for (const { hook, handler, once } of registrations) {
 			try {
-				const result = handler(this.swup.context, data);
+				const result = handler(this.swup.context, data as HookData<T>);
 				if (isPromise(result)) {
 					console.warn(
 						`Promise returned from handler for synchronous hook '${hook}'.` +
