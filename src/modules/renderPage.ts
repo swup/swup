@@ -35,6 +35,23 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 		}
 	);
 
+	await this.hooks.trigger(
+		'scrollToContent',
+		{ options: { behavior: 'auto' } },
+		(_, { options }) => {
+			if (this.context.scroll.target) {
+				const target = this.getAnchorElement(this.context.scroll.target);
+				if (target) {
+					target.scrollIntoView(options);
+					return;
+				}
+			}
+			if (this.context.scroll.reset) {
+				window.scrollTo(0, 0);
+			}
+		}
+	);
+
 	await this.hooks.trigger('pageView', { url: this.currentPageUrl, title: document.title });
 
 	// empty cache if it's disabled (in case preload plugin filled it)
