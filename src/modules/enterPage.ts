@@ -2,11 +2,13 @@ import Swup from '../Swup.js';
 
 export const enterPage = async function (this: Swup) {
 	if (this.context.animate) {
-		const animationPromises = this.getAnimationPromises({ selector: this.options.animationSelector, direction: 'in' });
+		const animation = this.hooks.trigger('awaitAnimation', { selector: this.options.animationSelector }, async (_, { selector }) => {
+			await Promise.all(this.getAnimationPromises({ selector, direction: 'in' }));
+		});
 		await this.hooks.trigger('animationInStart', undefined, () => {
 			document.documentElement.classList.remove('is-animating');
 		});
-		await Promise.all(animationPromises);
+		await animation;
 		await this.hooks.trigger('animationInDone');
 	}
 
