@@ -1,5 +1,5 @@
-import { createHistoryRecord, updateHistoryRecord, getCurrentUrl, Location } from '../helpers.js';
 import Swup from '../Swup.js';
+import { createHistoryRecord, updateHistoryRecord, getCurrentUrl, Location } from '../helpers.js';
 
 export type HistoryAction = 'push' | 'replace';
 
@@ -21,10 +21,14 @@ export function loadPage(this: Swup, url: string, options: PageLoadOptions = {})
 }
 
 export async function performPageLoad(this: Swup, url: string, options: PageLoadOptions = {}) {
-	const { transition, animate, history: historyAction = 'push' } = options;
+	const { transition, animate, history: historyAction } = options;
 
 	if (animate === false) {
 		this.context.animate = false;
+	}
+
+	if (historyAction) {
+		this.context.history.action = historyAction;
 	}
 
 	if (!this.context.animate) {
@@ -43,7 +47,7 @@ export async function performPageLoad(this: Swup, url: string, options: PageLoad
 	// create history record if this is not a popstate call (with or without anchor)
 	if (!this.context.history.popstate) {
 		const historyUrl = url + (this.context.scroll.target || '');
-		if (historyAction === 'replace') {
+		if (this.context.history.action === 'replace') {
 			updateHistoryRecord(historyUrl);
 		} else {
 			createHistoryRecord(historyUrl);
