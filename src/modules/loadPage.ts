@@ -1,26 +1,37 @@
 import Swup from '../Swup.js';
 import { createHistoryRecord, updateHistoryRecord, getCurrentUrl, Location } from '../helpers.js';
+import { FetchOptions } from '../helpers/fetch.js';
+import { ContextInitOptions } from './Context.js';
 
 export type HistoryAction = 'push' | 'replace';
 
 export type PageLoadOptions = {
+	animate?: boolean;
 	transition?: string;
 	history?: HistoryAction;
-	animate?: boolean;
 };
 
-export function loadPage(this: Swup, url: string, options: PageLoadOptions = {}) {
+export function loadPage(
+	this: Swup,
+	url: string,
+	options: PageLoadOptions & FetchOptions = {},
+	context: Omit<ContextInitOptions, 'to'> = {}
+) {
 	// Check if the visit should be ignored
 	if (this.shouldIgnoreVisit(url)) {
 		window.location.href = url;
 	} else {
 		const { url: to, hash } = Location.fromUrl(url);
-		this.context = this.createContext({ to, hash });
+		this.context = this.createContext({ ...context, to, hash });
 		this.performPageLoad(to, options);
 	}
 }
 
-export async function performPageLoad(this: Swup, url: string, options: PageLoadOptions = {}) {
+export async function performPageLoad(
+	this: Swup,
+	url: string,
+	options: PageLoadOptions & FetchOptions = {}
+) {
 	const { transition, animate, history: historyAction } = options;
 
 	if (animate === false) {

@@ -35,6 +35,19 @@ export interface HistoryContext {
 	// direction: 'forward' | 'backward' | undefined
 }
 
+export interface ContextInitOptions {
+	to: string | undefined;
+	from?: string;
+	hash?: string;
+	el?: Element;
+	event?: Event;
+	animate?: boolean;
+	transition?: string;
+	popstate?: boolean;
+	action?: HistoryAction;
+	resetScroll?: boolean;
+}
+
 export function createContext(
 	this: Swup,
 	{
@@ -48,18 +61,7 @@ export function createContext(
 		popstate = false,
 		action = 'push',
 		resetScroll: reset = true
-	}: {
-		to: string | undefined;
-		from?: string;
-		hash?: string;
-		el?: Element;
-		event?: Event;
-		animate?: boolean;
-		transition?: string;
-		popstate?: boolean;
-		action?: HistoryAction;
-		resetScroll?: boolean;
-	}
+	}: ContextInitOptions
 ): Context {
 	return {
 		from: { url: from },
