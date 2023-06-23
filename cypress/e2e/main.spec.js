@@ -555,7 +555,7 @@ describe('Context', function () {
 		let historyVisit = null;
 		this.swup.hooks.before('transitionStart', (context) => {
 			event = context.trigger.event;
-			historyVisit = context.trigger.history;
+			historyVisit = context.history.popstate;
 		});
 		cy.window().then(() => {
 			this.swup.loadPage('/page-2.html');
