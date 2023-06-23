@@ -340,10 +340,10 @@ export default class Swup {
 			popstate: true
 		});
 
-		// What does this do?
-		if (!hash) {
-			event.preventDefault();
-		}
+		// Does this even do anything?
+		// if (!hash) {
+		// 	event.preventDefault();
+		// }
 
 		this.hooks.triggerSync('popState', undefined, () => {
 			this.performPageLoad(url);
