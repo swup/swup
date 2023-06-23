@@ -12,4 +12,5 @@ export const enterPage = async function (this: Swup) {
 
 	await this.hooks.trigger('transitionEnd');
 	this.cleanupAnimationClasses();
+	this.context = this.createContext({ to: undefined });
 };
