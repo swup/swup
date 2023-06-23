@@ -493,7 +493,7 @@ describe('Context', function () {
 		cy.wrapSwupInstance();
 	});
 
-	it('has the current and next url', function () {
+	it('has current and next url', function () {
 		let from = '';
 		let to = '';
 		this.swup.hooks.before('transitionStart', (ctx) => {
@@ -504,6 +504,27 @@ describe('Context', function () {
 		cy.window().should(() => {
 			expect(from).to.eq('/page-1.html');
 			expect(to).to.eq('/page-2.html');
+		});
+	});
+
+	it('has the correct current url on history visits', function () {
+		let from = '';
+		let to = '';
+		this.swup.hooks.before('transitionStart', (ctx) => {
+			from = ctx.from.url;
+			to = ctx.to.url;
+		});
+		cy.triggerClickOnLink('/page-2.html');
+		cy.shouldBeAtPage('/page-2.html');
+		cy.shouldHaveH1('Page 2');
+		cy.window().then((window) => {
+			window.history.back();
+			cy.shouldBeAtPage('/page-1.html');
+			cy.shouldHaveH1('Page 1');
+			cy.window().should(() => {
+				expect(from).to.eq('/page-2.html');
+				expect(to).to.eq('/page-1.html');
+			});
 		});
 	});
 
