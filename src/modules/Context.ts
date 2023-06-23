@@ -4,8 +4,7 @@ import { HistoryAction } from './loadPage.js';
 export interface Context<TEvent = Event> {
 	from: PageContext;
 	to?: PageContext;
-	animate: boolean;
-	transition?: string;
+	transition: TransitionContext;
 	trigger: TriggerContext<TEvent>;
 	history: HistoryContext;
 	scroll: ScrollContext;
@@ -13,6 +12,11 @@ export interface Context<TEvent = Event> {
 
 export interface PageContext {
 	url: string;
+}
+
+export interface TransitionContext {
+	animate: boolean;
+	name?: string;
 }
 
 export interface ScrollContext {
@@ -60,8 +64,10 @@ export function createContext(
 	return {
 		from: { url: from },
 		to: to ? { url: to } : undefined,
-		animate,
-		transition,
+		transition: {
+			animate,
+			name: transition
+		},
 		trigger: {
 			el,
 			event

@@ -24,18 +24,18 @@ export async function performPageLoad(this: Swup, url: string, options: PageLoad
 	const { transition, animate, history: historyAction } = options;
 
 	if (animate === false) {
-		this.context.animate = false;
+		this.context.transition.animate = false;
 	}
 
 	if (historyAction) {
 		this.context.history.action = historyAction;
 	}
 
-	if (!this.context.animate) {
+	if (!this.context.transition.animate) {
 		document.documentElement.classList.remove('is-animating');
 		this.cleanupAnimationClasses();
 	} else if (transition) {
-		this.context.transition = transition;
+		this.context.transition.name = transition;
 	}
 
 	await this.hooks.trigger('transitionStart');

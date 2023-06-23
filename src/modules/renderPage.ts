@@ -19,7 +19,7 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 	}
 
 	// only add for page loads with transitions
-	if (this.context.animate) {
+	if (this.context.transition.animate) {
 		document.documentElement.classList.add('is-rendering');
 	}
 
