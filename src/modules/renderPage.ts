@@ -39,7 +39,7 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 
 	// empty cache if it's disabled (in case preload plugin filled it)
 	if (!this.options.cache) {
-		this.cache.empty();
+		this.cache.clear();
 	}
 
 	// Perform in transition

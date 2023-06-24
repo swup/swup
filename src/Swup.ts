@@ -161,7 +161,7 @@ export default class Swup {
 		window.removeEventListener('popstate', this.popStateHandler);
 
 		// empty cache
-		this.cache.empty();
+		this.cache.clear();
 
 		// unmount plugins
 		this.options.plugins.forEach((plugin) => this.unuse(plugin));

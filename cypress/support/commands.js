@@ -53,8 +53,8 @@ Cypress.Commands.add('shouldHaveCacheEntries', (urls) => {
 Cypress.Commands.add('shouldHaveCacheEntry', (url) => {
 	cy.window().should((window) => {
 		const { cache } = window._swup;
-		const exists = cache.exists(url);
-		const page = cache.getPage(url);
+		const exists = cache.has(url);
+		const page = cache.get(url);
 		expect(url).to.be.a('string');
 		expect(exists).to.be.true;
 		expect(page).not.to.be.undefined;

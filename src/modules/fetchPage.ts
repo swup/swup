@@ -2,10 +2,10 @@ import Swup from '../Swup.js';
 import { Location, fetch } from '../helpers.js';
 import { PageLoadOptions } from './loadPage.js';
 
-export type PageData = {
+export interface PageData {
 	url: string;
 	html: string;
-};
+}
 
 export async function fetchPage(
 	this: Swup,
@@ -15,9 +15,9 @@ export async function fetchPage(
 	const headers = this.options.requestHeaders;
 	const { url: requestURL } = Location.fromUrl(url);
 
-	const cachedPage = this.cache.getPage(requestURL);
+	const cachedPage = this.cache.get(requestURL);
 	if (cachedPage) {
-		await this.hooks.trigger('pageRetrievedFromCache', { page: cachedPage });
+		await this.hooks.trigger('pageLoadedFromCache', { page: cachedPage });
 		return Promise.resolve(cachedPage);
 	}
 
@@ -42,7 +42,7 @@ export async function fetchPage(
 
 			// Only save cache entry for non-redirects
 			if (requestURL === url) {
-				this.cache.cacheUrl(page);
+				this.cache.set(url, page);
 			}
 
 			this.hooks.trigger('pageLoaded', { page });
