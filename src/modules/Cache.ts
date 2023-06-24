@@ -50,9 +50,9 @@ export class Cache {
 		this.swup.hooks.triggerSync('cacheCleared');
 	}
 
-	public prune(predicate: (page: CacheData) => boolean): void {
+	public prune(predicate: (url: string, page: CacheData) => boolean): void {
 		this.pages.forEach((page, url) => {
-			if (predicate(page)) {
+			if (predicate(url, page)) {
 				this.delete(url);
 			}
 		});
