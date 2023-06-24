@@ -250,15 +250,15 @@ export class Hooks {
 	 * Will execute all handlers in order and `await` any `Promise`s they return.
 	 * @param hook Name of the hook to trigger
 	 * @param data Data to pass to the handler
-	 * @param defaultHander A default implementation of this hook to execute
+	 * @param defaultHandler A default implementation of this hook to execute
 	 * @returns The resolved return value of the executed default handler
 	 */
 	async trigger<T extends HookName>(
 		hook: T,
 		data?: HookData<T>,
-		defaultHander?: Handler<T>
+		defaultHandler?: Handler<T>
 	): Promise<any> {
-		const { before, handler, after } = this.getHandlers(hook, defaultHander);
+		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
 		await this.execute(before, data);
 		const [result] = await this.execute(handler, data);
 		await this.execute(after, data);
@@ -271,11 +271,11 @@ export class Hooks {
 	 * Will execute all handlers in order, but will **not** `await` any `Promise`s they return.
 	 * @param hook Name of the hook to trigger
 	 * @param data Data to pass to the handler
-	 * @param defaultHander A default implementation of this hook to execute
+	 * @param defaultHandler A default implementation of this hook to execute
 	 * @returns The (possibly unresolved) return value of the executed default handler
 	 */
-	triggerSync<T extends HookName>(hook: T, data?: HookData<T>, defaultHander?: Handler<T>): any {
-		const { before, after, handler } = this.getHandlers(hook, defaultHander);
+	triggerSync<T extends HookName>(hook: T, data?: HookData<T>, defaultHandler?: Handler<T>): any {
+		const { before, after, handler } = this.getHandlers(hook, defaultHandler);
 		this.executeSync(before, data);
 		const [result] = this.executeSync(handler, data);
 		this.executeSync(after, data);
@@ -339,11 +339,11 @@ export class Hooks {
 	/**
 	 * Get all registered handlers for a hook, sorted by priority and registration order.
 	 * @param hook Name of the hook
-	 * @param defaultHander The optional default handler of this hook
+	 * @param defaultHandler The optional default handler of this hook
 	 * @returns An object with the handlers sorted into `before` and `after` arrays,
 	 *          as well as a flag indicating if the original handler was replaced
 	 */
-	getHandlers<T extends HookName>(hook: T, defaultHander?: Handler<T>) {
+	getHandlers<T extends HookName>(hook: T, defaultHandler?: Handler<T>) {
 		const ledger = this.get(hook);
 		if (!ledger) {
 			return { found: false, before: [], handler: [], after: [], replaced: false };
@@ -360,8 +360,8 @@ export class Hooks {
 		let handler: HookRegistration<T>[] = [];
 		if (replaced) {
 			handler = [{ id: 0, hook, handler: replace[0].handler }];
-		} else if (defaultHander) {
-			handler = [{ id: 0, hook, handler: defaultHander }];
+		} else if (defaultHandler) {
+			handler = [{ id: 0, hook, handler: defaultHandler }];
 		}
 
 		return { found: true, before, handler, after, replaced };
