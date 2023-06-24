@@ -12,12 +12,14 @@ export interface HookDefinitions {
 	animationOutStart: undefined;
 	animationSkipped: undefined;
 	awaitAnimation: { selector: Options['animationSelector'] };
+	cacheCleared: undefined;
 	clickLink: { event: DelegateEvent<MouseEvent> };
 	disabled: undefined;
 	enabled: undefined;
 	openPageInNewTab: { href: string };
+	pageCached: { page: PageData };
 	pageLoaded: { page: PageData };
-	pageRetrievedFromCache: { page: PageData };
+	pageLoadedFromCache: { page: PageData };
 	pageView: { url: string; title: string };
 	popState: { event: PopStateEvent };
 	replaceContent: { page: PageData; containers: Options['containers'] };
@@ -81,12 +83,14 @@ export class Hooks {
 		'animationOutStart',
 		'animationSkipped',
 		'awaitAnimation',
+		'cacheCleared',
 		'clickLink',
 		'disabled',
 		'enabled',
 		'openPageInNewTab',
+		'pageCached',
 		'pageLoaded',
-		'pageRetrievedFromCache',
+		'pageLoadedFromCache',
 		'pageView',
 		'popState',
 		'replaceContent',

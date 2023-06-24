@@ -202,12 +202,14 @@ describe('Types', () => {
 		const swup = new Swup();
 
 		// @ts-expect-no-error
-		swup.hooks.on('popState', (ctx: Context, { event: PopStateEvent }) => {});
+		swup.hooks.on('popState', (ctx: Context, { event }: { event: PopStateEvent }) => {});
 		// @ts-expect-no-error
 		await swup.hooks.trigger('popState', { event: new PopStateEvent('') });
 
 		// @ts-expect-error
 		swup.hooks.on('popState', ({ event: MouseEvent }) => {});
+		// @ts-expect-error
+		swup.hooks.on('popState', (ctx: Context, { event }: { event: MouseEvent }) => {});
 		// @ts-expect-error
 		await swup.hooks.trigger('popState', { event: new MouseEvent('') });
 	});
