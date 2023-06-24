@@ -35,6 +35,12 @@ export class Cache {
 		this.swup.hooks.triggerSync('pageCached', { page });
 	}
 
+	public update(url: string, page: CacheData) {
+		url = this.resolve(url);
+		page = { ...this.get(url), ...page, url };
+		this.pages.set(url, page);
+	}
+
 	public delete(url: string): void {
 		this.pages.delete(this.resolve(url));
 	}
