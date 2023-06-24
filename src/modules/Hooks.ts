@@ -24,7 +24,8 @@ export interface HookDefinitions {
 	popState: { event: PopStateEvent };
 	replaceContent: { page: PageData; containers: Options['containers'] };
 	samePage: undefined;
-	samePageWithHash: { hash: string };
+	samePageWithHash: { hash: string; options: ScrollIntoViewOptions };
+	scrollToContent: { options: ScrollIntoViewOptions };
 	serverError: { url: string; status: number; request: XMLHttpRequest };
 	transitionStart: undefined;
 	transitionEnd: undefined;
@@ -96,6 +97,7 @@ export class Hooks {
 		'replaceContent',
 		'samePage',
 		'samePageWithHash',
+		'scrollToContent',
 		'serverError',
 		'transitionStart',
 		'transitionEnd',

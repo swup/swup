@@ -266,34 +266,42 @@ export default class Swup {
 		}
 
 		this.hooks.triggerSync('clickLink', { event }, () => {
-			event.preventDefault();
+			const from = this.context.from?.url ?? '';
 
-			const from = this.context.from?.url;
-
-			// Handle links to the same page and exit early, where applicable
+			// Handle links to the same page: with or without hash
 			if (!url || url === from) {
-				this.handleLinkToSamePage(url, hash);
+				if (hash) {
+					this.hooks.triggerSync(
+						'samePageWithHash',
+						{ hash, options: { behavior: 'auto' } },
+						(context, { hash, options }) => {
+							event.preventDefault();
+							updateHistoryRecord(url + hash);
+							const target = this.getAnchorElement(hash);
+							if (target) {
+								target.scrollIntoView(options);
+							}
+						}
+					);
+				} else {
+					this.hooks.triggerSync('samePage', undefined, () => {
+						event.preventDefault();
+						window.scroll({ top: 0, left: 0, behavior: 'auto' });
+					});
+				}
 				return;
 			}
 
+			event.preventDefault();
+
 			// Exit early if the resolved path hasn't changed
-			if (this.isSameResolvedUrl(url, from ?? '')) {
+			if (this.isSameResolvedUrl(url, from)) {
 				return;
 			}
 
 			// Finally, proceed with loading the page
 			this.performPageLoad(url, { transition, history: historyAction });
 		});
-	}
-
-	async handleLinkToSamePage(url: string, hash: string) {
-		if (hash) {
-			await this.hooks.trigger('samePageWithHash', { hash }, (_, { hash }) => {
-				updateHistoryRecord(url + hash);
-			});
-		} else {
-			await this.hooks.trigger('samePage');
-		}
 	}
 
 	triggerWillOpenNewWindow(triggerEl: Element) {

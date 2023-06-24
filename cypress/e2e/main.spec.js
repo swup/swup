@@ -587,11 +587,75 @@ describe('Containers', function () {
 	});
 
 	it('should be customizable from hook params', function () {
-		this.swup.hooks.before('replaceContent', (_, args) => {
+		this.swup.hooks.before('replaceContent', (context, args) => {
 			args.containers = ['#main'];
 		});
 		this.swup.loadPage('/containers-2.html', { animate: false });
 		cy.get('h1').should('contain', 'Containers 2');
 		cy.get('h2').should('contain', 'Heading 1');
+	});
+});
+
+describe('Scrolling', function () {
+	beforeEach(() => {
+		cy.visit('/scrolling-1.html');
+	});
+
+	it('should scroll to hash element and back to top', function () {
+		cy.get('[data-cy=link-to-anchor]').click();
+		cy.shouldHaveElementInViewport('[data-cy=anchor]');
+
+		cy.triggerClickOnLink('/page-1.html');
+		cy.window().should((window) => {
+			expect(window.scrollY).equal(0);
+		});
+	});
+
+	it('should scroll to anchor with path', function () {
+		cy.get('[data-cy=link-to-self-anchor]').click();
+		cy.shouldHaveElementInViewport('[data-cy=anchor]');
+	});
+
+	it('should scroll to top', function () {
+		cy.get('[data-cy=link-to-self-anchor]').click();
+		cy.shouldHaveElementInViewport('[data-cy=anchor]');
+		cy.get('[data-cy=link-to-top]').click();
+		cy.window().should((window) => {
+			expect(window.scrollY).equal(0);
+		});
+	});
+
+	it('should scroll to id-based anchor', function () {
+		cy.get('[data-cy=link-to-anchor-by-id]').click();
+		cy.shouldHaveElementInViewport('[data-cy=anchor-by-id]');
+	});
+
+	it('should scroll to name-based anchor', function () {
+		cy.get('[data-cy=link-to-anchor-by-name]').click();
+		cy.shouldHaveElementInViewport('[data-cy=anchor-by-name]');
+	});
+
+	it('should prefer undecoded id attributes', function () {
+		cy.get('[data-cy=link-to-anchor-encoded]').click();
+		cy.shouldHaveElementInViewport('[data-cy=anchor-encoded]');
+	});
+
+	it('should accept unencoded anchor links', function () {
+		cy.get('[data-cy=link-to-anchor-unencoded]').click();
+		cy.shouldHaveElementInViewport('[data-cy=anchor-unencoded]');
+	});
+
+	it('should scroll to anchor with special characters', function () {
+		cy.get('[data-cy=link-to-anchor-with-colon]').click();
+		cy.shouldHaveElementInViewport('[data-cy=anchor-with-colon]');
+		cy.get('[data-cy=link-to-anchor-with-unicode]').click();
+		cy.shouldHaveElementInViewport('[data-cy=anchor-with-unicode]');
+	});
+
+	it('should transition page and scroll on link with hash', function () {
+		cy.get('[data-cy=link-to-page-anchor]').click();
+		cy.shouldBeAtPage('/scrolling-2.html#anchor');
+		cy.shouldHaveH1('Scrolling 2');
+		cy.shouldHaveElementInViewport('[data-cy=anchor]');
 	});
 });

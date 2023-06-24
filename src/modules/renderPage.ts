@@ -30,8 +30,25 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 	await this.hooks.trigger(
 		'replaceContent',
 		{ page, containers: this.context.containers },
-		(_, { page, containers }) => {
+		(context, { page, containers }) => {
 			this.replaceContent(page, { containers });
+		}
+	);
+
+	await this.hooks.trigger(
+		'scrollToContent',
+		{ options: { behavior: 'auto' } },
+		(context, { options }) => {
+			if (this.context.scroll.target) {
+				const target = this.getAnchorElement(this.context.scroll.target);
+				if (target) {
+					target.scrollIntoView(options);
+					return;
+				}
+			}
+			if (this.context.scroll.reset) {
+				window.scrollTo(0, 0);
+			}
 		}
 	);
 
