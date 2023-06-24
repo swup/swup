@@ -30,7 +30,7 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 	await this.hooks.trigger(
 		'replaceContent',
 		{ page, containers: this.context.containers },
-		(_, { page, containers }) => {
+		(context, { page, containers }) => {
 			this.replaceContent(page, { containers });
 		}
 	);
@@ -38,7 +38,7 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 	await this.hooks.trigger(
 		'scrollToContent',
 		{ options: { behavior: 'auto' } },
-		(_, { options }) => {
+		(context, { options }) => {
 			if (this.context.scroll.target) {
 				const target = this.getAnchorElement(this.context.scroll.target);
 				if (target) {

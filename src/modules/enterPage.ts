@@ -5,7 +5,7 @@ export const enterPage = async function (this: Swup) {
 		const animation = this.hooks.trigger(
 			'awaitAnimation',
 			{ selector: this.options.animationSelector },
-			async (_, { selector }) => {
+			async (context, { selector }) => {
 				await Promise.all(this.getAnimationPromises({ selector, direction: 'in' }));
 			}
 		);

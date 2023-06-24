@@ -587,7 +587,7 @@ describe('Containers', function () {
 	});
 
 	it('should be customizable from hook params', function () {
-		this.swup.hooks.before('replaceContent', (_, args) => {
+		this.swup.hooks.before('replaceContent', (context, args) => {
 			args.containers = ['#main'];
 		});
 		this.swup.loadPage('/containers-2.html', { animate: false });

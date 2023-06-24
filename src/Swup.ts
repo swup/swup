@@ -274,7 +274,7 @@ export default class Swup {
 					this.hooks.triggerSync(
 						'samePageWithHash',
 						{ hash, options: { behavior: 'auto' } },
-						(_, { hash, options }) => {
+						(context, { hash, options }) => {
 							event.preventDefault();
 							updateHistoryRecord(url + hash);
 							const target = this.getAnchorElement(hash);
