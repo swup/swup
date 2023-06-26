@@ -45,6 +45,31 @@ describe('Request', function () {
 	});
 });
 
+describe.only('Fetch', function () {
+	beforeEach(() => {
+		cy.visit('/page-1.html');
+		cy.wrapSwupInstance();
+	});
+
+	it('should allow returning a page object to loadPage', function () {
+		let requested = false;
+		cy.intercept('/page-2.html', (req) => {
+			requested = true;
+		});
+
+		this.swup.hooks.before('loadPage', (context, args) => {
+			args.page = { url: '/page-3.html', html: '<html><body><div id="swup"><h1>Page 3</h1></div></body></html>' };
+		});
+		this.swup.loadPage('/page-2.html');
+
+		cy.shouldBeAtPage('/page-3.html');
+		cy.shouldHaveH1('Page 3');
+		cy.window().should(() => {
+			expect(requested).to.be.false;
+		});
+	});
+});
+
 describe('Cache', function () {
 	beforeEach(() => {
 		cy.visit('/page-1.html');

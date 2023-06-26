@@ -30,19 +30,22 @@ export class FetchError extends Error {
 export async function fetchPage(
 	this: Swup,
 	url: URL | string,
-	options: FetchOptions
+	options: FetchOptions & { triggerHooks?: boolean } = {}
 ): Promise<PageData> {
 	const { url: requestUrl } = Location.fromUrl(url);
 
 	if (this.cache.has(requestUrl)) {
 		const page = this.cache.get(requestUrl) as PageData;
-		await this.hooks.trigger('pageLoadedFromCache', { page });
+		if (options.triggerHooks !== false) {
+			await this.hooks.trigger('pageLoaded', { page, cache: true });
+		}
 		return page;
 	}
 
 	const headers = { ...this.options.requestHeaders, ...options.headers };
 	options = { ...options, headers };
 
+	// Allow hooking before this and returning a custom response-like object (e.g. custom fetch implementation)
 	const response = await this.hooks.trigger(
 		'fetchPage',
 		{ url: requestUrl, options },
@@ -70,7 +73,9 @@ export async function fetchPage(
 		this.cache.set(page.url, page);
 	}
 
-	await this.hooks.trigger('pageLoaded', { page });
+	if (options.triggerHooks !== false) {
+		await this.hooks.trigger('pageLoaded', { page, cache: false });
+	}
 
 	return page;
 }

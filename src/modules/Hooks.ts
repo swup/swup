@@ -20,8 +20,7 @@ export interface HookDefinitions {
 	loadPage: { url: string; options: FetchOptions; page?: PageData | Promise<PageData> };
 	openPageInNewTab: { href: string };
 	pageCached: { page: PageData };
-	pageLoaded: { page: PageData };
-	pageLoadedFromCache: { page: PageData };
+	pageLoaded: { page: PageData; cache?: boolean };
 	pageView: { url: string; title: string };
 	popState: { event: PopStateEvent };
 	replaceContent: { page: PageData; containers: Options['containers'] };
@@ -95,7 +94,6 @@ export class Hooks {
 		'openPageInNewTab',
 		'pageCached',
 		'pageLoaded',
-		'pageLoadedFromCache',
 		'pageView',
 		'popState',
 		'replaceContent',
