@@ -33,6 +33,7 @@ export async function performPageLoad(
 	options: PageLoadOptions & FetchOptions = {}
 ) {
 	const { transition, animate, history: historyAction } = options;
+	options.referrer = options.referrer || this.currentPageUrl;
 
 	if (animate === false) {
 		this.context.transition.animate = false;
