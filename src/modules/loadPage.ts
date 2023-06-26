@@ -54,17 +54,11 @@ export async function performPageLoad(
 
 	const animationPromise = this.leavePage();
 
+	// Allow hooking before this and returning a page (e.g. preload plugin)
 	const fetchPromise = this.hooks.trigger(
 		'fetchPage',
 		{ url, options, page: null },
-		async (context, { url, options, page }) => {
-			// Allow hooking before this and returning a page (e.g. preload plugin)
-			if (page) {
-				return page;
-			} else {
-				return await this.fetchPage(url, options);
-			}
-		}
+		async (context, { url, options, page }) => page || (await this.fetchPage(url, options))
 	);
 
 	// create history record if this is not a popstate call (with or without anchor)
