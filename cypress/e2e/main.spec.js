@@ -336,7 +336,7 @@ describe('Link selector', function () {
 	});
 });
 
-describe.only('Resolve URLs', function () {
+describe('Resolve and normalize URLs', function () {
 	beforeEach(() => {
 		cy.visit('/page-1.html');
 		cy.wrapSwupInstance();
