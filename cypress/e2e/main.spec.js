@@ -21,11 +21,13 @@ describe('Request', function () {
 		const expected = this.swup.options.requestHeaders;
 		cy.intercept('GET', '/page-3.html').as('request');
 		cy.triggerClickOnLink('/page-3.html');
-		cy.wait('@request').its('request.headers').then((headers) => {
-			Object.entries(expected).forEach(([header, value]) => {
-				cy.wrap(headers).its(header.toLowerCase()).should('eq', value);
+		cy.wait('@request')
+			.its('request.headers')
+			.then((headers) => {
+				Object.entries(expected).forEach(([header, value]) => {
+					cy.wrap(headers).its(header.toLowerCase()).should('eq', value);
+				});
 			});
-		});
 	});
 });
 
@@ -143,17 +145,20 @@ describe('Transition timing', function () {
 
 	it('should warn about missing transition timing', function () {
 		cy.visit('/transition-none.html', {
-			onBeforeLoad: (win) =>  cy.stub(win.console, 'warn').as('consoleWarn')
+			onBeforeLoad: (win) => cy.stub(win.console, 'warn').as('consoleWarn')
 		});
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
 		cy.shouldHaveH1('Page 2');
-		cy.get('@consoleWarn').should('be.calledOnceWith', '[swup] No CSS animation duration defined on elements matching `[class*=\"transition-\"]`');
+		cy.get('@consoleWarn').should(
+			'be.calledOnceWith',
+			'[swup] No CSS animation duration defined on elements matching `[class*="transition-"]`'
+		);
 	});
 
 	it('should not warn about partial transition timing', function () {
 		cy.visit('/transition-partial.html', {
-			onBeforeLoad: (win) =>  cy.stub(win.console, 'warn').as('consoleWarn')
+			onBeforeLoad: (win) => cy.stub(win.console, 'warn').as('consoleWarn')
 		});
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
@@ -209,6 +214,7 @@ describe('Navigation', function () {
 describe('Link resolution', function () {
 	beforeEach(() => {
 		cy.visit('/link-resolution.html');
+		cy.wrapSwupInstance();
 	});
 
 	it('should skip links to different origins', function () {
@@ -232,7 +238,9 @@ describe('Link resolution', function () {
 		cy.shouldBeAtPage('/nested/nested-2.html');
 		cy.shouldHaveH1('Nested Page 2');
 	});
+
 });
+
 
 describe('Redirects', function () {
 	beforeEach(() => {
@@ -328,7 +336,7 @@ describe('Link selector', function () {
 	});
 });
 
-describe('Resolve URLs', function () {
+describe.only('Resolve URLs', function () {
 	beforeEach(() => {
 		cy.visit('/page-1.html');
 		cy.wrapSwupInstance();
@@ -349,6 +357,14 @@ describe('Resolve URLs', function () {
 			window.history.back();
 			cy.shouldBeAtPage('/pushed-page-1/');
 			cy.shouldHaveH1('Page 1');
+		});
+	});
+
+	it('should normalize the current URL', function () {
+		cy.pushHistoryState('/page-1.html?foo=bar&baz=bat#hash');
+		cy.window().then((window) => {
+			expect(this.swup.getCurrentUrl()).to.equal('/page-1.html?baz=bat&foo=bar');
+			expect(this.swup.getCurrentUrl({hash: true})).to.equal('/page-1.html?baz=bat&foo=bar#hash');
 		});
 	});
 });
@@ -537,8 +553,8 @@ describe('Context', function () {
 		});
 		cy.triggerClickOnLink('/page-2.html');
 		cy.window().should((win) => {
-			expect(el).to.be.instanceof(win.HTMLAnchorElement)
-			expect(event).to.be.instanceof(win.MouseEvent)
+			expect(el).to.be.instanceof(win.HTMLAnchorElement);
+			expect(event).to.be.instanceof(win.MouseEvent);
 		});
 	});
 
