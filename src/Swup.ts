@@ -332,14 +332,6 @@ export default class Swup {
 		const { url, hash } = Location.fromUrl(href);
 		const animate = this.options.animateHistoryBrowsing;
 		const resetScroll = this.options.animateHistoryBrowsing;
-		this.context = this.createContext({
-			to: url,
-			hash,
-			event,
-			animate,
-			resetScroll,
-			popstate: true
-		});
 
 		// Does this even do anything?
 		// if (!hash) {
@@ -347,6 +339,14 @@ export default class Swup {
 		// }
 
 		this.hooks.triggerSync('popState', { event }, () => {
+			this.context = this.createContext({
+				to: url,
+				hash,
+				event,
+				animate,
+				resetScroll,
+				popstate: true
+			});
 			this.performPageLoad(url);
 		});
 	}

@@ -1,6 +1,6 @@
 import Swup from '../Swup.js';
 import { createHistoryRecord, updateHistoryRecord, getCurrentUrl, Location } from '../helpers.js';
-import { FetchError, FetchOptions } from '../modules/fetchPage.js';
+import { FetchOptions } from '../modules/fetchPage.js';
 import { ContextInitOptions } from './Context.js';
 
 export type HistoryAction = 'push' | 'replace';
@@ -59,8 +59,7 @@ export async function performPageLoad(
 	const pagePromise = this.hooks.trigger(
 		'loadPage',
 		{ url, options },
-		async (context, { url, options, page }) =>
-			(await page) || (await this.fetchPage(url, options))
+		async (context, { url, options, page }) => await (page || this.fetchPage(url, options))
 	);
 
 	// create history record if this is not a popstate call (with or without anchor)

@@ -41,14 +41,14 @@ export async function fetchPage(
 	}
 
 	const headers = { ...this.options.requestHeaders, ...options.headers };
+	options = { ...options, headers };
 
 	const response = await this.hooks.trigger(
 		'fetchPage',
 		{ url: requestUrl, options },
-		async (context, { url, options, response }) => {
-			return await (response || fetch(url, { ...options, headers }));
-		}
+		async (context, { url, options, response }) => await (response || fetch(url, options))
 	);
+
 	const { status, url: responseUrl } = response;
 	const html = await response.text();
 
