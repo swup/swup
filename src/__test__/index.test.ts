@@ -57,10 +57,10 @@ describe('ignoreVisit', () => {
 	it('should be called with relative URL', () => {
 		const ignoreVisit = vi.fn(() => true);
 		const swup = new Swup({ ignoreVisit });
-		swup.shouldIgnoreVisit(`${baseUrl}/path/?query#hash`);
+		swup.shouldIgnoreVisit(`${baseUrl}/path?foo=bar#hash`);
 
 		expect(ignoreVisit.mock.calls).toHaveLength(1);
-		expect((ignoreVisit.mock.lastCall as any)[0]).toEqual('/path/?query#hash');
+		expect((ignoreVisit.mock.lastCall as any)[0]).toEqual('/path?foo=bar#hash');
 	});
 
 	it('should have access to element and event params', () => {
