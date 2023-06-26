@@ -1,18 +1,22 @@
 import Swup from '../Swup.js';
-import { Location, fetch } from '../helpers.js';
-import { PageLoadOptions } from './loadPage.js';
+import { Location } from '../helpers.js';
 
 export interface PageData {
 	url: string;
 	html: string;
 }
 
+export interface FetchOptions extends RequestInit {
+	method?: 'GET' | 'POST';
+	body?: string | FormData | URLSearchParams;
+	headers?: Record<string, string>;
+}
+
 export async function fetchPage(
 	this: Swup,
-	url: string,
-	data: PageLoadOptions = {}
+	url: URL | string,
+	options: FetchOptions
 ): Promise<PageData> {
-	const headers = this.options.requestHeaders;
 	const { url: requestURL } = Location.fromUrl(url);
 
 	const cachedPage = this.cache.get(requestURL);
@@ -21,34 +25,43 @@ export async function fetchPage(
 		return Promise.resolve(cachedPage);
 	}
 
-	const page = await new Promise<PageData>((resolve, reject) => {
-		fetch(url, { ...data, headers }, (request) => {
-			const { status, responseText, responseURL } = request;
-			const { url } = Location.fromUrl(responseURL || requestURL);
+	return this.hooks.trigger(
+		'fetchPage',
+		{ url: requestURL, options, page: null },
+		async (context, { url, options, page }) => {
+			// Allow hooking before this handler and returning a page (e.g. preload plugin)
+			if (page) {
+				return page;
+			}
+
+			const headers = { ...this.options.requestHeaders, ...options.headers };
+
+			const controller = new AbortController();
+			const signal = controller.signal;
+
+			const response = await fetch(url, { ...options, headers, signal });
+			const { status, redirected } = response;
+			const html = await response.text();
 
 			if (status === 500) {
-				this.hooks.trigger('serverError', { url, status, request });
-				reject(requestURL);
-				return;
+				this.hooks.trigger('serverError', { url, status, response });
+				throw url;
 			}
 
-			if (!responseText) {
-				reject(requestURL);
-				return;
+			if (!html) {
+				throw url;
 			}
 
-			const html = responseText;
-			const page: PageData = { url, html };
+			page = { url, html };
 
 			// Only save cache entry for non-redirects
-			if (requestURL === url) {
+			if (!redirected) {
 				this.cache.set(url, page);
 			}
 
 			this.hooks.trigger('pageLoaded', { page });
-			resolve(page);
-		});
-	});
 
-	return page;
+			return page;
+		}
+	);
 }

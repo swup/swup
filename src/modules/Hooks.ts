@@ -3,8 +3,7 @@ import { DelegateEvent } from 'delegate-it';
 import Swup, { Options } from '../Swup.js';
 import { isPromise, runAsPromise } from '../utils.js';
 import { Context } from './Context.js';
-import { PageData } from './fetchPage.js';
-import { FetchOptions } from '../helpers/fetch.js';
+import { FetchOptions, PageData } from './fetchPage.js';
 
 export interface HookDefinitions {
 	animationInDone: undefined;
@@ -17,7 +16,7 @@ export interface HookDefinitions {
 	clickLink: { event: DelegateEvent<MouseEvent> };
 	disabled: undefined;
 	enabled: undefined;
-	fetchPage: { url: string; options: FetchOptions; page?: PageData | null };
+	fetchPage: { url: string; options: FetchOptions; page: PageData | null };
 	openPageInNewTab: { href: string };
 	pageCached: { page: PageData };
 	pageLoaded: { page: PageData };
@@ -28,7 +27,7 @@ export interface HookDefinitions {
 	samePage: undefined;
 	samePageWithHash: { hash: string; options: ScrollIntoViewOptions };
 	scrollToContent: { options: ScrollIntoViewOptions };
-	serverError: { url: string; status: number; request: XMLHttpRequest };
+	serverError: { url: string; status: number; response: Response };
 	transitionStart: undefined;
 	transitionEnd: undefined;
 	urlUpdated: { url: string };
@@ -41,7 +40,7 @@ export type HookName = keyof HookDefinitions;
 export type Handler<T extends HookName> = (
 	context: Context,
 	data: HookData<T>
-) => Promise<void> | void;
+) => Promise<any> | void;
 
 export type Handlers = {
 	[K in HookName]: Handler<K>[];
