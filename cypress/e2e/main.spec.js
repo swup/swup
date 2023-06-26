@@ -27,6 +27,22 @@ describe('Request', function () {
 			});
 		});
 	});
+
+	it('should force-load on server error', function () {
+		cy.intercept('/error-500.html', { statusCode: 500, times: 1 });
+		cy.shouldHaveReloadedAfterAction(() => {
+			this.swup.loadPage('/error-500.html');
+		});
+		cy.shouldBeAtPage('/error-500.html');
+	});
+
+	it('should force-load on network error', function () {
+		cy.intercept('/error-network.html', { times: 1 }, { forceNetworkError: true });
+		cy.shouldHaveReloadedAfterAction(() => {
+			this.swup.loadPage('/error-network.html');
+		});
+		cy.shouldBeAtPage('/error-network.html');
+	});
 });
 
 describe('Cache', function () {
