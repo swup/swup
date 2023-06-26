@@ -304,7 +304,8 @@ export class Hooks {
 	): Promise<any> {
 		const results = [];
 		for (const { hook, handler, once } of registrations) {
-			results.push(await runAsPromise(handler, [this.swup.context, data]));
+			const result = await runAsPromise(handler, [this.swup.context, data]);
+			results.push(result);
 			if (once) {
 				this.off(hook, handler);
 			}
@@ -324,13 +325,13 @@ export class Hooks {
 		const results = [];
 		for (const { hook, handler, once } of registrations) {
 			const result = handler(this.swup.context, data as HookData<T>);
+			results.push(result);
 			if (isPromise(result)) {
 				console.warn(
 					`Promise returned from handler for synchronous hook '${hook}'.` +
 						`Swup will not wait for it to resolve.`
 				);
 			}
-			results.push(result);
 			if (once) {
 				this.off(hook, handler);
 			}
