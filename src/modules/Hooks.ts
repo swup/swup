@@ -4,6 +4,7 @@ import Swup, { Options } from '../Swup.js';
 import { isPromise, runAsPromise } from '../utils.js';
 import { Context } from './Context.js';
 import { PageData } from './fetchPage.js';
+import { FetchOptions } from '../helpers/fetch.js';
 
 export interface HookDefinitions {
 	animationInDone: undefined;
@@ -16,6 +17,7 @@ export interface HookDefinitions {
 	clickLink: { event: DelegateEvent<MouseEvent> };
 	disabled: undefined;
 	enabled: undefined;
+	fetchPage: { url: string; options: FetchOptions; page?: PageData | null };
 	openPageInNewTab: { href: string };
 	pageCached: { page: PageData };
 	pageLoaded: { page: PageData };
@@ -88,6 +90,7 @@ export class Hooks {
 		'clickLink',
 		'disabled',
 		'enabled',
+		'fetchPage',
 		'openPageInNewTab',
 		'pageCached',
 		'pageLoaded',
