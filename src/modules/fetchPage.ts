@@ -17,51 +17,38 @@ export async function fetchPage(
 	url: URL | string,
 	options: FetchOptions
 ): Promise<PageData> {
-	const { url: requestURL } = Location.fromUrl(url);
+	const { url: requestUrl } = Location.fromUrl(url);
 
-	const cachedPage = this.cache.get(requestURL);
+	const cachedPage = this.cache.get(requestUrl);
 	if (cachedPage) {
 		await this.hooks.trigger('pageLoadedFromCache', { page: cachedPage });
 		return Promise.resolve(cachedPage);
 	}
 
-	return this.hooks.trigger(
-		'fetchPage',
-		{ url: requestURL, options, page: null },
-		async (context, { url, options, page }) => {
-			// Allow hooking before this handler and returning a page (e.g. preload plugin)
-			if (page) {
-				return page;
-			}
+	const headers = { ...this.options.requestHeaders, ...options.headers };
+	const response = await fetch(url, { ...options, headers });
+	const { status, url: responseUrl } = response;
+	const html = await response.text();
 
-			const headers = { ...this.options.requestHeaders, ...options.headers };
+	if (status === 500) {
+		this.hooks.trigger('serverError', { status, response, url: responseUrl });
+		throw url;
+	}
 
-			const controller = new AbortController();
-			const signal = controller.signal;
+	if (!html) {
+		throw url;
+	}
 
-			const response = await fetch(url, { ...options, headers, signal });
-			const { status, redirected } = response;
-			const html = await response.text();
+	// Resolve real url after potential redirect
+	const { url: finalUrl } = new Location(responseUrl);
+	const page = { url: finalUrl, html };
 
-			if (status === 500) {
-				this.hooks.trigger('serverError', { url, status, response });
-				throw url;
-			}
+	// Only save cache entry for non-redirects
+	if (requestUrl === finalUrl) {
+		this.cache.set(page.url, page);
+	}
 
-			if (!html) {
-				throw url;
-			}
+	await this.hooks.trigger('pageLoaded', { page });
 
-			page = { url, html };
-
-			// Only save cache entry for non-redirects
-			if (!redirected) {
-				this.cache.set(url, page);
-			}
-
-			this.hooks.trigger('pageLoaded', { page });
-
-			return page;
-		}
-	);
+	return page;
 }
