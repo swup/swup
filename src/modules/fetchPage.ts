@@ -12,6 +12,21 @@ export interface FetchOptions extends RequestInit {
 	headers?: Record<string, string>;
 }
 
+export class FetchError extends Error {
+	url: string;
+	status: number;
+	constructor(message: string, details: { url: string; status: number }) {
+		super(message);
+		this.name = 'FetchError';
+		this.url = details.url;
+		this.status = details.status;
+	}
+}
+
+/**
+ * Fetch a page from the server, return it and cache it.
+ */
+
 export async function fetchPage(
 	this: Swup,
 	url: URL | string,
@@ -19,24 +34,31 @@ export async function fetchPage(
 ): Promise<PageData> {
 	const { url: requestUrl } = Location.fromUrl(url);
 
-	const cachedPage = this.cache.get(requestUrl);
-	if (cachedPage) {
-		await this.hooks.trigger('pageLoadedFromCache', { page: cachedPage });
-		return Promise.resolve(cachedPage);
+	if (this.cache.has(requestUrl)) {
+		const page = this.cache.get(requestUrl) as PageData;
+		await this.hooks.trigger('pageLoadedFromCache', { page });
+		return page;
 	}
 
 	const headers = { ...this.options.requestHeaders, ...options.headers };
-	const response = await fetch(url, { ...options, headers });
+
+	const response = await this.hooks.trigger(
+		'fetchPage',
+		{ url: requestUrl, options },
+		async (context, { url, options, response }) => {
+			return await (response || fetch(url, { ...options, headers }));
+		}
+	);
 	const { status, url: responseUrl } = response;
 	const html = await response.text();
 
 	if (status === 500) {
 		this.hooks.trigger('serverError', { status, response, url: responseUrl });
-		throw url;
+		throw new FetchError(`Server error: ${responseUrl}`, { status, url: responseUrl });
 	}
 
 	if (!html) {
-		throw url;
+		throw new FetchError(`Empty response: ${responseUrl}`, { status, url: responseUrl });
 	}
 
 	// Resolve real url after potential redirect

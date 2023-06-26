@@ -16,7 +16,8 @@ export interface HookDefinitions {
 	clickLink: { event: DelegateEvent<MouseEvent> };
 	disabled: undefined;
 	enabled: undefined;
-	fetchPage: { url: string; options: FetchOptions; page: PageData | null };
+	fetchPage: { url: string; options: FetchOptions; response?: Response | Promise<Response> };
+	loadPage: { url: string; options: FetchOptions; page?: PageData | Promise<PageData> };
 	openPageInNewTab: { href: string };
 	pageCached: { page: PageData };
 	pageLoaded: { page: PageData };
@@ -90,6 +91,7 @@ export class Hooks {
 		'disabled',
 		'enabled',
 		'fetchPage',
+		'loadPage',
 		'openPageInNewTab',
 		'pageCached',
 		'pageLoaded',

@@ -1,6 +1,6 @@
 import Swup from '../Swup.js';
 import { createHistoryRecord, updateHistoryRecord, getCurrentUrl, Location } from '../helpers.js';
-import { FetchOptions } from '../modules/fetchPage.js';
+import { FetchError, FetchOptions } from '../modules/fetchPage.js';
 import { ContextInitOptions } from './Context.js';
 
 export type HistoryAction = 'push' | 'replace';
@@ -32,6 +32,7 @@ export async function performPageLoad(
 	url: string,
 	options: PageLoadOptions & FetchOptions = {}
 ) {
+	const { url: requestedUrl } = Location.fromUrl(url);
 	const { transition, animate, history: historyAction } = options;
 	options.referrer = options.referrer || this.currentPageUrl;
 
@@ -55,19 +56,20 @@ export async function performPageLoad(
 	const animationPromise = this.leavePage();
 
 	// Allow hooking before this and returning a page (e.g. preload plugin)
-	const fetchPromise = this.hooks.trigger(
-		'fetchPage',
-		{ url, options, page: null },
-		async (context, { url, options, page }) => page || (await this.fetchPage(url, options))
+	const pagePromise = this.hooks.trigger(
+		'loadPage',
+		{ url, options },
+		async (context, { url, options, page }) =>
+			(await page) || (await this.fetchPage(url, options))
 	);
 
 	// create history record if this is not a popstate call (with or without anchor)
 	if (!this.context.history.popstate) {
-		const historyUrl = url + (this.context.scroll.target || '');
+		const newUrl = url + (this.context.scroll.target || '');
 		if (this.context.history.action === 'replace') {
-			updateHistoryRecord(historyUrl);
+			updateHistoryRecord(newUrl);
 		} else {
-			createHistoryRecord(historyUrl);
+			createHistoryRecord(newUrl);
 		}
 	}
 
@@ -75,16 +77,17 @@ export async function performPageLoad(
 
 	// when everything is ready, render the page
 	try {
-		const [page] = await Promise.all([fetchPromise, animationPromise]);
-		const { url: requestedUrl } = Location.fromUrl(url);
+		const [page] = await Promise.all([pagePromise, animationPromise]);
 		this.renderPage(requestedUrl, page);
-	} catch (errorUrl: any) {
-		// Return early if errorUrl is not defined (probably aborted preload request)
-		if (errorUrl === undefined) return;
+	} catch (error: unknown) {
+		// Return early if error is undefined (probably aborted preload request)
+		if (!error) {
+			return;
+		}
 
 		// Rewrite `skipPopStateHandling` to redirect manually when `history.go` is processed
 		this.options.skipPopStateHandling = () => {
-			window.location = errorUrl;
+			window.location.href = requestedUrl;
 			return true;
 		};
 
