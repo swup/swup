@@ -127,6 +127,14 @@ describe('Cache', () => {
 
 		expect(cache.size).toBe(2);
 	});
+
+	it('should handle different URLs', () => {
+		cache.set(`${page2.url}?foo=bar`, page2);
+		cache.set(`${page2.url}/?foo=bar&baz=bat`, page2);
+		cache.set(`${page2.url}?baz=bat`, page2);
+
+		expect(cache.size).toBe(3);
+	});
 });
 
 describe('Types', () => {

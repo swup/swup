@@ -3,14 +3,25 @@
  * or a URL object/string
  *
  */
-
 export class Location extends URL {
 	constructor(url: string, base: string = document.baseURI) {
-		super(url.toString(), base);
+		super(url, base);
+		this.normalize();
 	}
 
 	get url() {
 		return this.pathname + this.search;
+	}
+
+	/**
+	 * Normalizes the location. Invoked every time a Location is created
+	 *
+	 * - sort the searchParams
+	 * - remove the trailing slash from the pathname
+	 */
+	normalize() {
+		this.searchParams.sort();
+		this.pathname = removeTrailingSlash(this.pathname);
 	}
 
 	/**
@@ -32,3 +43,11 @@ export class Location extends URL {
 		return new Location(url);
 	}
 }
+
+export const removeTrailingSlash = (str: string) => {
+	return str.endsWith('/') ? str.slice(0, -1) : str;
+};
+
+export const addTrailingSlash = (str: string) => {
+	return removeTrailingSlash(str) + '/';
+};
