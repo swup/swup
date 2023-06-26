@@ -68,6 +68,16 @@ describe.only('Fetch', function () {
 			expect(requested).to.be.false;
 		});
 	});
+
+	it('should allow returning a fetch Promise to loadPage', function () {
+		this.swup.hooks.before('loadPage', (context, args) => {
+			args.page = this.swup.fetchPage('page-3.html');
+		});
+		this.swup.loadPage('/page-2.html');
+
+		cy.shouldBeAtPage('/page-3.html');
+		cy.shouldHaveH1('Page 3');
+	});
 });
 
 describe('Cache', function () {
