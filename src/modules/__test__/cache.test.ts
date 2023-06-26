@@ -116,6 +116,17 @@ describe('Cache', () => {
 		expect(cache.has(page2.url)).toBe(true);
 		expect(cache.has(page3.url)).toBe(false);
 	});
+
+	it('should handle equal URLs', () => {
+		cache.set(page1.url, page1);
+		cache.set(page1.url + '/', page1);
+
+		cache.set(`${page2.url}?foo=bar&baz=bat`, page2);
+		cache.set(`${page2.url}/?foo=bar&baz=bat`, page2);
+		cache.set(`${page2.url}?baz=bat&foo=bar`, page2);
+
+		expect(cache.size).toBe(2);
+	});
 });
 
 describe('Types', () => {
