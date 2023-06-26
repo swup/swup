@@ -353,8 +353,6 @@ export default class Swup {
 
 	/**
 	 * Utility function to validate and run the global option 'resolveUrl'
-	 * @param {string} url
-	 * @returns {string} the resolved url
 	 */
 	resolveUrl(url: string) {
 		if (typeof this.options.resolveUrl !== 'function') {
@@ -375,9 +373,6 @@ export default class Swup {
 
 	/**
 	 * Compares the resolved version of two paths and returns true if they are the same
-	 * @param {string} url1
-	 * @param {string} url2
-	 * @returns {boolean}
 	 */
 	isSameResolvedUrl(url1: string, url2: string) {
 		return this.resolveUrl(url1) === this.resolveUrl(url2);
