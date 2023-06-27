@@ -68,7 +68,7 @@ export function createContext(
 ): Context {
 	return {
 		from: { url: from },
-		to: to ? { url: to } : undefined,
+		to: to !== undefined ? { url: to } : undefined,
 		containers,
 		transition: {
 			animate,

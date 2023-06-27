@@ -5,7 +5,6 @@ export { classify } from './helpers/classify.js';
 export { createHistoryRecord } from './helpers/createHistoryRecord.js';
 export { updateHistoryRecord } from './helpers/updateHistoryRecord.js';
 export { delegateEvent } from './helpers/delegateEvent.js';
-export { fetch } from './helpers/fetch.js';
 export { getCurrentUrl } from './helpers/getCurrentUrl.js';
 export { Location } from './helpers/Location.js';
 export { cleanupAnimationClasses } from './helpers/cleanupAnimationClasses.js';

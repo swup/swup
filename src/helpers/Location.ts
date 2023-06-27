@@ -5,30 +5,33 @@
  */
 
 export class Location extends URL {
-	constructor(url: string, base: string = document.baseURI) {
+	constructor(url: URL | string, base: string = document.baseURI) {
 		super(url.toString(), base);
 	}
 
-	get url() {
+	/**
+	 * The full local path including query params.
+	 */
+	get url(): string {
 		return this.pathname + this.search;
 	}
 
 	/**
 	 * Instantiate a Location from an element's href attribute
-	 * @param {Element} el
+	 * @param el
 	 * @return new Location instance
 	 */
-	static fromElement(el: HTMLAnchorElement): Location {
-		const href = el.getAttribute('href') || el.getAttribute('xlink:href');
+	static fromElement(el: Element): Location {
+		const href = el.getAttribute('href') || el.getAttribute('xlink:href') || '';
 		return new Location(href!);
 	}
 
 	/**
 	 * Instantiate a Location from a URL object or string
-	 * @param {URL|string} url
+	 * @param url
 	 * @return new Location instance
 	 */
-	static fromUrl(url: string): Location {
+	static fromUrl(url: URL | string): Location {
 		return new Location(url);
 	}
 }

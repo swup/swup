@@ -1,54 +1,80 @@
 import Swup from '../Swup.js';
-import { Location, fetch } from '../helpers.js';
-import { PageLoadOptions } from './loadPage.js';
+import { Location } from '../helpers.js';
 
 export interface PageData {
 	url: string;
 	html: string;
 }
 
+export interface FetchOptions extends RequestInit {
+	method?: 'GET' | 'POST';
+	body?: string | FormData | URLSearchParams;
+	headers?: Record<string, string>;
+}
+
+export class FetchError extends Error {
+	url: string;
+	status: number;
+	constructor(message: string, details: { url: string; status: number }) {
+		super(message);
+		this.name = 'FetchError';
+		this.url = details.url;
+		this.status = details.status;
+	}
+}
+
+/**
+ * Fetch a page from the server, return it and cache it.
+ */
 export async function fetchPage(
 	this: Swup,
-	url: string,
-	data: PageLoadOptions = {}
+	url: URL | string,
+	options: FetchOptions & { triggerHooks?: boolean } = {}
 ): Promise<PageData> {
-	const headers = this.options.requestHeaders;
-	const { url: requestURL } = Location.fromUrl(url);
+	const { url: requestUrl } = Location.fromUrl(url);
 
-	const cachedPage = this.cache.get(requestURL);
-	if (cachedPage) {
-		await this.hooks.trigger('pageLoadedFromCache', { page: cachedPage });
-		return Promise.resolve(cachedPage);
+	if (this.cache.has(requestUrl)) {
+		const page = this.cache.get(requestUrl) as PageData;
+		if (options.triggerHooks !== false) {
+			await this.hooks.trigger('pageLoaded', { page, cache: true });
+		}
+		return page;
 	}
 
-	const page = await new Promise<PageData>((resolve, reject) => {
-		fetch(url, { ...data, headers }, (request) => {
-			const { status, responseText, responseURL } = request;
-			const { url } = Location.fromUrl(responseURL || requestURL);
+	const headers = { ...this.options.requestHeaders, ...options.headers };
+	options = { ...options, headers };
 
-			if (status === 500) {
-				this.hooks.trigger('serverError', { url, status, request });
-				reject(requestURL);
-				return;
-			}
+	// Allow hooking before this and returning a custom response-like object (e.g. custom fetch implementation)
+	const response = await this.hooks.trigger(
+		'fetchPage',
+		{ url: requestUrl, options },
+		async (context, { url, options, response }) => await (response || fetch(url, options))
+	);
 
-			if (!responseText) {
-				reject(requestURL);
-				return;
-			}
+	const { status, url: responseUrl } = response;
+	const html = await response.text();
 
-			const html = responseText;
-			const page: PageData = { url, html };
+	if (status === 500) {
+		this.hooks.trigger('serverError', { status, response, url: responseUrl });
+		throw new FetchError(`Server error: ${responseUrl}`, { status, url: responseUrl });
+	}
 
-			// Only save cache entry for non-redirects
-			if (requestURL === url) {
-				this.cache.set(url, page);
-			}
+	if (!html) {
+		throw new FetchError(`Empty response: ${responseUrl}`, { status, url: responseUrl });
+	}
 
-			this.hooks.trigger('pageLoaded', { page });
-			resolve(page);
-		});
-	});
+	// Resolve real url after potential redirect
+	const { url: finalUrl } = new Location(responseUrl);
+	const page = { url: finalUrl, html };
+
+	// Only save cache entry for non-redirects
+	if (requestUrl === finalUrl) {
+		this.cache.set(page.url, page);
+	}
+
+	if (options.triggerHooks !== false) {
+		await this.hooks.trigger('pageLoaded', { page, cache: false });
+	}
 
 	return page;
 }

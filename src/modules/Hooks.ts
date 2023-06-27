@@ -3,7 +3,7 @@ import { DelegateEvent } from 'delegate-it';
 import Swup, { Options } from '../Swup.js';
 import { isPromise, runAsPromise } from '../utils.js';
 import { Context } from './Context.js';
-import { PageData } from './fetchPage.js';
+import { FetchOptions, PageData } from './fetchPage.js';
 
 export interface HookDefinitions {
 	animationInDone: undefined;
@@ -16,17 +16,18 @@ export interface HookDefinitions {
 	clickLink: { event: DelegateEvent<MouseEvent> };
 	disabled: undefined;
 	enabled: undefined;
+	fetchPage: { url: string; options: FetchOptions; response?: Response | Promise<Response> };
+	loadPage: { url: string; options: FetchOptions; page?: PageData | Promise<PageData> };
 	openPageInNewTab: { href: string };
 	pageCached: { page: PageData };
-	pageLoaded: { page: PageData };
-	pageLoadedFromCache: { page: PageData };
+	pageLoaded: { page: PageData; cache?: boolean };
 	pageView: { url: string; title: string };
 	popState: { event: PopStateEvent };
 	replaceContent: { page: PageData; containers: Options['containers'] };
 	samePage: undefined;
 	samePageWithHash: { hash: string; options: ScrollIntoViewOptions };
 	scrollToContent: { options: ScrollIntoViewOptions };
-	serverError: { url: string; status: number; request: XMLHttpRequest };
+	serverError: { url: string; status: number; response: Response };
 	transitionStart: undefined;
 	transitionEnd: undefined;
 	urlUpdated: { url: string };
@@ -39,7 +40,7 @@ export type HookName = keyof HookDefinitions;
 export type Handler<T extends HookName> = (
 	context: Context,
 	data: HookData<T>
-) => Promise<void> | void;
+) => Promise<any> | void;
 
 export type Handlers = {
 	[K in HookName]: Handler<K>[];
@@ -88,10 +89,11 @@ export class Hooks {
 		'clickLink',
 		'disabled',
 		'enabled',
+		'fetchPage',
+		'loadPage',
 		'openPageInNewTab',
 		'pageCached',
 		'pageLoaded',
-		'pageLoadedFromCache',
 		'pageView',
 		'popState',
 		'replaceContent',
@@ -300,11 +302,8 @@ export class Hooks {
 	): Promise<any> {
 		const results = [];
 		for (const { hook, handler, once } of registrations) {
-			try {
-				results.push(await runAsPromise(handler, [this.swup.context, data]));
-			} catch (error) {
-				console.error(error);
-			}
+			const result = await runAsPromise(handler, [this.swup.context, data]);
+			results.push(result);
 			if (once) {
 				this.off(hook, handler);
 			}
@@ -323,17 +322,13 @@ export class Hooks {
 	): any[] {
 		const results = [];
 		for (const { hook, handler, once } of registrations) {
-			try {
-				const result = handler(this.swup.context, data as HookData<T>);
-				if (isPromise(result)) {
-					console.warn(
-						`Promise returned from handler for synchronous hook '${hook}'.` +
-							`Swup will not wait for it to resolve.`
-					);
-				}
-				results.push(result);
-			} catch (error) {
-				console.error(error);
+			const result = handler(this.swup.context, data as HookData<T>);
+			results.push(result);
+			if (isPromise(result)) {
+				console.warn(
+					`Promise returned from handler for synchronous hook '${hook}'.` +
+						`Swup will not wait for it to resolve.`
+				);
 			}
 			if (once) {
 				this.off(hook, handler);

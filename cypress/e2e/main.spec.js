@@ -27,6 +27,57 @@ describe('Request', function () {
 			});
 		});
 	});
+
+	it('should force-load on server error', function () {
+		cy.intercept('/error-500.html', { statusCode: 500, times: 1 });
+		cy.shouldHaveReloadedAfterAction(() => {
+			this.swup.loadPage('/error-500.html');
+		});
+		cy.shouldBeAtPage('/error-500.html');
+	});
+
+	it('should force-load on network error', function () {
+		cy.intercept('/error-network.html', { times: 1 }, { forceNetworkError: true });
+		cy.shouldHaveReloadedAfterAction(() => {
+			this.swup.loadPage('/error-network.html');
+		});
+		cy.shouldBeAtPage('/error-network.html');
+	});
+});
+
+describe('Fetch', function () {
+	beforeEach(() => {
+		cy.visit('/page-1.html');
+		cy.wrapSwupInstance();
+	});
+
+	it('should allow returning a page object to loadPage', function () {
+		let requested = false;
+		cy.intercept('/page-2.html', (req) => {
+			requested = true;
+		});
+
+		this.swup.hooks.before('loadPage', (context, args) => {
+			args.page = { url: '/page-3.html', html: '<html><body><div id="swup"><h1>Page 3</h1></div></body></html>' };
+		});
+		this.swup.loadPage('/page-2.html');
+
+		cy.shouldBeAtPage('/page-3.html');
+		cy.shouldHaveH1('Page 3');
+		cy.window().should(() => {
+			expect(requested).to.be.false;
+		});
+	});
+
+	it('should allow returning a fetch Promise to loadPage', function () {
+		this.swup.hooks.before('loadPage', (context, args) => {
+			args.page = this.swup.fetchPage('page-3.html');
+		});
+		this.swup.loadPage('/page-2.html');
+
+		cy.shouldBeAtPage('/page-3.html');
+		cy.shouldHaveH1('Page 3');
+	});
 });
 
 describe('Cache', function () {
