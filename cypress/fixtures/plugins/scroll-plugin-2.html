@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Scroll Plugin 2</title>
+    <link rel="stylesheet" href="/assets/main.css">
+    <script src="/dist/Swup.umd.js"></script>
+    <script src="https://unpkg.com/@swup/scroll-plugin@1/dist/SwupScrollPlugin.js"></script>
+</head>
+<body>
+    <header class="header">
+        <ul>
+            <li><a href="/page-1.html">Page 1</a></li>
+            <li><a href="/page-2.html">Page 2</a></li>
+            <li><a href="/page-3.html">Page 3</a></li>
+        </ul>
+    </header>
+    <main id="swup" class="wrapper transition-default">
+        <h1>Scroll Plugin 2</h1>
+
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+        Alias assumenda consectetur consequatur enim esse incidunt iusto, magnam
+        maxime molestias nisi perferendis perspiciatis quibusdam quos repellat,
+        vel veniam vero voluptate voluptatem.</p>
+
+        <h2>Anchor</h2>
+
+        <div class="scroll-anchors">
+            <div id="anchor" data-cy="anchor">Anchor</div>
+        </div>
+
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias
+        assumenda consectetur consequatur enim esse incidunt iusto, magnam
+        maxime molestias nisi perferendis perspiciatis quibusdam quos repellat,
+        vel veniam vero voluptate voluptatem.
+    </main>
+    <script>
+        window._swup = new Swup({
+            plugins: [new SwupScrollPlugin()]
+        });
+    </script>
+</body>
+</html>

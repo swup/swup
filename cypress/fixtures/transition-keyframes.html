@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Transition duration: keyframes</title>
+    <link rel="stylesheet" href="/assets/main.css">
+    <script src="/dist/Swup.umd.js"></script>
+    <style>
+        .transition-default {
+            transition: none;
+        }
+        html.is-animating .transition-default {
+            animation: test-animation 400ms 300ms;
+        }
+        html.is-rendering .transition-default {
+            animation-direction: reverse;
+        }
+        @keyframes test-animation {
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(10px);
+                opacity: 0;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        <ul>
+            <li><a href="/page-1.html">Page 1</a></li>
+            <li><a href="/page-2.html">Page 2</a></li>
+            <li><a href="/page-3.html">Page 3</a></li>
+        </ul>
+    </header>
+    <main id="swup" class="wrapper transition-default">
+        <h1>Transition duration: keyframes</h1>
+    </main>
+    <script>
+        window._swup = new Swup();
+    </script>
+</body>
+</html>

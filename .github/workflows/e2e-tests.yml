@@ -2,21 +2,24 @@ name: E2E tests
 
 on:
   push:
-    branches: [master]
+    branches: [master, next]
   pull_request:
   workflow_dispatch:
 
 jobs:
   checkout-and-test:
-    name: Run E2E tests
+    name: Run tests
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
         uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
       - name: Run cypress tests
         uses: cypress-io/github-action@v4.2.2
         with:
-          command: npm run ci
+          command: npm run test:ci
           record: true
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Link resolution</title>
+    <link rel="stylesheet" href="/assets/main.css">
+    <script src="/dist/Swup.umd.js"></script>
+</head>
+<body>
+    <header class="header">
+        <ul>
+            <li><a href="./../page-2.html" data-cy="nav-link-rel">Relative link</a></li>
+            <li><a href="https://example.net/" data-cy="nav-link-ext">External link</a></li>
+        </ul>
+    </header>
+    <main class="wrapper transition-default" id="swup">
+        <h1>Link resolution</h1>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+        Alias assumenda consectetur consequatur enim esse incidunt iusto, magnam
+        maxime molestias nisi perferendis perspiciatis quibusdam quos repellat,
+        vel veniam vero voluptate voluptatem.</p>
+    </main>
+    <script>
+        window._swup = new Swup();
+    </script>
+</body>
+</html>
