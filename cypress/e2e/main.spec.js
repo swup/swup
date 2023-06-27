@@ -45,7 +45,7 @@ describe('Request', function () {
 	});
 });
 
-describe.only('Fetch', function () {
+describe('Fetch', function () {
 	beforeEach(() => {
 		cy.visit('/page-1.html');
 		cy.wrapSwupInstance();
