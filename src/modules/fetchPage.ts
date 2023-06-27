@@ -26,7 +26,6 @@ export class FetchError extends Error {
 /**
  * Fetch a page from the server, return it and cache it.
  */
-
 export async function fetchPage(
 	this: Swup,
 	url: URL | string,
