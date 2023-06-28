@@ -84,7 +84,7 @@ describe('Fetch', function () {
 			const { pathname: fixture } = new URL(req.url);
 			req.reply({ fixture, delay: 2000 });
 		});
-		this.swup.options.timeout = 1000;
+		this.swup.options.timeout = 500;
 		cy.shouldHaveReloadedAfterAction(() => {
 			this.swup.loadPage('/page-2.html');
 		});
