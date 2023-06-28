@@ -78,6 +78,18 @@ describe('Fetch', function () {
 		cy.shouldBeAtPage('/page-3.html');
 		cy.shouldHaveH1('Page 3');
 	});
+
+	it('should reload after timeout', function () {
+		cy.intercept('GET', '/*', async (req) => {
+			const { pathname: fixture } = new URL(req.url);
+			req.reply({ fixture, delay: 2000 });
+		});
+		this.swup.options.timeout = 1000;
+		cy.shouldHaveReloadedAfterAction(() => {
+			this.swup.loadPage('/page-2.html');
+		});
+		cy.shouldBeAtPage('/page-2.html');
+	});
 });
 
 describe('Cache', function () {
