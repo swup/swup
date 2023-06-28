@@ -15,12 +15,19 @@ export interface FetchOptions extends RequestInit {
 
 export class FetchError extends Error {
 	url: string;
-	status: number;
-	constructor(message: string, details: { url: string; status: number }) {
+	status?: number;
+	aborted: boolean;
+	timedOut: boolean;
+	constructor(
+		message: string,
+		details: { url: string; status?: number; aborted?: boolean; timedOut?: boolean }
+	) {
 		super(message);
 		this.name = 'FetchError';
 		this.url = details.url;
 		this.status = details.status;
+		this.aborted = details.aborted || false;
+		this.timedOut = details.timedOut || false;
 	}
 }
 
@@ -42,15 +49,45 @@ export async function fetchPage(
 		return page;
 	}
 
+	const controller = new AbortController();
+	const { signal } = controller;
+
 	const headers = { ...this.options.requestHeaders, ...options.headers };
-	options = { ...options, headers };
+	const timeout = options.timeout ?? this.options.timeout;
+	options = { ...options, headers, signal };
+
+	let timedOut = false;
+	let timeoutId: ReturnType<typeof setTimeout> | null = null;
+	if (timeout && timeout > 0) {
+		timeoutId = setTimeout(() => {
+			timedOut = true;
+			controller.abort('timeout');
+		}, timeout);
+	}
 
 	// Allow hooking before this and returning a custom response-like object (e.g. custom fetch implementation)
-	const response = await this.hooks.trigger(
-		'fetchPage',
-		{ url: requestUrl, options },
-		async (context, { url, options, response }) => await (response || fetch(url, options))
-	);
+	let response: Response;
+	try {
+		response = await this.hooks.trigger(
+			'fetchPage',
+			{ url: requestUrl, options },
+			async (context, { url, options, response }) => await (response || fetch(url, options))
+		);
+		if (timeoutId) {
+			clearTimeout(timeoutId);
+		}
+	} catch (error: any) {
+		if (timedOut) {
+			throw new FetchError(`Request timed out: ${requestUrl}`, { url: requestUrl, timedOut });
+		}
+		if (error?.name === 'AbortError' || signal.aborted) {
+			throw new FetchError(`Request aborted: ${requestUrl}`, {
+				url: requestUrl,
+				aborted: true
+			});
+		}
+		throw error;
+	}
 
 	const { status, url: responseUrl } = response;
 	const html = await response.text();

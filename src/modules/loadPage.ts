@@ -78,9 +78,9 @@ export async function performPageLoad(
 	try {
 		const [page] = await Promise.all([pagePromise, animationPromise]);
 		this.renderPage(requestedUrl, page);
-	} catch (error: unknown) {
-		// Return early if error is undefined (probably aborted preload request)
-		if (!error) {
+	} catch (error: any) {
+		// Return early if error is undefined or marked aborted (probably aborted preload request)
+		if (!error || error.aborted) {
 			return;
 		}
 
