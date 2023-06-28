@@ -10,6 +10,7 @@ export interface FetchOptions extends RequestInit {
 	method?: 'GET' | 'POST';
 	body?: string | FormData | URLSearchParams;
 	headers?: Record<string, string>;
+	timeout?: number;
 }
 
 export class FetchError extends Error {
