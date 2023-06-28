@@ -23,7 +23,9 @@ export interface HookDefinitions {
 	pageLoaded: { page: PageData; cache?: boolean };
 	pageView: { url: string; title: string };
 	popState: { event: PopStateEvent };
+	willReplaceContent: undefined;
 	replaceContent: { page: PageData; containers: Options['containers'] };
+	contentReplaced: undefined;
 	samePage: undefined;
 	samePageWithHash: { hash: string; options: ScrollIntoViewOptions };
 	scrollToContent: { options: ScrollIntoViewOptions };
