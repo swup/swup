@@ -11,6 +11,12 @@ import {
 } from './helpers.js';
 import { Unsubscribe } from './helpers/delegateEvent.js';
 
+/**
+ * re-export matchPath
+ */
+import { matchPath, Path } from './helpers/matchPath.js';
+export { matchPath, Path };
+
 import { Cache } from './modules/Cache.js';
 import { Context, createContext } from './modules/Context.js';
 import { enterPage } from './modules/enterPage.js';
