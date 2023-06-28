@@ -8,8 +8,6 @@ import type {
 	MatchFunction
 } from 'path-to-regexp';
 
-export { Path };
-
 export const matchPath = <P extends object = object>(
 	path: Path,
 	options?: ParseOptions & TokensToRegexpOptions & RegexpToFunctionOptions

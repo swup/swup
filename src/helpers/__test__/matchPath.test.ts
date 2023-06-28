@@ -1,7 +1,10 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { matchPath } from '../../Swup.js';
-import { pathToRegexp, Key } from 'path-to-regexp';
+import { pathToRegexp } from 'path-to-regexp';
 
+/**
+ * Tests to ensure the match function keeps working as expected
+ */
 describe('matchPath', () => {
 	it('should return false if not matching', () => {
 		const urlMatch = matchPath('/users/:user');
