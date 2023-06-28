@@ -27,7 +27,6 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 	}
 
 	// replace content: allow handlers and plugins to overwrite paga data and containers
-	await this.hooks.trigger('willReplaceContent');
 	await this.hooks.trigger(
 		'replaceContent',
 		{ page, containers: this.context.containers },
@@ -35,7 +34,6 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 			this.replaceContent(page, { containers });
 		}
 	);
-	await this.hooks.trigger('contentReplaced');
 
 	await this.hooks.trigger(
 		'scrollToContent',
