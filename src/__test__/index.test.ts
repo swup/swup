@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import pckg from '../../package.json';
 import Swup, { Options, Plugin } from '../index.js';
+import * as SwupTS from '../Swup.js';
 
 const baseUrl = window.location.origin;
 
@@ -50,6 +51,10 @@ describe('Exports', () => {
 		const swup = new Swup();
 		expect(swup.version).not.toBeUndefined();
 		expect(swup.version).toEqual(pckg.version);
+	});
+
+	it('UMD compatibility: should not have named exports in Swup.ts', () => {
+		expect(SwupTS).toMatchSnapshot({ default: Swup });
 	});
 });
 
