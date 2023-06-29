@@ -47,10 +47,7 @@
   },
   "author": "Georgy Marchuk",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/gmrchk/swup.git"
-  },
+  "repository": "swup/swup",
   "keywords": [
     "css",
     "animation",
