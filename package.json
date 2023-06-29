@@ -41,8 +41,8 @@
     "test:e2e:instrument": "nyc instrument --compact=false dist cypress/fixtures/dist",
     "test:e2e:server": "http-server --silent --port 8274 cypress/fixtures",
     "test:e2e:start": "npm run test:e2e:instrument && npm run test:e2e:server",
-    "cy:run": "cypress run",
-    "cy:run:record": "cypress run --record",
+    "cy:run": "npm run build && cypress run",
+    "cy:run:record": "npm run build && cypress run --record",
     "cy:open": "cypress open",
     "prepare": "husky install"
   },

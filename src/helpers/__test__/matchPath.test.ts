@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { matchPath } from '../../Swup.js';
+import { matchPath } from '../matchPath.js';
 import { pathToRegexp } from 'path-to-regexp';
 
 /**
