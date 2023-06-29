@@ -1,6 +1,6 @@
-import { describe, expect, it, vi } from 'vitest';
-import { matchPath } from '../../Swup.js';
-import { pathToRegexp, Key } from 'path-to-regexp';
+import { describe, expect, it } from 'vitest';
+import { matchPath } from '../../index.js';
+import { pathToRegexp } from 'path-to-regexp';
 
 describe('matchPath', () => {
 	it('should return false if not matching', () => {
