@@ -173,30 +173,6 @@ describe('Hook registry', () => {
 	});
 });
 
-describe('Event aliases', () => {
-	it('should call events.on()', () => {
-		const swup = new Swup();
-		const on = vi.fn();
-
-		swup.hooks.on = on;
-
-		swup.on('enabled', () => {});
-
-		expect(on).toBeCalledTimes(1);
-	});
-
-	it('should call events.off()', () => {
-		const swup = new Swup();
-		const off = vi.fn();
-
-		swup.hooks.off = off;
-
-		swup.off('enabled', () => {});
-
-		expect(off).toBeCalledTimes(1);
-	});
-});
-
 describe('Types', () => {
 	it('error when necessary', async () => {
 		const swup = new Swup();
