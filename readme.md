@@ -16,7 +16,7 @@
 
 # Swup
 
-Complete, flexible, extensible, and easy-to-use page transition library for your server-side rendered website.
+Versatile and extensible page transition library for server-side rendered websites
 
 [Features](#features) •
 [Documentation](https://swup.js.org/getting-started) •
@@ -26,21 +26,39 @@ Complete, flexible, extensible, and easy-to-use page transition library for your
 
 ## Overview
 
-Swup is a library that helps you add page transitions to server-side rendered websites. It handles
-the complete lifecycle of a page visit by intercepting link clicks, loading the new page in the
-background, replacing the content and transitioning between the old and the new page.
+Swup adds page transitions to server-side rendered websites. It manages the complete lifecycle of a
+page visit by intercepting link clicks,  loading the new page in the background and smoothly
+transitioning between the old and new content.
 
-Its goal is to make adding transitions to a site as simple as possible, while providing lots of
-other quality-of-life improvements.
+Its goal is to make it effortless to add page transitions to a site, while providing lots of other
+quality-of-life improvements.
 
 ## Features
 
-- ✨ Auto-detects [CSS transitions](https://swup.js.org/getting-started/how-it-works) for perfect timing
-- 🔗 Updates URLs and preserves native browser history behavior
-- 📦 Uses a [cache](https://swup.js.org/api/cache) to speed up subsequent page loads
-- 💡 Offers [hooks](https://swup.js.org/hooks) for customizing and extending the page load lifecycle
-- 🔌 Has a powerful [plugin system](https://swup.js.org/plugins) and many official and third-party plugins
-- 🎨 Provides ready-to-go [themes](https://swup.js.org/themes) to get started quickly
+- ✏️ Works out of the box with [minimal markup](https://swup.js.org/getting-started/example/)
+- ✨ Auto-detects [CSS transitions](https://swup.js.org/getting-started/how-it-works/) for perfect timing
+- 🔗 Updates URLs and preserves native [browser history](https://swup.js.org/options/#animatehistorybrowsing)
+- 🏓 Manages scroll position between pages and anchor jump links
+- 🚀 Uses a [cache](https://swup.js.org/api/cache/) to speed up subsequent page loads
+- 📡 Offers [hooks](https://swup.js.org/hooks/) to customize and extend the page load lifecycle
+- 🔌 Has a powerful [plugin system](https://swup.js.org/plugins/) and many official and third-party plugins
+- 🎨 Provides ready-to-go [themes](https://swup.js.org/themes/) to get started quickly
+
+## Plugins
+
+Swup is small by design. Extended features can be added via [plugins](https://swup.js.org/plugins/):
+
+- Display a [progress bar](https://swup.js.org/plugins/progress-plugin/) while loading
+- Enable [smooth scrolling](https://swup.js.org/plugins/scroll-plugin/) between visits
+- Update [meta tags and stylesheets](https://swup.js.org/plugins/head-plugin/) after page loads
+- Add support for [preloading pages](https://swup.js.org/plugins/preload-plugin/) in the background
+- Improve [accessibility](https://swup.js.org/plugins/a11y-plugin/) for screen readers
+- Perform your [animations in JS](https://swup.js.org/plugins/js-plugin/) instead of CSS transitions
+- Animate [form submissions](https://swup.js.org/plugins/forms-plugin/)
+- Get help in [debug mode](https://swup.js.org/plugins/debug-plugin/)
+
+Check out the list of [all official plugins](https://swup.js.org/plugins/) as well as
+[third-party integrations](https://swup.js.org/third-party-integrations/).
 
 ## Examples
 

@@ -182,34 +182,6 @@ export default class Swup {
 		this.hooks.clear();
 	}
 
-	/**
-	 * Add a new hook handler.
-	 * @deprecated Use `swup.hooks.on()` instead.
-	 */
-	on<T extends HookName>(hook: T, handler: Handler<T>) {
-		console.warn(
-			'[swup] Methods `swup.on()` and `swup.off()` are deprecated and will be removed in the next major release. Use `swup.hooks.on()` instead.'
-		);
-		return this.hooks.on(hook, handler);
-	}
-
-	/**
-	 * Remove a hook handler (or all handlers).
-	 * @deprecated Use `swup.hooks.off()` instead.
-	 */
-	off<T extends HookName>(hook?: T, handler?: Handler<T>): void {
-		console.warn(
-			'[swup] Methods `swup.on()` and `swup.off()` are deprecated and will be removed in the next major release. Use `swup.hooks.on()` instead.'
-		);
-		if (hook && handler) {
-			return this.hooks.off(hook, handler);
-		} else if (hook) {
-			return this.hooks.off(hook);
-		} else {
-			return this.hooks.clear();
-		}
-	}
-
 	shouldIgnoreVisit(href: string, { el, event }: { el?: Element; event?: Event } = {}) {
 		const { origin, url, hash } = Location.fromUrl(href);
 
