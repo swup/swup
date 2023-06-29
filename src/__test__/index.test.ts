@@ -53,8 +53,8 @@ describe('Exports', () => {
 		expect(swup.version).toEqual(pckg.version);
 	});
 
-	it('UMD compatibility: should not have named exports in Swup.ts', () => {
-		expect(SwupTS).toMatchSnapshot({ default: Swup });
+	it('UMD compatibility: Swup.ts should only have a default export', () => {
+		expect(Object.keys(SwupTS)).toEqual(['default']);
 	});
 });
 
