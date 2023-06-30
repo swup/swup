@@ -12,6 +12,7 @@ export const delegateEvent = <Selector extends string, TEvent extends EventType>
 	options?: DelegateOptions
 ): Unsubscribe => {
 	const controller = new AbortController();
+	options = { ...options, signal: controller.signal };
 	delegate<string, ParseSelector<Selector, HTMLElement>, TEvent>(
 		selector,
 		type,
