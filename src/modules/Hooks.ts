@@ -4,6 +4,7 @@ import Swup, { Options } from '../Swup.js';
 import { isPromise, runAsPromise } from '../utils.js';
 import { Context } from './Context.js';
 import { FetchOptions, PageData } from './fetchPage.js';
+import { AnimationDirection } from './getAnimationPromises.js';
 
 export interface HookDefinitions {
 	animationInDone: undefined;
@@ -11,7 +12,7 @@ export interface HookDefinitions {
 	animationOutDone: undefined;
 	animationOutStart: undefined;
 	animationSkipped: undefined;
-	awaitAnimation: { selector: Options['animationSelector'] };
+	awaitAnimation: { selector: Options['animationSelector']; direction: AnimationDirection };
 	cacheCleared: undefined;
 	clickLink: { el: HTMLAnchorElement; event: DelegateEvent<MouseEvent> };
 	disabled: undefined;

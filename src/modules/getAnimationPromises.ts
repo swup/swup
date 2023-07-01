@@ -9,6 +9,8 @@ type AnimationProperties = 'Delay' | 'Duration';
 type AnimationStyleKeys = `${AnimationTypes}${AnimationProperties}` | 'transitionProperty';
 type AnimationStyleDeclarations = Pick<CSSStyleDeclaration, AnimationStyleKeys>;
 
+export type AnimationDirection = 'in' | 'out';
+
 /**
  * Get an array of Promises that resolve when all animations are done on the page.
  * @note We don't make use of the `direction` argument, but it's required by JS plugin
@@ -21,7 +23,7 @@ export function getAnimationPromises(
 	}: {
 		selector: Options['animationSelector'];
 		elements?: HTMLElement[];
-		direction?: 'in' | 'out';
+		direction?: AnimationDirection;
 	}
 ): Promise<void>[] {
 	// Use array of a single resolved promise instead of an empty array to allow
