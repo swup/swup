@@ -240,15 +240,16 @@ export default class Swup {
 		this.hooks.triggerSync('clickLink', { event }, () => {
 			const from = this.context.from?.url ?? '';
 
+			event.preventDefault();
+
 			// Handle links to the same page: with or without hash
 			if (!url || url === from) {
 				if (hash) {
+					updateHistoryRecord(url + hash);
 					this.hooks.triggerSync(
 						'samePageWithHash',
 						{ hash, options: { behavior: 'auto' } },
 						(context, { hash, options }) => {
-							event.preventDefault();
-							updateHistoryRecord(url + hash);
 							const target = this.getAnchorElement(hash);
 							if (target) {
 								target.scrollIntoView(options);
@@ -257,14 +258,11 @@ export default class Swup {
 					);
 				} else {
 					this.hooks.triggerSync('samePage', undefined, () => {
-						event.preventDefault();
 						window.scroll({ top: 0, left: 0, behavior: 'auto' });
 					});
 				}
 				return;
 			}
-
-			event.preventDefault();
 
 			// Exit early if the resolved path hasn't changed
 			if (this.isSameResolvedUrl(url, from)) {
