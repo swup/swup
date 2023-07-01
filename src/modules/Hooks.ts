@@ -13,7 +13,7 @@ export interface HookDefinitions {
 	animationSkipped: undefined;
 	awaitAnimation: { selector: Options['animationSelector'] };
 	cacheCleared: undefined;
-	clickLink: { event: DelegateEvent<MouseEvent> };
+	clickLink: { el: HTMLAnchorElement; event: DelegateEvent<MouseEvent> };
 	disabled: undefined;
 	enabled: undefined;
 	fetchPage: { url: string; options: FetchOptions; response?: Response | Promise<Response> };
