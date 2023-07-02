@@ -31,7 +31,7 @@ export function getAnimationPromises(
 	const resolved = [Promise.resolve()];
 
 	// Allow usage of swup without animations
-	if (selector === false) {
+	if (selector === false && !elements) {
 		return resolved;
 	}
 
@@ -53,9 +53,11 @@ export function getAnimationPromises(
 		.filter(Boolean) as Promise<void>[];
 
 	if (!animationPromises.length) {
-		console.warn(
-			`[swup] No CSS animation duration defined on elements matching \`${selector}\``
-		);
+		if (selector) {
+			console.warn(
+				`[swup] No CSS animation duration defined on elements matching \`${selector}\``
+			);
+		}
 		return resolved;
 	}
 
