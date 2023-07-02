@@ -22,7 +22,7 @@ export function getAnimationPromises(
 		selector
 	}: {
 		selector: Options['animationSelector'];
-		elements?: HTMLElement[];
+		elements?: NodeListOf<HTMLElement> | HTMLElement[];
 		direction?: AnimationDirection;
 	}
 ): Promise<void>[] {
@@ -38,7 +38,7 @@ export function getAnimationPromises(
 	// Allow passing in elements
 	let animatedElements: HTMLElement[] = [];
 	if (elements) {
-		animatedElements = elements;
+		animatedElements = Array.from(elements);
 	} else if (selector) {
 		animatedElements = queryAll(selector, document.body);
 	}
