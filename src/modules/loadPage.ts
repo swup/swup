@@ -32,6 +32,10 @@ export async function performPageLoad(
 	url: string,
 	options: PageLoadOptions & FetchOptions = {}
 ) {
+	if (typeof url !== 'string') {
+		throw new Error(`loadPage requires a URL parameter`);
+	}
+
 	const { url: requestedUrl } = Location.fromUrl(url);
 	const { transition, animate, history: historyAction } = options;
 	options.referrer = options.referrer || this.currentPageUrl;
