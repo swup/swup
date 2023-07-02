@@ -41,12 +41,11 @@ export function getAnimationPromises(
 		animatedElements = Array.from(elements);
 	} else if (selector) {
 		animatedElements = queryAll(selector, document.body);
-	}
-
-	// Warn if no elements match the selector, but keep things going
-	if (!animatedElements.length) {
-		console.warn(`[swup] No elements found matching animationSelector \`${selector}\``);
-		return resolved;
+		// Warn if no elements match the selector, but keep things going
+		if (!animatedElements.length) {
+			console.warn(`[swup] No elements found matching animationSelector \`${selector}\``);
+			return resolved;
+		}
 	}
 
 	const animationPromises = animatedElements
