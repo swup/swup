@@ -9,10 +9,12 @@ export const queryAll = (
 	return Array.from(context.querySelectorAll(selector));
 };
 
-export const nextTick = (callback: () => void) => {
-	requestAnimationFrame(() => {
+export const nextTick = (): Promise<void> => {
+	return new Promise((resolve) => {
 		requestAnimationFrame(() => {
-			callback();
+			requestAnimationFrame(() => {
+				resolve();
+			});
 		});
 	});
 };
