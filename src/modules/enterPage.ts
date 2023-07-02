@@ -1,4 +1,5 @@
 import Swup from '../Swup.js';
+import { nextTick } from '../utils.js';
 
 export const enterPage = async function (this: Swup) {
 	if (this.context.transition.animate) {
@@ -9,6 +10,7 @@ export const enterPage = async function (this: Swup) {
 				await Promise.all(this.getAnimationPromises({ selector, direction }));
 			}
 		);
+		await nextTick();
 		await this.hooks.trigger('animationInStart', undefined, () => {
 			document.documentElement.classList.remove('is-animating');
 		});
