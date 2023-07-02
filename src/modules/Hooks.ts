@@ -33,13 +33,13 @@ export interface HookDefinitions {
 	transitionEnd: undefined;
 }
 
-export type HookData<T extends HookName> = HookDefinitions[T];
+export type HookArguments<T extends HookName> = HookDefinitions[T];
 
 export type HookName = keyof HookDefinitions;
 
 export type Handler<T extends HookName> = (
 	context: Context,
-	data: HookData<T>
+	args: HookArguments<T>
 ) => Promise<any> | void;
 
 export type Handlers = {
@@ -256,19 +256,19 @@ export class Hooks {
 	 * Trigger a hook asynchronously, executing its default handler and all registered handlers.
 	 * Will execute all handlers in order and `await` any `Promise`s they return.
 	 * @param hook Name of the hook to trigger
-	 * @param data Data to pass to the handler
+	 * @param args Arguments to pass to the handler
 	 * @param defaultHandler A default implementation of this hook to execute
 	 * @returns The resolved return value of the executed default handler
 	 */
 	async trigger<T extends HookName>(
 		hook: T,
-		data?: HookData<T>,
+		args?: HookArguments<T>,
 		defaultHandler?: Handler<T>
 	): Promise<any> {
 		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
-		await this.execute(before, data);
-		const [result] = await this.execute(handler, data);
-		await this.execute(after, data);
+		await this.execute(before, args);
+		const [result] = await this.execute(handler, args);
+		await this.execute(after, args);
 		this.dispatchDomEvent(hook);
 		return result;
 	}
@@ -277,15 +277,19 @@ export class Hooks {
 	 * Trigger a hook synchronously, executing its default handler and all registered handlers.
 	 * Will execute all handlers in order, but will **not** `await` any `Promise`s they return.
 	 * @param hook Name of the hook to trigger
-	 * @param data Data to pass to the handler
+	 * @param args Arguments to pass to the handler
 	 * @param defaultHandler A default implementation of this hook to execute
 	 * @returns The (possibly unresolved) return value of the executed default handler
 	 */
-	triggerSync<T extends HookName>(hook: T, data?: HookData<T>, defaultHandler?: Handler<T>): any {
+	triggerSync<T extends HookName>(
+		hook: T,
+		args?: HookArguments<T>,
+		defaultHandler?: Handler<T>
+	): any {
 		const { before, after, handler } = this.getHandlers(hook, defaultHandler);
-		this.executeSync(before, data);
-		const [result] = this.executeSync(handler, data);
-		this.executeSync(after, data);
+		this.executeSync(before, args);
+		const [result] = this.executeSync(handler, args);
+		this.executeSync(after, args);
 		this.dispatchDomEvent(hook);
 		return result;
 	}
@@ -293,15 +297,15 @@ export class Hooks {
 	/**
 	 * Execute the handlers for a hook, in order, as `Promise`s that will be `await`ed.
 	 * @param registrations The registrations (handler + options) to execute
-	 * @param data Data to pass to the handlers
+	 * @param args Arguments to pass to the handler
 	 */
 	async execute<T extends HookName>(
 		registrations: HookRegistration<T>[],
-		data?: HookData<T>
+		args?: HookArguments<T>
 	): Promise<any> {
 		const results = [];
 		for (const { hook, handler, once } of registrations) {
-			const result = await runAsPromise(handler, [this.swup.context, data]);
+			const result = await runAsPromise(handler, [this.swup.context, args]);
 			results.push(result);
 			if (once) {
 				this.off(hook, handler);
@@ -313,15 +317,15 @@ export class Hooks {
 	/**
 	 * Execute the handlers for a hook, in order, without `await`ing any returned `Promise`s.
 	 * @param registrations The registrations (handler + options) to execute
-	 * @param data Data to pass to the handlers
+	 * @param args Arguments to pass to the handler
 	 */
 	executeSync<T extends HookName>(
 		registrations: HookRegistration<T>[],
-		data?: HookData<T>
+		args?: HookArguments<T>
 	): any[] {
 		const results = [];
 		for (const { hook, handler, once } of registrations) {
-			const result = handler(this.swup.context, data as HookData<T>);
+			const result = handler(this.swup.context, args as HookArguments<T>);
 			results.push(result);
 			if (isPromise(result)) {
 				console.warn(
