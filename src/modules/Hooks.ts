@@ -31,7 +31,6 @@ export interface HookDefinitions {
 	serverError: { url: string; status: number; response: Response };
 	transitionStart: undefined;
 	transitionEnd: undefined;
-	urlUpdated: { url: string };
 }
 
 export type HookData<T extends HookName> = HookDefinitions[T];
@@ -103,8 +102,7 @@ export class Hooks {
 		'scrollToContent',
 		'serverError',
 		'transitionStart',
-		'transitionEnd',
-		'urlUpdated'
+		'transitionEnd'
 	];
 
 	constructor(swup: Swup) {

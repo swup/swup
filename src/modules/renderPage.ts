@@ -19,8 +19,6 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 		this.context.to!.url = this.currentPageUrl;
 	}
 
-	await this.hooks.trigger('urlUpdated', { url: this.currentPageUrl });
-
 	// only add for page loads with transitions
 	if (this.context.transition.animate) {
 		document.documentElement.classList.add('is-rendering');
