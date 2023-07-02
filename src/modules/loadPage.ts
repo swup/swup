@@ -84,6 +84,8 @@ export async function performPageLoad(
 			return;
 		}
 
+		console.error(error);
+
 		// Rewrite `skipPopStateHandling` to redirect manually when `history.go` is processed
 		this.options.skipPopStateHandling = () => {
 			window.location.href = requestedUrl;
