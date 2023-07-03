@@ -12,14 +12,14 @@ export const enterPage = async function (this: Swup) {
 		);
 		await nextTick();
 		await this.hooks.trigger('animationInStart', undefined, () => {
-			document.documentElement.classList.remove('is-animating');
+			this.classes.remove('is-animating');
 		});
 		await animation;
 		await this.hooks.trigger('animationInDone');
 	}
 
 	await this.hooks.trigger('transitionEnd', undefined, () => {
-		this.cleanupAnimationClasses();
+		this.classes.clear();
 	});
 
 	this.context = this.createContext({ to: undefined });

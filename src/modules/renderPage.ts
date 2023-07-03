@@ -5,7 +5,7 @@ import { PageData } from './fetchPage.js';
 export const renderPage = async function (this: Swup, requestedUrl: string, page: PageData) {
 	const { url } = page;
 
-	document.documentElement.classList.remove('is-leaving');
+	this.classes.remove('is-leaving');
 
 	// do nothing if another page was requested in the meantime
 	if (!this.isSameResolvedUrl(getCurrentUrl(), requestedUrl)) {
@@ -21,7 +21,7 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 
 	// only add for page loads with transitions
 	if (this.context.transition.animate) {
-		document.documentElement.classList.add('is-rendering');
+		this.classes.add('is-rendering');
 	}
 
 	// replace content: allow handlers and plugins to overwrite paga data and containers

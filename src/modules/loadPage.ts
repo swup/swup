@@ -48,8 +48,8 @@ export async function performPageLoad(
 	}
 
 	if (!this.context.transition.animate) {
-		document.documentElement.classList.remove('is-animating');
-		this.cleanupAnimationClasses();
+		this.classes.remove('is-animating');
+		this.classes.clear();
 	} else if (transition) {
 		this.context.transition.name = transition;
 	}
