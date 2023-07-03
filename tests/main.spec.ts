@@ -38,16 +38,13 @@ test.describe('request', () => {
   });
 
   test('should send the correct request headers', async ({ page }) => {
-    const expected = {
-      'X-Requested-With': 'swup',
-      'Accept': 'text/html, application/xhtml+xml'
-    };
     const [request] = await Promise.all([
       page.waitForRequest((request) => request.url().endsWith('/page-2.html')),
       page.click('a[href="/page-2.html"]')
     ]);
-    Object.entries(expected).forEach(([header, value]) => {
-      expect(request.headers()).toHaveProperty(header.toLowerCase(), value);
+    expect(request.headers()).toMatchObject({
+      'x-requested-with': 'swup',
+      'accept': 'text/html, application/xhtml+xml'
     });
   });
 });
