@@ -42,9 +42,10 @@ test.describe('request', () => {
       page.waitForRequest((request) => request.url().endsWith('/page-2.html')),
       page.click('a[href="/page-2.html"]')
     ]);
-    expect(request.headers()).toMatchObject({
-      'x-requested-with': 'swup',
-      'accept': 'text/html, application/xhtml+xml'
-    });
+    const headers = await page.evaluate(() => window._swup.options.requestHeaders);
+    const expected = Object.fromEntries(
+      Object.entries(headers).map(([header, value]) => [header.toLowerCase(), value])
+    );
+    expect(request.headers()).toMatchObject(expected);
   });
 });
