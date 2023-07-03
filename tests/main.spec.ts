@@ -28,26 +28,26 @@ test.describe('request', () => {
     await expect(page).toHaveTitle('Page 2');
   });
 
-  test('should send the correct referer', async ({ page }) => {
-    let referer = '';
-    // await page.route('/page-2.html', async (route) => {
-    //   console.log('Intercepted request:', route.request().url());
-    //   const headers = await route.request().allHeaders();
-    //   referer = headers.referer;
-    // });
-    let headers = {};
-    const requestPromise = page.waitForRequest((request) => {
-      if (request.url().includes('/page-2.html')) {
-        headers = request.headers();
-      }
-      return true;
-    });
-    const clickPromise = page.click('a[href="/page-2.html"]');
-    await Promise.all([requestPromise, clickPromise]);
+  test('should send the correct referer', async ({ page, baseURL }) => {
+    const referer = `${baseURL}/page-1.html`;
+    const [request] = await Promise.all([
+      page.waitForRequest((request) => request.url().endsWith('/page-2.html')),
+      page.click('a[href="/page-2.html"]')
+    ]);
+    expect(request.headers()).toHaveProperty('referer', referer);
+  });
 
-    const expected = await withSwup(page, (swup) => swup.options.requestHeaders);
+  test('should send the correct request headers', async ({ page }) => {
+    const expected = {
+      'X-Requested-With': 'swup',
+      'Accept': 'text/html, application/xhtml+xml'
+    };
+    const [request] = await Promise.all([
+      page.waitForRequest((request) => request.url().endsWith('/page-2.html')),
+      page.click('a[href="/page-2.html"]')
+    ]);
     Object.entries(expected).forEach(([header, value]) => {
-      expect(headers).toHaveProperty(header.toLowerCase(), value);
+      expect(request.headers()).toHaveProperty(header.toLowerCase(), value);
     });
   });
 });
