@@ -31,13 +31,13 @@
         <h2>Anchors</h2>
 
         <div class="scroll-anchors">
-            <div id="anchor" data-cy="anchor">Anchor</div>
-            <div id="anchor-by-id" data-cy="anchor-by-id">Anchor by id</div>
-            <a name="anchor-by-name" data-cy="anchor-by-name">Anchor by name</a>
-            <div id="anchor-%21" data-cy="anchor-encoded">Anchor with encoded ID</div>
-            <div id="anchor-!" data-cy="anchor-unencoded">Anchor with unencoded ID</div>
-            <div id="anchor:with:colon" data-cy="anchor-with-colon">Anchor with colon</div>
-            <div id="anchor-with-unicode-テスト" data-cy="anchor-with-unicode">Anchor with unicode</div>
+            <div id="anchor" data-testid="anchor">Anchor</div>
+            <div id="anchor-by-id" data-testid="anchor-by-id">Anchor by id</div>
+            <a name="anchor-by-name" data-testid="anchor-by-name">Anchor by name</a>
+            <div id="anchor-%21" data-testid="anchor-encoded">Anchor with encoded ID</div>
+            <div id="anchor-!" data-testid="anchor-unencoded">Anchor with unencoded ID</div>
+            <div id="anchor:with:colon" data-testid="anchor-with-colon">Anchor with colon</div>
+            <div id="anchor-with-unicode-テスト" data-testid="anchor-with-unicode">Anchor with unicode</div>
         </div>
 
         Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias
@@ -49,37 +49,37 @@
 
         <ul>
             <li>
-                <a href="/scrolling-2.html" data-cy="link-to-page">Link to page</a>
+                <a href="/scrolling-2.html" data-testid="link-to-page">Link to page</a>
             </li>
             <li>
-                <a href="#anchor" data-cy="link-to-anchor">Link to anchor</a>
+                <a href="#anchor" data-testid="link-to-anchor">Link to anchor</a>
             </li>
             <li>
-                <a href="#top" data-cy="link-to-top">Link to top</a>
+                <a href="#top" data-testid="link-to-top">Link to top</a>
             </li>
             <li>
-                <a href="/scrolling-1.html#anchor" data-cy="link-to-self-anchor">Link to self with anchor</a>
+                <a href="/scrolling-1.html#anchor" data-testid="link-to-self-anchor">Link to self with anchor</a>
             </li>
             <li>
-                <a href="/scrolling-2.html#anchor" data-cy="link-to-page-anchor">Link to page with anchor</a>
+                <a href="/scrolling-2.html#anchor" data-testid="link-to-page-anchor">Link to page with anchor</a>
             </li>
             <li>
-                <a href="#anchor-by-id" data-cy="link-to-anchor-by-id">Link to anchor by id</a>
+                <a href="#anchor-by-id" data-testid="link-to-anchor-by-id">Link to anchor by id</a>
             </li>
             <li>
-                <a href="#anchor-by-name" data-cy="link-to-anchor-by-name">Link to anchor by name</a>
+                <a href="#anchor-by-name" data-testid="link-to-anchor-by-name">Link to anchor by name</a>
             </li>
             <li>
-                <a href="#anchor-%21" data-cy="link-to-anchor-encoded">Link to anchor with url-encoding</a>
+                <a href="#anchor-%21" data-testid="link-to-anchor-encoded">Link to anchor with url-encoding</a>
             </li>
             <li>
-                <a href="#anchor-!" data-cy="link-to-anchor-unencoded">Link to anchor without url-encoding</a>
+                <a href="#anchor-!" data-testid="link-to-anchor-unencoded">Link to anchor without url-encoding</a>
             </li>
             <li>
-                <a href="#anchor:with:colon" data-cy="link-to-anchor-with-colon">Link to anchor with colon</a>
+                <a href="#anchor:with:colon" data-testid="link-to-anchor-with-colon">Link to anchor with colon</a>
             </li>
             <li>
-                <a href="#anchor-with-unicode-テスト" data-cy="link-to-anchor-with-unicode">Link to anchor with unicode</a>
+                <a href="#anchor-with-unicode-テスト" data-testid="link-to-anchor-with-unicode">Link to anchor with unicode</a>
             </li>
         </ul>
     </main>

@@ -264,7 +264,7 @@ describe('Link resolution', function () {
 
 	it('should skip links to different origins', function () {
 		cy.shouldHaveReloadedAfterAction(() => {
-			cy.get('[data-cy=nav-link-ext]').click();
+			cy.get('[data-testid=nav-link-ext]').click();
 		});
 		cy.location().should((location) => {
 			expect(location.origin).to.eq('https://example.net');
@@ -272,14 +272,14 @@ describe('Link resolution', function () {
 	});
 
 	it('should follow relative links', function () {
-		cy.get('[data-cy=nav-link-rel]').click();
+		cy.get('[data-testid=nav-link-rel]').click();
 		cy.shouldBeAtPage('/page-2.html');
 		cy.shouldHaveH1('Page 2');
 	});
 
 	it('should resolve document base URLs', function () {
 		cy.visit('/nested/nested-1.html');
-		cy.get('[data-cy=nav-link-sub]').click();
+		cy.get('[data-testid=nav-link-sub]').click();
 		cy.shouldBeAtPage('/nested/nested-2.html');
 		cy.shouldHaveH1('Nested Page 2');
 	});
@@ -315,14 +315,14 @@ describe('Ignoring visits', function () {
 
 	it('should ignore links with data-no-swup attr', function () {
 		cy.shouldHaveReloadedAfterAction(() => {
-			cy.get('[data-cy="ignore-element"]').first().click();
+			cy.get('[data-testid="ignore-element"]').first().click();
 		});
 		cy.shouldBeAtPage('/page-2.html');
 	});
 
 	it('should ignore links with data-no-swup parent', function () {
 		cy.shouldHaveReloadedAfterAction(() => {
-			cy.get('[data-cy="ignore-parent"]').first().click();
+			cy.get('[data-testid="ignore-parent"]').first().click();
 		});
 		cy.shouldBeAtPage('/page-2.html');
 	});
@@ -330,7 +330,7 @@ describe('Ignoring visits', function () {
 	it('should ignore links via custom ignored path', function () {
 		this.swup.options.ignoreVisit = (url) => url.endsWith('#hash');
 		cy.shouldHaveReloadedAfterAction(() => {
-			cy.get('[data-cy="ignore-path-end"]').first().click();
+			cy.get('[data-testid="ignore-path-end"]').first().click();
 		});
 		cy.shouldBeAtPage('/page-2.html#hash');
 	});
@@ -416,7 +416,7 @@ describe('History', function () {
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
 
-		cy.get('[data-cy=create-link]').first().click();
+		cy.get('[data-testid=create-link]').first().click();
 		cy.shouldBeAtPage('/page-3.html');
 		cy.window().then((window) => {
 			window.history.back();
@@ -432,7 +432,7 @@ describe('History', function () {
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
 
-		cy.get('[data-cy=update-link]').first().click();
+		cy.get('[data-testid=update-link]').first().click();
 		cy.shouldBeAtPage('/page-3.html');
 		cy.window().then((window) => {
 			window.history.back();
@@ -653,8 +653,8 @@ describe('Scrolling', function () {
 	});
 
 	it('should scroll to hash element and back to top', function () {
-		cy.get('[data-cy=link-to-anchor]').click();
-		cy.shouldHaveElementInViewport('[data-cy=anchor]');
+		cy.get('[data-testid=link-to-anchor]').click();
+		cy.shouldHaveElementInViewport('[data-testid=anchor]');
 
 		cy.triggerClickOnLink('/page-1.html');
 		cy.window().should((window) => {
@@ -663,50 +663,50 @@ describe('Scrolling', function () {
 	});
 
 	it('should scroll to anchor with path', function () {
-		cy.get('[data-cy=link-to-self-anchor]').click();
-		cy.shouldHaveElementInViewport('[data-cy=anchor]');
+		cy.get('[data-testid=link-to-self-anchor]').click();
+		cy.shouldHaveElementInViewport('[data-testid=anchor]');
 	});
 
 	it('should scroll to top', function () {
-		cy.get('[data-cy=link-to-self-anchor]').click();
-		cy.shouldHaveElementInViewport('[data-cy=anchor]');
-		cy.get('[data-cy=link-to-top]').click();
+		cy.get('[data-testid=link-to-self-anchor]').click();
+		cy.shouldHaveElementInViewport('[data-testid=anchor]');
+		cy.get('[data-testid=link-to-top]').click();
 		cy.window().should((window) => {
 			expect(window.scrollY).equal(0);
 		});
 	});
 
 	it('should scroll to id-based anchor', function () {
-		cy.get('[data-cy=link-to-anchor-by-id]').click();
-		cy.shouldHaveElementInViewport('[data-cy=anchor-by-id]');
+		cy.get('[data-testid=link-to-anchor-by-id]').click();
+		cy.shouldHaveElementInViewport('[data-testid=anchor-by-id]');
 	});
 
 	it('should scroll to name-based anchor', function () {
-		cy.get('[data-cy=link-to-anchor-by-name]').click();
-		cy.shouldHaveElementInViewport('[data-cy=anchor-by-name]');
+		cy.get('[data-testid=link-to-anchor-by-name]').click();
+		cy.shouldHaveElementInViewport('[data-testid=anchor-by-name]');
 	});
 
 	it('should prefer undecoded id attributes', function () {
-		cy.get('[data-cy=link-to-anchor-encoded]').click();
-		cy.shouldHaveElementInViewport('[data-cy=anchor-encoded]');
+		cy.get('[data-testid=link-to-anchor-encoded]').click();
+		cy.shouldHaveElementInViewport('[data-testid=anchor-encoded]');
 	});
 
 	it('should accept unencoded anchor links', function () {
-		cy.get('[data-cy=link-to-anchor-unencoded]').click();
-		cy.shouldHaveElementInViewport('[data-cy=anchor-unencoded]');
+		cy.get('[data-testid=link-to-anchor-unencoded]').click();
+		cy.shouldHaveElementInViewport('[data-testid=anchor-unencoded]');
 	});
 
 	it('should scroll to anchor with special characters', function () {
-		cy.get('[data-cy=link-to-anchor-with-colon]').click();
-		cy.shouldHaveElementInViewport('[data-cy=anchor-with-colon]');
-		cy.get('[data-cy=link-to-anchor-with-unicode]').click();
-		cy.shouldHaveElementInViewport('[data-cy=anchor-with-unicode]');
+		cy.get('[data-testid=link-to-anchor-with-colon]').click();
+		cy.shouldHaveElementInViewport('[data-testid=anchor-with-colon]');
+		cy.get('[data-testid=link-to-anchor-with-unicode]').click();
+		cy.shouldHaveElementInViewport('[data-testid=anchor-with-unicode]');
 	});
 
 	it('should transition page and scroll on link with hash', function () {
-		cy.get('[data-cy=link-to-page-anchor]').click();
+		cy.get('[data-testid=link-to-page-anchor]').click();
 		cy.shouldBeAtPage('/scrolling-2.html#anchor');
 		cy.shouldHaveH1('Scrolling 2');
-		cy.shouldHaveElementInViewport('[data-cy=anchor]');
+		cy.shouldHaveElementInViewport('[data-testid=anchor]');
 	});
 });
