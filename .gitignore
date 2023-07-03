@@ -22,3 +22,6 @@ coverage
 /cypress/videos
 /cypress/screenshots
 *.tgz
+/test-results/
+/playwright-report/
+/playwright/.cache/
