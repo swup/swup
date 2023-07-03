@@ -49,3 +49,25 @@ test.describe('request', () => {
     expect(request.headers()).toMatchObject(expected);
   });
 });
+
+test.describe('cache', () => {
+  test('should cache pages', async ({ page }) => {
+    await page.evaluate(() => window._swup.loadPage('/page-2.html'));
+    await expect(page).toHaveURL('/page-2.html');
+    await expect(page).toHaveTitle('Page 2');
+    const exists = await page.evaluate(() => window._swup.cache.has('/page-2.html'));
+    const entry = await page.evaluate(() => window._swup.cache.get('/page-2.html'));
+    expect(exists).toBe(true);
+    expect(entry).toHaveProperty('url', '/page-2.html');
+	});
+
+  test('should cache pages from absolute URLs', async ({ page, baseURL }) => {
+    await page.evaluate((baseURL) => window._swup.loadPage(`${baseURL}/page-2.html`), baseURL);
+    await expect(page).toHaveURL('/page-2.html');
+    await expect(page).toHaveTitle('Page 2');
+    const exists = await page.evaluate(() => window._swup.cache.has('/page-2.html'));
+    const entry = await page.evaluate(() => window._swup.cache.get('/page-2.html'));
+    expect(exists).toBe(true);
+    expect(entry).toHaveProperty('url', '/page-2.html');
+	});
+});
