@@ -30,6 +30,10 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 		{ page, containers: this.context.containers },
 		(context, { page, containers }) => {
 			this.replaceContent(page, { containers });
+			if (this.context.transition.animate) {
+				// Make sure to add these classes to new containers as well
+				this.classes.add('is-animating', 'is-changing', 'is-rendering');
+			}
 		}
 	);
 

@@ -48,6 +48,7 @@ export async function performPageLoad(
 	}
 
 	if (!this.context.transition.animate) {
+		// Why is is-animating not cleared in `clearAnimationClasses`?
 		this.classes.remove('is-animating');
 		this.classes.clear();
 	} else if (transition) {
@@ -56,6 +57,10 @@ export async function performPageLoad(
 
 	try {
 		await this.hooks.trigger('transitionStart');
+		if (!this.options.transitionRoot) {
+			this.context.transition.targets = this.context.containers;
+		}
+
 		const animationPromise = this.leavePage();
 		const pagePromise = this.hooks.trigger(
 			'loadPage',
