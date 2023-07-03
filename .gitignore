@@ -23,5 +23,6 @@ coverage
 /cypress/screenshots
 *.tgz
 /tests/results/
-/playwright-report/
+/tests/report/
+/tests/fixtures/dist
 /playwright/.cache/
