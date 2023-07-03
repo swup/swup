@@ -110,11 +110,21 @@ describe('Markup', function () {
 		cy.shouldHaveH1('Page 1');
 	});
 
-	it('should process transition classes', function () {
+	it('should add transition classes to html', function () {
 		cy.triggerClickOnLink('/page-2.html');
-		cy.shouldHaveTransitionLeaveClasses();
-		cy.shouldHaveTransitionEnterClasses();
-		cy.shouldNotHaveTransitionClasses();
+		cy.shouldHaveTransitionLeaveClasses('html');
+		cy.shouldNotHaveTransitionClasses('#swup'); // making sure
+		cy.shouldHaveTransitionEnterClasses('html');
+		cy.shouldNotHaveTransitionClasses('html');
+	});
+
+	it('should add transition classes to containers', function () {
+		this.swup.options.transitionRoot = false;
+		cy.triggerClickOnLink('/page-2.html');
+		cy.shouldHaveTransitionLeaveClasses('#swup');
+		cy.shouldNotHaveTransitionClasses('html'); // making sure
+		cy.shouldHaveTransitionEnterClasses('#swup');
+		cy.shouldNotHaveTransitionClasses('#swup');
 	});
 
 	it('should remove swup class from html tag', function () {
