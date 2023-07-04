@@ -33,6 +33,7 @@ type DelegatedListeners = {
 export type Options = {
 	animateHistoryBrowsing: boolean;
 	animationSelector: string | false;
+	animationScope: 'html' | 'containers';
 	linkSelector: string;
 	cache: boolean;
 	containers: string[];
@@ -41,7 +42,6 @@ export type Options = {
 	skipPopStateHandling: (event: any) => boolean;
 	ignoreVisit: (url: string, { el, event }: { el?: Element; event?: Event }) => boolean;
 	resolveUrl: (url: string) => string;
-	transitionRoot: 'html' | 'containers';
 };
 
 export default class Swup {
@@ -83,6 +83,7 @@ export default class Swup {
 	defaults: Options = {
 		animateHistoryBrowsing: false,
 		animationSelector: '[class*="transition-"]',
+		animationScope: 'html',
 		cache: true,
 		containers: ['#swup'],
 		ignoreVisit: (url, { el, event } = {}) => !!el?.closest('[data-no-swup]'),
@@ -93,8 +94,7 @@ export default class Swup {
 			'X-Requested-With': 'swup',
 			Accept: 'text/html, application/xhtml+xml'
 		},
-		skipPopStateHandling: (event) => event.state?.source !== 'swup',
-		transitionRoot: 'html'
+		skipPopStateHandling: (event) => event.state?.source !== 'swup'
 	};
 
 	constructor(options: Partial<Options> = {}) {

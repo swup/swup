@@ -21,11 +21,13 @@ describe('Request', function () {
 		const expected = this.swup.options.requestHeaders;
 		cy.intercept('GET', '/page-3.html').as('request');
 		cy.triggerClickOnLink('/page-3.html');
-		cy.wait('@request').its('request.headers').then((headers) => {
-			Object.entries(expected).forEach(([header, value]) => {
-				cy.wrap(headers).its(header.toLowerCase()).should('eq', value);
+		cy.wait('@request')
+			.its('request.headers')
+			.then((headers) => {
+				Object.entries(expected).forEach(([header, value]) => {
+					cy.wrap(headers).its(header.toLowerCase()).should('eq', value);
+				});
 			});
-		});
 	});
 
 	it('should force-load on server error', function () {
@@ -58,7 +60,10 @@ describe('Fetch', function () {
 		});
 
 		this.swup.hooks.before('loadPage', (context, args) => {
-			args.page = { url: '/page-3.html', html: '<html><body><div id="swup"><h1>Page 3</h1></div></body></html>' };
+			args.page = {
+				url: '/page-3.html',
+				html: '<html><body><div id="swup"><h1>Page 3</h1></div></body></html>'
+			};
 		});
 		this.swup.loadPage('/page-2.html');
 
@@ -119,7 +124,7 @@ describe('Markup', function () {
 	});
 
 	it('should add transition classes to containers', function () {
-		this.swup.options.transitionRoot = "containers";
+		this.swup.options.animationScope = 'containers';
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldHaveTransitionLeaveClasses('#swup');
 		cy.shouldNotHaveTransitionClasses('html'); // making sure
@@ -204,17 +209,20 @@ describe('Transition timing', function () {
 
 	it('should warn about missing transition timing', function () {
 		cy.visit('/transition-none.html', {
-			onBeforeLoad: (win) =>  cy.stub(win.console, 'warn').as('consoleWarn')
+			onBeforeLoad: (win) => cy.stub(win.console, 'warn').as('consoleWarn')
 		});
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
 		cy.shouldHaveH1('Page 2');
-		cy.get('@consoleWarn').should('be.calledOnceWith', '[swup] No CSS animation duration defined on elements matching `[class*=\"transition-\"]`');
+		cy.get('@consoleWarn').should(
+			'be.calledOnceWith',
+			'[swup] No CSS animation duration defined on elements matching `[class*="transition-"]`'
+		);
 	});
 
 	it('should not warn about partial transition timing', function () {
 		cy.visit('/transition-partial.html', {
-			onBeforeLoad: (win) =>  cy.stub(win.console, 'warn').as('consoleWarn')
+			onBeforeLoad: (win) => cy.stub(win.console, 'warn').as('consoleWarn')
 		});
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
@@ -598,8 +606,8 @@ describe('Context', function () {
 		});
 		cy.triggerClickOnLink('/page-2.html');
 		cy.window().should((win) => {
-			expect(el).to.be.instanceof(win.HTMLAnchorElement)
-			expect(event).to.be.instanceof(win.MouseEvent)
+			expect(el).to.be.instanceof(win.HTMLAnchorElement);
+			expect(event).to.be.instanceof(win.MouseEvent);
 		});
 	});
 

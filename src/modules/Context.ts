@@ -76,7 +76,7 @@ export function createContext(
 			animate,
 			name: transition,
 			targets:
-				this.options.transitionRoot === 'containers' ? this.options.containers : ['html']
+				this.options.animationScope === 'containers' ? this.options.containers : ['html']
 		},
 		trigger: {
 			el,
