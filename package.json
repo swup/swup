@@ -54,9 +54,9 @@
   },
   "keywords": [
     "css",
-    "animation",
     "page",
-    "transition"
+    "transition",
+    "animation"
   ],
   "dependencies": {
     "delegate-it": "^6.0.0",
