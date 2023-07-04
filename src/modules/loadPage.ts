@@ -47,11 +47,6 @@ export async function performPageLoad(
 		this.context.history.action = historyAction;
 	}
 
-	// Determine where to add transition classes: html or containers
-	if (!this.options.transitionRoot) {
-		this.context.transition.targets = this.context.containers;
-	}
-
 	// Clean up old transition classes and set custom transition name
 	if (!this.context.transition.animate) {
 		// Why is is-animating not cleared in `clearAnimationClasses`?

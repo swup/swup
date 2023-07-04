@@ -119,7 +119,7 @@ describe('Markup', function () {
 	});
 
 	it('should add transition classes to containers', function () {
-		this.swup.options.transitionRoot = false;
+		this.swup.options.transitionRoot = "containers";
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldHaveTransitionLeaveClasses('#swup');
 		cy.shouldNotHaveTransitionClasses('html'); // making sure
