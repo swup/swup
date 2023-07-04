@@ -1,4 +1,4 @@
-import { updateHistoryRecord, getCurrentUrl } from '../helpers.js';
+import { updateHistoryRecord, getCurrentUrl, classify } from '../helpers.js';
 import Swup from '../Swup.js';
 import { PageData } from './fetchPage.js';
 
@@ -23,6 +23,10 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 	if (this.context.transition.animate) {
 		this.classes.add('is-rendering');
 	}
+	console.log(this.context.from);
+	// if (this.context.scroll.reset) {
+	// 	console.log(this.context.to!);
+	// }
 
 	// replace content: allow handlers and plugins to overwrite paga data and containers
 	await this.hooks.trigger(
@@ -33,6 +37,9 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 			if (this.context.transition.animate) {
 				// Make sure to add these classes to new containers as well
 				this.classes.add('is-animating', 'is-changing', 'is-rendering');
+				if (this.context.transition.name) {
+					this.classes.add(`to-${classify(this.context.transition.name)}`);
+				}
 			}
 		}
 	);
