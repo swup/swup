@@ -59,7 +59,6 @@ export function createContext(
 		from = this.currentPageUrl,
 		hash: target,
 		containers = this.options.containers,
-		targets,
 		animate = true,
 		transition,
 		el,
@@ -76,7 +75,8 @@ export function createContext(
 		transition: {
 			animate,
 			name: transition,
-			targets
+			targets:
+				this.options.transitionRoot === 'containers' ? this.options.containers : ['html']
 		},
 		trigger: {
 			el,
