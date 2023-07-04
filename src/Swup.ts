@@ -41,7 +41,7 @@ export type Options = {
 	skipPopStateHandling: (event: any) => boolean;
 	ignoreVisit: (url: string, { el, event }: { el?: Element; event?: Event }) => boolean;
 	resolveUrl: (url: string) => string;
-	transitionRoot: boolean;
+	transitionRoot: 'html' | 'containers';
 };
 
 export default class Swup {
@@ -94,7 +94,7 @@ export default class Swup {
 			Accept: 'text/html, application/xhtml+xml'
 		},
 		skipPopStateHandling: (event) => event.state?.source !== 'swup',
-		transitionRoot: true
+		transitionRoot: 'html'
 	};
 
 	constructor(options: Partial<Options> = {}) {
