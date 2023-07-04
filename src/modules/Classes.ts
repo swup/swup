@@ -3,7 +3,7 @@ import Swup from '../Swup.js';
 export class Classes {
 	public swup: Swup;
 
-	swupClasses = ['to-', 'is-changing', 'is-rendering', 'is-popstate'];
+	swupClasses = ['to-', 'is-changing', 'is-rendering', 'is-popstate', 'is-animating'];
 
 	constructor(swup: Swup) {
 		this.swup = swup;

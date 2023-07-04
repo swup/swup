@@ -49,8 +49,6 @@ export async function performPageLoad(
 
 	// Clean up old transition classes and set custom transition name
 	if (!this.context.transition.animate) {
-		// Why is is-animating not cleared in `clearAnimationClasses`?
-		this.classes.remove('is-animating');
 		this.classes.clear();
 	} else if (transition) {
 		this.context.transition.name = transition;
