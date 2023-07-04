@@ -1,4 +1,5 @@
 import Swup from '../Swup.js';
+import { query } from '../utils.js';
 
 export class Classes {
 	public swup: Swup;
@@ -10,19 +11,12 @@ export class Classes {
 	}
 
 	get selectors(): string[] {
-		const { targets } = this.swup.context.transition;
-		return targets || ['html'];
+		const { scope } = this.swup.context.transition;
+		return scope === 'containers' ? this.swup.context.containers : ['html'];
 	}
 
-	get targets(): Element[] {
-		const elements: Element[] = [];
-
-		this.selectors.forEach((selector) => {
-			const el = document.querySelector(selector);
-			if (el) elements.push(el as Element);
-		});
-
-		return elements;
+	get targets(): HTMLElement[] {
+		return this.selectors.map((s) => query(s)).filter(Boolean) as HTMLElement[];
 	}
 
 	public add(...classes: string[]): void {
