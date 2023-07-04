@@ -15,7 +15,14 @@ export class Classes {
 	}
 
 	get targets(): Element[] {
-		return Array.from(document.querySelectorAll(this.selectors.join(',')));
+		const elements: Element[] = [];
+
+		this.selectors.forEach((selector) => {
+			const el = document.querySelector(selector);
+			if (el) elements.push(el as Element);
+		});
+
+		return elements;
 	}
 
 	public add(...classes: string[]): void {
