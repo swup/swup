@@ -23,10 +23,6 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 	if (this.context.transition.animate) {
 		this.classes.add('is-rendering');
 	}
-	// console.log(this.context.from);
-	if (this.context.scroll.reset) {
-		console.log(this.context.to!);
-	}
 
 	// replace content: allow handlers and plugins to overwrite paga data and containers
 	await this.hooks.trigger(
@@ -70,6 +66,7 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 
 	// Perform in transition
 	await this.enterPage();
+
 
 	// If we ever decide that we want to reset the context after each visit
 	// if (this.context.to && this.isSameResolvedUrl(this.context.to.url, requestedUrl)) {
