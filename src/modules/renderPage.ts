@@ -1,11 +1,11 @@
-import { updateHistoryRecord, getCurrentUrl } from '../helpers.js';
+import { updateHistoryRecord, getCurrentUrl, classify } from '../helpers.js';
 import Swup from '../Swup.js';
 import { PageData } from './fetchPage.js';
 
 export const renderPage = async function (this: Swup, requestedUrl: string, page: PageData) {
 	const { url } = page;
 
-	document.documentElement.classList.remove('is-leaving');
+	this.classes.remove('is-leaving');
 
 	// do nothing if another page was requested in the meantime
 	if (!this.isSameResolvedUrl(getCurrentUrl(), requestedUrl)) {
@@ -21,7 +21,11 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 
 	// only add for page loads with transitions
 	if (this.context.transition.animate) {
-		document.documentElement.classList.add('is-rendering');
+		this.classes.add('is-rendering');
+	}
+	// console.log(this.context.from);
+	if (this.context.scroll.reset) {
+		console.log(this.context.to!);
 	}
 
 	// replace content: allow handlers and plugins to overwrite paga data and containers
@@ -30,6 +34,13 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 		{ page, containers: this.context.containers },
 		(context, { page, containers }) => {
 			this.replaceContent(page, { containers });
+			if (this.context.transition.animate) {
+				// Make sure to add these classes to new containers as well
+				this.classes.add('is-animating', 'is-changing', 'is-rendering');
+				if (this.context.transition.name) {
+					this.classes.add(`to-${classify(this.context.transition.name)}`);
+				}
+			}
 		}
 	);
 
@@ -58,5 +69,10 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 	}
 
 	// Perform in transition
-	this.enterPage();
+	await this.enterPage();
+
+	// If we ever decide that we want to reset the context after each visit
+	// if (this.context.to && this.isSameResolvedUrl(this.context.to.url, requestedUrl)) {
+	// 	this.createContext({ to: undefined });
+	// }
 };

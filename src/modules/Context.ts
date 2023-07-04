@@ -18,6 +18,7 @@ export interface PageContext {
 export interface TransitionContext {
 	animate: boolean;
 	name?: string;
+	targets?: string[];
 }
 
 export interface ScrollContext {
@@ -43,6 +44,7 @@ export interface ContextInitOptions {
 	containers?: Options['containers'];
 	animate?: boolean;
 	transition?: string;
+	targets?: string[];
 	el?: Element;
 	event?: Event;
 	popstate?: boolean;
@@ -72,7 +74,9 @@ export function createContext(
 		containers,
 		transition: {
 			animate,
-			name: transition
+			name: transition,
+			targets:
+				this.options.animationScope === 'containers' ? this.options.containers : ['html']
 		},
 		trigger: {
 			el,

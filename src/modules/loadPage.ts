@@ -47,15 +47,17 @@ export async function performPageLoad(
 		this.context.history.action = historyAction;
 	}
 
+	// Clean up old transition classes and set custom transition name
 	if (!this.context.transition.animate) {
-		document.documentElement.classList.remove('is-animating');
-		this.cleanupAnimationClasses();
+		this.classes.clear();
 	} else if (transition) {
 		this.context.transition.name = transition;
 	}
 
 	try {
 		await this.hooks.trigger('transitionStart');
+
+		// Create Promises for animation and page fetch
 		const animationPromise = this.leavePage();
 		const pagePromise = this.hooks.trigger(
 			'loadPage',
@@ -63,7 +65,7 @@ export async function performPageLoad(
 			async (context, { url, options, page }) => await (page || this.fetchPage(url, options))
 		);
 
-		// create history record if this is not a popstate call (with or without anchor)
+		// Create history record if this is not a popstate call (with or without anchor)
 		if (!this.context.history.popstate) {
 			const newUrl = url + (this.context.scroll.target || '');
 			if (this.context.history.action === 'replace') {
@@ -75,7 +77,7 @@ export async function performPageLoad(
 
 		this.currentPageUrl = getCurrentUrl();
 
-		// when everything is ready, render the page
+		// When everything is ready, render the page
 		const [page] = await Promise.all([pagePromise, animationPromise]);
 		this.renderPage(requestedUrl, page);
 	} catch (error: unknown) {

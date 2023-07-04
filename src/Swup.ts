@@ -2,27 +2,23 @@ import { DelegateEvent } from 'delegate-it';
 
 import version from './config/version.js';
 
-import {
-	cleanupAnimationClasses,
-	delegateEvent,
-	getCurrentUrl,
-	Location,
-	updateHistoryRecord
-} from './helpers.js';
+import { delegateEvent, getCurrentUrl, Location, updateHistoryRecord } from './helpers.js';
 import { Unsubscribe } from './helpers/delegateEvent.js';
 
 import { Cache } from './modules/Cache.js';
+import { Classes } from './modules/Classes.js';
 import { Context, createContext } from './modules/Context.js';
-import { enterPage } from './modules/enterPage.js';
+import { Hooks } from './modules/Hooks.js';
 import { getAnchorElement } from './modules/getAnchorElement.js';
 import { getAnimationPromises } from './modules/getAnimationPromises.js';
+import { loadPage } from './modules/loadPage.js';
 import { fetchPage } from './modules/fetchPage.js';
 import { leavePage } from './modules/leavePage.js';
-import { HistoryAction, loadPage, performPageLoad } from './modules/loadPage.js';
 import { replaceContent } from './modules/replaceContent.js';
-import { Handler, HookName, Hooks } from './modules/Hooks.js';
-import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
+import { enterPage } from './modules/enterPage.js';
 import { renderPage } from './modules/renderPage.js';
+import { performPageLoad, HistoryAction } from './modules/loadPage.js';
+import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
 
 export type Transition = {
 	from?: string;
@@ -37,6 +33,7 @@ type DelegatedListeners = {
 export type Options = {
 	animateHistoryBrowsing: boolean;
 	animationSelector: string | false;
+	animationScope: 'html' | 'containers';
 	linkSelector: string;
 	cache: boolean;
 	containers: string[];
@@ -59,6 +56,8 @@ export default class Swup {
 	cache: Cache;
 	// hook registry
 	hooks: Hooks;
+	// classname manager
+	classes: Classes;
 	// variable for keeping event listeners from "delegate"
 	delegatedListeners: DelegatedListeners = {};
 	// allows us to compare the current and new path inside popStateHandler
@@ -79,12 +78,12 @@ export default class Swup {
 	unuse = unuse;
 	findPlugin = findPlugin;
 	getCurrentUrl = getCurrentUrl;
-	cleanupAnimationClasses = cleanupAnimationClasses;
 	createContext = createContext;
 
 	defaults: Options = {
 		animateHistoryBrowsing: false,
 		animationSelector: '[class*="transition-"]',
+		animationScope: 'html',
 		cache: true,
 		containers: ['#swup'],
 		ignoreVisit: (url, { el, event } = {}) => !!el?.closest('[data-no-swup]'),
@@ -106,6 +105,7 @@ export default class Swup {
 		this.popStateHandler = this.popStateHandler.bind(this);
 
 		this.cache = new Cache(this);
+		this.classes = new Classes(this);
 		this.hooks = new Hooks(this);
 		this.context = this.createContext({ to: undefined });
 

@@ -8,12 +8,12 @@ export const leavePage = async function (this: Swup) {
 	}
 
 	await this.hooks.trigger('animationOutStart', undefined, () => {
-		document.documentElement.classList.add('is-changing', 'is-leaving', 'is-animating');
+		this.classes.add('is-changing', 'is-leaving', 'is-animating');
 		if (this.context.history.popstate) {
-			document.documentElement.classList.add('is-popstate');
+			this.classes.add('is-popstate');
 		}
 		if (this.context.transition.name) {
-			document.documentElement.classList.add(`to-${classify(this.context.transition.name)}`);
+			this.classes.add(`to-${classify(this.context.transition.name)}`);
 		}
 	});
 
