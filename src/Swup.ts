@@ -34,14 +34,14 @@ export type Options = {
 	animateHistoryBrowsing: boolean;
 	animationSelector: string | false;
 	animationScope: 'html' | 'containers';
-	linkSelector: string;
 	cache: boolean;
 	containers: string[];
-	requestHeaders: Record<string, string>;
-	plugins: Plugin[];
-	skipPopStateHandling: (event: any) => boolean;
 	ignoreVisit: (url: string, { el, event }: { el?: Element; event?: Event }) => boolean;
+	linkSelector: string;
+	plugins: Plugin[];
+	requestHeaders: Record<string, string>;
 	resolveUrl: (url: string) => string;
+	skipPopStateHandling: (event: any) => boolean;
 };
 
 export default class Swup {
