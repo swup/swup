@@ -26,7 +26,7 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 
 	// replace content: allow handlers and plugins to overwrite paga data and containers
 	await this.hooks.trigger(
-		'replaceContent',
+		'content:replace',
 		{ page, containers: this.context.containers },
 		(context, { page, containers }) => {
 			this.replaceContent(page, { containers });
@@ -41,7 +41,7 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 	);
 
 	await this.hooks.trigger(
-		'scrollToContent',
+		'content:scroll',
 		{ options: { behavior: 'auto' } },
 		(context, { options }) => {
 			if (this.context.scroll.target) {
@@ -57,7 +57,7 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 		}
 	);
 
-	await this.hooks.trigger('pageView', { url: this.currentPageUrl, title: document.title });
+	await this.hooks.trigger('page:view', { url: this.currentPageUrl, title: document.title });
 
 	// empty cache if it's disabled (in case preload plugin filled it)
 	if (!this.options.cache) {

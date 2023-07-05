@@ -55,12 +55,12 @@ export async function performPageLoad(
 	}
 
 	try {
-		await this.hooks.trigger('transitionStart');
+		await this.hooks.trigger('transition:start');
 
 		// Create Promises for animation and page fetch
 		const animationPromise = this.leavePage();
 		const pagePromise = this.hooks.trigger(
-			'loadPage',
+			'page:load',
 			{ url, options },
 			async (context, { url, options, page }) => await (page || this.fetchPage(url, options))
 		);

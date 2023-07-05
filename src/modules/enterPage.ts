@@ -4,21 +4,21 @@ import { nextTick } from '../utils.js';
 export const enterPage = async function (this: Swup) {
 	if (this.context.transition.animate) {
 		const animation = this.hooks.trigger(
-			'awaitAnimation',
+			'animation:await',
 			{ selector: this.options.animationSelector, direction: 'in' },
 			async (context, { selector, direction }) => {
 				await Promise.all(this.getAnimationPromises({ selector, direction }));
 			}
 		);
 		await nextTick();
-		await this.hooks.trigger('animationInStart', undefined, () => {
+		await this.hooks.trigger('animation:in:start', undefined, () => {
 			this.classes.remove('is-animating');
 		});
 		await animation;
-		await this.hooks.trigger('animationInDone');
+		await this.hooks.trigger('animation:in:end');
 	}
 
-	await this.hooks.trigger('transitionEnd', undefined, () => {
+	await this.hooks.trigger('transition:end', undefined, () => {
 		this.classes.clear();
 	});
 };

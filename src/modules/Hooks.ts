@@ -7,30 +7,34 @@ import { FetchOptions, PageData } from './fetchPage.js';
 import { AnimationDirection } from './getAnimationPromises.js';
 
 export interface HookDefinitions {
-	animationInDone: undefined;
-	animationInStart: undefined;
-	animationOutDone: undefined;
-	animationOutStart: undefined;
-	animationSkipped: undefined;
-	awaitAnimation: { selector: Options['animationSelector']; direction: AnimationDirection };
-	cacheCleared: undefined;
-	clickLink: { el: HTMLAnchorElement; event: DelegateEvent<MouseEvent> };
-	disabled: undefined;
-	enabled: undefined;
-	fetchPage: { url: string; options: FetchOptions; response?: Response | Promise<Response> };
-	loadPage: { url: string; options: FetchOptions; page?: PageData | Promise<PageData> };
-	openPageInNewTab: { href: string };
-	pageCached: { page: PageData };
-	pageLoaded: { page: PageData; cache?: boolean };
-	pageView: { url: string; title: string };
-	popState: { event: PopStateEvent };
-	replaceContent: { page: PageData; containers: Options['containers'] };
-	samePage: undefined;
-	samePageWithHash: { hash: string; options: ScrollIntoViewOptions };
-	scrollToContent: { options: ScrollIntoViewOptions };
-	serverError: { url: string; status: number; response: Response };
-	transitionStart: undefined;
-	transitionEnd: undefined;
+	'animation:out:start': undefined;
+	'animation:out:end': undefined;
+	'animation:in:start': undefined;
+	'animation:in:end': undefined;
+	'animation:skip': undefined;
+	'animation:await': { selector: Options['animationSelector']; direction: AnimationDirection };
+	'cache:clear': undefined;
+	'cache:set': { page: PageData };
+	'content:replace': { page: PageData; containers: Options['containers'] };
+	'content:scroll': { options: ScrollIntoViewOptions };
+	'fetch:request': {
+		url: string;
+		options: FetchOptions;
+		response?: Response | Promise<Response>;
+	};
+	'fetch:error': { url: string; status: number; response: Response };
+	'history:popstate': { event: PopStateEvent };
+	'link:click': { el: HTMLAnchorElement; event: DelegateEvent<MouseEvent> };
+	'link:self': undefined;
+	'link:anchor': { hash: string; options: ScrollIntoViewOptions };
+	'link:newtab': { href: string };
+	'page:load': { url: string; options: FetchOptions; page?: PageData | Promise<PageData> };
+	'page:loaded': { page: PageData; cache?: boolean };
+	'page:view': { url: string; title: string };
+	'swup:enable': undefined;
+	'swup:disable': undefined;
+	'transition:start': undefined;
+	'transition:end': undefined;
 }
 
 export type HookArguments<T extends HookName> = HookDefinitions[T];
@@ -79,30 +83,30 @@ export class Hooks {
 	// Can we deduplicate this somehow? Or make it error when not in sync with HookDefinitions?
 	// https://stackoverflow.com/questions/53387838/how-to-ensure-an-arrays-values-the-keys-of-a-typescript-interface/53395649
 	readonly hooks: HookName[] = [
-		'animationInDone',
-		'animationInStart',
-		'animationOutDone',
-		'animationOutStart',
-		'animationSkipped',
-		'awaitAnimation',
-		'cacheCleared',
-		'clickLink',
-		'disabled',
-		'enabled',
-		'fetchPage',
-		'loadPage',
-		'openPageInNewTab',
-		'pageCached',
-		'pageLoaded',
-		'pageView',
-		'popState',
-		'replaceContent',
-		'samePage',
-		'samePageWithHash',
-		'scrollToContent',
-		'serverError',
-		'transitionStart',
-		'transitionEnd'
+		'animation:out:start',
+		'animation:out:end',
+		'animation:in:start',
+		'animation:in:end',
+		'animation:skip',
+		'animation:await',
+		'cache:clear',
+		'cache:set',
+		'content:replace',
+		'content:scroll',
+		'fetch:request',
+		'fetch:error',
+		'history:popstate',
+		'link:click',
+		'link:self',
+		'link:anchor',
+		'link:newtab',
+		'page:load',
+		'page:loaded',
+		'page:view',
+		'swup:enable',
+		'swup:disable',
+		'transition:start',
+		'transition:end'
 	];
 
 	constructor(swup: Swup) {

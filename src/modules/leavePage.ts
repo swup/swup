@@ -3,11 +3,11 @@ import { classify } from '../helpers.js';
 
 export const leavePage = async function (this: Swup) {
 	if (!this.context.transition.animate) {
-		await this.hooks.trigger('animationSkipped');
+		await this.hooks.trigger('animation:skip');
 		return;
 	}
 
-	await this.hooks.trigger('animationOutStart', undefined, () => {
+	await this.hooks.trigger('animation:out:start', undefined, () => {
 		this.classes.add('is-changing', 'is-leaving', 'is-animating');
 		if (this.context.history.popstate) {
 			this.classes.add('is-popstate');
@@ -18,12 +18,12 @@ export const leavePage = async function (this: Swup) {
 	});
 
 	await this.hooks.trigger(
-		'awaitAnimation',
+		'animation:await',
 		{ selector: this.options.animationSelector, direction: 'out' },
 		async (context, { selector, direction }) => {
 			await Promise.all(this.getAnimationPromises({ selector, direction }));
 		}
 	);
 
-	await this.hooks.trigger('animationOutDone');
+	await this.hooks.trigger('animation:out:end');
 };
