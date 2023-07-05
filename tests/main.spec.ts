@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Page, Request } from '@playwright/test';
 
 import type Swup from '../src/Swup.js';
 
@@ -6,6 +6,29 @@ declare global {
   interface Window {
     _swup: Swup;
   }
+}
+
+function triggerClickOnLink(page: Page, url: string) {
+  return page.click(`a[href="${url}"]`);
+}
+
+async function expectRequestHeaders(request: Request, headers: Record<string, string>) {
+  const expected = Object.fromEntries(
+    Object.entries(headers).map(([header, value]) => [header.toLowerCase(), value])
+  );
+  expect(request.headers()).toMatchObject(expected);
+}
+
+function expectToHaveCacheEntry(page: Page, url: string) {
+  return page.evaluate(() => {
+    const { cache } = window._swup;
+		expect(cache.has(url)).toBe(true);
+		expect(cache.get(url)).toBeDefined();
+  });
+}
+
+function expectToHaveCacheEntries(page: Page, urls: string[]) {
+  return urls.every((url) => expectToHaveCacheEntry(page, url));
 }
 
 function withSwup(page: Page, cb: (swup: Swup) => any) {
@@ -23,7 +46,7 @@ test.describe('request', () => {
   });
 
   test('visits', async ({ page }) => {
-    await page.click('a[href="/page-2.html"]');
+    await triggerClickOnLink(page, '/page-2.html');
     await expect(page).toHaveURL('/page-2.html');
     await expect(page).toHaveTitle('Page 2');
   });
@@ -31,22 +54,19 @@ test.describe('request', () => {
   test('should send the correct referer', async ({ page, baseURL }) => {
     const referer = `${baseURL}/page-1.html`;
     const [request] = await Promise.all([
-      page.waitForRequest((request) => request.url().endsWith('/page-2.html')),
-      page.click('a[href="/page-2.html"]')
+      page.waitForRequest('/page-2.html'),
+      triggerClickOnLink(page, '/page-2.html')
     ]);
-    expect(request.headers()).toHaveProperty('referer', referer);
+    expectRequestHeaders(request, { referer });
   });
 
   test('should send the correct request headers', async ({ page }) => {
     const [request] = await Promise.all([
-      page.waitForRequest((request) => request.url().endsWith('/page-2.html')),
-      page.click('a[href="/page-2.html"]')
+      page.waitForRequest('/page-2.html'),
+      triggerClickOnLink(page, '/page-2.html')
     ]);
     const headers = await page.evaluate(() => window._swup.options.requestHeaders);
-    const expected = Object.fromEntries(
-      Object.entries(headers).map(([header, value]) => [header.toLowerCase(), value])
-    );
-    expect(request.headers()).toMatchObject(expected);
+    expectRequestHeaders(request, headers);
   });
 });
 
