@@ -67,7 +67,6 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 	// Perform in transition
 	await this.enterPage();
 
-
 	// If we ever decide that we want to reset the context after each visit
 	// if (this.context.to && this.isSameResolvedUrl(this.context.to.url, requestedUrl)) {
 	// 	this.createContext({ to: undefined });
