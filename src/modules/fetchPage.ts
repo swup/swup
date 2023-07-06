@@ -31,10 +31,10 @@ export async function fetchPage(
 	url: URL | string,
 	options: FetchOptions & { triggerHooks?: boolean } = {}
 ): Promise<PageData> {
-	const { url: requestUrl } = Location.fromUrl(url);
+	url = Location.fromUrl(url).url;
 
-	if (this.cache.has(requestUrl)) {
-		const page = this.cache.get(requestUrl) as PageData;
+	if (this.cache.has(url)) {
+		const page = this.cache.get(url) as PageData;
 		if (options.triggerHooks !== false) {
 			await this.hooks.trigger('page:load', { page, cache: true });
 		}
@@ -45,10 +45,10 @@ export async function fetchPage(
 	options = { ...options, headers };
 
 	// Allow hooking before this and returning a custom response-like object (e.g. custom fetch implementation)
-	const response = await this.hooks.trigger(
+	const response: Response = await this.hooks.trigger(
 		'fetch:request',
-		{ url: requestUrl, options },
-		async (context, { url, options, response }) => await (response || fetch(url, options))
+		{ url, options },
+		(context, { url, options }) => fetch(url, options)
 	);
 
 	const { status, url: responseUrl } = response;
@@ -64,11 +64,11 @@ export async function fetchPage(
 	}
 
 	// Resolve real url after potential redirect
-	const { url: finalUrl } = new Location(responseUrl);
+	const { url: finalUrl } = Location.fromUrl(responseUrl);
 	const page = { url: finalUrl, html };
 
 	// Only save cache entry for non-redirects
-	if (requestUrl === finalUrl) {
+	if (url === finalUrl) {
 		this.cache.set(page.url, page);
 	}
 

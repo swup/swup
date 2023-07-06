@@ -53,14 +53,24 @@ describe('Fetch', function () {
 		cy.wrapSwupInstance();
 	});
 
+	it('should allow calling original page:request handler', function () {
+		this.swup.hooks.replace('page:request', (context, args, originalHandler) => {
+			return originalHandler(context, args);
+		});
+		this.swup.loadPage('/page-2.html');
+
+		cy.shouldBeAtPage('/page-2.html');
+		cy.shouldHaveH1('Page 2');
+	});
+
 	it('should allow returning a page object to page:request', function () {
 		let requested = false;
 		cy.intercept('/page-2.html', (req) => {
 			requested = true;
 		});
 
-		this.swup.hooks.before('page:request', (context, args) => {
-			args.page = {
+		this.swup.hooks.replace('page:request', () => {
+			return {
 				url: '/page-3.html',
 				html: '<html><body><div id="swup"><h1>Page 3</h1></div></body></html>'
 			};
@@ -75,8 +85,8 @@ describe('Fetch', function () {
 	});
 
 	it('should allow returning a fetch Promise to page:request', function () {
-		this.swup.hooks.before('page:request', (context, args) => {
-			args.page = this.swup.fetchPage('page-3.html');
+		this.swup.hooks.replace('page:request', () => {
+			return this.swup.fetchPage('page-3.html');
 		});
 		this.swup.loadPage('/page-2.html');
 
@@ -142,6 +152,22 @@ describe('Events', function () {
 	beforeEach(() => {
 		cy.visit('/page-1.html');
 		cy.wrapSwupInstance();
+	});
+
+	it('should trigger custom dom events', function () {
+		let triggered = false;
+		let data = [];
+		cy.document().then((document) => {
+			document.addEventListener('swup:link:click', (event) => {
+				triggered = true;
+				data = event.detail;
+			});
+		});
+		cy.triggerClickOnLink('/page-2.html');
+		cy.window().should(() => {
+			expect(triggered, 'event was not triggered').to.be.true;
+			expect(data).to.have.property('hook', 'link:click');
+		});
 	});
 
 	it('should prevent the default click event', function () {
