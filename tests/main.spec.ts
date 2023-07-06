@@ -16,15 +16,6 @@ test.beforeEach(async ({ page }) => {
 })
 
 test.describe('request', () => {
-	// test('arrives', async ({ page }) => {
-	// 	await expectToBeAt(page, '/page-1.html', 'Page 1');
-	// });
-
-	// test('visits', async ({ page }) => {
-	// 	await clickOnLink(page, '/page-2.html');
-	// 	await expectToBeAt(page, '/page-2.html', 'Page 2');
-	// });
-
 	test('should send the correct referer', async ({ page, baseURL }) => {
 		const referer = `${baseURL}/page-1.html`;
 		const [request] = await Promise.all([
