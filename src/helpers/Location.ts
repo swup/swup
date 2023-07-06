@@ -19,7 +19,7 @@ export class Location extends URL {
 	/**
 	 * Instantiate a Location from an element's href attribute
 	 * @param el
-	 * @return new Location instance
+	 * @returns new Location instance
 	 */
 	static fromElement(el: Element): Location {
 		const href = el.getAttribute('href') || el.getAttribute('xlink:href') || '';
@@ -29,7 +29,7 @@ export class Location extends URL {
 	/**
 	 * Instantiate a Location from a URL object or string
 	 * @param url
-	 * @return new Location instance
+	 * @returns new Location instance
 	 */
 	static fromUrl(url: URL | string): Location {
 		return new Location(url);

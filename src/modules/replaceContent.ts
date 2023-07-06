@@ -6,12 +6,14 @@ import { PageData } from './fetchPage.js';
  *
  * It takes an object with the page data as returned from `fetchPage` and a list
  * of container selectors to replace.
+ *
+ * @returns Whether all containers were replaced.
  */
 export const replaceContent = function (
 	this: Swup,
 	{ html }: PageData,
 	{ containers }: { containers: Options['containers'] } = this.options
-): void {
+): boolean {
 	const doc = new DOMParser().parseFromString(html, 'text/html');
 
 	// Update browser title
@@ -19,17 +21,18 @@ export const replaceContent = function (
 	document.title = title;
 
 	// Update content containers
-	containers.forEach((selector) => {
+	const replaced = containers.map((selector) => {
 		const currentEl = document.querySelector(selector);
 		const incomingEl = doc.querySelector(selector);
 		if (!currentEl) {
 			console.warn(`[swup] Container missing in current document: ${selector}`);
-			return;
-		}
-		if (!incomingEl) {
+		} else if (!incomingEl) {
 			console.warn(`[swup] Container missing in incoming document: ${selector}`);
-			return;
+		} else {
+			currentEl.replaceWith(incomingEl);
+			return incomingEl;
 		}
-		currentEl.replaceWith(incomingEl);
 	});
+
+	return replaced.filter(Boolean).length === containers.length;
 };
