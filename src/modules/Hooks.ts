@@ -269,7 +269,7 @@ export class Hooks {
 		await this.execute(before, args);
 		const [result] = await this.execute(handler, args);
 		await this.execute(after, args);
-		this.dispatchDomEvent(hook);
+		this.dispatchDomEvent(hook, args);
 		return result;
 	}
 
@@ -290,7 +290,7 @@ export class Hooks {
 		this.executeSync(before, args);
 		const [result] = this.executeSync(handler, args);
 		this.executeSync(after, args);
-		this.dispatchDomEvent(hook);
+		this.dispatchDomEvent(hook, args);
 		return result;
 	}
 
@@ -387,7 +387,8 @@ export class Hooks {
 	 * Trigger a custom event on the `document`. Prefixed with `swup:`
 	 * @param hook Name of the hook to trigger.
 	 */
-	dispatchDomEvent<T extends HookName>(hook: T): void {
-		document.dispatchEvent(new CustomEvent(`swup:${hook}`, { detail: hook }));
+	dispatchDomEvent<T extends HookName>(hook: T, args?: HookArguments<T>): void {
+		const detail = { hook, args, context: this.swup.context };
+		document.dispatchEvent(new CustomEvent(`swup:${hook}`, { detail }));
 	}
 }

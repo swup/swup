@@ -144,6 +144,22 @@ describe('Events', function () {
 		cy.wrapSwupInstance();
 	});
 
+	it.only('should trigger custom dom events', function () {
+		let triggered = false;
+		let data = [];
+		cy.document().then((document) => {
+			document.addEventListener('swup:clickLink', (event) => {
+				triggered = true;
+				data = event.detail;
+			});
+		});
+		cy.triggerClickOnLink('/page-2.html');
+		cy.window().should(() => {
+			expect(triggered, 'event was not triggered').to.be.true;
+			expect(data).to.have.property('hook', 'clickLink');
+		});
+	});
+
 	it('should prevent the default click event', function () {
 		let triggered = false;
 		let prevented = false;
