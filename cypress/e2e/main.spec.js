@@ -53,6 +53,26 @@ describe('Fetch', function () {
 		cy.wrapSwupInstance();
 	});
 
+	it('should allow replacing loadPage', function () {
+		this.swup.hooks.replace('loadPage', (context, args) => {
+			return this.swup.fetchPage('page-3.html');
+		});
+		this.swup.loadPage('/page-2.html');
+
+		cy.shouldBeAtPage('/page-3.html');
+		cy.shouldHaveH1('Page 3');
+	});
+
+	it('should allow calling original loadPage handler', function () {
+		this.swup.hooks.replace('loadPage', (context, args, originalHandler) => {
+			return originalHandler(context, args);
+		});
+		this.swup.loadPage('/page-2.html');
+
+		cy.shouldBeAtPage('/page-2.html');
+		cy.shouldHaveH1('Page 2');
+	});
+
 	it('should allow returning a page object to loadPage', function () {
 		let requested = false;
 		cy.intercept('/page-2.html', (req) => {
