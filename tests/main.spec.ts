@@ -104,13 +104,14 @@ test.describe('markup', () => {
 		await expectToHaveClasses(page.locator('html'), 'swup-enabled');
 	});
 
-	test('should remove swup class from html tag', async ({ page }) => {
+	test('should remove swup class from html element', async ({ page }) => {
 		await page.evaluate(() => window._swup.destroy());
 		await expectNotToHaveClasses(page.locator('html'), 'swup-enabled');
 	});
 
-	test('should process transition classes', async ({ page }) => {
+	test('should set transition classes on html element', async ({ page }) => {
 		const html = page.locator('html');
+		const container = page.locator('#swup');
 		const leaving = Promise.all([
 			expectToHaveClasses(html, 'is-changing is-animating is-leaving'),
 			expectNotToHaveClasses(html, 'is-rendering')
@@ -119,8 +120,27 @@ test.describe('markup', () => {
 		await leaving;
 		await Promise.all([
 			expectToHaveClasses(html, 'is-changing is-animating is-rendering'),
-			expectNotToHaveClasses(html, 'is-leaving')
+			expectNotToHaveClasses(html, 'is-leaving'),
+			expectNotToHaveClasses(container, 'is-changing is-animating is-leaving is-rendering')
 		]);
-		await expectNotToHaveClasses(html, 'is-changing is-animating is-leaving is-rendering')
+		await expectNotToHaveClasses(html, 'is-changing is-animating is-leaving is-rendering');
+	});
+
+	test('should set transition classes on container element', async ({ page }) => {
+		await page.evaluate(() => window._swup.options.animationScope = 'containers');
+		const html = page.locator('html');
+		const container = page.locator('#swup');
+		const leaving = Promise.all([
+			expectToHaveClasses(container, 'is-changing is-animating is-leaving'),
+			expectNotToHaveClasses(container, 'is-rendering')
+		]);
+		loadWithSwup(page, '/page-2.html');
+		await leaving;
+		await Promise.all([
+			expectToHaveClasses(container, 'is-changing is-animating is-rendering'),
+			expectNotToHaveClasses(container, 'is-leaving'),
+			expectNotToHaveClasses(html, 'is-changing is-animating is-leaving is-rendering')
+		]);
+		await expectNotToHaveClasses(container, 'is-changing is-animating is-leaving is-rendering');
 	});
 });
