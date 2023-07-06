@@ -18,6 +18,7 @@ const swup = new Swup();
 const ctx = swup.context;
 const cache = new Cache(swup);
 
+const page0 = { url: 'https://localhost/page-1', html: '1' };
 const page1 = { url: '/page-1', html: '1' };
 const page2 = { url: '/page-2', html: '2' };
 const page3 = { url: '/page-3', html: '3' };
@@ -72,6 +73,13 @@ describe('Cache', () => {
 		expect(cache.size).toBe(1);
 		cache.set(page2.url, page2);
 		expect(cache.size).toBe(2);
+	});
+
+	it('should remove host', () => {
+		cache.set(page1.url, page1);
+		expect(cache.size).toBe(1);
+		cache.set(page0.url, page0);
+		expect(cache.size).toBe(1);
 	});
 
 	it('should trigger a hook on set', () => {
