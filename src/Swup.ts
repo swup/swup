@@ -257,7 +257,8 @@ export default class Swup {
 						}
 					);
 				} else {
-					this.hooks.triggerSync('samePage', undefined, () => {
+					this.hooks.triggerSync('samePage', undefined, (context) => {
+						if (!context.scroll.reset) return;
 						window.scroll({ top: 0, left: 0, behavior: 'auto' });
 					});
 				}
