@@ -36,7 +36,7 @@ export async function fetchPage(
 	if (this.cache.has(requestUrl)) {
 		const page = this.cache.get(requestUrl) as PageData;
 		if (options.triggerHooks !== false) {
-			await this.hooks.trigger('page:loaded', { page, cache: true });
+			await this.hooks.trigger('page:load', { page, cache: true });
 		}
 		return page;
 	}
@@ -73,7 +73,7 @@ export async function fetchPage(
 	}
 
 	if (options.triggerHooks !== false) {
-		await this.hooks.trigger('page:loaded', { page, cache: false });
+		await this.hooks.trigger('page:load', { page, cache: false });
 	}
 
 	return page;

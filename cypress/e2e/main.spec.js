@@ -53,13 +53,13 @@ describe('Fetch', function () {
 		cy.wrapSwupInstance();
 	});
 
-	it('should allow returning a page object to page:load', function () {
+	it('should allow returning a page object to page:request', function () {
 		let requested = false;
 		cy.intercept('/page-2.html', (req) => {
 			requested = true;
 		});
 
-		this.swup.hooks.before('page:load', (context, args) => {
+		this.swup.hooks.before('page:request', (context, args) => {
 			args.page = {
 				url: '/page-3.html',
 				html: '<html><body><div id="swup"><h1>Page 3</h1></div></body></html>'
@@ -74,8 +74,8 @@ describe('Fetch', function () {
 		});
 	});
 
-	it('should allow returning a fetch Promise to page:load', function () {
-		this.swup.hooks.before('page:load', (context, args) => {
+	it('should allow returning a fetch Promise to page:request', function () {
+		this.swup.hooks.before('page:request', (context, args) => {
 			args.page = this.swup.fetchPage('page-3.html');
 		});
 		this.swup.loadPage('/page-2.html');
@@ -176,7 +176,7 @@ describe('Events', function () {
 		cy.spy(handlers, 'transition');
 		cy.spy(handlers, 'content');
 
-		this.swup.hooks.on('transition:start', handlers.transition);
+		this.swup.hooks.on('visit:start', handlers.transition);
 		this.swup.hooks.on('content:replace', handlers.content);
 
 		cy.triggerClickOnLink('/page-2.html');
@@ -186,7 +186,7 @@ describe('Events', function () {
 		});
 
 		cy.window().then(() => {
-			this.swup.hooks.off('transition:start', handlers.transition);
+			this.swup.hooks.off('visit:start', handlers.transition);
 		});
 		cy.triggerClickOnLink('/page-3.html');
 		cy.window().should(() => {
@@ -565,7 +565,7 @@ describe('Context', function () {
 	it('has the current and next url', function () {
 		let from = '';
 		let to = '';
-		this.swup.hooks.before('transition:start', (ctx) => {
+		this.swup.hooks.before('visit:start', (ctx) => {
 			from = ctx.from.url;
 			to = ctx.to.url;
 		});
@@ -579,7 +579,7 @@ describe('Context', function () {
 	it('has the correct current url on history visits', function () {
 		let from = '';
 		let to = '';
-		this.swup.hooks.before('transition:start', (ctx) => {
+		this.swup.hooks.before('visit:start', (ctx) => {
 			from = ctx.from.url;
 			to = ctx.to.url;
 		});
@@ -600,7 +600,7 @@ describe('Context', function () {
 	it('passes along the click trigger and event', function () {
 		let el = null;
 		let event = null;
-		this.swup.hooks.before('transition:start', (context) => {
+		this.swup.hooks.before('visit:start', (context) => {
 			el = context.trigger.el;
 			event = context.trigger.event;
 		});
@@ -614,7 +614,7 @@ describe('Context', function () {
 	it('passes along the popstate status and event', function () {
 		let event = null;
 		let historyVisit = null;
-		this.swup.hooks.before('transition:start', (context) => {
+		this.swup.hooks.before('visit:start', (context) => {
 			event = context.trigger.event;
 			historyVisit = context.history.popstate;
 		});
@@ -633,7 +633,7 @@ describe('Context', function () {
 	});
 
 	it('should allow disabling animations', function () {
-		this.swup.hooks.before('transition:start', (context) => {
+		this.swup.hooks.before('visit:start', (context) => {
 			context.transition.animate = false;
 		});
 		cy.transitionWithExpectedDuration(0, '/page-2.html');
@@ -647,7 +647,7 @@ describe('Containers', function () {
 	});
 
 	it('should be customizable from context', function () {
-		this.swup.hooks.before('transition:start', (context) => {
+		this.swup.hooks.before('visit:start', (context) => {
 			context.containers = ['#aside'];
 		});
 		this.swup.loadPage('/containers-2.html', { animate: false });

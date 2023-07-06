@@ -18,7 +18,7 @@ export const enterPage = async function (this: Swup) {
 		await this.hooks.trigger('animation:in:end');
 	}
 
-	await this.hooks.trigger('transition:end', undefined, () => {
+	await this.hooks.trigger('visit:end', undefined, () => {
 		this.classes.clear();
 	});
 };

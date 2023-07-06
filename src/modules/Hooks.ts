@@ -28,13 +28,13 @@ export interface HookDefinitions {
 	'link:self': undefined;
 	'link:anchor': { hash: string; options: ScrollIntoViewOptions };
 	'link:newtab': { href: string };
-	'page:load': { url: string; options: FetchOptions; page?: PageData | Promise<PageData> };
-	'page:loaded': { page: PageData; cache?: boolean };
+	'page:request': { url: string; options: FetchOptions; page?: PageData | Promise<PageData> };
+	'page:load': { page: PageData; cache?: boolean };
 	'page:view': { url: string; title: string };
 	'swup:enable': undefined;
 	'swup:disable': undefined;
-	'transition:start': undefined;
-	'transition:end': undefined;
+	'visit:start': undefined;
+	'visit:end': undefined;
 }
 
 export type HookArguments<T extends HookName> = HookDefinitions[T];
@@ -100,13 +100,13 @@ export class Hooks {
 		'link:self',
 		'link:anchor',
 		'link:newtab',
+		'page:request',
 		'page:load',
-		'page:loaded',
 		'page:view',
 		'swup:enable',
 		'swup:disable',
-		'transition:start',
-		'transition:end'
+		'visit:start',
+		'visit:end'
 	];
 
 	constructor(swup: Swup) {
