@@ -41,7 +41,7 @@ export type Handler<T extends HookName> = (
 	context: Context,
 	args: HookArguments<T>,
 	originalHandler?: Handler<T>
-) => Promise<any> | void;
+) => Promise<any> | any;
 
 export type Handlers = {
 	[K in HookName]: Handler<K>[];
