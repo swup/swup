@@ -53,16 +53,6 @@ describe('Fetch', function () {
 		cy.wrapSwupInstance();
 	});
 
-	it('should allow replacing loadPage', function () {
-		this.swup.hooks.replace('loadPage', (context, args) => {
-			return this.swup.fetchPage('page-3.html');
-		});
-		this.swup.loadPage('/page-2.html');
-
-		cy.shouldBeAtPage('/page-3.html');
-		cy.shouldHaveH1('Page 3');
-	});
-
 	it('should allow calling original loadPage handler', function () {
 		this.swup.hooks.replace('loadPage', (context, args, originalHandler) => {
 			return originalHandler(context, args);
@@ -79,8 +69,8 @@ describe('Fetch', function () {
 			requested = true;
 		});
 
-		this.swup.hooks.before('loadPage', (context, args) => {
-			args.page = {
+		this.swup.hooks.replace('loadPage', () => {
+			return {
 				url: '/page-3.html',
 				html: '<html><body><div id="swup"><h1>Page 3</h1></div></body></html>'
 			};
@@ -95,8 +85,8 @@ describe('Fetch', function () {
 	});
 
 	it('should allow returning a fetch Promise to loadPage', function () {
-		this.swup.hooks.before('loadPage', (context, args) => {
-			args.page = this.swup.fetchPage('page-3.html');
+		this.swup.hooks.replace('loadPage', () => {
+			return this.swup.fetchPage('page-3.html');
 		});
 		this.swup.loadPage('/page-2.html');
 

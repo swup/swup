@@ -17,8 +17,8 @@ export interface HookDefinitions {
 	clickLink: { el: HTMLAnchorElement; event: DelegateEvent<MouseEvent> };
 	disabled: undefined;
 	enabled: undefined;
-	fetchPage: { url: string; options: FetchOptions; response?: Response | Promise<Response> };
-	loadPage: { url: string; options: FetchOptions; page?: PageData | Promise<PageData> };
+	fetchPage: { url: string; options: FetchOptions };
+	loadPage: { url: string; options: FetchOptions };
 	openPageInNewTab: { href: string };
 	pageCached: { page: PageData };
 	pageLoaded: { page: PageData; cache?: boolean };
