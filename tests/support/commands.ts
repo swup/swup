@@ -67,3 +67,38 @@ export function expectToHaveClasses(locator: Locator, classNames: string, not = 
 export function expectNotToHaveClasses(locator: Locator, classNames: string) {
 	return expectToHaveClasses(locator, classNames, true);
 }
+
+export async function expectTransitionDuration(page: Page, duration: number) {
+	const url = page.url();
+	const tolerance = 0.25; // 25% plus/minus
+	const expectedRange = [
+		duration * (1 - tolerance),
+		duration * (1 + tolerance)
+	];
+
+	await page.exposeBinding('timing', async (_, key, val) => (timing[key] = val));
+
+	const timing = {
+		outStart: 0,
+		outEnd: 0,
+		inStart: 0,
+		inEnd: 0
+	};
+
+	await page.evaluate((url) => {
+		window._swup.hooks.on('animationOutStart', () => window.timing('outStart', performance.now()));
+		window._swup.hooks.on('animationOutDone', () => window.timing('outEnd', performance.now()));
+		window._swup.hooks.on('animationInStart', () => window.timing('inStart', performance.now()));
+		window._swup.hooks.on('animationInDone', () => window.timing('inEnd', performance.now()));
+		window._swup.loadPage(url);
+	}, url);
+
+	await expect(async () => {
+		const outDuration = timing.outEnd - timing.outStart;
+		const inDuration = timing.inEnd - timing.inStart;
+		expect(outDuration).toBeGreaterThanOrEqual(expectedRange[0]);
+		expect(outDuration).toBeLessThanOrEqual(expectedRange[1]);
+		expect(inDuration).toBeGreaterThanOrEqual(expectedRange[0]);
+		expect(inDuration).toBeLessThanOrEqual(expectedRange[1]);
+	}).toPass();
+}

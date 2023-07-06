@@ -10,14 +10,15 @@ import {
 	expectToBeAt,
 	expectToHaveCacheEntry,
 	expectToHaveReloadedAfterAction,
-	loadWithSwup
+	loadWithSwup,
+	expectTransitionDuration
 } from './support/commands.js';
 
-test.beforeEach(async ({ page }) => {
-	await page.goto('/page-1.html');
-})
-
 test.describe('request', () => {
+	test.beforeEach(async ({ page }) => {
+		await page.goto('/page-1.html');
+	});
+
 	test('should send the correct referer', async ({ page, baseURL }) => {
 		const referer = `${baseURL}/page-1.html`;
 		const [request] = await Promise.all([
@@ -54,6 +55,10 @@ test.describe('request', () => {
 });
 
 test.describe('fetch', () => {
+	test.beforeEach(async ({ page }) => {
+		await page.goto('/page-1.html');
+	});
+
 	test('should allow calling original loadPage handler', async ({ page }) => {
 		await page.evaluate(() => {
 			window._swup.hooks.replace('loadPage', (context, args, originalHandler) => {
@@ -86,6 +91,10 @@ test.describe('fetch', () => {
 });
 
 test.describe('cache', () => {
+	test.beforeEach(async ({ page }) => {
+		await page.goto('/page-1.html');
+	});
+
 	test('should cache pages', async ({ page }) => {
 		await loadWithSwup(page, '/page-2.html');
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
@@ -100,6 +109,10 @@ test.describe('cache', () => {
 });
 
 test.describe('markup', () => {
+	test.beforeEach(async ({ page }) => {
+		await page.goto('/page-1.html');
+	});
+
 	test('should add swup class to html element', async ({ page }) => {
 		await expectToHaveClasses(page.locator('html'), 'swup-enabled');
 	});
@@ -146,6 +159,10 @@ test.describe('markup', () => {
 });
 
 test.describe('events', () => {
+	test.beforeEach(async ({ page }) => {
+		await page.goto('/page-1.html');
+	});
+
 	test('should trigger custom dom events', async ({ page }) => {
 		let triggered = false;
 		await page.exposeBinding('triggered', async (_, data) => (triggered = data));
@@ -164,5 +181,12 @@ test.describe('events', () => {
 		});
 		await clickOnLink(page, '/page-2.html');
 		expect(prevented).toStrictEqual(true);
+	});
+});
+
+test.describe('transitions', () => {
+	test('should detect transition timing', async ({ page }) => {
+		await page.goto('/transition-duration.html');
+		await expectTransitionDuration(page, 400);
 	});
 });
