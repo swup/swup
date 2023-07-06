@@ -29,7 +29,7 @@ jobs:
 
       - name: Publish if prerelease
         run: |
-          if [[ "${{ steps.version.outputs.current-version}}" =~ ^(.*-(alpha|beta|rc))$ ]]; then
+          if [[ "${{ steps.version.outputs.current-version}}" =~ ^(.*-(alpha|beta|next|rc)(\..+)?)$ ]]; then
             npm publish --access public --tag next
           else
             echo "Skipping publish since version is not a prerelease."
