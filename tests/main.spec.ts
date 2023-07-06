@@ -144,3 +144,25 @@ test.describe('markup', () => {
 		await expectNotToHaveClasses(container, 'is-changing is-animating is-leaving is-rendering');
 	});
 });
+
+test.describe('events', () => {
+	test('should trigger custom dom events', async ({ page }) => {
+		let triggered = false;
+		await page.exposeBinding('triggered', async (_, data) => (triggered = data));
+		await page.evaluate(() => {
+			document.addEventListener('swup:clickLink', (event) => window.triggered(event.detail.hook));
+		});
+		await clickOnLink(page, '/page-2.html');
+		expect(triggered).toStrictEqual('clickLink');
+	});
+
+	test('should prevent the default click event', async ({ page }) => {
+		let prevented = null;
+		await page.exposeBinding('prevented', async (_, data) => (prevented = data));
+		await page.evaluate(() => {
+			document.documentElement.addEventListener('click', (event) => window.prevented(event.defaultPrevented));
+		});
+		await clickOnLink(page, '/page-2.html');
+		expect(prevented).toStrictEqual(true);
+	});
+});
