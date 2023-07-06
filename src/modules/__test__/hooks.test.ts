@@ -148,15 +148,41 @@ describe('Hook registry', () => {
 
 	it('should allow replacing original handlers', async () => {
 		const swup = new Swup();
+		const customHandler = vi.fn();
+		const originalHandler = vi.fn();
+
+		swup.hooks.on('enabled', customHandler, { replace: true });
+
+		await swup.hooks.trigger('enabled', undefined, originalHandler);
+
+		expect(customHandler).toBeCalledTimes(1);
+		expect(originalHandler).toBeCalledTimes(0);
+	});
+
+	it('should pass original handler into replacing handlers', async () => {
+		const swup = new Swup();
+		const customHandler = vi.fn();
+		const originalHandler = vi.fn();
+		const ctx = swup.context;
+
+		swup.hooks.on('enabled', customHandler, { replace: true });
+
+		await swup.hooks.trigger('enabled', undefined, originalHandler);
+
+		expect(customHandler).toBeCalledWith(ctx, undefined, originalHandler);
+	});
+
+	it('should not pass original handler into normal handlers', async () => {
+		const swup = new Swup();
 		const listener = vi.fn();
 		const handler = vi.fn();
+		const ctx = swup.context;
 
-		swup.hooks.on('enabled', listener, { replace: true });
+		swup.hooks.on('enabled', listener);
 
 		await swup.hooks.trigger('enabled', undefined, handler);
 
-		expect(handler).toBeCalledTimes(0);
-		expect(listener).toBeCalledTimes(1);
+		expect(listener).toBeCalledWith(ctx, undefined, undefined);
 	});
 
 	it('should trigger event handler with context and args', async () => {
@@ -169,7 +195,7 @@ describe('Hook registry', () => {
 		await swup.hooks.trigger('popState', args);
 
 		expect(handler).toBeCalledTimes(1);
-		expect(handler).toBeCalledWith(ctx, args);
+		expect(handler).toBeCalledWith(ctx, args, undefined);
 	});
 });
 
