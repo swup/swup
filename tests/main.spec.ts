@@ -4,6 +4,8 @@ import type Swup from '../src/Swup.js';
 
 import {
 	clickOnLink,
+	expectToHaveClasses,
+	expectNotToHaveClasses,
 	expectRequestHeaders,
 	expectToBeAt,
 	expectToHaveCacheEntry,
@@ -84,5 +86,31 @@ test.describe('cache', () => {
 		await loadWithSwup(page, `${baseURL}/page-2.html`);
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
 		await expectToHaveCacheEntry(page, '/page-2.html');
+	});
+});
+
+test.describe('markup', () => {
+	test('should add swup class to html element', async ({ page }) => {
+		await expectToHaveClasses(page.locator('html'), 'swup-enabled');
+	});
+
+	test('should remove swup class from html tag', async ({ page }) => {
+		await page.evaluate(() => window._swup.destroy());
+		await expectNotToHaveClasses(page.locator('html'), 'swup-enabled');
+	});
+
+	test('should process transition classes', async ({ page }) => {
+		const html = page.locator('html');
+		const leaving = Promise.all([
+			expectToHaveClasses(html, 'is-changing is-animating is-leaving'),
+			expectNotToHaveClasses(html, 'is-rendering')
+		]);
+		loadWithSwup(page, '/page-2.html');
+		await leaving;
+		await Promise.all([
+			expectToHaveClasses(html, 'is-changing is-animating is-rendering'),
+			expectNotToHaveClasses(html, 'is-leaving')
+		]);
+		await expectNotToHaveClasses(html, 'is-changing is-animating is-leaving is-rendering')
 	});
 });

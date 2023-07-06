@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import type { Page, Request } from '@playwright/test';
+import type { Page, Request, Locator } from '@playwright/test';
 
 import type Swup from '../../src/Swup.js';
 
@@ -49,4 +49,21 @@ export async function expectToHaveReloadedAfterAction(page: Page, action: (page:
 	const reloadPromise = page.waitForFunction(() => window._beforeReload !== true);
 	await action(page);
 	await reloadPromise;
+}
+
+export function expectToHaveClass(locator: Locator, className: string, not = false) {
+	const regexp = new RegExp(`\\b${className}\\b`);
+	return not
+		? expect(locator).not.toHaveClass(regexp)
+		: expect(locator).toHaveClass(regexp);
+}
+
+export function expectToHaveClasses(locator: Locator, classNames: string, not = false) {
+	return Promise.all(
+		classNames.split(' ').map(className => expectToHaveClass(locator, className, not))
+	);
+}
+
+export function expectNotToHaveClasses(locator: Locator, classNames: string) {
+	return expectToHaveClasses(locator, classNames, true);
 }
