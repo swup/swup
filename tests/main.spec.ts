@@ -42,13 +42,13 @@ test.describe('request', () => {
 		await expectToBeAt(page, '/error-500.html');
 	});
 
-	// test('should force-load on network error', async ({ page }) => {
-	// 	await page.route('/error-network.html', route => route.abort('failed'));
-	// 	await expectToHaveReloadedAfterAction(page, async () => {
-	// 		await loadWithSwup(page, '/error-network.html');
-	// 	});
-	// 	await expectToBeAt(page, '/error-network.html');
-	// });
+	test('should force-load on network error', async ({ page }) => {
+		await page.route('/error-network.html', route => route.abort(), { times: 1 });
+		await expectToHaveReloadedAfterAction(page, async () => {
+			await loadWithSwup(page, '/error-network.html');
+		});
+		await expectToBeAt(page, '/error-network.html');
+	});
 });
 
 test.describe('cache', () => {
