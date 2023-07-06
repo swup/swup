@@ -144,7 +144,7 @@ describe('Events', function () {
 		cy.wrapSwupInstance();
 	});
 
-	it.only('should trigger custom dom events', function () {
+	it('should trigger custom dom events', function () {
 		let triggered = false;
 		let data = [];
 		cy.document().then((document) => {
