@@ -79,7 +79,7 @@ export async function performPageLoad(
 
 		// When everything is ready, render the page
 		const [page] = await Promise.all([pagePromise, animationPromise]);
-		this.renderPage(requestedUrl, page);
+		await this.renderPage(requestedUrl, page);
 	} catch (error: unknown) {
 		// Return early if error is undefined (probably aborted preload request)
 		if (!error) {

@@ -253,7 +253,7 @@ describe('Navigation', function () {
 		cy.shouldHaveH1('Page 3');
 	});
 
-	it('should transition if no containers defined', function () {
+	it('should transition if no animation selectors defined', function () {
 		this.swup.options.animationSelector = false;
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
@@ -662,6 +662,13 @@ describe('Containers', function () {
 		this.swup.loadPage('/containers-2.html', { animate: false });
 		cy.get('h1').should('contain', 'Containers 2');
 		cy.get('h2').should('contain', 'Heading 1');
+	});
+
+	it('should force-load on container mismatch', function () {
+		cy.shouldHaveReloadedAfterAction(() => {
+			this.swup.loadPage('/containers-missing.html');
+		});
+		cy.shouldBeAtPage('/containers-missing.html');
 	});
 });
 
