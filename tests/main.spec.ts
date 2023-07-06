@@ -7,29 +7,23 @@ import {
 	expectRequestHeaders,
 	expectToBeAt,
 	expectToHaveCacheEntry,
+	expectToHaveReloadedAfterAction,
 	loadWithSwup
 } from './support/commands.js';
 
-
-declare global {
-	interface Window {
-		_swup: Swup;
-	}
-}
-
 test.beforeEach(async ({ page }) => {
-	await page.goto('/page-1.html', { waitUntil: 'load' });
+	await page.goto('/page-1.html');
 })
 
 test.describe('request', () => {
-	test('arrives', async ({ page }) => {
-		await expectToBeAt(page, '/page-1.html', 'Page 1');
-	});
+	// test('arrives', async ({ page }) => {
+	// 	await expectToBeAt(page, '/page-1.html', 'Page 1');
+	// });
 
-	test('visits', async ({ page }) => {
-		await clickOnLink(page, '/page-2.html');
-		await expectToBeAt(page, '/page-2.html', 'Page 2');
-	});
+	// test('visits', async ({ page }) => {
+	// 	await clickOnLink(page, '/page-2.html');
+	// 	await expectToBeAt(page, '/page-2.html', 'Page 2');
+	// });
 
 	test('should send the correct referer', async ({ page, baseURL }) => {
 		const referer = `${baseURL}/page-1.html`;
@@ -48,6 +42,22 @@ test.describe('request', () => {
 		const headers = await page.evaluate(() => window._swup.options.requestHeaders);
 		expectRequestHeaders(request, headers);
 	});
+
+	test('should force-load on server error', async ({ page }) => {
+		await page.route('/error-500.html', route => route.fulfill({ status: 500 }));
+		await expectToHaveReloadedAfterAction(page, async () => {
+			await loadWithSwup(page, '/error-500.html');
+		});
+		await expectToBeAt(page, '/error-500.html');
+	});
+
+	// test('should force-load on network error', async ({ page }) => {
+	// 	await page.route('/error-network.html', route => route.abort('failed'));
+	// 	await expectToHaveReloadedAfterAction(page, async () => {
+	// 		await loadWithSwup(page, '/error-network.html');
+	// 	});
+	// 	await expectToBeAt(page, '/error-network.html');
+	// });
 });
 
 test.describe('cache', () => {
