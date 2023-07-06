@@ -1,5 +1,5 @@
 import Swup, { Options } from '../Swup.js';
-import { HistoryAction } from './loadPage.js';
+import { HistoryAction } from './visit.js';
 
 export interface Context<TEvent = Event> {
 	from: PageContext;

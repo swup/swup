@@ -33,7 +33,7 @@ describe('Request', function () {
 	it('should force-load on server error', function () {
 		cy.intercept('/error-500.html', { statusCode: 500, times: 1 });
 		cy.shouldHaveReloadedAfterAction(() => {
-			this.swup.loadPage('/error-500.html');
+			this.swup.visit('/error-500.html');
 		});
 		cy.shouldBeAtPage('/error-500.html');
 	});
@@ -41,7 +41,7 @@ describe('Request', function () {
 	it('should force-load on network error', function () {
 		cy.intercept('/error-network.html', { times: 1 }, { forceNetworkError: true });
 		cy.shouldHaveReloadedAfterAction(() => {
-			this.swup.loadPage('/error-network.html');
+			this.swup.visit('/error-network.html');
 		});
 		cy.shouldBeAtPage('/error-network.html');
 	});
@@ -57,7 +57,7 @@ describe('Fetch', function () {
 		this.swup.hooks.replace('loadPage', (context, args, originalHandler) => {
 			return originalHandler(context, args);
 		});
-		this.swup.loadPage('/page-2.html');
+		this.swup.visit('/page-2.html');
 
 		cy.shouldBeAtPage('/page-2.html');
 		cy.shouldHaveH1('Page 2');
@@ -75,7 +75,7 @@ describe('Fetch', function () {
 				html: '<html><body><div id="swup"><h1>Page 3</h1></div></body></html>'
 			};
 		});
-		this.swup.loadPage('/page-2.html');
+		this.swup.visit('/page-2.html');
 
 		cy.shouldBeAtPage('/page-3.html');
 		cy.shouldHaveH1('Page 3');
@@ -88,7 +88,7 @@ describe('Fetch', function () {
 		this.swup.hooks.replace('loadPage', () => {
 			return this.swup.fetchPage('page-3.html');
 		});
-		this.swup.loadPage('/page-2.html');
+		this.swup.visit('/page-2.html');
 
 		cy.shouldBeAtPage('/page-3.html');
 		cy.shouldHaveH1('Page 3');
@@ -102,13 +102,13 @@ describe('Cache', function () {
 	});
 
 	it('should cache pages', function () {
-		this.swup.loadPage('/page-2.html');
+		this.swup.visit('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
 		cy.shouldHaveCacheEntry('/page-2.html');
 	});
 
 	it('should cache pages from absolute URLs', function () {
-		this.swup.loadPage(`${baseUrl}/page-2.html`);
+		this.swup.visit(`${baseUrl}/page-2.html`);
 		cy.shouldBeAtPage('/page-2.html');
 		cy.shouldHaveCacheEntry('/page-2.html');
 	});
@@ -379,10 +379,10 @@ describe('Ignoring visits', function () {
 		cy.shouldBeAtPage('/page-2.html#hash');
 	});
 
-	it('should ignore visits via loadPage', function () {
+	it('should ignore visits in swup.visit', function () {
 		this.swup.options.ignoreVisit = (url) => true;
 		cy.shouldHaveReloadedAfterAction(() => {
-			this.swup.loadPage('/page-2.html');
+			this.swup.visit('/page-2.html');
 		});
 		cy.shouldBeAtPage('/page-2.html');
 	});
@@ -488,11 +488,11 @@ describe('History', function () {
 
 	it('should replace the current history state via API', function () {
 		cy.window().then(() => {
-			this.swup.loadPage('/page-2.html');
+			this.swup.visit('/page-2.html');
 		});
 		cy.shouldBeAtPage('/page-2.html');
 		cy.window().then(() => {
-			this.swup.loadPage('/page-3.html', { history: 'replace' });
+			this.swup.visit('/page-3.html', { history: 'replace' });
 		});
 		cy.shouldBeAtPage('/page-3.html');
 		cy.window().then((window) => {
@@ -576,7 +576,7 @@ describe('API', function () {
 	});
 
 	it('should transition to pages using swup API', function () {
-		this.swup.loadPage('/page-2.html');
+		this.swup.visit('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
 		cy.shouldHaveH1('Page 2');
 	});
@@ -645,7 +645,7 @@ describe('Context', function () {
 			historyVisit = context.history.popstate;
 		});
 		cy.window().then(() => {
-			this.swup.loadPage('/page-2.html');
+			this.swup.visit('/page-2.html');
 		});
 		cy.shouldBeAtPage('/page-2.html');
 		cy.window().then((window) => {
@@ -676,7 +676,7 @@ describe('Containers', function () {
 		this.swup.hooks.before('transitionStart', (context) => {
 			context.containers = ['#aside'];
 		});
-		this.swup.loadPage('/containers-2.html', { animate: false });
+		this.swup.visit('/containers-2.html', { animate: false });
 		cy.get('h1').should('contain', 'Containers 1');
 		cy.get('h2').should('contain', 'Heading 2');
 	});
@@ -685,14 +685,14 @@ describe('Containers', function () {
 		this.swup.hooks.before('replaceContent', (context, args) => {
 			args.containers = ['#main'];
 		});
-		this.swup.loadPage('/containers-2.html', { animate: false });
+		this.swup.visit('/containers-2.html', { animate: false });
 		cy.get('h1').should('contain', 'Containers 2');
 		cy.get('h2').should('contain', 'Heading 1');
 	});
 
 	it('should force-load on container mismatch', function () {
 		cy.shouldHaveReloadedAfterAction(() => {
-			this.swup.loadPage('/containers-missing.html');
+			this.swup.visit('/containers-missing.html');
 		});
 		cy.shouldBeAtPage('/containers-missing.html');
 	});

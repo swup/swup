@@ -11,13 +11,12 @@ import { Context, createContext } from './modules/Context.js';
 import { Hooks } from './modules/Hooks.js';
 import { getAnchorElement } from './modules/getAnchorElement.js';
 import { getAnimationPromises } from './modules/getAnimationPromises.js';
-import { loadPage } from './modules/loadPage.js';
+import { visit, performVisit, HistoryAction } from './modules/visit.js';
 import { fetchPage } from './modules/fetchPage.js';
 import { leavePage } from './modules/leavePage.js';
 import { replaceContent } from './modules/replaceContent.js';
 import { enterPage } from './modules/enterPage.js';
 import { renderPage } from './modules/renderPage.js';
-import { performPageLoad, HistoryAction } from './modules/loadPage.js';
 import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
 
 export type Transition = {
@@ -63,15 +62,15 @@ export default class Swup {
 	// allows us to compare the current and new path inside popStateHandler
 	currentPageUrl = getCurrentUrl();
 
-	loadPage = loadPage;
-	performPageLoad = performPageLoad;
+	visit = visit;
+	performVisit = performVisit;
 	leavePage = leavePage;
 	renderPage = renderPage;
 	replaceContent = replaceContent;
 	enterPage = enterPage;
 	delegateEvent = delegateEvent;
-	getAnimationPromises = getAnimationPromises;
 	fetchPage = fetchPage;
+	getAnimationPromises = getAnimationPromises;
 	getAnchorElement = getAnchorElement;
 	log: (message: string, context?: any) => void = () => {}; // here so it can be used by plugins
 	use = use;
@@ -271,7 +270,7 @@ export default class Swup {
 			}
 
 			// Finally, proceed with loading the page
-			this.performPageLoad(url, { transition, history: historyAction });
+			this.performVisit(url, { transition, history: historyAction });
 		});
 	}
 
@@ -318,7 +317,7 @@ export default class Swup {
 		// }
 
 		this.hooks.triggerSync('popState', { event }, () => {
-			this.performPageLoad(url);
+			this.performVisit(url);
 		});
 	}
 
