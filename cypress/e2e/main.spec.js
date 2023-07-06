@@ -21,11 +21,13 @@ describe('Request', function () {
 		const expected = this.swup.options.requestHeaders;
 		cy.intercept('GET', '/page-3.html').as('request');
 		cy.triggerClickOnLink('/page-3.html');
-		cy.wait('@request').its('request.headers').then((headers) => {
-			Object.entries(expected).forEach(([header, value]) => {
-				cy.wrap(headers).its(header.toLowerCase()).should('eq', value);
+		cy.wait('@request')
+			.its('request.headers')
+			.then((headers) => {
+				Object.entries(expected).forEach(([header, value]) => {
+					cy.wrap(headers).its(header.toLowerCase()).should('eq', value);
+				});
 			});
-		});
 	});
 
 	it('should force-load on server error', function () {
@@ -51,14 +53,27 @@ describe('Fetch', function () {
 		cy.wrapSwupInstance();
 	});
 
+	it('should allow calling original loadPage handler', function () {
+		this.swup.hooks.replace('loadPage', (context, args, originalHandler) => {
+			return originalHandler(context, args);
+		});
+		this.swup.loadPage('/page-2.html');
+
+		cy.shouldBeAtPage('/page-2.html');
+		cy.shouldHaveH1('Page 2');
+	});
+
 	it('should allow returning a page object to loadPage', function () {
 		let requested = false;
 		cy.intercept('/page-2.html', (req) => {
 			requested = true;
 		});
 
-		this.swup.hooks.before('loadPage', (context, args) => {
-			args.page = { url: '/page-3.html', html: '<html><body><div id="swup"><h1>Page 3</h1></div></body></html>' };
+		this.swup.hooks.replace('loadPage', () => {
+			return {
+				url: '/page-3.html',
+				html: '<html><body><div id="swup"><h1>Page 3</h1></div></body></html>'
+			};
 		});
 		this.swup.loadPage('/page-2.html');
 
@@ -70,8 +85,8 @@ describe('Fetch', function () {
 	});
 
 	it('should allow returning a fetch Promise to loadPage', function () {
-		this.swup.hooks.before('loadPage', (context, args) => {
-			args.page = this.swup.fetchPage('page-3.html');
+		this.swup.hooks.replace('loadPage', () => {
+			return this.swup.fetchPage('page-3.html');
 		});
 		this.swup.loadPage('/page-2.html');
 
@@ -110,11 +125,21 @@ describe('Markup', function () {
 		cy.shouldHaveH1('Page 1');
 	});
 
-	it('should process transition classes', function () {
+	it('should add transition classes to html', function () {
 		cy.triggerClickOnLink('/page-2.html');
-		cy.shouldHaveTransitionLeaveClasses();
-		cy.shouldHaveTransitionEnterClasses();
-		cy.shouldNotHaveTransitionClasses();
+		cy.shouldHaveTransitionLeaveClasses('html');
+		cy.shouldNotHaveTransitionClasses('#swup'); // making sure
+		cy.shouldHaveTransitionEnterClasses('html');
+		cy.shouldNotHaveTransitionClasses('html');
+	});
+
+	it('should add transition classes to containers', function () {
+		this.swup.options.animationScope = 'containers';
+		cy.triggerClickOnLink('/page-2.html');
+		cy.shouldHaveTransitionLeaveClasses('#swup');
+		cy.shouldNotHaveTransitionClasses('html'); // making sure
+		cy.shouldHaveTransitionEnterClasses('#swup');
+		cy.shouldNotHaveTransitionClasses('#swup');
 	});
 
 	it('should remove swup class from html tag', function () {
@@ -127,6 +152,22 @@ describe('Events', function () {
 	beforeEach(() => {
 		cy.visit('/page-1.html');
 		cy.wrapSwupInstance();
+	});
+
+	it('should trigger custom dom events', function () {
+		let triggered = false;
+		let data = [];
+		cy.document().then((document) => {
+			document.addEventListener('swup:clickLink', (event) => {
+				triggered = true;
+				data = event.detail;
+			});
+		});
+		cy.triggerClickOnLink('/page-2.html');
+		cy.window().should(() => {
+			expect(triggered, 'event was not triggered').to.be.true;
+			expect(data).to.have.property('hook', 'clickLink');
+		});
 	});
 
 	it('should prevent the default click event', function () {
@@ -194,17 +235,20 @@ describe('Transition timing', function () {
 
 	it('should warn about missing transition timing', function () {
 		cy.visit('/transition-none.html', {
-			onBeforeLoad: (win) =>  cy.stub(win.console, 'warn').as('consoleWarn')
+			onBeforeLoad: (win) => cy.stub(win.console, 'warn').as('consoleWarn')
 		});
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
 		cy.shouldHaveH1('Page 2');
-		cy.get('@consoleWarn').should('be.calledOnceWith', '[swup] No CSS animation duration defined on elements matching `[class*=\"transition-\"]`');
+		cy.get('@consoleWarn').should(
+			'be.calledOnceWith',
+			'[swup] No CSS animation duration defined on elements matching `[class*="transition-"]`'
+		);
 	});
 
 	it('should not warn about partial transition timing', function () {
 		cy.visit('/transition-partial.html', {
-			onBeforeLoad: (win) =>  cy.stub(win.console, 'warn').as('consoleWarn')
+			onBeforeLoad: (win) => cy.stub(win.console, 'warn').as('consoleWarn')
 		});
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
@@ -235,7 +279,7 @@ describe('Navigation', function () {
 		cy.shouldHaveH1('Page 3');
 	});
 
-	it('should transition if no containers defined', function () {
+	it('should transition if no animation selectors defined', function () {
 		this.swup.options.animationSelector = false;
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
@@ -588,8 +632,8 @@ describe('Context', function () {
 		});
 		cy.triggerClickOnLink('/page-2.html');
 		cy.window().should((win) => {
-			expect(el).to.be.instanceof(win.HTMLAnchorElement)
-			expect(event).to.be.instanceof(win.MouseEvent)
+			expect(el).to.be.instanceof(win.HTMLAnchorElement);
+			expect(event).to.be.instanceof(win.MouseEvent);
 		});
 	});
 
@@ -644,6 +688,13 @@ describe('Containers', function () {
 		this.swup.loadPage('/containers-2.html', { animate: false });
 		cy.get('h1').should('contain', 'Containers 2');
 		cy.get('h2').should('contain', 'Heading 1');
+	});
+
+	it('should force-load on container mismatch', function () {
+		cy.shouldHaveReloadedAfterAction(() => {
+			this.swup.loadPage('/containers-missing.html');
+		});
+		cy.shouldBeAtPage('/containers-missing.html');
 	});
 });
 

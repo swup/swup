@@ -17,8 +17,8 @@ export interface HookDefinitions {
 	clickLink: { el: HTMLAnchorElement; event: DelegateEvent<MouseEvent> };
 	disabled: undefined;
 	enabled: undefined;
-	fetchPage: { url: string; options: FetchOptions; response?: Response | Promise<Response> };
-	loadPage: { url: string; options: FetchOptions; page?: PageData | Promise<PageData> };
+	fetchPage: { url: string; options: FetchOptions };
+	loadPage: { url: string; options: FetchOptions };
 	openPageInNewTab: { href: string };
 	pageCached: { page: PageData };
 	pageLoaded: { page: PageData; cache?: boolean };
@@ -39,7 +39,8 @@ export type HookName = keyof HookDefinitions;
 
 export type Handler<T extends HookName> = (
 	context: Context,
-	args: HookArguments<T>
+	args: HookArguments<T>,
+	originalHandler?: Handler<T>
 ) => Promise<any> | void;
 
 export type Handlers = {
@@ -265,11 +266,11 @@ export class Hooks {
 		args?: HookArguments<T>,
 		defaultHandler?: Handler<T>
 	): Promise<any> {
-		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
+		const { before, handler, after, replaced } = this.getHandlers(hook, defaultHandler);
 		await this.execute(before, args);
-		const [result] = await this.execute(handler, args);
+		const [result] = await this.execute(handler, args, replaced ? defaultHandler : undefined);
 		await this.execute(after, args);
-		this.dispatchDomEvent(hook);
+		this.dispatchDomEvent(hook, args);
 		return result;
 	}
 
@@ -286,11 +287,11 @@ export class Hooks {
 		args?: HookArguments<T>,
 		defaultHandler?: Handler<T>
 	): any {
-		const { before, after, handler } = this.getHandlers(hook, defaultHandler);
+		const { before, after, handler, replaced } = this.getHandlers(hook, defaultHandler);
 		this.executeSync(before, args);
-		const [result] = this.executeSync(handler, args);
+		const [result] = this.executeSync(handler, args, replaced ? defaultHandler : undefined);
 		this.executeSync(after, args);
-		this.dispatchDomEvent(hook);
+		this.dispatchDomEvent(hook, args);
 		return result;
 	}
 
@@ -301,11 +302,12 @@ export class Hooks {
 	 */
 	async execute<T extends HookName>(
 		registrations: HookRegistration<T>[],
-		args?: HookArguments<T>
+		args?: HookArguments<T>,
+		defaultHandler?: Handler<T>
 	): Promise<any> {
 		const results = [];
 		for (const { hook, handler, once } of registrations) {
-			const result = await runAsPromise(handler, [this.swup.context, args]);
+			const result = await runAsPromise(handler, [this.swup.context, args, defaultHandler]);
 			results.push(result);
 			if (once) {
 				this.off(hook, handler);
@@ -321,11 +323,12 @@ export class Hooks {
 	 */
 	executeSync<T extends HookName>(
 		registrations: HookRegistration<T>[],
-		args?: HookArguments<T>
+		args?: HookArguments<T>,
+		defaultHandler?: Handler<T>
 	): any[] {
 		const results = [];
 		for (const { hook, handler, once } of registrations) {
-			const result = handler(this.swup.context, args as HookArguments<T>);
+			const result = handler(this.swup.context, args as HookArguments<T>, defaultHandler);
 			results.push(result);
 			if (isPromise(result)) {
 				console.warn(
@@ -387,7 +390,8 @@ export class Hooks {
 	 * Trigger a custom event on the `document`. Prefixed with `swup:`
 	 * @param hook Name of the hook to trigger.
 	 */
-	dispatchDomEvent<T extends HookName>(hook: T): void {
-		document.dispatchEvent(new CustomEvent(`swup:${hook}`, { detail: hook }));
+	dispatchDomEvent<T extends HookName>(hook: T, args?: HookArguments<T>): void {
+		const detail = { hook, args, context: this.swup.context };
+		document.dispatchEvent(new CustomEvent(`swup:${hook}`, { detail }));
 	}
 }

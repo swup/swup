@@ -90,7 +90,7 @@ describe('Cache', () => {
 		cache.set(page1.url, page1);
 
 		expect(handler).toBeCalledTimes(1);
-		expect(handler).toBeCalledWith(ctx, { page: page1 });
+		expect(handler).toBeCalledWith(ctx, { page: page1 }, undefined);
 	});
 
 	it('should allow augmenting cache entries on save', () => {
