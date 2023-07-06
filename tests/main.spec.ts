@@ -51,6 +51,28 @@ test.describe('request', () => {
 	});
 });
 
+test.describe('fetch', () => {
+	test('should allow returning a page object to loadPage', async ({ page }) => {
+		await page.evaluate(() => {
+			window._swup.hooks.before('loadPage', (context, args) => {
+				args.page = { url: '/page-3.html', html: '<html><head><title>Page 3</title></head><body><div id="swup"><h1>Page 3</h1></div></body></html>' };
+			});
+		});
+		await loadWithSwup(page, '/page-2.html');
+		await expectToBeAt(page, '/page-3.html', 'Page 3');
+	});
+
+	test('should allow returning a fetch Promise to loadPage', async ({ page, baseURL }) => {
+		await page.evaluate(() => {
+			window._swup.hooks.before('loadPage', (context, args) => {
+				args.page = window._swup.fetchPage('page-3.html');
+			});
+		});
+		await loadWithSwup(page, '/page-2.html');
+		await expectToBeAt(page, '/page-3.html', 'Page 3');
+	});
+});
+
 test.describe('cache', () => {
 	test('should cache pages', async ({ page }) => {
 		await loadWithSwup(page, '/page-2.html');
