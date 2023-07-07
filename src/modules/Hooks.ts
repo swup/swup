@@ -12,7 +12,7 @@ export interface HookDefinitions {
 	animationOutDone: undefined;
 	animationOutStart: undefined;
 	animationSkipped: undefined;
-	awaitAnimation: { selector: Options['animationSelector']; direction: AnimationDirection };
+	awaitAnimation: { direction: AnimationDirection };
 	cacheCleared: undefined;
 	clickLink: { el: HTMLAnchorElement; event: DelegateEvent<MouseEvent> };
 	disabled: undefined;

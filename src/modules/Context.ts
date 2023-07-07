@@ -19,6 +19,7 @@ export interface TransitionContext {
 	animate: boolean;
 	name?: string;
 	scope: 'html' | 'containers';
+	selector: Options['animationSelector'];
 }
 
 export interface ScrollContext {
@@ -41,8 +42,6 @@ export interface ContextInitOptions {
 	to: string | undefined;
 	from?: string;
 	hash?: string;
-	containers?: Options['containers'];
-	scope?: Options['animationScope'];
 	animate?: boolean;
 	transition?: string;
 	targets?: string[];
@@ -59,8 +58,6 @@ export function createContext(
 		to,
 		from = this.currentPageUrl,
 		hash: target,
-		containers = this.options.containers,
-		scope = this.options.animationScope,
 		animate = true,
 		transition,
 		el,
@@ -73,11 +70,12 @@ export function createContext(
 	return {
 		from: { url: from },
 		to: to !== undefined ? { url: to } : undefined,
-		containers,
+		containers: this.options.containers,
 		transition: {
 			animate,
 			name: transition,
-			scope
+			scope: this.options.animationScope,
+			selector: this.options.animationSelector
 		},
 		trigger: {
 			el,
