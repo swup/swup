@@ -71,7 +71,7 @@ export function expectNotToHaveClasses(locator: Locator, classNames: string) {
 export async function expectTransitionDuration(page: Page, duration: number) {
 	const url = page.url();
 	const tolerance = 0.25; // 25% plus/minus
-	const expectedRange = [
+	const expectedRange: [number, number] = [
 		duration * (1 - tolerance),
 		duration * (1 + tolerance)
 	];
@@ -79,6 +79,8 @@ export async function expectTransitionDuration(page: Page, duration: number) {
 	await page.exposeBinding('timing', async (_, key, val) => (timing[key] = val));
 
 	const timing = {
+		measureStart: 0,
+		measureEnd: 0,
 		outStart: 0,
 		outEnd: 0,
 		inStart: 0,
@@ -86,6 +88,8 @@ export async function expectTransitionDuration(page: Page, duration: number) {
 	};
 
 	await page.evaluate((url) => {
+		window._swup.hooks.before('awaitAnimation', () => window.timing('measureStart', performance.now()));
+		window._swup.hooks.on('awaitAnimation', () => window.timing('measureEnd', performance.now()));
 		window._swup.hooks.on('animationOutStart', () => window.timing('outStart', performance.now()));
 		window._swup.hooks.on('animationOutDone', () => window.timing('outEnd', performance.now()));
 		window._swup.hooks.on('animationInStart', () => window.timing('inStart', performance.now()));
@@ -93,12 +97,11 @@ export async function expectTransitionDuration(page: Page, duration: number) {
 		window._swup.loadPage(url);
 	}, url);
 
-	await expect(async () => {
-		const outDuration = timing.outEnd - timing.outStart;
-		const inDuration = timing.inEnd - timing.inStart;
-		expect(outDuration).toBeGreaterThanOrEqual(expectedRange[0]);
-		expect(outDuration).toBeLessThanOrEqual(expectedRange[1]);
-		expect(inDuration).toBeGreaterThanOrEqual(expectedRange[0]);
-		expect(inDuration).toBeLessThanOrEqual(expectedRange[1]);
-	}).toPass();
+	await expect(async () => expect(timing.inEnd - timing.inStart).toBeGreaterThan(0)).toPass();
+	const outDuration = timing.outEnd - timing.outStart;
+	const inDuration = timing.inEnd - timing.inStart;
+	expect(outDuration).toBeGreaterThanOrEqual(expectedRange[0]);
+	expect(outDuration).toBeLessThanOrEqual(expectedRange[1]);
+	expect(inDuration).toBeGreaterThanOrEqual(expectedRange[0]);
+	expect(inDuration).toBeLessThanOrEqual(expectedRange[1]);
 }
