@@ -189,4 +189,14 @@ test.describe('transitions', () => {
 		await page.goto('/transition-duration.html');
 		await expectTransitionDuration(page, 400);
 	});
+
+	test('should detect complex transition timing', async ({ page }) => {
+		await page.goto('/transition-complex.html');
+		await expectTransitionDuration(page, 600);
+	});
+
+	test('should detect keyframe timing', async ({ page }) => {
+		await page.goto('/transition-keyframes.html');
+		await expectTransitionDuration(page, 700);
+	});
 });
