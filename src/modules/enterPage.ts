@@ -5,9 +5,11 @@ export const enterPage = async function (this: Swup) {
 	if (this.context.transition.animate) {
 		const animation = this.hooks.trigger(
 			'awaitAnimation',
-			{ selector: this.options.animationSelector, direction: 'in' },
-			async (context, { selector, direction }) => {
-				await Promise.all(this.getAnimationPromises({ selector, direction }));
+			{ direction: 'in' },
+			async (context, { direction }) => {
+				await Promise.all(
+					this.getAnimationPromises({ selector: context.transition.selector, direction })
+				);
 			}
 		);
 		await nextTick();
