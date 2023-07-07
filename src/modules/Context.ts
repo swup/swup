@@ -19,6 +19,7 @@ export interface TransitionContext {
 	animate: boolean;
 	name?: string;
 	scope: 'html' | 'containers';
+	selector: Options['animationSelector'];
 }
 
 export interface ScrollContext {
@@ -77,7 +78,8 @@ export function createContext(
 		transition: {
 			animate,
 			name: transition,
-			scope
+			scope,
+			selector: this.options.animationSelector
 		},
 		trigger: {
 			el,
