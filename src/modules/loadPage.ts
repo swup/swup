@@ -1,6 +1,6 @@
 import Swup from '../Swup.js';
 import { createHistoryRecord, updateHistoryRecord, getCurrentUrl, Location } from '../helpers.js';
-import { FetchOptions } from '../modules/fetchPage.js';
+import { FetchOptions, PageData } from '../modules/fetchPage.js';
 import { ContextInitOptions, PageContext } from './Context.js';
 
 export type HistoryAction = 'push' | 'replace';
@@ -57,8 +57,7 @@ export async function performPageLoad(
 	try {
 		await this.hooks.trigger('transitionStart');
 
-		// Create Promises for animation and page fetch
-		const animationPromise = this.leavePage();
+		// Begin fetching page
 		const pagePromise = this.hooks.trigger(
 			'loadPage',
 			{ url: this.context.to!.url, options },
@@ -77,7 +76,13 @@ export async function performPageLoad(
 
 		this.currentPageUrl = getCurrentUrl();
 
-		// When everything is ready, render the page
+		// Wait for page before starting to animate out?
+		if (this.context.transition.wait) {
+			await pagePromise;
+		}
+
+		// When page is loaded and leave animation has finished, render the page
+		const animationPromise = this.leavePage();
 		const [page] = await Promise.all([pagePromise, animationPromise]);
 		await this.renderPage(this.context.to!.url, page);
 	} catch (error: unknown) {

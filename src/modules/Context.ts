@@ -17,6 +17,7 @@ export interface PageContext {
 
 export interface TransitionContext {
 	animate: boolean;
+	wait: boolean;
 	name?: string;
 	scope: 'html' | 'containers';
 	selector: Options['animationSelector'];
@@ -73,6 +74,7 @@ export function createContext(
 		containers: this.options.containers,
 		transition: {
 			animate,
+			wait: false,
 			name: transition,
 			scope: this.options.animationScope,
 			selector: this.options.animationSelector
