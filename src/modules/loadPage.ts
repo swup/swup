@@ -1,6 +1,6 @@
 import Swup from '../Swup.js';
 import { createHistoryRecord, updateHistoryRecord, getCurrentUrl, Location } from '../helpers.js';
-import { FetchOptions, PageData } from '../modules/fetchPage.js';
+import { FetchOptions } from '../modules/fetchPage.js';
 import { ContextInitOptions, PageContext } from './Context.js';
 
 export type HistoryAction = 'push' | 'replace';
