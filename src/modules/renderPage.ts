@@ -16,7 +16,7 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 	if (!this.isSameResolvedUrl(getCurrentUrl(), url)) {
 		updateHistoryRecord(url);
 		this.currentPageUrl = getCurrentUrl();
-		this.context.to!.url = this.currentPageUrl;
+		this.context.to.url = this.currentPageUrl;
 	}
 
 	// only add for page loads with transitions

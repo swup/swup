@@ -238,7 +238,7 @@ export default class Swup {
 		}
 
 		this.hooks.triggerSync('clickLink', { el, event }, () => {
-			const from = this.context.from?.url ?? '';
+			const from = this.context.from.url ?? '';
 
 			event.preventDefault();
 

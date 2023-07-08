@@ -1,7 +1,7 @@
 import Swup from '../Swup.js';
 import { createHistoryRecord, updateHistoryRecord, getCurrentUrl, Location } from '../helpers.js';
 import { FetchOptions } from '../modules/fetchPage.js';
-import { ContextInitOptions, PageContext } from './Context.js';
+import { ContextInitOptions } from './Context.js';
 
 export type HistoryAction = 'push' | 'replace';
 
@@ -36,7 +36,7 @@ export async function performPageLoad(
 		throw new Error(`loadPage requires a URL parameter`);
 	}
 
-	this.context.to!.url = Location.fromUrl(url).url;
+	this.context.to.url = Location.fromUrl(url).url;
 	const { transition, animate, history: historyAction } = options;
 	options.referrer = options.referrer || this.currentPageUrl;
 
@@ -60,8 +60,8 @@ export async function performPageLoad(
 		// Begin fetching page
 		const pagePromise = this.hooks.trigger(
 			'loadPage',
-			{ url: this.context.to!.url, options },
-			async (context, { options }) => await this.fetchPage(context.to!.url, options)
+			{ url: this.context.to.url, options },
+			async (context, { options }) => await this.fetchPage(context.to.url as string, options)
 		);
 
 		// Create history record if this is not a popstate call (with or without anchor)
@@ -84,7 +84,7 @@ export async function performPageLoad(
 		// When page is loaded and leave animation has finished, render the page
 		const animationPromise = this.leavePage();
 		const [page] = await Promise.all([pagePromise, animationPromise]);
-		await this.renderPage(this.context.to!.url, page);
+		await this.renderPage(this.context.to.url, page);
 	} catch (error: unknown) {
 		// Return early if error is undefined (probably aborted preload request)
 		if (!error) {
@@ -96,7 +96,7 @@ export async function performPageLoad(
 
 		// Rewrite `skipPopStateHandling` to redirect manually when `history.go` is processed
 		this.options.skipPopStateHandling = () => {
-			window.location.href = this.context.to!.url;
+			window.location.href = this.context.to.url as string;
 			return true;
 		};
 

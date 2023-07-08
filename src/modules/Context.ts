@@ -2,8 +2,8 @@ import Swup, { Options } from '../Swup.js';
 import { HistoryAction } from './loadPage.js';
 
 export interface Context<TEvent = Event> {
-	from: PageContext;
-	to?: PageContext;
+	from: FromContext;
+	to: ToContext;
 	containers: Options['containers'];
 	transition: TransitionContext;
 	trigger: TriggerContext<TEvent>;
@@ -11,8 +11,13 @@ export interface Context<TEvent = Event> {
 	scroll: ScrollContext;
 }
 
-export interface PageContext {
+export interface FromContext {
 	url: string;
+}
+
+export interface ToContext {
+	url?: string;
+	html?: string;
 }
 
 export interface TransitionContext {
@@ -70,7 +75,7 @@ export function createContext(
 ): Context {
 	return {
 		from: { url: from },
-		to: to !== undefined ? { url: to } : undefined,
+		to: { url: to },
 		containers: this.options.containers,
 		transition: {
 			animate,
