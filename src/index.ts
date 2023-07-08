@@ -10,4 +10,14 @@ export default Swup;
 export * from './helpers.js';
 export * from './utils.js';
 
-export type { Options, Plugin, CacheData, Context, FromContext, ToContext, HookDefinitions, Handler, Path };
+export type {
+	Options,
+	Plugin,
+	CacheData,
+	Context,
+	FromContext,
+	ToContext,
+	HookDefinitions,
+	Handler,
+	Path
+};

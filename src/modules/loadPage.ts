@@ -78,7 +78,8 @@ export async function performPageLoad(
 
 		// Wait for page before starting to animate out?
 		if (this.context.transition.wait) {
-			await pagePromise;
+			const { html } = await pagePromise;
+			this.context.to.html = html;
 		}
 
 		// When page is loaded and leave animation has finished, render the page

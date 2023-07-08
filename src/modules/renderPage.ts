@@ -3,7 +3,7 @@ import Swup from '../Swup.js';
 import { PageData } from './fetchPage.js';
 
 export const renderPage = async function (this: Swup, requestedUrl: string, page: PageData) {
-	const { url } = page;
+	const { url, html } = page;
 
 	this.classes.remove('is-leaving');
 
@@ -23,6 +23,9 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 	if (this.context.transition.animate) {
 		this.classes.add('is-rendering');
 	}
+
+	// save html into context for easier retrieval
+	this.context.to.html = html;
 
 	// replace content: allow handlers and plugins to overwrite paga data and containers
 	await this.hooks.trigger(
