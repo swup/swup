@@ -16,7 +16,7 @@
 
 # Swup
 
-Versatile and extensible page transition library for server-side rendered websites
+Versatile and extensible **page transition library** for server-rendered websites.
 
 [Features](#features) •
 [Documentation](https://swup.js.org/getting-started) •
@@ -26,12 +26,12 @@ Versatile and extensible page transition library for server-side rendered websit
 
 ## Overview
 
-Swup adds page transitions to server-side rendered websites. It manages the complete lifecycle of a
-page visit by intercepting link clicks,  loading the new page in the background and smoothly
-transitioning between the old and new content.
+Swup adds **page transitions** to server-rendered websites. It manages the complete page load lifecycle
+and smoothly transitions between the current and next page. In addition, it offers many other
+quality-of-life improvements like **caching**, **smart preloading**, native browser history and
+enhanced **accessibility**.
 
-Its goal is to make it effortless to add page transitions to a site, while providing lots of other
-quality-of-life improvements.
+Make your site feel like a snappy single-page app — without any of the complexity.
 
 ## Features
 
