@@ -4,7 +4,7 @@ import type {
 	Context,
 	FromContext,
 	ToContext,
-	TransitionContext,
+	AnimationContext,
 	ScrollContext,
 	HistoryContext
 } from './modules/Context.js';
@@ -24,7 +24,7 @@ export type {
 	Context,
 	FromContext,
 	ToContext,
-	TransitionContext,
+	AnimationContext,
 	ScrollContext,
 	HistoryContext,
 	HookDefinitions,

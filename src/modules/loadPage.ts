@@ -41,17 +41,17 @@ export async function performPageLoad(
 	options.referrer = options.referrer || this.currentPageUrl;
 
 	if (animate === false) {
-		this.context.transition.animate = false;
+		this.context.animation.animate = false;
 	}
 	if (historyAction) {
 		this.context.history.action = historyAction;
 	}
 
 	// Clean up old transition classes and set custom transition name
-	if (!this.context.transition.animate) {
+	if (!this.context.animation.animate) {
 		this.classes.clear();
 	} else if (transition) {
-		this.context.transition.name = transition;
+		this.context.animation.name = transition;
 	}
 
 	try {
@@ -77,7 +77,7 @@ export async function performPageLoad(
 		this.currentPageUrl = getCurrentUrl();
 
 		// Wait for page before starting to animate out?
-		if (this.context.transition.wait) {
+		if (this.context.animation.wait) {
 			const { html } = await pagePromise;
 			this.context.to.html = html;
 		}

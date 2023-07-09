@@ -20,7 +20,7 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 	}
 
 	// only add for page loads with transitions
-	if (this.context.transition.animate) {
+	if (this.context.animation.animate) {
 		this.classes.add('is-rendering');
 	}
 
@@ -36,11 +36,11 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 			if (!success) {
 				throw new Error('[swup] Container mismatch, aborting');
 			}
-			if (this.context.transition.animate) {
+			if (this.context.animation.animate) {
 				// Make sure to add these classes to new containers as well
 				this.classes.add('is-animating', 'is-changing', 'is-rendering');
-				if (this.context.transition.name) {
-					this.classes.add(`to-${classify(this.context.transition.name)}`);
+				if (this.context.animation.name) {
+					this.classes.add(`to-${classify(this.context.animation.name)}`);
 				}
 			}
 		}

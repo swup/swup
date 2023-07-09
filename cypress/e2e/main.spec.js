@@ -660,7 +660,7 @@ describe('Context', function () {
 
 	it('should allow disabling animations', function () {
 		this.swup.hooks.before('transitionStart', (context) => {
-			context.transition.animate = false;
+			context.animation.animate = false;
 		});
 		cy.transitionWithExpectedDuration(0, '/page-2.html');
 	});

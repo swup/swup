@@ -5,7 +5,7 @@ export interface Context<TEvent = Event> {
 	from: FromContext;
 	to: ToContext;
 	containers: Options['containers'];
-	transition: TransitionContext;
+	animation: AnimationContext;
 	trigger: TriggerContext<TEvent>;
 	history: HistoryContext;
 	scroll: ScrollContext;
@@ -20,7 +20,7 @@ export interface ToContext {
 	html?: string;
 }
 
-export interface TransitionContext {
+export interface AnimationContext {
 	animate: boolean;
 	wait: boolean;
 	name?: string;
@@ -77,7 +77,7 @@ export function createContext(
 		from: { url: from },
 		to: { url: to },
 		containers: this.options.containers,
-		transition: {
+		animation: {
 			animate,
 			wait: false,
 			name: transition,
