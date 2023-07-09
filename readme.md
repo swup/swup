@@ -19,9 +19,10 @@
 Versatile and extensible **page transition library** for server-rendered websites.
 
 [Features](#features) •
+[Demos](#demos) •
+[Plugins](#plugins) •
+[Themes](#themes) •
 [Documentation](https://swup.js.org/getting-started) •
-[Plugins](https://swup.js.org/plugins) •
-[Themes](https://swup.js.org/themes) •
 [Discussions](https://github.com/swup/swup/discussions)
 
 ## Overview
@@ -44,6 +45,10 @@ Make your site feel like a snappy single-page app — without any of the complex
 - 🔌 Has a powerful [plugin system](https://swup.js.org/plugins/) and many official and third-party plugins
 - 🎨 Provides ready-to-go [themes](https://swup.js.org/themes/) to get started quickly
 
+## Demos
+
+Explore our [interactive demos](https://swup.js.org/getting-started/demos/) to see swup in action.
+
 ## Plugins
 
 Swup is small by design. Extended features can be added via [plugins](https://swup.js.org/plugins/):
@@ -57,14 +62,19 @@ Swup is small by design. Extended features can be added via [plugins](https://sw
 - Animate [form submissions](https://swup.js.org/plugins/forms-plugin/)
 - Get help in [debug mode](https://swup.js.org/plugins/debug-plugin/)
 
-Check out the list of [all official plugins](https://swup.js.org/plugins/) as well as
-[third-party integrations](https://swup.js.org/third-party-integrations/).
+Check out the list of [official plugins](https://swup.js.org/plugins/) and [third-party integrations](https://swup.js.org/third-party-integrations/).
+
+## Themes
+
+Get started quickly with one of three included themes: [fade](https://swup.js.org/themes/fade-theme/),
+[slide](https://swup.js.org/themes/slide-theme/), and [overlay](https://swup.js.org/themes/overlay-theme/).
 
 ## Examples
 
 <img src="https://user-images.githubusercontent.com/9338324/49190360-50125480-f372-11e8-89e9-d2fb091a2240.gif" width="100%">
 
-Take a look at [Sites using swup](https://github.com/swup/swup/discussions/333) for more examples.
+Take a look at the [interactive demos](https://swup.js.org/getting-started/demos/) and
+[sites using swup](https://github.com/swup/swup/discussions/333) for more examples.
 
 ## Having trouble?
 
