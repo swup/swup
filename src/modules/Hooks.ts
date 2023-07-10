@@ -141,9 +141,8 @@ export class Hooks {
 		const ledger = this.registry.get(hook);
 		if (ledger) {
 			return ledger;
-		} else {
-			console.error(`Unknown hook '${hook}'`);
 		}
+		console.error(`Unknown hook '${hook}'`);
 	}
 
 	/**
