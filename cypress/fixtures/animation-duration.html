@@ -3,30 +3,17 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Transition duration: keyframes</title>
+    <title>Animation duration</title>
     <link rel="stylesheet" href="/assets/main.css">
     <script src="/dist/Swup.umd.js"></script>
     <style>
         .transition-default {
-            transition: none;
+            transition: 0.4s opacity;
+            opacity: 1;
         }
         html.is-animating .transition-default {
-            animation: test-animation 400ms 300ms;
+            opacity: 0;
         }
-        html.is-rendering .transition-default {
-            animation-direction: reverse;
-        }
-        @keyframes test-animation {
-            from {
-                transform: translateY(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateY(10px);
-                opacity: 0;
-            }
-        }
-
     </style>
 </head>
 <body>
@@ -38,7 +25,7 @@
         </ul>
     </header>
     <main id="swup" class="wrapper transition-default">
-        <h1>Transition duration: keyframes</h1>
+        <h1>Animation duration</h1>
     </main>
     <script>
         window._swup = new Swup();

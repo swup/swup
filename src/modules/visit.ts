@@ -7,7 +7,7 @@ export type HistoryAction = 'push' | 'replace';
 
 export type PageLoadOptions = {
 	animate?: boolean;
-	transition?: string;
+	animation?: string;
 	history?: HistoryAction;
 };
 
@@ -37,21 +37,21 @@ export async function performVisit(
 	}
 
 	this.context.to.url = Location.fromUrl(url).url;
-	const { transition, animate, history: historyAction } = options;
+	const { animation, animate, history: historyAction } = options;
 	options.referrer = options.referrer || this.currentPageUrl;
 
 	if (animate === false) {
-		this.context.transition.animate = false;
+		this.context.animation.animate = false;
 	}
 	if (historyAction) {
 		this.context.history.action = historyAction;
 	}
 
-	// Clean up old transition classes and set custom transition name
-	if (!this.context.transition.animate) {
+	// Clean up old animation classes and set custom animation name
+	if (!this.context.animation.animate) {
 		this.classes.clear();
-	} else if (transition) {
-		this.context.transition.name = transition;
+	} else if (animation) {
+		this.context.animation.name = animation;
 	}
 
 	try {
@@ -77,7 +77,7 @@ export async function performVisit(
 		this.currentPageUrl = getCurrentUrl();
 
 		// Wait for page before starting to animate out?
-		if (this.context.transition.wait) {
+		if (this.context.animation.wait) {
 			const { html } = await pagePromise;
 			this.context.to.html = html;
 		}

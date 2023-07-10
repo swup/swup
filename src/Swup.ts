@@ -192,8 +192,8 @@ export default class Swup {
 		const el = event.delegateTarget as HTMLAnchorElement;
 		const { href, url, hash } = Location.fromElement(el);
 
-		// Get the transition name, if specified
-		const transition = el.getAttribute('data-swup-transition') || undefined;
+		// Get the animation name, if specified
+		const animation = el.getAttribute('data-swup-animation') || undefined;
 
 		// Get the history action, if specified
 		let historyAction: HistoryAction | undefined;
@@ -210,7 +210,7 @@ export default class Swup {
 		this.context = this.createContext({
 			to: url,
 			hash,
-			transition,
+			animation,
 			el,
 			event,
 			action: historyAction
@@ -261,7 +261,7 @@ export default class Swup {
 			}
 
 			// Finally, proceed with loading the page
-			this.performVisit(url, { transition, history: historyAction });
+			this.performVisit(url);
 		});
 	}
 

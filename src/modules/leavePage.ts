@@ -2,7 +2,7 @@ import Swup from '../Swup.js';
 import { classify } from '../helpers.js';
 
 export const leavePage = async function (this: Swup) {
-	if (!this.context.transition.animate) {
+	if (!this.context.animation.animate) {
 		await this.hooks.trigger('animationSkipped');
 		return;
 	}
@@ -12,8 +12,8 @@ export const leavePage = async function (this: Swup) {
 		if (this.context.history.popstate) {
 			this.classes.add('is-popstate');
 		}
-		if (this.context.transition.name) {
-			this.classes.add(`to-${classify(this.context.transition.name)}`);
+		if (this.context.animation.name) {
+			this.classes.add(`to-${classify(this.context.animation.name)}`);
 		}
 	});
 
@@ -22,7 +22,7 @@ export const leavePage = async function (this: Swup) {
 		{ direction: 'out' },
 		async (context, { direction }) => {
 			await Promise.all(
-				this.getAnimationPromises({ selector: context.transition.selector, direction })
+				this.getAnimationPromises({ selector: context.animation.selector, direction })
 			);
 		}
 	);
