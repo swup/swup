@@ -2,8 +2,8 @@ import Swup, { Options } from '../Swup.js';
 import { HistoryAction } from './visit.js';
 
 export interface Context<TEvent = Event> {
-	from: PageContext;
-	to?: PageContext;
+	from: FromContext;
+	to: ToContext;
 	containers: Options['containers'];
 	transition: TransitionContext;
 	trigger: TriggerContext<TEvent>;
@@ -11,14 +11,21 @@ export interface Context<TEvent = Event> {
 	scroll: ScrollContext;
 }
 
-export interface PageContext {
+export interface FromContext {
 	url: string;
+}
+
+export interface ToContext {
+	url?: string;
+	html?: string;
 }
 
 export interface TransitionContext {
 	animate: boolean;
+	wait: boolean;
 	name?: string;
 	scope: 'html' | 'containers';
+	selector: Options['animationSelector'];
 }
 
 export interface ScrollContext {
@@ -41,8 +48,6 @@ export interface ContextInitOptions {
 	to: string | undefined;
 	from?: string;
 	hash?: string;
-	containers?: Options['containers'];
-	scope?: Options['animationScope'];
 	animate?: boolean;
 	transition?: string;
 	targets?: string[];
@@ -59,8 +64,6 @@ export function createContext(
 		to,
 		from = this.currentPageUrl,
 		hash: target,
-		containers = this.options.containers,
-		scope = this.options.animationScope,
 		animate = true,
 		transition,
 		el,
@@ -72,12 +75,14 @@ export function createContext(
 ): Context {
 	return {
 		from: { url: from },
-		to: to !== undefined ? { url: to } : undefined,
-		containers,
+		to: { url: to },
+		containers: this.options.containers,
 		transition: {
 			animate,
+			wait: false,
 			name: transition,
-			scope
+			scope: this.options.animationScope,
+			selector: this.options.animationSelector
 		},
 		trigger: {
 			el,

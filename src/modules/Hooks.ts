@@ -12,7 +12,7 @@ export interface HookDefinitions {
 	animationOutDone: undefined;
 	animationOutStart: undefined;
 	animationSkipped: undefined;
-	awaitAnimation: { selector: Options['animationSelector']; direction: AnimationDirection };
+	awaitAnimation: { direction: AnimationDirection };
 	cacheCleared: undefined;
 	clickLink: { el: HTMLAnchorElement; event: DelegateEvent<MouseEvent> };
 	disabled: undefined;
@@ -24,7 +24,7 @@ export interface HookDefinitions {
 	pageLoaded: { page: PageData; cache?: boolean };
 	pageView: { url: string; title: string };
 	popState: { event: PopStateEvent };
-	replaceContent: { page: PageData; containers: Options['containers'] };
+	replaceContent: { page: PageData };
 	samePage: undefined;
 	samePageWithHash: { hash: string; options: ScrollIntoViewOptions };
 	scrollToContent: { options: ScrollIntoViewOptions };

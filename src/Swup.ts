@@ -3,7 +3,7 @@ import { DelegateEvent } from 'delegate-it';
 import version from './config/version.js';
 
 import { delegateEvent, getCurrentUrl, Location, updateHistoryRecord } from './helpers.js';
-import { Unsubscribe } from './helpers/delegateEvent.js';
+import { DelegateEventUnsubscribe } from './helpers/delegateEvent.js';
 
 import { Cache } from './modules/Cache.js';
 import { Classes } from './modules/Classes.js';
@@ -18,16 +18,6 @@ import { replaceContent } from './modules/replaceContent.js';
 import { enterPage } from './modules/enterPage.js';
 import { renderPage } from './modules/renderPage.js';
 import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
-
-export type Transition = {
-	from?: string;
-	to?: string;
-	custom?: string;
-};
-
-type DelegatedListeners = {
-	click?: Unsubscribe;
-};
 
 export type Options = {
 	animateHistoryBrowsing: boolean;
@@ -44,10 +34,11 @@ export type Options = {
 };
 
 export default class Swup {
+	// library version
 	version: string = version;
-	// variable for save options
+	// instance options
 	options: Options;
-	// running plugin instances
+	// plugin instances
 	plugins: Plugin[] = [];
 	// context data
 	context: Context;
@@ -57,10 +48,10 @@ export default class Swup {
 	hooks: Hooks;
 	// classname manager
 	classes: Classes;
-	// variable for keeping event listeners from "delegate"
-	delegatedListeners: DelegatedListeners = {};
-	// allows us to compare the current and new path inside popStateHandler
+	// current url to allow better comparison inside popstate handler
 	currentPageUrl = getCurrentUrl();
+	// subscription handle for delegated event listener
+	private clickDelegate?: DelegateEventUnsubscribe;
 
 	visit = visit;
 	performVisit = performVisit;
@@ -72,12 +63,12 @@ export default class Swup {
 	fetchPage = fetchPage;
 	getAnimationPromises = getAnimationPromises;
 	getAnchorElement = getAnchorElement;
-	log: (message: string, context?: any) => void = () => {}; // here so it can be used by plugins
 	use = use;
 	unuse = unuse;
 	findPlugin = findPlugin;
 	getCurrentUrl = getCurrentUrl;
 	createContext = createContext;
+	log: (message: string, context?: any) => void = () => {}; // here so it can be used by plugins
 
 	defaults: Options = {
 		animateHistoryBrowsing: false,
@@ -124,9 +115,9 @@ export default class Swup {
 	}
 
 	async enable() {
-		// Add event listeners
+		// Add event listener
 		const { linkSelector } = this.options;
-		this.delegatedListeners.click = delegateEvent(linkSelector, 'click', this.linkClickHandler);
+		this.clickDelegate = this.delegateEvent(linkSelector, 'click', this.linkClickHandler);
 
 		window.addEventListener('popstate', this.popStateHandler);
 
@@ -153,8 +144,8 @@ export default class Swup {
 	}
 
 	async destroy() {
-		// remove delegated listeners
-		this.delegatedListeners.click!.destroy();
+		// remove delegated listener
+		this.clickDelegate!.destroy();
 
 		// remove popstate listener
 		window.removeEventListener('popstate', this.popStateHandler);
@@ -237,7 +228,7 @@ export default class Swup {
 		}
 
 		this.hooks.triggerSync('clickLink', { el, event }, () => {
-			const from = this.context.from?.url ?? '';
+			const from = this.context.from.url ?? '';
 
 			event.preventDefault();
 

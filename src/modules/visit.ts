@@ -36,7 +36,7 @@ export async function performVisit(
 		throw new Error(`swup.visit() requires a URL parameter`);
 	}
 
-	this.context.to!.url = Location.fromUrl(url).url;
+	this.context.to.url = Location.fromUrl(url).url;
 	const { transition, animate, history: historyAction } = options;
 	options.referrer = options.referrer || this.currentPageUrl;
 
@@ -57,12 +57,11 @@ export async function performVisit(
 	try {
 		await this.hooks.trigger('transitionStart');
 
-		// Create Promises for animation and page fetch
-		const animationPromise = this.leavePage();
+		// Begin fetching page
 		const pagePromise = this.hooks.trigger(
 			'loadPage',
-			{ url: this.context.to!.url, options },
-			async (context, { options }) => await this.fetchPage(context.to!.url, options)
+			{ url: this.context.to.url, options },
+			async (context, { options }) => await this.fetchPage(context.to.url as string, options)
 		);
 
 		// Create history record if this is not a popstate call (with or without anchor)
@@ -77,9 +76,16 @@ export async function performVisit(
 
 		this.currentPageUrl = getCurrentUrl();
 
-		// When everything is ready, render the page
+		// Wait for page before starting to animate out?
+		if (this.context.transition.wait) {
+			const { html } = await pagePromise;
+			this.context.to.html = html;
+		}
+
+		// When page is loaded and leave animation has finished, render the page
+		const animationPromise = this.leavePage();
 		const [page] = await Promise.all([pagePromise, animationPromise]);
-		await this.renderPage(this.context.to!.url, page);
+		await this.renderPage(this.context.to.url, page);
 	} catch (error: unknown) {
 		// Return early if error is undefined (probably aborted preload request)
 		if (!error) {
@@ -91,7 +97,7 @@ export async function performVisit(
 
 		// Rewrite `skipPopStateHandling` to redirect manually when `history.go` is processed
 		this.options.skipPopStateHandling = () => {
-			window.location.href = this.context.to!.url;
+			window.location.href = this.context.to.url as string;
 			return true;
 		};
 
