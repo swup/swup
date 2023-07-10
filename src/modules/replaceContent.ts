@@ -24,14 +24,17 @@ export const replaceContent = function (
 	const replaced = containers.map((selector) => {
 		const currentEl = document.querySelector(selector);
 		const incomingEl = doc.querySelector(selector);
+		if (currentEl && incomingEl) {
+			currentEl.replaceWith(incomingEl);
+			return true;
+		}
 		if (!currentEl) {
 			console.warn(`[swup] Container missing in current document: ${selector}`);
-		} else if (!incomingEl) {
-			console.warn(`[swup] Container missing in incoming document: ${selector}`);
-		} else {
-			currentEl.replaceWith(incomingEl);
-			return incomingEl;
 		}
+		if (!incomingEl) {
+			console.warn(`[swup] Container missing in incoming document: ${selector}`);
+		}
+		return false;
 	});
 
 	return replaced.filter(Boolean).length === containers.length;
