@@ -5,7 +5,7 @@ export interface Context<TEvent = Event> {
 	from: FromContext;
 	to: ToContext;
 	containers: Options['containers'];
-	transition: TransitionContext;
+	animation: AnimationContext;
 	trigger: TriggerContext<TEvent>;
 	history: HistoryContext;
 	scroll: ScrollContext;
@@ -20,7 +20,7 @@ export interface ToContext {
 	html?: string;
 }
 
-export interface TransitionContext {
+export interface AnimationContext {
 	animate: boolean;
 	wait: boolean;
 	name?: string;
@@ -49,7 +49,7 @@ export interface ContextInitOptions {
 	from?: string;
 	hash?: string;
 	animate?: boolean;
-	transition?: string;
+	animation?: string;
 	targets?: string[];
 	el?: Element;
 	event?: Event;
@@ -65,7 +65,7 @@ export function createContext(
 		from = this.currentPageUrl,
 		hash: target,
 		animate = true,
-		transition,
+		animation: name,
 		el,
 		event,
 		popstate = false,
@@ -77,10 +77,10 @@ export function createContext(
 		from: { url: from },
 		to: { url: to },
 		containers: this.options.containers,
-		transition: {
+		animation: {
 			animate,
 			wait: false,
-			name: transition,
+			name,
 			scope: this.options.animationScope,
 			selector: this.options.animationSelector
 		},

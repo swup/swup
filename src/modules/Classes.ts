@@ -11,7 +11,7 @@ export class Classes {
 	}
 
 	get selectors(): string[] {
-		const { scope } = this.swup.context.transition;
+		const { scope } = this.swup.context.animation;
 		return scope === 'containers' ? this.swup.context.containers : ['html'];
 	}
 

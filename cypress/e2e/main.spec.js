@@ -125,21 +125,21 @@ describe('Markup', function () {
 		cy.shouldHaveH1('Page 1');
 	});
 
-	it('should add transition classes to html', function () {
+	it('should add animation classes to html', function () {
 		cy.triggerClickOnLink('/page-2.html');
-		cy.shouldHaveTransitionLeaveClasses('html');
-		cy.shouldNotHaveTransitionClasses('#swup'); // making sure
-		cy.shouldHaveTransitionEnterClasses('html');
-		cy.shouldNotHaveTransitionClasses('html');
+		cy.shouldHaveAnimationLeaveClasses('html');
+		cy.shouldNotHaveAnimationClasses('#swup'); // making sure
+		cy.shouldHaveAnimationEnterClasses('html');
+		cy.shouldNotHaveAnimationClasses('html');
 	});
 
-	it('should add transition classes to containers', function () {
+	it('should add animation classes to containers', function () {
 		this.swup.options.animationScope = 'containers';
 		cy.triggerClickOnLink('/page-2.html');
-		cy.shouldHaveTransitionLeaveClasses('#swup');
-		cy.shouldNotHaveTransitionClasses('html'); // making sure
-		cy.shouldHaveTransitionEnterClasses('#swup');
-		cy.shouldNotHaveTransitionClasses('#swup');
+		cy.shouldHaveAnimationLeaveClasses('#swup');
+		cy.shouldNotHaveAnimationClasses('html'); // making sure
+		cy.shouldHaveAnimationEnterClasses('#swup');
+		cy.shouldNotHaveAnimationClasses('#swup');
 	});
 
 	it('should remove swup class from html tag', function () {
@@ -222,19 +222,19 @@ describe('Events', function () {
 	});
 });
 
-describe('Transition timing', function () {
-	it('should detect transition timing', function () {
-		cy.visit('/transition-duration.html');
-		cy.transitionWithExpectedDuration(400);
+describe('Animation timing', function () {
+	it('should detect animation timing', function () {
+		cy.visit('/animation-duration.html');
+		cy.shouldAnimateWithDuration(400);
 	});
 
-	it('should detect complex transition timing', function () {
-		cy.visit('/transition-complex.html');
-		cy.transitionWithExpectedDuration(600);
+	it('should detect complex animation timing', function () {
+		cy.visit('/animation-complex.html');
+		cy.shouldAnimateWithDuration(600);
 	});
 
-	it('should warn about missing transition timing', function () {
-		cy.visit('/transition-none.html', {
+	it('should warn about missing animation timing', function () {
+		cy.visit('/animation-none.html', {
 			onBeforeLoad: (win) => cy.stub(win.console, 'warn').as('consoleWarn')
 		});
 		cy.triggerClickOnLink('/page-2.html');
@@ -246,8 +246,8 @@ describe('Transition timing', function () {
 		);
 	});
 
-	it('should not warn about partial transition timing', function () {
-		cy.visit('/transition-partial.html', {
+	it('should not warn about partial animation timing', function () {
+		cy.visit('/animation-partial.html', {
 			onBeforeLoad: (win) => cy.stub(win.console, 'warn').as('consoleWarn')
 		});
 		cy.triggerClickOnLink('/page-2.html');
@@ -257,8 +257,8 @@ describe('Transition timing', function () {
 	});
 
 	it('should detect keyframe timing', function () {
-		cy.visit('/transition-keyframes.html');
-		cy.transitionWithExpectedDuration(700);
+		cy.visit('/animation-keyframes.html');
+		cy.shouldAnimateWithDuration(700);
 	});
 });
 
@@ -268,26 +268,26 @@ describe('Navigation', function () {
 		cy.wrapSwupInstance();
 	});
 
-	it('should transition to other pages', function () {
+	it('should navigate to other pages', function () {
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
 		cy.shouldHaveH1('Page 2');
 
-		cy.wait(200); // Wait for transition finish
+		cy.wait(200); // Wait for animation finish
 		cy.triggerClickOnLink('/page-3.html');
 		cy.shouldBeAtPage('/page-3.html');
 		cy.shouldHaveH1('Page 3');
 	});
 
-	it('should transition if no animation selectors defined', function () {
+	it('should navigate if no animation selectors defined', function () {
 		this.swup.options.animationSelector = false;
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
 		cy.shouldHaveH1('Page 2');
 	});
 
-	it('should transition if no CSS transition is defined', function () {
-		cy.visit('/transition-none.html');
+	it('should navigate if no CSS animation is defined', function () {
+		cy.visit('/animation-none.html');
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
 		cy.shouldHaveH1('Page 2');
@@ -503,7 +503,7 @@ describe('History', function () {
 		});
 	});
 
-	it('should transition to previous page on popstate', function () {
+	it('should navigate to previous page on popstate', function () {
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
 		cy.shouldHaveH1('Page 2');
@@ -515,7 +515,7 @@ describe('History', function () {
 		});
 	});
 
-	it('should transition to next page on popstate', function () {
+	it('should navigate to next page on popstate', function () {
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
 		cy.shouldHaveH1('Page 2');
@@ -575,7 +575,7 @@ describe('API', function () {
 		cy.wrapSwupInstance();
 	});
 
-	it('should transition to pages using swup API', function () {
+	it('should navigate to pages using swup API', function () {
 		this.swup.loadPage('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
 		cy.shouldHaveH1('Page 2');
@@ -658,11 +658,28 @@ describe('Context', function () {
 		});
 	});
 
+	it('passes along the custom animation', function () {
+		let name = null;
+		let expectedName = null;
+		this.swup.hooks.before('transitionStart', (context) => {
+			name = context.animation.name;
+		});
+		cy.get('a[data-swup-animation]').should(($el) => {
+			expect($el.length).to.be.at.least(1);
+			expectedName = $el.first().attr('data-swup-animation');
+			expect(expectedName).to.eq('custom');
+		});
+		cy.get('a[data-swup-animation]').click();
+		cy.window().should(() => {
+			expect(name).to.eq(expectedName);
+		});
+	});
+
 	it('should allow disabling animations', function () {
 		this.swup.hooks.before('transitionStart', (context) => {
-			context.transition.animate = false;
+			context.animation.animate = false;
 		});
-		cy.transitionWithExpectedDuration(0, '/page-2.html');
+		cy.shouldAnimateWithDuration(0, '/page-2.html');
 	});
 });
 
@@ -754,7 +771,7 @@ describe('Scrolling', function () {
 		cy.shouldHaveElementInViewport('[data-cy=anchor-with-unicode]');
 	});
 
-	it('should transition page and scroll on link with hash', function () {
+	it('should scroll to requested hash after navigation', function () {
 		cy.get('[data-cy=link-to-page-anchor]').click();
 		cy.shouldBeAtPage('/scrolling-2.html#anchor');
 		cy.shouldHaveH1('Scrolling 2');
