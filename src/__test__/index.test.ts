@@ -84,10 +84,10 @@ describe('ignoreVisit', () => {
 		);
 	});
 
-	it('should be called from loadPage method', () => {
+	it('should be called from visit method', () => {
 		const ignoreVisit = vi.fn(() => true);
 		const swup = new Swup({ ignoreVisit });
-		swup.loadPage('/path/');
+		swup.visit('/path/');
 
 		expect(ignoreVisit.mock.calls).toHaveLength(1);
 	});

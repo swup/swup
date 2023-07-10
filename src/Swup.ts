@@ -11,13 +11,12 @@ import { Context, createContext } from './modules/Context.js';
 import { Hooks } from './modules/Hooks.js';
 import { getAnchorElement } from './modules/getAnchorElement.js';
 import { getAnimationPromises } from './modules/getAnimationPromises.js';
-import { loadPage } from './modules/loadPage.js';
+import { visit, performVisit, HistoryAction } from './modules/visit.js';
 import { fetchPage } from './modules/fetchPage.js';
 import { leavePage } from './modules/leavePage.js';
 import { replaceContent } from './modules/replaceContent.js';
 import { enterPage } from './modules/enterPage.js';
 import { renderPage } from './modules/renderPage.js';
-import { performPageLoad, HistoryAction } from './modules/loadPage.js';
 import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
 
 export type Options = {
@@ -54,15 +53,15 @@ export default class Swup {
 	// subscription handle for delegated event listener
 	private clickDelegate?: DelegateEventUnsubscribe;
 
-	loadPage = loadPage;
-	performPageLoad = performPageLoad;
+	visit = visit;
+	performVisit = performVisit;
 	leavePage = leavePage;
 	renderPage = renderPage;
 	replaceContent = replaceContent;
 	enterPage = enterPage;
 	delegateEvent = delegateEvent;
-	getAnimationPromises = getAnimationPromises;
 	fetchPage = fetchPage;
+	getAnimationPromises = getAnimationPromises;
 	getAnchorElement = getAnchorElement;
 	use = use;
 	unuse = unuse;
@@ -262,7 +261,7 @@ export default class Swup {
 			}
 
 			// Finally, proceed with loading the page
-			this.performPageLoad(url);
+			this.performVisit(url);
 		});
 	}
 
@@ -309,7 +308,7 @@ export default class Swup {
 		// }
 
 		this.hooks.triggerSync('popState', { event }, () => {
-			this.performPageLoad(url);
+			this.performVisit(url);
 		});
 	}
 

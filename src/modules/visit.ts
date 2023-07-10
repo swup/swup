@@ -1,6 +1,6 @@
 import Swup from '../Swup.js';
 import { createHistoryRecord, updateHistoryRecord, getCurrentUrl, Location } from '../helpers.js';
-import { FetchOptions } from '../modules/fetchPage.js';
+import { FetchOptions } from './fetchPage.js';
 import { ContextInitOptions } from './Context.js';
 
 export type HistoryAction = 'push' | 'replace';
@@ -11,7 +11,7 @@ export type PageLoadOptions = {
 	history?: HistoryAction;
 };
 
-export function loadPage(
+export function visit(
 	this: Swup,
 	url: string,
 	options: PageLoadOptions & FetchOptions = {},
@@ -23,17 +23,17 @@ export function loadPage(
 	} else {
 		const { url: to, hash } = Location.fromUrl(url);
 		this.context = this.createContext({ ...context, to, hash });
-		this.performPageLoad(to, options);
+		this.performVisit(to, options);
 	}
 }
 
-export async function performPageLoad(
+export async function performVisit(
 	this: Swup,
 	url: string,
 	options: PageLoadOptions & FetchOptions = {}
 ) {
 	if (typeof url !== 'string') {
-		throw new Error(`loadPage requires a URL parameter`);
+		throw new Error(`swup.visit() requires a URL parameter`);
 	}
 
 	this.context.to.url = Location.fromUrl(url).url;
