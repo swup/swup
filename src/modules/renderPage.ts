@@ -28,23 +28,19 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 	this.context.to.html = html;
 
 	// replace content: allow handlers and plugins to overwrite paga data and containers
-	await this.hooks.trigger(
-		'replaceContent',
-		{ page, containers: this.context.containers },
-		(context, { page, containers }) => {
-			const success = this.replaceContent(page, { containers });
-			if (!success) {
-				throw new Error('[swup] Container mismatch, aborting');
-			}
-			if (this.context.animation.animate) {
-				// Make sure to add these classes to new containers as well
-				this.classes.add('is-animating', 'is-changing', 'is-rendering');
-				if (this.context.animation.name) {
-					this.classes.add(`to-${classify(this.context.animation.name)}`);
-				}
+	await this.hooks.trigger('replaceContent', { page }, (context, { page }) => {
+		const success = this.replaceContent(page, { containers: context.containers });
+		if (!success) {
+			throw new Error('[swup] Container mismatch, aborting');
+		}
+		if (this.context.animation.animate) {
+			// Make sure to add these classes to new containers as well
+			this.classes.add('is-animating', 'is-changing', 'is-rendering');
+			if (this.context.animation.name) {
+				this.classes.add(`to-${classify(this.context.animation.name)}`);
 			}
 		}
-	);
+	});
 
 	await this.hooks.trigger(
 		'scrollToContent',

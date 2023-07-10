@@ -681,9 +681,9 @@ describe('Containers', function () {
 		cy.get('h2').should('contain', 'Heading 2');
 	});
 
-	it('should be customizable from hook params', function () {
-		this.swup.hooks.before('replaceContent', (context, args) => {
-			args.containers = ['#main'];
+	it('should be customizable from hook context', function () {
+		this.swup.hooks.before('replaceContent', (context) => {
+			context.containers = ['#main'];
 		});
 		this.swup.loadPage('/containers-2.html', { animate: false });
 		cy.get('h1').should('contain', 'Containers 2');
