@@ -19,7 +19,7 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 		this.context.to.url = this.currentPageUrl;
 	}
 
-	// only add for page loads with transitions
+	// only add for animated page loads
 	if (this.context.animation.animate) {
 		this.classes.add('is-rendering');
 	}
@@ -66,7 +66,7 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 		this.cache.clear();
 	}
 
-	// Perform in transition
+	// Perform in animation
 	await this.enterPage();
 
 	// If we ever decide that we want to reset the context after each visit

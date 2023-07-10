@@ -7,7 +7,7 @@ export type HistoryAction = 'push' | 'replace';
 
 export type PageLoadOptions = {
 	animate?: boolean;
-	transition?: string;
+	animation?: string;
 	history?: HistoryAction;
 };
 
@@ -37,7 +37,7 @@ export async function performPageLoad(
 	}
 
 	this.context.to.url = Location.fromUrl(url).url;
-	const { transition, animate, history: historyAction } = options;
+	const { animation, animate, history: historyAction } = options;
 	options.referrer = options.referrer || this.currentPageUrl;
 
 	if (animate === false) {
@@ -47,11 +47,11 @@ export async function performPageLoad(
 		this.context.history.action = historyAction;
 	}
 
-	// Clean up old transition classes and set custom transition name
+	// Clean up old animation classes and set custom animation name
 	if (!this.context.animation.animate) {
 		this.classes.clear();
-	} else if (transition) {
-		this.context.animation.name = transition;
+	} else if (animation) {
+		this.context.animation.name = animation;
 	}
 
 	try {

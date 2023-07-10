@@ -28,8 +28,8 @@ Versatile and extensible **page transition library** for server-rendered website
 ## Overview
 
 Swup adds **page transitions** to server-rendered websites. It manages the complete page load lifecycle
-and smoothly transitions between the current and next page. In addition, it offers many other
-quality-of-life improvements like **caching**, **smart preloading**, native browser history and
+and smoothly animates between the current and next page. In addition, it offers many other
+quality-of-life improvements like **caching**, **smart preloading**, native **browser history** and
 enhanced **accessibility**.
 
 Make your site feel like a snappy single-page app — without any of the complexity.
@@ -37,9 +37,9 @@ Make your site feel like a snappy single-page app — without any of the complex
 ## Features
 
 - ✏️ Works out of the box with [minimal markup](https://swup.js.org/getting-started/example/)
-- ✨ Auto-detects [CSS transitions](https://swup.js.org/getting-started/how-it-works/) for perfect timing
+- ✨ Auto-detects [CSS transitions](https://swup.js.org/getting-started/how-it-works/) & animations for perfect timing
 - 🔗 Updates URLs and preserves native [browser history](https://swup.js.org/options/#animatehistorybrowsing)
-- 🏓 Manages scroll position between pages and anchor jump links
+- 🏓 Manages the scroll position between pages and anchor links
 - 🚀 Uses a [cache](https://swup.js.org/api/cache/) to speed up subsequent page loads
 - 📡 Offers [hooks](https://swup.js.org/hooks/) to customize and extend the page load lifecycle
 - 🔌 Has a powerful [plugin system](https://swup.js.org/plugins/) and many official and third-party plugins
@@ -66,7 +66,7 @@ Check out the list of [official plugins](https://swup.js.org/plugins/) and [thir
 
 ## Themes
 
-Get started quickly with one of three included themes: [fade](https://swup.js.org/themes/fade-theme/),
+Get started quickly with one of three official themes: [fade](https://swup.js.org/themes/fade-theme/),
 [slide](https://swup.js.org/themes/slide-theme/), and [overlay](https://swup.js.org/themes/overlay-theme/).
 
 ## Examples

@@ -49,7 +49,7 @@ export interface ContextInitOptions {
 	from?: string;
 	hash?: string;
 	animate?: boolean;
-	transition?: string;
+	animation?: string;
 	targets?: string[];
 	el?: Element;
 	event?: Event;
@@ -65,7 +65,7 @@ export function createContext(
 		from = this.currentPageUrl,
 		hash: target,
 		animate = true,
-		transition,
+		animation: name,
 		el,
 		event,
 		popstate = false,
@@ -80,7 +80,7 @@ export function createContext(
 		animation: {
 			animate,
 			wait: false,
-			name: transition,
+			name,
 			scope: this.options.animationScope,
 			selector: this.options.animationSelector
 		},
