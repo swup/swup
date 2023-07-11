@@ -16,10 +16,10 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - run: npm run build
       - name: Run cypress tests
         uses: cypress-io/github-action@v5
         with:
+          build: npm run build
           command: npm run test:ci
           record: true
         env:
