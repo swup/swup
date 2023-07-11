@@ -12,10 +12,10 @@ export interface HookDefinitions {
 	'animation:in:start': undefined;
 	'animation:in:end': undefined;
 	'animation:skip': undefined;
-	'animation:await': { selector: Options['animationSelector']; direction: AnimationDirection };
+	'animation:await': { direction: AnimationDirection };
 	'cache:clear': undefined;
 	'cache:set': { page: PageData };
-	'content:replace': { page: PageData; containers: Options['containers'] };
+	'content:replace': { page: PageData };
 	'content:scroll': { options: ScrollIntoViewOptions };
 	'fetch:request': { url: string; options: FetchOptions };
 	'fetch:error': { url: string; status: number; response: Response };
@@ -141,9 +141,8 @@ export class Hooks {
 		const ledger = this.registry.get(hook);
 		if (ledger) {
 			return ledger;
-		} else {
-			console.error(`Unknown hook '${hook}'`);
 		}
+		console.error(`Unknown hook '${hook}'`);
 	}
 
 	/**

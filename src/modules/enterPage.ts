@@ -2,12 +2,14 @@ import Swup from '../Swup.js';
 import { nextTick } from '../utils.js';
 
 export const enterPage = async function (this: Swup) {
-	if (this.context.transition.animate) {
+	if (this.context.animation.animate) {
 		const animation = this.hooks.trigger(
 			'animation:await',
-			{ selector: this.options.animationSelector, direction: 'in' },
-			async (context, { selector, direction }) => {
-				await Promise.all(this.getAnimationPromises({ selector, direction }));
+			{ direction: 'in' },
+			async (context, { direction }) => {
+				await Promise.all(
+					this.getAnimationPromises({ selector: context.animation.selector, direction })
+				);
 			}
 		);
 		await nextTick();

@@ -42,9 +42,8 @@ export const escapeCssIdentifier = (ident: string) => {
 	// @ts-ignore this is for support check, so it's correct that TS complains
 	if (window.CSS && window.CSS.escape) {
 		return CSS.escape(ident);
-	} else {
-		return ident;
 	}
+	return ident;
 };
 
 // Fix for Chrome below v61 formatting CSS floats with comma in some locales

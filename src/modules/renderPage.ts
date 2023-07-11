@@ -3,7 +3,7 @@ import Swup from '../Swup.js';
 import { PageData } from './fetchPage.js';
 
 export const renderPage = async function (this: Swup, requestedUrl: string, page: PageData) {
-	const { url } = page;
+	const { url, html } = page;
 
 	this.classes.remove('is-leaving');
 
@@ -16,32 +16,31 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 	if (!this.isSameResolvedUrl(getCurrentUrl(), url)) {
 		updateHistoryRecord(url);
 		this.currentPageUrl = getCurrentUrl();
-		this.context.to!.url = this.currentPageUrl;
+		this.context.to.url = this.currentPageUrl;
 	}
 
-	// only add for page loads with transitions
-	if (this.context.transition.animate) {
+	// only add for animated page loads
+	if (this.context.animation.animate) {
 		this.classes.add('is-rendering');
 	}
 
+	// save html into context for easier retrieval
+	this.context.to.html = html;
+
 	// replace content: allow handlers and plugins to overwrite paga data and containers
-	await this.hooks.trigger(
-		'content:replace',
-		{ page, containers: this.context.containers },
-		(context, { page, containers }) => {
-			const success = this.replaceContent(page, { containers });
-			if (!success) {
-				throw new Error('[swup] Container mismatch, aborting');
-			}
-			if (this.context.transition.animate) {
-				// Make sure to add these classes to new containers as well
-				this.classes.add('is-animating', 'is-changing', 'is-rendering');
-				if (this.context.transition.name) {
-					this.classes.add(`to-${classify(this.context.transition.name)}`);
-				}
+	await this.hooks.trigger('content:replace', { page }, (context, { page }) => {
+		const success = this.replaceContent(page, { containers: context.containers });
+		if (!success) {
+			throw new Error('[swup] Container mismatch, aborting');
+		}
+		if (this.context.animation.animate) {
+			// Make sure to add these classes to new containers as well
+			this.classes.add('is-animating', 'is-changing', 'is-rendering');
+			if (this.context.animation.name) {
+				this.classes.add(`to-${classify(this.context.animation.name)}`);
 			}
 		}
-	);
+	});
 
 	await this.hooks.trigger(
 		'content:scroll',
@@ -67,7 +66,7 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 		this.cache.clear();
 	}
 
-	// Perform in transition
+	// Perform in animation
 	await this.enterPage();
 
 	// If we ever decide that we want to reset the context after each visit
