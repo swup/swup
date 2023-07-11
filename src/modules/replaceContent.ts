@@ -21,21 +21,23 @@ export const replaceContent = function (
 	document.title = title;
 
 	// Update content containers
-	const replaced = containers.map((selector) => {
-		const currentEl = document.querySelector(selector);
-		const incomingEl = incomingDocument.querySelector(selector);
-		if (currentEl && incomingEl) {
-			currentEl.replaceWith(incomingEl);
-			return true;
-		}
-		if (!currentEl) {
-			console.warn(`[swup] Container missing in current document: ${selector}`);
-		}
-		if (!incomingEl) {
-			console.warn(`[swup] Container missing in incoming document: ${selector}`);
-		}
-		return false;
-	});
+	const replaced = containers
+		.map((selector) => {
+			const currentEl = document.querySelector(selector);
+			const incomingEl = incomingDocument.querySelector(selector);
+			if (currentEl && incomingEl) {
+				currentEl.replaceWith(incomingEl);
+				return true;
+			}
+			if (!currentEl) {
+				console.warn(`[swup] Container missing in current document: ${selector}`);
+			}
+			if (!incomingEl) {
+				console.warn(`[swup] Container missing in incoming document: ${selector}`);
+			}
+			return false;
+		})
+		.filter(Boolean);
 
-	return replaced.filter(Boolean).length === containers.length;
+	return replaced.length === containers.length;
 };
