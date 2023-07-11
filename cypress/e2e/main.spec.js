@@ -661,7 +661,7 @@ describe('Context', function () {
 	it('passes along the custom animation', function () {
 		let name = null;
 		let expectedName = null;
-		this.swup.hooks.before('transitionStart', (context) => {
+		this.swup.hooks.before('visit:start', (context) => {
 			name = context.animation.name;
 		});
 		cy.get('a[data-swup-animation]').should(($el) => {
