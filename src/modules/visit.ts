@@ -20,11 +20,12 @@ export function visit(
 	// Check if the visit should be ignored
 	if (this.shouldIgnoreVisit(url)) {
 		window.location.href = url;
-	} else {
-		const { url: to, hash } = Location.fromUrl(url);
-		this.context = this.createContext({ ...context, to, hash });
-		this.performVisit(to, options);
+		return;
 	}
+
+	const { url: to, hash } = Location.fromUrl(url);
+	this.context = this.createContext({ ...context, to, hash });
+	this.performVisit(to, options);
 }
 
 export async function performVisit(

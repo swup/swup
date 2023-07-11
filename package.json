@@ -68,6 +68,7 @@
     "@cypress/code-coverage": "^3.10.0",
     "@swup/browserslist-config": "^1.0.0",
     "@swup/prettier-config": "^1.0.0",
+    "@types/jsdom": "^21.1.1",
     "cypress": "^12.3.0",
     "http-server": "^14.1.1",
     "husky": "^8.0.0",
