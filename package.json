@@ -59,6 +59,7 @@
     "animation"
   ],
   "dependencies": {
+    "@types/jsdom": "^21.1.1",
     "delegate-it": "^6.0.0",
     "opencollective-postinstall": "^2.0.2",
     "path-to-regexp": "^6.2.1"
