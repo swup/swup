@@ -10,7 +10,7 @@ import { Classes } from './modules/Classes.js';
 import { Context, createContext } from './modules/Context.js';
 import { Hooks } from './modules/Hooks.js';
 import { getAnchorElement } from './modules/getAnchorElement.js';
-import { getAnimationPromises } from './modules/getAnimationPromises.js';
+import { awaitAnimations } from './modules/awaitAnimations.js';
 import { visit, performVisit, HistoryAction } from './modules/visit.js';
 import { fetchPage } from './modules/fetchPage.js';
 import { leavePage } from './modules/leavePage.js';
@@ -61,7 +61,7 @@ export default class Swup {
 	enterPage = enterPage;
 	delegateEvent = delegateEvent;
 	fetchPage = fetchPage;
-	getAnimationPromises = getAnimationPromises;
+	awaitAnimations = awaitAnimations;
 	getAnchorElement = getAnchorElement;
 	use = use;
 	unuse = unuse;

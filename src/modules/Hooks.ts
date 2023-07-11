@@ -4,7 +4,7 @@ import Swup, { Options } from '../Swup.js';
 import { isPromise, runAsPromise } from '../utils.js';
 import { Context } from './Context.js';
 import { FetchOptions, PageData } from './fetchPage.js';
-import { AnimationDirection } from './getAnimationPromises.js';
+import { AnimationDirection } from './awaitAnimations.js';
 
 export interface HookDefinitions {
 	'animation:out:start': undefined;

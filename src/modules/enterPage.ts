@@ -7,9 +7,7 @@ export const enterPage = async function (this: Swup) {
 			'animation:await',
 			{ direction: 'in' },
 			async (context, { direction }) => {
-				await Promise.all(
-					this.getAnimationPromises({ selector: context.animation.selector, direction })
-				);
+				await this.awaitAnimations({ selector: context.animation.selector, direction });
 			}
 		);
 		await nextTick();
