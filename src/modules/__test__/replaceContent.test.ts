@@ -36,7 +36,7 @@ const stubDocument = (body: string = ''): void => {
 describe('replaceContent', () => {
 	beforeEach(() => stubDocument());
 
-	it.only('should replace containers', () => {
+	it('should replace containers', () => {
 		const page = getPage(/*html*/ `
 			<div id="container-1" data-from="incoming"></div>
 			<div id="container-2" data-from="incoming"></div>`);
@@ -50,27 +50,38 @@ describe('replaceContent', () => {
 		expect(document.querySelector('#container-3')?.getAttribute('data-from')).toBe('current');
 	});
 
-	it('should return false if containers are missing in current DOM', () => {
+	it('should handle missing containers in current DOM', () => {
+		const warn = vi.spyOn(console, 'warn');
 		stubDocument(/*html*/ `
-			<div id="container-2"></div>
+			<div id="container-1" data-from="current"></div>
 		`);
 		const page = getPage(/*html*/ `
 			<div id="container-1" data-from="incoming"></div>
+			<div id="container-2" data-from="incoming"></div>
 			`);
 
 		const swup = new Swup();
-		const result = swup.replaceContent(page, { containers: ['#container-1', '#container-2'] });
+		const result = swup.replaceContent(page, { containers: ['#container-1', '#missing'] });
 
 		expect(result).toBe(false);
+		expect(warn).not.toBeCalledWith(
+			'[swup] Container missing in current document: #container-1'
+		);
+		expect(warn).toBeCalledWith('[swup] Container missing in current document: #missing');
 	});
 
-	it('should return false if containers are missing in incoming DOM', () => {
+	it('should handle missing containers in incoming DOM', () => {
+		const warn = vi.spyOn(console, 'warn');
 		const page = getPage(/*html*/ `
 			<div id="container-1" data-from="incoming"></div>`);
 
 		const swup = new Swup();
-		const result = swup.replaceContent(page, { containers: ['#container-1', '#container-2'] });
+		const result = swup.replaceContent(page, { containers: ['#container-1', '#missing'] });
 
 		expect(result).toBe(false);
+		expect(warn).not.toBeCalledWith(
+			'[swup] Container missing in incoming document: #container-1'
+		);
+		expect(warn).toBeCalledWith('[swup] Container missing in incoming document: #missing');
 	});
 });
