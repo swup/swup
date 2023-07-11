@@ -14,16 +14,16 @@ export const replaceContent = function (
 	{ html }: PageData,
 	{ containers }: { containers: Options['containers'] } = this.options
 ): boolean {
-	const doc = new DOMParser().parseFromString(html, 'text/html');
+	const incomingDocument = new DOMParser().parseFromString(html, 'text/html');
 
 	// Update browser title
-	const title = doc.querySelector('title')?.innerText || '';
+	const title = incomingDocument.querySelector('title')?.innerText || '';
 	document.title = title;
 
 	// Update content containers
 	const replaced = containers.map((selector) => {
 		const currentEl = document.querySelector(selector);
-		const incomingEl = doc.querySelector(selector);
+		const incomingEl = incomingDocument.querySelector(selector);
 		if (currentEl && incomingEl) {
 			currentEl.replaceWith(incomingEl);
 			return true;
