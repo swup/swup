@@ -16,8 +16,9 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
+      - run: npm run build
       - name: Run cypress tests
-        uses: cypress-io/github-action@v4.2.2
+        uses: cypress-io/github-action@v5
         with:
           command: npm run test:ci
           record: true
