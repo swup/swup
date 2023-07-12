@@ -77,7 +77,7 @@ describe('Cache', () => {
 	it('should trigger a hook on set', () => {
 		const handler = vi.fn();
 
-		swup.hooks.on('pageCached', handler);
+		swup.hooks.on('cache:set', handler);
 
 		cache.set(page1.url, page1);
 
@@ -88,7 +88,7 @@ describe('Cache', () => {
 	it('should allow augmenting cache entries on save', () => {
 		const now = Date.now();
 
-		swup.hooks.on('pageCached', (_, { page }) => {
+		swup.hooks.on('cache:set', (_, { page }) => {
 			const ttl: CacheTtlData = { ttl: 1000, created: now };
 			cache.update(page.url, ttl as AugmentedCacheData);
 		});
@@ -101,7 +101,7 @@ describe('Cache', () => {
 	});
 
 	it('should allow manual pruning', () => {
-		swup.hooks.on('pageCached', (_, { page }) => {
+		swup.hooks.on('cache:set', (_, { page }) => {
 			cache.update(page.url, { index: cache.size } as AugmentedCacheData);
 		});
 
@@ -124,9 +124,9 @@ describe('Types', () => {
 		const cache = new Cache(swup);
 
 		// @ts-expect-no-error
-		swup.hooks.on('popState', (ctx: Context, { event: PopStateEvent }) => {});
+		swup.hooks.on('history:popstate', (ctx: Context, { event: PopStateEvent }) => {});
 		// @ts-expect-no-error
-		await swup.hooks.trigger('popState', { event: new PopStateEvent('') });
+		await swup.hooks.trigger('history:popstate', { event: new PopStateEvent('') });
 
 		try {
 			// @ts-expect-error

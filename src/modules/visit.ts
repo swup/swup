@@ -56,11 +56,11 @@ export async function performVisit(
 	}
 
 	try {
-		await this.hooks.trigger('transitionStart');
+		await this.hooks.trigger('visit:start');
 
 		// Begin fetching page
 		const pagePromise = this.hooks.trigger(
-			'loadPage',
+			'page:request',
 			{ url: this.context.to.url, options },
 			async (context, { options }) => await this.fetchPage(context.to.url as string, options)
 		);

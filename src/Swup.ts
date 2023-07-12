@@ -83,7 +83,7 @@ export default class Swup {
 		resolveUrl: (url) => url,
 		requestHeaders: {
 			'X-Requested-With': 'swup',
-			Accept: 'text/html, application/xhtml+xml'
+			'Accept': 'text/html, application/xhtml+xml'
 		},
 		skipPopStateHandling: (event) => event.state?.source !== 'swup'
 	};
@@ -134,16 +134,16 @@ export default class Swup {
 		// Modify initial history record
 		updateHistoryRecord();
 
-		// Trigger enabled event
-		await this.hooks.trigger('enabled', undefined, () => {
+		// Trigger enable hook
+		await this.hooks.trigger('enable', undefined, () => {
 			// Add swup-enabled class to html tag
 			document.documentElement.classList.add('swup-enabled');
 		});
 
 		await nextTick();
 
-		// Trigger page view event
-		await this.hooks.trigger('pageView', { url: this.currentPageUrl, title: document.title });
+		// Trigger page view hook
+		await this.hooks.trigger('page:view', { url: this.currentPageUrl, title: document.title });
 	}
 
 	async destroy() {
@@ -159,8 +159,8 @@ export default class Swup {
 		// unmount plugins
 		this.options.plugins.forEach((plugin) => this.unuse(plugin));
 
-		// trigger disable event
-		await this.hooks.trigger('disabled', undefined, () => {
+		// trigger disable hook
+		await this.hooks.trigger('disable', undefined, () => {
 			// remove swup-enabled class from html tag
 			document.documentElement.classList.remove('swup-enabled');
 		});
@@ -221,7 +221,7 @@ export default class Swup {
 
 		// Exit early if control key pressed
 		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
-			this.hooks.trigger('openPageInNewTab', { href });
+			this.hooks.trigger('link:newtab', { href });
 			return;
 		}
 
@@ -230,7 +230,7 @@ export default class Swup {
 			return;
 		}
 
-		this.hooks.triggerSync('clickLink', { el, event }, () => {
+		this.hooks.triggerSync('link:click', { el, event }, () => {
 			const from = this.context.from.url ?? '';
 
 			event.preventDefault();
@@ -240,7 +240,7 @@ export default class Swup {
 				if (hash) {
 					updateHistoryRecord(url + hash);
 					this.hooks.triggerSync(
-						'samePageWithHash',
+						'link:anchor',
 						{ hash, options: { behavior: 'auto' } },
 						(context, { hash, options }) => {
 							const target = this.getAnchorElement(hash);
@@ -250,7 +250,7 @@ export default class Swup {
 						}
 					);
 				} else {
-					this.hooks.triggerSync('samePage', undefined, (context) => {
+					this.hooks.triggerSync('link:self', undefined, (context) => {
 						if (!context.scroll.reset) return;
 						window.scroll({ top: 0, left: 0, behavior: 'auto' });
 					});
@@ -310,7 +310,7 @@ export default class Swup {
 		// 	event.preventDefault();
 		// }
 
-		this.hooks.triggerSync('popState', { event }, () => {
+		this.hooks.triggerSync('history:popstate', { event }, () => {
 			this.performVisit(url);
 		});
 	}

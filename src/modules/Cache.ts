@@ -32,7 +32,7 @@ export class Cache {
 		url = this.resolve(url);
 		page = { ...page, url };
 		this.pages.set(url, page);
-		this.swup.hooks.triggerSync('pageCached', { page });
+		this.swup.hooks.triggerSync('cache:set', { page });
 	}
 
 	public update(url: string, page: CacheData) {
@@ -47,7 +47,7 @@ export class Cache {
 
 	public clear(): void {
 		this.pages.clear();
-		this.swup.hooks.triggerSync('cacheCleared');
+		this.swup.hooks.triggerSync('cache:clear');
 	}
 
 	public prune(predicate: (url: string, page: CacheData) => boolean): void {
