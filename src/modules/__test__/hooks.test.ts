@@ -132,18 +132,25 @@ describe('Hook registry', () => {
 			},
 			6: () => {
 				called.push(6);
+			},
+			7: () => {
+				called.push(7);
+			},
+			8: () => {
+				called.push(8);
 			}
 		};
 
-		swup.hooks.on('disable', handlers['1'], { priority: 1, before: true });
-		swup.hooks.on('disable', handlers['2'], { priority: 2, before: true });
-		swup.hooks.on('disable', handlers['4'], { priority: 5 });
-		swup.hooks.on('disable', handlers['6'], { priority: 4 });
-		swup.hooks.on('disable', handlers['5'], { priority: 4 });
+		swup.hooks.on('disable', handlers['1'], { priority: 2, before: true });
+		swup.hooks.on('disable', handlers['2'], { priority: -1, before: true });
+		swup.hooks.on('disable', handlers['3'], { priority: 1 });
+		swup.hooks.on('disable', handlers['4']);
+		swup.hooks.on('disable', handlers['8'], { priority: 4 });
+		swup.hooks.on('disable', handlers['7'], { priority: 4 });
 
-		await swup.hooks.trigger('disable', undefined, handlers['3']);
+		await swup.hooks.trigger('disable', undefined, handlers['5']);
 
-		expect(called).toEqual([2, 1, 3, 4, 6, 5]);
+		expect(called).toEqual([2, 1, 5, 4, 3, 8, 7]);
 	});
 
 	it('should allow replacing original handlers', async () => {

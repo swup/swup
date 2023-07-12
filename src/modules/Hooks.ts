@@ -380,7 +380,7 @@ export class Hooks {
 	 * @returns The sort direction
 	 */
 	sortRegistrations<T extends HookName>(a: HookRegistration<T>, b: HookRegistration<T>): number {
-		const priority = (b.priority ?? 0) - (a.priority ?? 0);
+		const priority = (a.priority ?? 0) - (b.priority ?? 0);
 		const id = a.id - b.id;
 		return priority || id || 0;
 	}
