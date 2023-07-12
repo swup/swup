@@ -38,8 +38,11 @@ export type HookArguments<T extends HookName> = HookDefinitions[T];
 export type HookName = keyof HookDefinitions;
 
 export type Handler<T extends HookName> = (
+	/** The global context object for the current visit */
 	context: Context,
+	/** The local arguments passed into the handler */
 	args: HookArguments<T>,
+	/** The default handler to be executed, available if replacing an internal hook handler */
 	defaultHandler?: Handler<T>
 ) => Promise<any> | void;
 
@@ -48,9 +51,13 @@ export type Handlers = {
 };
 
 export type HookOptions = {
+	/** Execute the hook once, then remove the handler */
 	once?: boolean;
+	/** Execute the hook before the internal default handler */
 	before?: boolean;
+	/** Set a priority for when to execute this hook. Lower numbers execute first. Default: `0` */
 	priority?: number;
+	/** Replace the internal default handler with this hook handler */
 	replace?: boolean;
 };
 

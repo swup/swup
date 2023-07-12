@@ -6,8 +6,11 @@ import { ContextInitOptions } from './Context.js';
 export type HistoryAction = 'push' | 'replace';
 
 export type PageLoadOptions = {
+	/** Whether this visit is animated. Default: `true` */
 	animate?: boolean;
+	/** Name of a custom animation to run. */
 	animation?: string;
+	/** History action to perform: `push` for creating a new history entry, `replace` for replacing the current entry. Default: `push` */
 	history?: HistoryAction;
 };
 
