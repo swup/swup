@@ -95,7 +95,7 @@ export default class Swup {
 		resolveUrl: (url) => url,
 		requestHeaders: {
 			'X-Requested-With': 'swup',
-			'Accept': 'text/html, application/xhtml+xml'
+			Accept: 'text/html, application/xhtml+xml'
 		},
 		skipPopStateHandling: (event) => event.state?.source !== 'swup'
 	};
