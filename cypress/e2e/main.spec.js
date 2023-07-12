@@ -54,8 +54,8 @@ describe('Fetch', function () {
 	});
 
 	it('should allow calling original loadPage handler', function () {
-		this.swup.hooks.replace('loadPage', (context, args, originalHandler) => {
-			return originalHandler(context, args);
+		this.swup.hooks.replace('loadPage', (context, args, defaultHandler) => {
+			return defaultHandler(context, args);
 		});
 		this.swup.visit('/page-2.html');
 

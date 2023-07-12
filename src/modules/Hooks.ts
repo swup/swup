@@ -40,7 +40,7 @@ export type HookName = keyof HookDefinitions;
 export type Handler<T extends HookName> = (
 	context: Context,
 	args: HookArguments<T>,
-	originalHandler?: Handler<T>
+	defaultHandler?: Handler<T>
 ) => Promise<any> | void;
 
 export type Handlers = {
