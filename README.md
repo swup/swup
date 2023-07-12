@@ -51,6 +51,10 @@ Make your site feel like a snappy single-page app — without any of the complex
 
 Explore our [interactive demos](https://swup.js.org/getting-started/demos/) to see swup in action.
 
+## Documentation
+
+Visit our [official documentation](https://swup.js.org/getting-started) to learn more.
+
 ## Plugins
 
 Swup is small by design. Extended features can be added via [plugins](https://swup.js.org/plugins/):
