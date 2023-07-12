@@ -1,5 +1,5 @@
 import Swup, { Options } from '../Swup.js';
-import { HistoryAction } from './visit.js';
+import { HistoryAction, HistoryDirection } from './visit.js';
 
 export interface Context<TEvent = Event> {
 	/** The previous page, about to leave */
@@ -62,7 +62,8 @@ export interface HistoryContext {
 	action: HistoryAction;
 	/** Whether this visit was triggered by a browser history navigation. */
 	popstate: boolean;
-	// direction: 'forward' | 'backward' | undefined
+	/** The direction of travel in case of a browser history navigation: backward or forward. */
+	direction: HistoryDirection | undefined;
 }
 
 export interface ContextInitOptions {
@@ -74,7 +75,6 @@ export interface ContextInitOptions {
 	targets?: string[];
 	el?: Element;
 	event?: Event;
-	popstate?: boolean;
 	action?: HistoryAction;
 	resetScroll?: boolean;
 }
@@ -89,7 +89,6 @@ export function createContext(
 		animation: name,
 		el,
 		event,
-		popstate = false,
 		action = 'push',
 		resetScroll: reset = true
 	}: ContextInitOptions
@@ -111,8 +110,8 @@ export function createContext(
 		},
 		history: {
 			action,
-			popstate
-			// direction: undefined
+			popstate: false,
+			direction: undefined
 		},
 		scroll: {
 			reset,
