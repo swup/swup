@@ -18,6 +18,7 @@ import { replaceContent } from './modules/replaceContent.js';
 import { enterPage } from './modules/enterPage.js';
 import { renderPage } from './modules/renderPage.js';
 import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
+import { nextTick } from './utils.js';
 
 export type Options = {
 	animateHistoryBrowsing: boolean;
@@ -138,6 +139,8 @@ export default class Swup {
 			// Add swup-enabled class to html tag
 			document.documentElement.classList.add('swup-enabled');
 		});
+
+		await nextTick();
 
 		// Trigger page view event
 		await this.hooks.trigger('pageView', { url: this.currentPageUrl, title: document.title });
