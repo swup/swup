@@ -149,27 +149,27 @@ describe('Hook registry', () => {
 	it('should allow replacing original handlers', async () => {
 		const swup = new Swup();
 		const customHandler = vi.fn();
-		const originalHandler = vi.fn();
+		const defaultHandler = vi.fn();
 
 		swup.hooks.on('enable', customHandler, { replace: true });
 
-		await swup.hooks.trigger('enable', undefined, originalHandler);
+		await swup.hooks.trigger('enable', undefined, defaultHandler);
 
 		expect(customHandler).toBeCalledTimes(1);
-		expect(originalHandler).toBeCalledTimes(0);
+		expect(defaultHandler).toBeCalledTimes(0);
 	});
 
 	it('should pass original handler into replacing handlers', async () => {
 		const swup = new Swup();
 		const customHandler = vi.fn();
-		const originalHandler = vi.fn();
+		const defaultHandler = vi.fn();
 		const ctx = swup.context;
 
 		swup.hooks.on('enable', customHandler, { replace: true });
 
-		await swup.hooks.trigger('enable', undefined, originalHandler);
+		await swup.hooks.trigger('enable', undefined, defaultHandler);
 
-		expect(customHandler).toBeCalledWith(ctx, undefined, originalHandler);
+		expect(customHandler).toBeCalledWith(ctx, undefined, defaultHandler);
 	});
 
 	it('should not pass original handler into normal handlers', async () => {

@@ -4,13 +4,15 @@
   <img width="280" alt="swup" src="https://swup.js.org/assets/images/swup-logo.svg">
 </p>
 
-<p align="center">
-  <a href="https://www.npmjs.com/package/swup"><img src="https://img.shields.io/npm/v/swup.svg" alt="npm version"></a>
-  <a href="https://bundlephobia.com/package/swup"><img src="https://img.shields.io/bundlephobia/minzip/swup?label=size" alt="Bundle size"></a>
-  <a href="https://github.com/gmrchk/swup/blob/master/LICENSE"><img src="https://img.shields.io/github/license/gmrchk/swup.svg" alt="License"></a>
-  <a href="https://www.npmjs.com/package/swup"><img src="https://img.shields.io/npm/dt/swup.svg" alt="npm downloads"></a>
-  <a href="https://github.com/swup/swup/actions/workflows/e2e-tests.yml"><img src="https://img.shields.io/github/actions/workflow/status/swup/swup/e2e-tests.yml?branch=master&label=tests" alt="Test status"></a>
-</p>
+<div align="center">
+
+[![npm version](https://img.shields.io/npm/v/swup.svg)](https://www.npmjs.com/package/swup)
+[![Bundle size](https://img.shields.io/bundlephobia/minzip/swup?label=size)](https://bundlephobia.com/package/swup)
+[![npm downloads](https://img.shields.io/npm/dt/swup.svg)](https://www.npmjs.com/package/swup)
+[![Test status](https://img.shields.io/github/actions/workflow/status/swup/swup/e2e-tests.yml?branch=master&label=tests)](https://github.com/swup/swup/actions/workflows/e2e-tests.yml)
+[![License](https://img.shields.io/github/license/swup/swup.svg)](https://github.com/swup/swup/blob/master/LICENSE)
+
+</div>
 
 <br>
 
@@ -49,6 +51,10 @@ Make your site feel like a snappy single-page app — without any of the complex
 
 Explore our [interactive demos](https://swup.js.org/getting-started/demos/) to see swup in action.
 
+## Documentation
+
+Visit our [official documentation](https://swup.js.org/getting-started) to learn more.
+
 ## Plugins
 
 Swup is small by design. Extended features can be added via [plugins](https://swup.js.org/plugins/):
@@ -78,7 +84,7 @@ Take a look at the [interactive demos](https://swup.js.org/getting-started/demos
 
 ## Having trouble?
 
-If you're having trouble implementing swup, check out the [Common Issues](https://swup.js.org/other/common-issues) section of the docs, look at [closed issues](https://github.com/gmrchk/swup/issues?q=is%3Aissue+is%3Aclosed) or create a [new discussion](https://github.com/swup/swup/discussions/new).
+If you're having trouble implementing swup, check out the [Common Issues](https://swup.js.org/other/common-issues) section of the docs, look at [closed issues](https://github.com/swup/swup/issues?q=is%3Aissue+is%3Aclosed) or create a [new discussion](https://github.com/swup/swup/discussions/new).
 
 ## Want to Contribute?
 
