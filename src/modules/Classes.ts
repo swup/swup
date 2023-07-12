@@ -10,13 +10,16 @@ export class Classes {
 		this.swup = swup;
 	}
 
-	get containerSelectors(): string[] {
+	get selectors(): string[] {
 		const { scope } = this.swup.context.animation;
-		return scope === 'containers' ? this.swup.context.containers : ['html'];
+		if (scope === 'containers') return this.swup.context.containers;
+		if (scope === 'html') return ['html'];
+		if (Array.isArray(scope)) return scope;
+		return [];
 	}
 
 	get selector(): string {
-		return this.containerSelectors.join(',');
+		return this.selectors.join(',');
 	}
 
 	get targets(): HTMLElement[] {

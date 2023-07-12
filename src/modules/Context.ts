@@ -24,7 +24,7 @@ export interface AnimationContext {
 	animate: boolean;
 	wait: boolean;
 	name?: string;
-	scope: 'html' | 'containers';
+	scope: 'html' | 'containers' | string[];
 	selector: Options['animationSelector'];
 }
 
