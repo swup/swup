@@ -26,6 +26,7 @@ export interface AnimationContext {
 	name?: string;
 	scope: 'html' | 'containers';
 	selector: Options['animationSelector'];
+	parallel: boolean;
 }
 
 export interface ScrollContext {
@@ -82,7 +83,8 @@ export function createContext(
 			wait: false,
 			name,
 			scope: this.options.animationScope,
-			selector: this.options.animationSelector
+			selector: this.options.animationSelector,
+			parallel: false
 		},
 		trigger: {
 			el,
