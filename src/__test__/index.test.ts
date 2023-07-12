@@ -38,7 +38,7 @@ describe('Exports', () => {
 			resolveUrl: (url) => url,
 			requestHeaders: {
 				'X-Requested-With': 'swup',
-				Accept: 'text/html, application/xhtml+xml'
+				'Accept': 'text/html, application/xhtml+xml'
 			},
 			skipPopStateHandling: (event) => event.state?.source !== 'swup'
 		};
@@ -84,10 +84,10 @@ describe('ignoreVisit', () => {
 		);
 	});
 
-	it('should be called from loadPage method', () => {
+	it('should be called from visit method', () => {
 		const ignoreVisit = vi.fn(() => true);
 		const swup = new Swup({ ignoreVisit });
-		swup.loadPage('/path/');
+		swup.visit('/path/');
 
 		expect(ignoreVisit.mock.calls).toHaveLength(1);
 	});

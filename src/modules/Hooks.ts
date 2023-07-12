@@ -4,33 +4,33 @@ import Swup, { Options } from '../Swup.js';
 import { isPromise, runAsPromise } from '../utils.js';
 import { Context } from './Context.js';
 import { FetchOptions, PageData } from './fetchPage.js';
-import { AnimationDirection } from './getAnimationPromises.js';
+import { AnimationDirection } from './awaitAnimations.js';
 
 export interface HookDefinitions {
-	animationInDone: undefined;
-	animationInStart: undefined;
-	animationOutDone: undefined;
-	animationOutStart: undefined;
-	animationSkipped: undefined;
-	awaitAnimation: { selector: Options['animationSelector']; direction: AnimationDirection };
-	cacheCleared: undefined;
-	clickLink: { el: HTMLAnchorElement; event: DelegateEvent<MouseEvent> };
-	disabled: undefined;
-	enabled: undefined;
-	fetchPage: { url: string; options: FetchOptions };
-	loadPage: { url: string; options: FetchOptions };
-	openPageInNewTab: { href: string };
-	pageCached: { page: PageData };
-	pageLoaded: { page: PageData; cache?: boolean };
-	pageView: { url: string; title: string };
-	popState: { event: PopStateEvent };
-	replaceContent: { page: PageData; containers: Options['containers'] };
-	samePage: undefined;
-	samePageWithHash: { hash: string; options: ScrollIntoViewOptions };
-	scrollToContent: { options: ScrollIntoViewOptions };
-	serverError: { url: string; status: number; response: Response };
-	transitionStart: undefined;
-	transitionEnd: undefined;
+	'animation:out:start': undefined;
+	'animation:out:end': undefined;
+	'animation:in:start': undefined;
+	'animation:in:end': undefined;
+	'animation:skip': undefined;
+	'animation:await': { direction: AnimationDirection };
+	'cache:clear': undefined;
+	'cache:set': { page: PageData };
+	'content:replace': { page: PageData };
+	'content:scroll': { options: ScrollIntoViewOptions };
+	'enable': undefined;
+	'disable': undefined;
+	'fetch:request': { url: string; options: FetchOptions };
+	'fetch:error': { url: string; status: number; response: Response };
+	'history:popstate': { event: PopStateEvent };
+	'link:click': { el: HTMLAnchorElement; event: DelegateEvent<MouseEvent> };
+	'link:self': undefined;
+	'link:anchor': { hash: string; options: ScrollIntoViewOptions };
+	'link:newtab': { href: string };
+	'page:request': { url: string; options: FetchOptions };
+	'page:load': { page: PageData; cache?: boolean };
+	'page:view': { url: string; title: string };
+	'visit:start': undefined;
+	'visit:end': undefined;
 }
 
 export type HookArguments<T extends HookName> = HookDefinitions[T];
@@ -40,7 +40,7 @@ export type HookName = keyof HookDefinitions;
 export type Handler<T extends HookName> = (
 	context: Context,
 	args: HookArguments<T>,
-	originalHandler?: Handler<T>
+	defaultHandler?: Handler<T>
 ) => Promise<any> | any;
 
 export type Handlers = {
@@ -80,30 +80,30 @@ export class Hooks {
 	// Can we deduplicate this somehow? Or make it error when not in sync with HookDefinitions?
 	// https://stackoverflow.com/questions/53387838/how-to-ensure-an-arrays-values-the-keys-of-a-typescript-interface/53395649
 	readonly hooks: HookName[] = [
-		'animationInDone',
-		'animationInStart',
-		'animationOutDone',
-		'animationOutStart',
-		'animationSkipped',
-		'awaitAnimation',
-		'cacheCleared',
-		'clickLink',
-		'disabled',
-		'enabled',
-		'fetchPage',
-		'loadPage',
-		'openPageInNewTab',
-		'pageCached',
-		'pageLoaded',
-		'pageView',
-		'popState',
-		'replaceContent',
-		'samePage',
-		'samePageWithHash',
-		'scrollToContent',
-		'serverError',
-		'transitionStart',
-		'transitionEnd'
+		'animation:out:start',
+		'animation:out:end',
+		'animation:in:start',
+		'animation:in:end',
+		'animation:skip',
+		'animation:await',
+		'cache:clear',
+		'cache:set',
+		'content:replace',
+		'content:scroll',
+		'enable',
+		'disable',
+		'fetch:request',
+		'fetch:error',
+		'history:popstate',
+		'link:click',
+		'link:self',
+		'link:anchor',
+		'link:newtab',
+		'page:request',
+		'page:load',
+		'page:view',
+		'visit:start',
+		'visit:end'
 	];
 
 	constructor(swup: Swup) {
@@ -141,9 +141,8 @@ export class Hooks {
 		const ledger = this.registry.get(hook);
 		if (ledger) {
 			return ledger;
-		} else {
-			console.error(`Unknown hook '${hook}'`);
 		}
+		console.error(`Unknown hook '${hook}'`);
 	}
 
 	/**

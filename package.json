@@ -2,7 +2,7 @@
   "name": "swup",
   "amdName": "Swup",
   "version": "4.0.0-rc.18",
-  "description": "Versatile and extensible page transition library for server-side rendered websites",
+  "description": "Versatile and extensible page transition library for server-rendered websites",
   "type": "module",
   "source": "./src/Swup.ts",
   "main": "./dist/Swup.cjs",
@@ -29,7 +29,7 @@
     "format": "npm run lint:ts && npm run lint:prettier -- --write",
     "lint:ts": "tsc --noEmit --skipLibCheck",
     "lint:prettier": "prettier 'src/**/*.ts'",
-    "prepublish": "npm run build",
+    "prepublishOnly": "npm run build",
     "postinstall": "opencollective-postinstall || true",
     "test": "npm run test:unit && npm run test:e2e",
     "test:ci": "npm run test:unit && npm run test:e2e:ci",
@@ -50,7 +50,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/gmrchk/swup.git"
+    "url": "https://github.com/swup/swup.git"
   },
   "keywords": [
     "css",
@@ -69,6 +69,7 @@
     "@playwright/test": "^1.35.1",
     "@swup/browserslist-config": "^1.0.0",
     "@swup/prettier-config": "^1.0.0",
+    "@types/jsdom": "^21.1.1",
     "cypress": "^12.3.0",
     "http-server": "^14.1.1",
     "husky": "^8.0.0",

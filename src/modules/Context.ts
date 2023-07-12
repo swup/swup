@@ -1,24 +1,31 @@
 import Swup, { Options } from '../Swup.js';
-import { HistoryAction } from './loadPage.js';
+import { HistoryAction } from './visit.js';
 
 export interface Context<TEvent = Event> {
-	from: PageContext;
-	to?: PageContext;
+	from: FromContext;
+	to: ToContext;
 	containers: Options['containers'];
-	transition: TransitionContext;
+	animation: AnimationContext;
 	trigger: TriggerContext<TEvent>;
 	history: HistoryContext;
 	scroll: ScrollContext;
 }
 
-export interface PageContext {
+export interface FromContext {
 	url: string;
 }
 
-export interface TransitionContext {
+export interface ToContext {
+	url?: string;
+	html?: string;
+}
+
+export interface AnimationContext {
 	animate: boolean;
+	wait: boolean;
 	name?: string;
-	scope: 'html' | 'containers';
+	scope: 'html' | 'containers' | string[];
+	selector: Options['animationSelector'];
 }
 
 export interface ScrollContext {
@@ -41,10 +48,8 @@ export interface ContextInitOptions {
 	to: string | undefined;
 	from?: string;
 	hash?: string;
-	containers?: Options['containers'];
-	scope?: Options['animationScope'];
 	animate?: boolean;
-	transition?: string;
+	animation?: string;
 	targets?: string[];
 	el?: Element;
 	event?: Event;
@@ -59,10 +64,8 @@ export function createContext(
 		to,
 		from = this.currentPageUrl,
 		hash: target,
-		containers = this.options.containers,
-		scope = this.options.animationScope,
 		animate = true,
-		transition,
+		animation: name,
 		el,
 		event,
 		popstate = false,
@@ -72,12 +75,14 @@ export function createContext(
 ): Context {
 	return {
 		from: { url: from },
-		to: to !== undefined ? { url: to } : undefined,
-		containers,
-		transition: {
+		to: { url: to },
+		containers: this.options.containers,
+		animation: {
 			animate,
-			name: transition,
-			scope
+			wait: false,
+			name,
+			scope: this.options.animationScope,
+			selector: this.options.animationSelector
 		},
 		trigger: {
 			el,
