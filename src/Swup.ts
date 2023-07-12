@@ -21,37 +21,48 @@ import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
 import { nextTick } from './utils.js';
 
 export type Options = {
+	/** Whether history visits are animated. Default: `false` */
 	animateHistoryBrowsing: boolean;
+	/** Selector for detecting animation timing. Default: `[class*="transition-"]` */
 	animationSelector: string | false;
+	/** Elements on which to add animation classes. Default: `html` element */
 	animationScope: 'html' | 'containers';
+	/** Enable in-memory page cache. Default: `true` */
 	cache: boolean;
+	/** Content containers to be replaced on page visits. Default: `['#swup']` */
 	containers: string[];
+	/** Callback for ignoring visits. Receives the element and event that triggered the visit. */
 	ignoreVisit: (url: string, { el, event }: { el?: Element; event?: Event }) => boolean;
+	/** Selector for links that trigger visits. Default: `'a[href]'` */
 	linkSelector: string;
+	/** Plugins to register on startup. */
 	plugins: Plugin[];
+	/** Custom headers sent along with fetch requests. */
 	requestHeaders: Record<string, string>;
+	/** Rewrite URLs before loading them. */
 	resolveUrl: (url: string) => string;
+	/** Callback for telling swup to ignore certain popstate events.  */
 	skipPopStateHandling: (event: any) => boolean;
 };
 
 export default class Swup {
-	// library version
+	/** Library version */
 	version: string = version;
-	// instance options
+	/** Options passed into the instance */
 	options: Options;
-	// plugin instances
+	/** Registered plugin instances */
 	plugins: Plugin[] = [];
-	// context data
+	/** Global context of the current visit */
 	context: Context;
-	// cache instance
+	/** Cache instance */
 	cache: Cache;
-	// hook registry
+	/** Hook registry */
 	hooks: Hooks;
-	// classname manager
+	/** Animation class manager */
 	classes: Classes;
-	// current url to allow better comparison inside popstate handler
+	/** URL of the currently visible page */
 	currentPageUrl = getCurrentUrl();
-	// subscription handle for delegated event listener
+	/** Delegated event subscription handle */
 	private clickDelegate?: DelegateEventUnsubscribe;
 
 	visit = visit;
@@ -71,6 +82,7 @@ export default class Swup {
 	createContext = createContext;
 	log: (message: string, context?: any) => void = () => {}; // here so it can be used by plugins
 
+	/** Default options before merging user options */
 	defaults: Options = {
 		animateHistoryBrowsing: false,
 		animationSelector: '[class*="transition-"]',
