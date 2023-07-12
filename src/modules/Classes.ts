@@ -1,5 +1,5 @@
 import Swup from '../Swup.js';
-import { query } from '../utils.js';
+import { queryAll } from '../utils.js';
 
 export class Classes {
 	public swup: Swup;
@@ -10,13 +10,18 @@ export class Classes {
 		this.swup = swup;
 	}
 
-	get selectors(): string[] {
+	get containerSelectors(): string[] {
 		const { scope } = this.swup.context.animation;
 		return scope === 'containers' ? this.swup.context.containers : ['html'];
 	}
 
+	get selector(): string {
+		return this.containerSelectors.join(',');
+	}
+
 	get targets(): HTMLElement[] {
-		return this.selectors.map((s) => query(s)).filter(Boolean) as HTMLElement[];
+		if (!this.selector.trim()) return [];
+		return queryAll(this.selector) as HTMLElement[];
 	}
 
 	public add(...classes: string[]): void {
