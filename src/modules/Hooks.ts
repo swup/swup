@@ -17,6 +17,8 @@ export interface HookDefinitions {
 	'cache:set': { page: PageData };
 	'content:replace': { page: PageData };
 	'content:scroll': { options: ScrollIntoViewOptions };
+	'enable': undefined;
+	'disable': undefined;
 	'fetch:request': { url: string; options: FetchOptions };
 	'fetch:error': { url: string; status: number; response: Response };
 	'history:popstate': { event: PopStateEvent };
@@ -27,8 +29,6 @@ export interface HookDefinitions {
 	'page:request': { url: string; options: FetchOptions };
 	'page:load': { page: PageData; cache?: boolean };
 	'page:view': { url: string; title: string };
-	'swup:enable': undefined;
-	'swup:disable': undefined;
 	'visit:start': undefined;
 	'visit:end': undefined;
 }
@@ -90,6 +90,8 @@ export class Hooks {
 		'cache:set',
 		'content:replace',
 		'content:scroll',
+		'enable',
+		'disable',
 		'fetch:request',
 		'fetch:error',
 		'history:popstate',
@@ -100,8 +102,6 @@ export class Hooks {
 		'page:request',
 		'page:load',
 		'page:view',
-		'swup:enable',
-		'swup:disable',
 		'visit:start',
 		'visit:end'
 	];

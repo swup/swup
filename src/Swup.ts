@@ -134,7 +134,7 @@ export default class Swup {
 		updateHistoryRecord();
 
 		// Trigger enable hook
-		await this.hooks.trigger('swup:enable', undefined, () => {
+		await this.hooks.trigger('enable', undefined, () => {
 			// Add swup-enabled class to html tag
 			document.documentElement.classList.add('swup-enabled');
 		});
@@ -157,7 +157,7 @@ export default class Swup {
 		this.options.plugins.forEach((plugin) => this.unuse(plugin));
 
 		// trigger disable hook
-		await this.hooks.trigger('swup:disable', undefined, () => {
+		await this.hooks.trigger('disable', undefined, () => {
 			// remove swup-enabled class from html tag
 			document.documentElement.classList.remove('swup-enabled');
 		});

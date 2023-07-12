@@ -16,8 +16,8 @@ describe('Hook registry', () => {
 		};
 		const hooks = new HooksWithAccess(swup);
 
-		hooks.on('swup:enable', handler);
-		const ledger = hooks.getRegistry().get('swup:enable');
+		hooks.on('enable', handler);
+		const ledger = hooks.getRegistry().get('enable');
 
 		expect(ledger).toBeDefined();
 		expect(ledger).toBeInstanceOf(Map);
@@ -33,7 +33,7 @@ describe('Hook registry', () => {
 		const swup = new Swup();
 		const handler = vi.fn();
 
-		const handlerReturned = swup.hooks.on('swup:enable', handler);
+		const handlerReturned = swup.hooks.on('enable', handler);
 
 		expect(handlerReturned).toEqual(handler);
 	});
@@ -42,9 +42,9 @@ describe('Hook registry', () => {
 		const swup = new Swup();
 		const handler = vi.fn();
 
-		swup.hooks.on('swup:enable', handler);
+		swup.hooks.on('enable', handler);
 
-		await swup.hooks.trigger('swup:enable');
+		await swup.hooks.trigger('enable');
 
 		expect(handler).toBeCalledTimes(1);
 	});
@@ -53,10 +53,10 @@ describe('Hook registry', () => {
 		const swup = new Swup();
 		const handler = vi.fn();
 
-		swup.hooks.on('swup:enable', handler, { once: true });
+		swup.hooks.on('enable', handler, { once: true });
 
-		await swup.hooks.trigger('swup:enable', undefined, () => {});
-		await swup.hooks.trigger('swup:enable', undefined, () => {});
+		await swup.hooks.trigger('enable', undefined, () => {});
+		await swup.hooks.trigger('enable', undefined, () => {});
 
 		expect(handler).toBeCalledTimes(1);
 	});
@@ -65,10 +65,10 @@ describe('Hook registry', () => {
 		const swup = new Swup();
 		const handler = vi.fn();
 
-		swup.hooks.once('swup:enable', handler);
+		swup.hooks.once('enable', handler);
 
-		await swup.hooks.trigger('swup:enable', undefined, () => {});
-		await swup.hooks.trigger('swup:enable', undefined, () => {});
+		await swup.hooks.trigger('enable', undefined, () => {});
+		await swup.hooks.trigger('enable', undefined, () => {});
 
 		expect(handler).toBeCalledTimes(1);
 	});
@@ -77,7 +77,7 @@ describe('Hook registry', () => {
 		const swup = new Swup();
 		const handler = vi.fn();
 
-		await swup.hooks.trigger('swup:enable', undefined, handler);
+		await swup.hooks.trigger('enable', undefined, handler);
 
 		expect(handler).toBeCalledTimes(1);
 	});
@@ -101,11 +101,11 @@ describe('Hook registry', () => {
 			}
 		};
 
-		swup.hooks.on('swup:disable', handlers.before, { before: true });
-		swup.hooks.on('swup:disable', handlers.normal, {});
-		swup.hooks.on('swup:disable', handlers.after, {});
+		swup.hooks.on('disable', handlers.before, { before: true });
+		swup.hooks.on('disable', handlers.normal, {});
+		swup.hooks.on('disable', handlers.after, {});
 
-		await swup.hooks.trigger('swup:disable', undefined, handlers.original);
+		await swup.hooks.trigger('disable', undefined, handlers.original);
 
 		expect(called).toEqual(['before', 'original', 'normal', 'after']);
 	});
@@ -135,13 +135,13 @@ describe('Hook registry', () => {
 			}
 		};
 
-		swup.hooks.on('swup:disable', handlers['1'], { priority: 1, before: true });
-		swup.hooks.on('swup:disable', handlers['2'], { priority: 2, before: true });
-		swup.hooks.on('swup:disable', handlers['4'], { priority: 5 });
-		swup.hooks.on('swup:disable', handlers['6'], { priority: 4 });
-		swup.hooks.on('swup:disable', handlers['5'], { priority: 4 });
+		swup.hooks.on('disable', handlers['1'], { priority: 1, before: true });
+		swup.hooks.on('disable', handlers['2'], { priority: 2, before: true });
+		swup.hooks.on('disable', handlers['4'], { priority: 5 });
+		swup.hooks.on('disable', handlers['6'], { priority: 4 });
+		swup.hooks.on('disable', handlers['5'], { priority: 4 });
 
-		await swup.hooks.trigger('swup:disable', undefined, handlers['3']);
+		await swup.hooks.trigger('disable', undefined, handlers['3']);
 
 		expect(called).toEqual([2, 1, 3, 4, 6, 5]);
 	});
@@ -151,9 +151,9 @@ describe('Hook registry', () => {
 		const customHandler = vi.fn();
 		const originalHandler = vi.fn();
 
-		swup.hooks.on('swup:enable', customHandler, { replace: true });
+		swup.hooks.on('enable', customHandler, { replace: true });
 
-		await swup.hooks.trigger('swup:enable', undefined, originalHandler);
+		await swup.hooks.trigger('enable', undefined, originalHandler);
 
 		expect(customHandler).toBeCalledTimes(1);
 		expect(originalHandler).toBeCalledTimes(0);
@@ -165,9 +165,9 @@ describe('Hook registry', () => {
 		const originalHandler = vi.fn();
 		const ctx = swup.context;
 
-		swup.hooks.on('swup:enable', customHandler, { replace: true });
+		swup.hooks.on('enable', customHandler, { replace: true });
 
-		await swup.hooks.trigger('swup:enable', undefined, originalHandler);
+		await swup.hooks.trigger('enable', undefined, originalHandler);
 
 		expect(customHandler).toBeCalledWith(ctx, undefined, originalHandler);
 	});
@@ -178,9 +178,9 @@ describe('Hook registry', () => {
 		const handler = vi.fn();
 		const ctx = swup.context;
 
-		swup.hooks.on('swup:enable', listener);
+		swup.hooks.on('enable', listener);
 
-		await swup.hooks.trigger('swup:enable', undefined, handler);
+		await swup.hooks.trigger('enable', undefined, handler);
 
 		expect(listener).toBeCalledWith(ctx, undefined, undefined);
 	});
