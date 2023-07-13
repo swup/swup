@@ -97,7 +97,7 @@ export default class Swup {
 		resolveUrl: (url) => url,
 		requestHeaders: {
 			'X-Requested-With': 'swup',
-			'Accept': 'text/html, application/xhtml+xml'
+			Accept: 'text/html, application/xhtml+xml'
 		},
 		skipPopStateHandling: (event) => event.state?.source !== 'swup'
 	};
@@ -325,7 +325,7 @@ export default class Swup {
 		// Determine direction of history visit
 		const index = Number(event.state?.index);
 		if (index) {
-			const direction = index - this.currentHistoryIndex > 0 ? 'forward' : 'backward';
+			const direction = index - this.currentHistoryIndex > 0 ? 'forwards' : 'backwards';
 			this.context.history.direction = direction;
 		}
 

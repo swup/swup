@@ -17,8 +17,8 @@ export interface HookDefinitions {
 	'cache:set': { page: PageData };
 	'content:replace': { page: PageData };
 	'content:scroll': { options: ScrollIntoViewOptions };
-	'enable': undefined;
-	'disable': undefined;
+	enable: undefined;
+	disable: undefined;
 	'fetch:request': { url: string; options: FetchOptions };
 	'fetch:error': { url: string; status: number; response: Response };
 	'history:popstate': { event: PopStateEvent };

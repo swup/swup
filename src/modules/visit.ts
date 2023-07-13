@@ -4,7 +4,7 @@ import { FetchOptions } from './fetchPage.js';
 import { ContextInitOptions } from './Context.js';
 
 export type HistoryAction = 'push' | 'replace';
-export type HistoryDirection = 'forward' | 'backward';
+export type HistoryDirection = 'forwards' | 'backwards';
 
 export type PageLoadOptions = {
 	/** Whether this visit is animated. Default: `true` */

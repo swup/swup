@@ -553,7 +553,7 @@ describe('History', function () {
 		cy.window().then((window) => {
 			window.history.back();
 			cy.window().should(() => {
-				expect(direction).to.equal('backward');
+				expect(direction).to.equal('backwards');
 			});
 		});
 
@@ -562,7 +562,7 @@ describe('History', function () {
 		cy.window().then((window) => {
 			window.history.forward();
 			cy.window().should(() => {
-				expect(direction).to.equal('forward');
+				expect(direction).to.equal('forwards');
 			});
 		});
 
@@ -572,7 +572,7 @@ describe('History', function () {
 		cy.window().then((window) => {
 			window.history.go(-2);
 			cy.window().should(() => {
-				expect(direction).to.equal('backward');
+				expect(direction).to.equal('backwards');
 			});
 		});
 	});
