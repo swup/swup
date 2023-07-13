@@ -62,6 +62,8 @@ export default class Swup {
 	classes: Classes;
 	/** URL of the currently visible page */
 	currentPageUrl = getCurrentUrl();
+	/** Index of the current history entry */
+	currentHistoryIndex = 1;
 	/** Delegated event subscription handle */
 	private clickDelegate?: DelegateEventUnsubscribe;
 
@@ -95,7 +97,7 @@ export default class Swup {
 		resolveUrl: (url) => url,
 		requestHeaders: {
 			'X-Requested-With': 'swup',
-			Accept: 'text/html, application/xhtml+xml'
+			'Accept': 'text/html, application/xhtml+xml'
 		},
 		skipPopStateHandling: (event) => event.state?.source !== 'swup'
 	};
@@ -144,7 +146,7 @@ export default class Swup {
 		this.options.plugins.forEach((plugin) => this.use(plugin));
 
 		// Modify initial history record
-		updateHistoryRecord();
+		updateHistoryRecord(null, { index: 1 });
 
 		// Trigger enable hook
 		await this.hooks.trigger('enable', undefined, () => {
@@ -308,14 +310,24 @@ export default class Swup {
 		const { url, hash } = Location.fromUrl(href);
 		const animate = this.options.animateHistoryBrowsing;
 		const resetScroll = this.options.animateHistoryBrowsing;
+
 		this.context = this.createContext({
 			to: url,
 			hash,
 			event,
 			animate,
-			resetScroll,
-			popstate: true
+			resetScroll
 		});
+
+		// Mark as popstate visit
+		this.context.history.popstate = true;
+
+		// Determine direction of history visit
+		const index = Number(event.state?.index);
+		if (index) {
+			const direction = index - this.currentHistoryIndex > 0 ? 'forward' : 'backward';
+			this.context.history.direction = direction;
+		}
 
 		// Does this even do anything?
 		// if (!hash) {

@@ -541,6 +541,42 @@ describe('History', function () {
 		});
 	});
 
+	it('should calculate the travel direction of history visits', function () {
+		let direction = null;
+		this.swup.hooks.on('history:popstate', (context) => {
+			direction = context.history.direction;
+		});
+
+		cy.triggerClickOnLink('/page-2.html');
+		cy.shouldBeAtPage('/page-2.html');
+
+		cy.window().then((window) => {
+			window.history.back();
+			cy.window().should(() => {
+				expect(direction).to.equal('backward');
+			});
+		});
+
+		cy.shouldBeAtPage('/page-1.html');
+
+		cy.window().then((window) => {
+			window.history.forward();
+			cy.window().should(() => {
+				expect(direction).to.equal('forward');
+			});
+		});
+
+		cy.triggerClickOnLink('/page-3.html');
+		cy.shouldBeAtPage('/page-3.html');
+
+		cy.window().then((window) => {
+			window.history.go(-2);
+			cy.window().should(() => {
+				expect(direction).to.equal('backward');
+			});
+		});
+	});
+
 	it('should trigger a custom popstate event', function () {
 		const handlers = { popstate() {} };
 		cy.spy(handlers, 'popstate');

@@ -4,6 +4,7 @@ import { FetchOptions } from './fetchPage.js';
 import { ContextInitOptions } from './Context.js';
 
 export type HistoryAction = 'push' | 'replace';
+export type HistoryDirection = 'forward' | 'backward';
 
 export type PageLoadOptions = {
 	/** Whether this visit is animated. Default: `true` */
@@ -74,7 +75,8 @@ export async function performVisit(
 			if (this.context.history.action === 'replace') {
 				updateHistoryRecord(newUrl);
 			} else {
-				createHistoryRecord(newUrl);
+				const index = this.currentHistoryIndex + 1;
+				createHistoryRecord(newUrl, { index });
 			}
 		}
 
