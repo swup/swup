@@ -2,6 +2,10 @@ import { updateHistoryRecord, getCurrentUrl, classify } from '../helpers.js';
 import Swup from '../Swup.js';
 import { PageData } from './fetchPage.js';
 
+/**
+ * Render the next page: replace the content and update scroll position.
+ * @returns Promise<void>
+ */
 export const renderPage = async function (this: Swup, requestedUrl: string, page: PageData) {
 	const { url, html } = page;
 

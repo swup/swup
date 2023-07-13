@@ -13,6 +13,7 @@ export type AnimationDirection = 'in' | 'out';
 
 /**
  * Return a Promise that resolves when all animations are done on the page.
+ *
  * @note We don't make use of the `direction` argument, but it's required by JS plugin
  */
 export async function awaitAnimations(

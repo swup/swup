@@ -15,6 +15,12 @@ export type PageLoadOptions = {
 	history?: HistoryAction;
 };
 
+/**
+ * Navigate to a new URL.
+ * @param url The URL to navigate to.
+ * @param options Options for how to perform this visit.
+ * @returns Promise<void>
+ */
 export function visit(
 	this: Swup,
 	url: string,
@@ -32,6 +38,17 @@ export function visit(
 	this.performVisit(to, options);
 }
 
+/**
+ * Start a visit to a new URL.
+ *
+ * Internal method that assumes the global context has already been set up.
+ *
+ * As a user, you should call `swup.visit(url)` instead.
+ *
+ * @param url The URL to navigate to.
+ * @param options Options for how to perform this visit.
+ * @returns Promise<void>
+ */
 export async function performVisit(
 	this: Swup,
 	url: string,
