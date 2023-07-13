@@ -6,7 +6,7 @@ import { ContextInitOptions } from './Context.js';
 export type HistoryAction = 'push' | 'replace';
 export type HistoryDirection = 'forwards' | 'backwards';
 
-export type PageLoadOptions = {
+type VisitOptions = {
 	/** Whether this visit is animated. Default: `true` */
 	animate?: boolean;
 	/** Name of a custom animation to run. */
@@ -24,7 +24,7 @@ export type PageLoadOptions = {
 export function visit(
 	this: Swup,
 	url: string,
-	options: PageLoadOptions & FetchOptions = {},
+	options: VisitOptions & FetchOptions = {},
 	context: Omit<ContextInitOptions, 'to'> = {}
 ) {
 	// Check if the visit should be ignored
@@ -52,7 +52,7 @@ export function visit(
 export async function performVisit(
 	this: Swup,
 	url: string,
-	options: PageLoadOptions & FetchOptions = {}
+	options: VisitOptions & FetchOptions = {}
 ) {
 	if (typeof url !== 'string') {
 		throw new Error(`swup.visit() requires a URL parameter`);
