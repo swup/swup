@@ -88,10 +88,23 @@ export async function performVisit(
 			this.context.to.html = html;
 		}
 
-		// When page is loaded and leave animation has finished, render the page
+		// Wait for page to load and leave animation to finish
 		const animationPromise = this.leavePage();
 		const [page] = await Promise.all([pagePromise, animationPromise]);
+
+		// Render page: replace content and scroll to top/fragment
 		await this.renderPage(this.context.to.url, page);
+
+		// Wait for enter animation
+		await this.enterPage();
+
+		// Finalize visit
+		await this.hooks.trigger('visit:end', undefined, () => this.classes.clear());
+
+		// Reset context after visit?
+		// if (this.context.to && this.isSameResolvedUrl(this.context.to.url, requestedUrl)) {
+		// 	this.createContext({ to: undefined });
+		// }
 	} catch (error: unknown) {
 		// Return early if error is undefined (probably aborted preload request)
 		if (!error) {

@@ -65,17 +65,4 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 	if (!this.options.cache) {
 		this.cache.clear();
 	}
-
-	// Perform in animation
-	await this.enterPage();
-
-	// Finalize visit
-	await this.hooks.trigger('visit:end', undefined, () => {
-		this.classes.clear();
-	});
-
-	// If we ever decide that we want to reset the context after each visit
-	// if (this.context.to && this.isSameResolvedUrl(this.context.to.url, requestedUrl)) {
-	// 	this.createContext({ to: undefined });
-	// }
 };
