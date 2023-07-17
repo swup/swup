@@ -1,3 +1,9 @@
+<div align="center">
+
+**swup 4 is released  🎉  Check out the [release notes](https://swup.js.org/announcements/swup-4/) and [upgrade guide](https://swup.js.org/getting-started/upgrading/).**
+
+</div>
+
 <br>
 
 <p align="center">
