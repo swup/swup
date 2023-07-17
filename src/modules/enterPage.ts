@@ -1,24 +1,30 @@
 import Swup from '../Swup.js';
 import { nextTick } from '../utils.js';
 
+/**
+ * Perform the in/enter animation of the next page.
+ * @returns Promise<void>
+ */
 export const enterPage = async function (this: Swup) {
-	if (this.context.transition.animate) {
-		const animation = this.hooks.trigger(
-			'awaitAnimation',
-			{ selector: this.options.animationSelector, direction: 'in' },
-			async (context, { selector, direction }) => {
-				await Promise.all(this.getAnimationPromises({ selector, direction }));
-			}
-		);
-		await nextTick();
-		await this.hooks.trigger('animationInStart', undefined, () => {
-			this.classes.remove('is-animating');
-		});
-		await animation;
-		await this.hooks.trigger('animationInDone');
+	if (!this.context.animation.animate) {
+		return;
 	}
 
-	await this.hooks.trigger('transitionEnd', undefined, () => {
-		this.classes.clear();
+	const animation = this.hooks.trigger(
+		'animation:await',
+		{ direction: 'in' },
+		async (context, { direction }) => {
+			await this.awaitAnimations({ selector: context.animation.selector, direction });
+		}
+	);
+
+	await nextTick();
+
+	await this.hooks.trigger('animation:in:start', undefined, () => {
+		this.classes.remove('is-animating');
 	});
+
+	await animation;
+
+	await this.hooks.trigger('animation:in:end');
 };

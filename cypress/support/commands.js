@@ -72,18 +72,18 @@ Cypress.Commands.add('shouldHaveH1', (str) => {
 	cy.get('h1').should('contain', str);
 });
 
-Cypress.Commands.add('shouldHaveTransitionLeaveClasses', (selector = 'html') => {
+Cypress.Commands.add('shouldHaveAnimationLeaveClasses', (selector = 'html') => {
 	cy.get(selector).should('have.class', 'is-changing');
 	cy.get(selector).should('have.class', 'is-leaving');
 });
 
-Cypress.Commands.add('shouldHaveTransitionEnterClasses', (selector = 'html') => {
+Cypress.Commands.add('shouldHaveAnimationEnterClasses', (selector = 'html') => {
 	cy.get(selector).should('have.class', 'is-changing');
 	cy.get(selector).should('have.class', 'is-rendering');
 	cy.get(selector).should('not.have.class', 'is-leaving');
 });
 
-Cypress.Commands.add('shouldNotHaveTransitionClasses', (selector = 'html') => {
+Cypress.Commands.add('shouldNotHaveAnimationClasses', (selector = 'html') => {
 	cy.get(selector).should('not.have.class', 'is-changing');
 	cy.get(selector).should('not.have.class', 'is-rendering');
 	cy.get(selector).should('not.have.class', 'is-leaving');
@@ -101,7 +101,7 @@ Cypress.Commands.add('shouldHaveElementInViewport', (element) => {
 	});
 });
 
-Cypress.Commands.add('transitionWithExpectedDuration', function (durationInMs, url = null) {
+Cypress.Commands.add('shouldAnimateWithDuration', function (durationInMs, url = null) {
 	cy.wrapSwupInstance();
 
 	const durationTolerance = 0.25; // 25% plus/minus
@@ -112,14 +112,14 @@ Cypress.Commands.add('transitionWithExpectedDuration', function (durationInMs, u
 	let durationIn = null;
 
 	cy.window().then((window) => {
-		this.swup.hooks.on('animationOutStart', () => (startOut = performance.now()));
-		this.swup.hooks.on('animationOutDone', () => (durationOut = performance.now() - startOut));
-		this.swup.hooks.on('animationInStart', () => (startIn = performance.now()));
-		this.swup.hooks.on('animationInDone', () => (durationIn = performance.now() - startIn));
-		this.swup.hooks.on('animationSkipped', () => (durationIn = 0));
-		this.swup.hooks.on('animationSkipped', () => (durationOut = 0));
+		this.swup.hooks.on('animation:out:start', () => (startOut = performance.now()));
+		this.swup.hooks.on('animation:out:end', () => (durationOut = performance.now() - startOut));
+		this.swup.hooks.on('animation:in:start', () => (startIn = performance.now()));
+		this.swup.hooks.on('animation:in:end', () => (durationIn = performance.now() - startIn));
+		this.swup.hooks.on('animation:skip', () => (durationIn = 0));
+		this.swup.hooks.on('animation:skip', () => (durationOut = 0));
 		url = url || window.location.href;
-		this.swup.loadPage(url);
+		this.swup.visit(url);
 	});
 
 	cy.window().should(() => {
