@@ -1,3 +1,5 @@
+import type { Path } from 'path-to-regexp';
+
 import Swup, { type Options } from './Swup.js';
 import type { CacheData } from './modules/Cache.js';
 import type {
@@ -8,7 +10,6 @@ import type {
 	ScrollContext,
 	HistoryContext
 } from './modules/Context.js';
-import type { Plugin } from './modules/plugins.js';
 import type {
 	HookDefinitions,
 	HookName,
@@ -16,7 +17,7 @@ import type {
 	HookUnregister,
 	Handler
 } from './modules/Hooks.js';
-import type { Path } from 'path-to-regexp';
+import type { Plugin } from './modules/plugins.js';
 
 export default Swup;
 
