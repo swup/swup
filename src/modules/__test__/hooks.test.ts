@@ -4,7 +4,7 @@ import { Handler, Hooks } from '../Hooks.js';
 import { Context } from '../Context.js';
 
 describe('Hook registry', () => {
-	it('should add custom handlers', () => {
+	it('should add handlers', () => {
 		const swup = new Swup();
 		const handler = vi.fn();
 
@@ -29,13 +29,48 @@ describe('Hook registry', () => {
 		expect(registration?.handler).toEqual(handler);
 	});
 
-	it('should return the passed handler', () => {
+	it('should remove handlers', async () => {
 		const swup = new Swup();
-		const handler = vi.fn();
+		const handler1 = vi.fn();
+		const handler2 = vi.fn();
 
-		const handlerReturned = swup.hooks.on('enable', handler);
+		swup.hooks.on('enable', handler1);
+		swup.hooks.on('enable', handler2);
 
-		expect(handlerReturned).toEqual(handler);
+		await swup.hooks.trigger('enable');
+
+		expect(handler1).toBeCalledTimes(1);
+		expect(handler2).toBeCalledTimes(1);
+
+		swup.hooks.off('enable', handler2);
+
+		await swup.hooks.trigger('enable');
+
+		expect(handler1).toBeCalledTimes(2);
+		expect(handler2).toBeCalledTimes(1);
+	});
+
+	it('should return a function to unregister the handler', async () => {
+		const swup = new Swup();
+		const handler1 = vi.fn();
+		const handler2 = vi.fn();
+
+		const unregister1 = swup.hooks.on('enable', handler1);
+		const unregister2 = swup.hooks.on('enable', handler2);
+
+		expect(unregister1).toBeTypeOf('function');
+
+		await swup.hooks.trigger('enable');
+
+		expect(handler1).toBeCalledTimes(1);
+		expect(handler2).toBeCalledTimes(1);
+
+		unregister2();
+
+		await swup.hooks.trigger('enable');
+
+		expect(handler1).toBeCalledTimes(2);
+		expect(handler2).toBeCalledTimes(1);
 	});
 
 	it('should trigger custom handlers', async () => {
