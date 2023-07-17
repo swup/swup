@@ -50,7 +50,7 @@ export type Handlers = {
 	[K in HookName]: Handler<K>[];
 };
 
-type HookUnregister = () => void;
+export type HookUnregister = () => void;
 
 export type HookOptions = {
 	/** Execute the hook once, then remove the handler */
