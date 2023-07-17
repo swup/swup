@@ -2,6 +2,41 @@
 
 <!-- ## [Unreleased] -->
 
+## [4.0.0] - 2023-07
+
+- Built-in scroll support
+- New hook system
+- Global context object
+- Optionally add animation classes to containers
+- Cache pruning
+
+See the [release notes](https://swup.js.org/announcements/swup-4/) and
+[upgrade guide](https://swup.js.org/getting-started/upgrading/) for details.
+
+### Breaking changes
+
+- New hook system: `swup.hooks.on('page:view', () => {})`
+- Container selectors now only match a single element per selector
+- Custom animation attribute renamed to `data-swup-animation`
+- Navigation method renamed: `swup.visit(url)`
+- Swup no longer adds `data-swup` attributes to containers
+- Use the global context instead of the `swup.transition` object
+- Simplified cache API: `cache.set(url, {})` and `cache.get(url)`
+- Support for custom payload formats was dropped
+
+## [3.1.1] - 2023-06-23
+
+- Accept `#top` as special scroll target
+
+## [3.1.0] - 2023-06-13
+
+- Allow replacing the current history entry instead of pushing to it
+
+## [3.0.8] - 2023-06-04
+
+- Create smaller bundle for modern browsers
+- Make warning about missing transitions less strict
+
 ## [3.0.7] - 2023-05-26
 
 - Update event delegation library
@@ -45,8 +80,7 @@
 
 ### Breaking changes
 
-See [Upgrade instructions for swup 3](https://swup.js.org/getting-started/upgrading)
-for details.
+See [upgrade instructions](https://swup.js.org/getting-started/upgrading-v3/) for details.
 
 - Swup will now wait for the longest transitioned property
 - Swup will no longer add `to-*` classes for the next URL
@@ -92,8 +126,12 @@ for details.
 
 - Fix bug where animateHistoryBrowsing option was ignored for OUT animations
 
-[Unreleased]: https://github.com/swup/swup/compare/3.0.7...HEAD
+[Unreleased]: https://github.com/swup/swup/compare/4.0.0...HEAD
 
+[4.0.0]: https://github.com/swup/swup/releases/tag/4.0.0
+[3.1.1]: https://github.com/swup/swup/releases/tag/3.1.1
+[3.1.0]: https://github.com/swup/swup/releases/tag/3.1.0
+[3.0.8]: https://github.com/swup/swup/releases/tag/3.0.8
 [3.0.7]: https://github.com/swup/swup/releases/tag/3.0.7
 [3.0.6]: https://github.com/swup/swup/releases/tag/3.0.6
 [3.0.5]: https://github.com/swup/swup/releases/tag/3.0.5
