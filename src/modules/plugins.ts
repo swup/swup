@@ -1,22 +1,20 @@
 import Swup from '../Swup.js';
 
 export type Plugin = {
-	/** Name of this plugin */
-	name: string;
 	/** Identify as a swup plugin */
 	isSwupPlugin: true;
+	/** Name of this plugin */
+	name: string;
+	/** Version of this plugin. Currently not in use, defined here for backward compatiblity. */
+	version?: string;
+	/** The swup instance that mounted this plugin */
+	swup?: Swup;
+	/** Version requirements of this plugin. Example: `{ swup: '>=4' }` */
+	requires?: Record<string, string | string[]>;
 	/** Run on mount */
 	mount: () => void;
 	/** Run on unmount */
 	unmount: () => void;
-
-	/** The swup instance that mounted this plugin */
-	swup?: Swup;
-
-	/** Version of this plugin. Currently not in use, defined here for backward compatiblity. */
-	version?: string;
-	/** Version requirements of this plugin. Example: `{ swup: '>=4' }` */
-	requires?: Record<string, string>;
 	_beforeMount?: () => void;
 	_afterUnmount?: () => void;
 	_checkRequirements?: () => boolean;
