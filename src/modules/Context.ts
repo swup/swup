@@ -1,7 +1,7 @@
 import Swup, { Options } from '../Swup.js';
 import { HistoryAction, HistoryDirection } from './visit.js';
 
-export interface Context<TEvent = Event> {
+export interface Context {
 	/** The previous page, about to leave */
 	from: FromContext;
 	/** The next page, about to enter */
@@ -11,7 +11,7 @@ export interface Context<TEvent = Event> {
 	/** Information about animated page transitions */
 	animation: AnimationContext;
 	/** What triggered this visit */
-	trigger: TriggerContext<TEvent>;
+	trigger: TriggerContext;
 	/** Browser history behavior on this visit */
 	history: HistoryContext;
 	/** Scroll behavior on this visit */
@@ -50,11 +50,11 @@ export interface ScrollContext {
 	target?: string;
 }
 
-export interface TriggerContext<TEvent = Event> {
+export interface TriggerContext {
 	/** DOM element that triggered this visit. */
 	el?: Element;
 	/** DOM event that triggered this visit. */
-	event?: TEvent;
+	event?: Event;
 }
 
 export interface HistoryContext {
