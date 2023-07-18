@@ -209,29 +209,12 @@ export default class Swup {
 		const el = event.delegateTarget as HTMLAnchorElement;
 		const { href, url, hash } = Location.fromElement(el);
 
-		// Get the animation name, if specified
-		const animation = el.getAttribute('data-swup-animation') || undefined;
-
-		// Get the history action, if specified
-		let historyAction: HistoryAction | undefined;
-		const historyAttr = el.getAttribute('data-swup-history');
-		if (historyAttr && ['push', 'replace'].includes(historyAttr)) {
-			historyAction = historyAttr as HistoryAction;
-		}
-
 		// Exit early if the link should be ignored
 		if (this.shouldIgnoreVisit(href, { el, event })) {
 			return;
 		}
 
-		this.context = this.createContext({
-			to: url,
-			hash,
-			animation,
-			el,
-			event,
-			action: historyAction
-		});
+		this.context = this.createContext({ to: url, hash, el, event });
 
 		// Exit early if control key pressed
 		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {

@@ -1,6 +1,6 @@
 import { DelegateEvent } from 'delegate-it';
 
-import Swup, { Options } from '../Swup.js';
+import Swup from '../Swup.js';
 import { isPromise, runAsPromise } from '../utils.js';
 import { Context } from './Context.js';
 import { FetchOptions, PageData } from './fetchPage.js';

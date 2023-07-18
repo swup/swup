@@ -58,21 +58,28 @@ export async function performVisit(
 		throw new Error(`swup.visit() requires a URL parameter`);
 	}
 
+	const { el } = this.context.trigger;
 	this.context.to.url = Location.fromUrl(url).url;
-	const { animation, animate, history: historyAction } = options;
 	options.referrer = options.referrer || this.currentPageUrl;
 
-	if (animate === false) {
+	if (options.animate === false) {
 		this.context.animation.animate = false;
 	}
-	if (historyAction) {
-		this.context.history.action = historyAction;
-	}
 
-	// Clean up old animation classes and set custom animation name
+	// Clean up old animation classes
 	if (!this.context.animation.animate) {
 		this.classes.clear();
-	} else if (animation) {
+	}
+
+	// Get history action from option or attribute on trigger element
+	const history = options.history || el?.getAttribute('data-swup-history') || undefined;
+	if (history && ['push', 'replace'].includes(history)) {
+		this.context.history.action = history as HistoryAction;
+	}
+
+	// Get custom animation name from option or attribute on trigger element
+	const animation = options.animation || el?.getAttribute('data-swup-animation') || undefined;
+	if (animation) {
 		this.context.animation.name = animation;
 	}
 
@@ -138,6 +145,6 @@ export async function performVisit(
 		};
 
 		// Go back to the actual page we're still at
-		history.go(-1);
+		window.history.go(-1);
 	}
 }
