@@ -94,7 +94,7 @@ If you're having trouble implementing swup, check out the [Common Issues](https:
 
 ## Want to Contribute?
 
-<a href="https://github.com/swup/swup/discussions/424">We're looking for maintainers!</a>   👀
+[We're looking for maintainers!](https://github.com/swup/swup/discussions/424)   👀
 
 Become a sponsor on [Open Collective](https://opencollective.com/swup) or support development through
 [GitHub sponsors](https://github.com/sponsors/gmrchk).
