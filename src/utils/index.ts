@@ -38,6 +38,11 @@ export function runAsPromise(func: Function, args: any[] = [], ctx: any = {}): P
 	});
 }
 
+export function forceReflow(element?: HTMLElement) {
+	element = element || document.body;
+	return element?.offsetHeight;
+}
+
 export const escapeCssIdentifier = (ident: string) => {
 	// @ts-ignore this is for support check, so it's correct that TS complains
 	if (window.CSS && window.CSS.escape) {
