@@ -23,8 +23,9 @@ export const animatePageOut = async function (this: Swup) {
 
 	await this.hooks.trigger(
 		'animation:await',
-		{ direction: 'out' },
-		async (context, { direction }) => {
+		{ direction: 'out', skip: false },
+		async (context, { direction, skip }) => {
+			if (skip) return;
 			await this.awaitAnimations({ selector: context.animation.selector, direction });
 		}
 	);

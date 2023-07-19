@@ -12,8 +12,9 @@ export const animatePageIn = async function (this: Swup) {
 
 	const animation = this.hooks.trigger(
 		'animation:await',
-		{ direction: 'in' },
-		async (context, { direction }) => {
+		{ direction: 'in', skip: false },
+		async (context, { direction, skip }) => {
+			if (skip) return;
 			await this.awaitAnimations({ selector: context.animation.selector, direction });
 		}
 	);

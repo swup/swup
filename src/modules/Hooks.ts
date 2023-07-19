@@ -12,7 +12,7 @@ export interface HookDefinitions {
 	'animation:in:start': undefined;
 	'animation:in:end': undefined;
 	'animation:skip': undefined;
-	'animation:await': { direction: AnimationDirection };
+	'animation:await': { direction: AnimationDirection; skip: boolean };
 	'cache:clear': undefined;
 	'cache:set': { page: PageData };
 	'content:replace': { page: PageData };
