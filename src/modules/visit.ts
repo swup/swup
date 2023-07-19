@@ -113,14 +113,14 @@ export async function performVisit(
 		}
 
 		// Wait for page to load and leave animation to finish
-		const animationPromise = this.leavePage();
+		const animationPromise = this.animatePageOut();
 		const [page] = await Promise.all([pagePromise, animationPromise]);
 
 		// Render page: replace content and scroll to top/fragment
 		await this.renderPage(this.context.to.url, page);
 
 		// Wait for enter animation
-		await this.enterPage();
+		await this.animatePageIn();
 
 		// Finalize visit
 		await this.hooks.trigger('visit:end', undefined, () => this.classes.clear());

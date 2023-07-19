@@ -13,9 +13,9 @@ import { getAnchorElement } from './modules/getAnchorElement.js';
 import { awaitAnimations } from './modules/awaitAnimations.js';
 import { visit, performVisit, HistoryAction } from './modules/visit.js';
 import { fetchPage } from './modules/fetchPage.js';
-import { leavePage } from './modules/leavePage.js';
+import { animatePageOut } from './modules/animatePageOut.js';
 import { replaceContent } from './modules/replaceContent.js';
-import { enterPage } from './modules/enterPage.js';
+import { animatePageIn } from './modules/animatePageIn.js';
 import { renderPage } from './modules/renderPage.js';
 import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
 import { nextTick } from './utils.js';
@@ -69,10 +69,10 @@ export default class Swup {
 
 	visit = visit;
 	performVisit = performVisit;
-	leavePage = leavePage;
+	animatePageOut = animatePageOut;
 	renderPage = renderPage;
 	replaceContent = replaceContent;
-	enterPage = enterPage;
+	animatePageIn = animatePageIn;
 	delegateEvent = delegateEvent;
 	fetchPage = fetchPage;
 	awaitAnimations = awaitAnimations;
@@ -148,13 +148,14 @@ export default class Swup {
 		// Modify initial history record
 		updateHistoryRecord(null, { index: 1 });
 
+		// Give consumers a chance to hook into enable and page:view
+		await nextTick();
+
 		// Trigger enable hook
 		await this.hooks.trigger('enable', undefined, () => {
 			// Add swup-enabled class to html tag
 			document.documentElement.classList.add('swup-enabled');
 		});
-
-		await nextTick();
 
 		// Trigger page view hook
 		await this.hooks.trigger('page:view', { url: this.currentPageUrl, title: document.title });

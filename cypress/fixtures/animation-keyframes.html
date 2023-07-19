@@ -7,11 +7,11 @@
     <link rel="stylesheet" href="/assets/main.css">
     <script src="/dist/Swup.umd.js"></script>
     <style>
-        .transition-default {
-            transition: none;
-        }
-        html.is-animating .transition-default {
+        html.is-changing .transition-default {
             animation: test-animation 400ms 300ms;
+            animation-fill-mode: both;
+            transition: none;
+            opacity: initial
         }
         html.is-rendering .transition-default {
             animation-direction: reverse;
@@ -26,7 +26,6 @@
                 opacity: 0;
             }
         }
-
     </style>
 </head>
 <body>

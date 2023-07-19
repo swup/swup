@@ -38,6 +38,16 @@ export function runAsPromise(func: Function, args: any[] = [], ctx: any = {}): P
 	});
 }
 
+/**
+ * Force a layout reflow, e.g. after adding classnames
+ * @returns The offset height, just here so it doesn't get optimized away by the JS engine
+ * @see https://stackoverflow.com/a/21665117/3759615
+ */
+export function forceReflow(element?: HTMLElement) {
+	element = element || document.body;
+	return element?.offsetHeight;
+}
+
 export const escapeCssIdentifier = (ident: string) => {
 	// @ts-ignore this is for support check, so it's correct that TS complains
 	if (window.CSS && window.CSS.escape) {
