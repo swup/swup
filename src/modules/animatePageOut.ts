@@ -5,7 +5,7 @@ import { classify } from '../helpers.js';
  * Perform the out/leave animation of the current page.
  * @returns Promise<void>
  */
-export const leavePage = async function (this: Swup) {
+export const animatePageOut = async function (this: Swup) {
 	if (!this.context.animation.animate) {
 		await this.hooks.trigger('animation:skip');
 		return;

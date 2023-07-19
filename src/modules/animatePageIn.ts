@@ -5,7 +5,7 @@ import { nextTick } from '../utils.js';
  * Perform the in/enter animation of the next page.
  * @returns Promise<void>
  */
-export const enterPage = async function (this: Swup) {
+export const animatePageIn = async function (this: Swup) {
 	if (!this.context.animation.animate) {
 		return;
 	}
