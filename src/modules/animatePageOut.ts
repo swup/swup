@@ -1,5 +1,6 @@
 import Swup from '../Swup.js';
 import { classify } from '../helpers.js';
+import { forceReflow } from '../utils.js';
 
 /**
  * Perform the out/leave animation of the current page.
@@ -20,6 +21,8 @@ export const animatePageOut = async function (this: Swup) {
 			this.classes.add(`to-${classify(this.context.animation.name)}`);
 		}
 	});
+
+	forceReflow();
 
 	await this.hooks.trigger(
 		'animation:await',

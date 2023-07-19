@@ -1,5 +1,5 @@
 import Swup from '../Swup.js';
-import { nextTick } from '../utils.js';
+import { forceReflow } from '../utils.js';
 
 /**
  * Perform the in/enter animation of the next page.
@@ -10,21 +10,19 @@ export const animatePageIn = async function (this: Swup) {
 		return;
 	}
 
-	const animation = this.hooks.trigger(
+	await this.hooks.trigger('animation:in:start', undefined, () => {
+		this.classes.remove('is-animating');
+	});
+
+	forceReflow();
+
+	await this.hooks.trigger(
 		'animation:await',
 		{ direction: 'in' },
 		async (context, { direction }) => {
 			await this.awaitAnimations({ selector: context.animation.selector, direction });
 		}
 	);
-
-	await nextTick();
-
-	await this.hooks.trigger('animation:in:start', undefined, () => {
-		this.classes.remove('is-animating');
-	});
-
-	await animation;
 
 	await this.hooks.trigger('animation:in:end');
 };
