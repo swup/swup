@@ -132,9 +132,9 @@ export class Hooks {
 	/**
 	 * Register a new hook.
 	 */
-	create(hook: HookName) {
-		if (!this.registry.has(hook)) {
-			this.registry.set(hook, new Map());
+	create(hook: string) {
+		if (!this.registry.has(hook as HookName)) {
+			this.registry.set(hook as HookName, new Map());
 		}
 	}
 
