@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import Swup from '../../Swup.js';
 import { Handler, Hooks } from '../Hooks.js';
-import { Context } from '../Context.js';
+import { Visit } from '../Visit.js';
 
 describe('Hook registry', () => {
 	it('should add handlers', () => {
@@ -226,14 +226,14 @@ describe('Hook registry', () => {
 		const args = { foo: 'bar' };
 		const customHandler = vi.fn((c, a, handler) => handler(c, args));
 		const defaultHandler = vi.fn();
-		const ctx = swup.context;
+		const visit = swup.visit;
 
 		swup.hooks.on('enable', customHandler, { replace: true });
 
 		await swup.hooks.call('enable', undefined, defaultHandler);
 
-		expect(customHandler).toBeCalledWith(ctx, undefined, defaultHandler);
-		expect(defaultHandler).toBeCalledWith(ctx, args);
+		expect(customHandler).toBeCalledWith(visit, undefined, defaultHandler);
+		expect(defaultHandler).toBeCalledWith(visit, args);
 	});
 
 	it('should return result of replacing handler', async () => {
@@ -257,7 +257,7 @@ describe('Hook registry', () => {
 		const firstHandler = vi.fn((c, a, handler) => handler(c, args1));
 		const secondHandler = vi.fn((c, a, handler) => handler(c, args2));
 		const thirdHandler = vi.fn((c, a, handler) => handler(c, args3, handler));
-		const ctx = swup.context;
+		const visit = swup.visit;
 
 		swup.hooks.on('enable', firstHandler, { replace: true });
 		swup.hooks.on('enable', secondHandler, { replace: true });
@@ -265,36 +265,36 @@ describe('Hook registry', () => {
 
 		await swup.hooks.call('enable', undefined, defaultHandler);
 
-		expect(defaultHandler).toBeCalledWith(ctx, args1);
-		expect(thirdHandler).toBeCalledWith(ctx, undefined, expect.any(Function));
-		expect(secondHandler).toBeCalledWith(ctx, args3, expect.any(Function));
-		expect(firstHandler).toBeCalledWith(ctx, args2, expect.any(Function));
+		expect(defaultHandler).toBeCalledWith(visit, args1);
+		expect(thirdHandler).toBeCalledWith(visit, undefined, expect.any(Function));
+		expect(secondHandler).toBeCalledWith(visit, args3, expect.any(Function));
+		expect(firstHandler).toBeCalledWith(visit, args2, expect.any(Function));
 	});
 
 	it('should not pass original handler into normal handlers', async () => {
 		const swup = new Swup();
 		const listener = vi.fn();
 		const handler = vi.fn();
-		const ctx = swup.context;
+		const visit = swup.visit;
 
 		swup.hooks.on('enable', listener);
 
 		await swup.hooks.call('enable', undefined, handler);
 
-		expect(listener).toBeCalledWith(ctx, undefined, undefined);
+		expect(listener).toBeCalledWith(visit, undefined, undefined);
 	});
 
-	it('should trigger event handler with context and args', async () => {
+	it('should trigger event handler with visit and args', async () => {
 		const swup = new Swup();
 		const handler: Handler<'history:popstate'> = vi.fn();
-		const ctx = swup.context;
+		const visit = swup.visit;
 		const args = { event: new PopStateEvent('') };
 
 		swup.hooks.on('history:popstate', handler);
 		await swup.hooks.call('history:popstate', args);
 
 		expect(handler).toBeCalledTimes(1);
-		expect(handler).toBeCalledWith(ctx, args, undefined);
+		expect(handler).toBeCalledWith(visit, args, undefined);
 	});
 });
 
@@ -305,7 +305,7 @@ describe('Types', () => {
 		// @ts-expect-no-error
 		swup.hooks.on(
 			'history:popstate',
-			(ctx: Context, { event }: { event: PopStateEvent }) => {}
+			(visit: Visit, { event }: { event: PopStateEvent }) => {}
 		);
 		// @ts-expect-no-error
 		await swup.hooks.call('history:popstate', { event: new PopStateEvent('') });
@@ -313,7 +313,7 @@ describe('Types', () => {
 		// @ts-expect-error
 		swup.hooks.on('history:popstate', ({ event: MouseEvent }) => {});
 		// @ts-expect-error
-		swup.hooks.on('history:popstate', (ctx: Context, { event }: { event: MouseEvent }) => {});
+		swup.hooks.on('history:popstate', (visit: Visit, { event }: { event: MouseEvent }) => {});
 		// @ts-expect-error
 		await swup.hooks.call('history:popstate', { event: new MouseEvent('') });
 	});

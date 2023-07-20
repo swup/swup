@@ -6,24 +6,24 @@ import { classify } from '../helpers.js';
  * @returns Promise<void>
  */
 export const animatePageOut = async function (this: Swup) {
-	if (!this.context.animation.animate) {
+	if (!this.visit.animation.animate) {
 		await this.hooks.call('animation:skip');
 		return;
 	}
 
-	await this.hooks.call('animation:out:start', undefined, () => {
+	await this.hooks.call('animation:out:start', undefined, (visit) => {
 		this.classes.add('is-changing', 'is-leaving', 'is-animating');
-		if (this.context.history.popstate) {
+		if (visit.history.popstate) {
 			this.classes.add('is-popstate');
 		}
-		if (this.context.animation.name) {
-			this.classes.add(`to-${classify(this.context.animation.name)}`);
+		if (visit.animation.name) {
+			this.classes.add(`to-${classify(visit.animation.name)}`);
 		}
 	});
 
-	await this.hooks.call('animation:out:await', { skip: false }, async (context, { skip }) => {
+	await this.hooks.call('animation:out:await', { skip: false }, async (visit, { skip }) => {
 		if (skip) return;
-		await this.awaitAnimations({ selector: context.animation.selector });
+		await this.awaitAnimations({ selector: visit.animation.selector });
 	});
 
 	await this.hooks.call('animation:out:end');

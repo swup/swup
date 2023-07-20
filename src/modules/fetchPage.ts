@@ -48,7 +48,7 @@ export async function fetchPage(
 	const response: Response = await this.hooks.call(
 		'fetch:request',
 		{ url, options },
-		(context, { url, options }) => fetch(url, options)
+		(visit, { url, options }) => fetch(url, options)
 	);
 
 	const { status, url: responseUrl } = response;

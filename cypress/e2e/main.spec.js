@@ -54,8 +54,8 @@ describe('Fetch', function () {
 	});
 
 	it('should allow calling original page:request handler', function () {
-		this.swup.hooks.replace('page:request', (context, args, defaultHandler) => {
-			return defaultHandler(context, args);
+		this.swup.hooks.replace('page:request', (visit, args, defaultHandler) => {
+			return defaultHandler(visit, args);
 		});
 		this.swup.navigate('/page-2.html');
 
@@ -543,8 +543,8 @@ describe('History', function () {
 
 	it('should calculate the travel direction of history visits', function () {
 		let direction = null;
-		this.swup.hooks.on('history:popstate', (context) => {
-			direction = context.history.direction;
+		this.swup.hooks.on('history:popstate', (visit) => {
+			direction = visit.history.direction;
 		});
 
 		cy.triggerClickOnLink('/page-2.html');
@@ -618,7 +618,7 @@ describe('API', function () {
 	});
 });
 
-describe('Context', function () {
+describe('Visit context', function () {
 	beforeEach(() => {
 		cy.visit('/page-1.html');
 		cy.wrapSwupInstance();
@@ -627,9 +627,9 @@ describe('Context', function () {
 	it('has the current and next url', function () {
 		let from = '';
 		let to = '';
-		this.swup.hooks.before('visit:start', (ctx) => {
-			from = ctx.from.url;
-			to = ctx.to.url;
+		this.swup.hooks.before('visit:start', (visit) => {
+			from = visit.from.url;
+			to = visit.to.url;
 		});
 		cy.triggerClickOnLink('/page-2.html');
 		cy.window().should(() => {
@@ -641,9 +641,9 @@ describe('Context', function () {
 	it('has the correct current url on history visits', function () {
 		let from = '';
 		let to = '';
-		this.swup.hooks.before('visit:start', (ctx) => {
-			from = ctx.from.url;
-			to = ctx.to.url;
+		this.swup.hooks.before('visit:start', (visit) => {
+			from = visit.from.url;
+			to = visit.to.url;
 		});
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
@@ -662,9 +662,9 @@ describe('Context', function () {
 	it('passes along the click trigger and event', function () {
 		let el = null;
 		let event = null;
-		this.swup.hooks.before('visit:start', (context) => {
-			el = context.trigger.el;
-			event = context.trigger.event;
+		this.swup.hooks.before('visit:start', (visit) => {
+			el = visit.trigger.el;
+			event = visit.trigger.event;
 		});
 		cy.triggerClickOnLink('/page-2.html');
 		cy.window().should((win) => {
@@ -676,9 +676,9 @@ describe('Context', function () {
 	it('passes along the popstate status and event', function () {
 		let event = null;
 		let historyVisit = null;
-		this.swup.hooks.before('visit:start', (context) => {
-			event = context.trigger.event;
-			historyVisit = context.history.popstate;
+		this.swup.hooks.before('visit:start', (visit) => {
+			event = visit.trigger.event;
+			historyVisit = visit.history.popstate;
 		});
 		cy.window().then(() => {
 			this.swup.navigate('/page-2.html');
@@ -697,8 +697,8 @@ describe('Context', function () {
 	it('passes along the custom animation', function () {
 		let name = null;
 		let expectedName = null;
-		this.swup.hooks.before('visit:start', (context) => {
-			name = context.animation.name;
+		this.swup.hooks.before('visit:start', (visit) => {
+			name = visit.animation.name;
 		});
 		cy.get('a[data-swup-animation]').should(($el) => {
 			expect($el.length).to.be.at.least(1);
@@ -712,8 +712,8 @@ describe('Context', function () {
 	});
 
 	it('should allow disabling animations', function () {
-		this.swup.hooks.before('visit:start', (context) => {
-			context.animation.animate = false;
+		this.swup.hooks.before('visit:start', (visit) => {
+			visit.animation.animate = false;
 		});
 		cy.shouldAnimateWithDuration(0, '/page-2.html');
 	});
@@ -726,8 +726,8 @@ describe('Containers', function () {
 	});
 
 	it('should be customizable from context', function () {
-		this.swup.hooks.before('visit:start', (context) => {
-			context.containers = ['#aside'];
+		this.swup.hooks.before('visit:start', (visit) => {
+			visit.containers = ['#aside'];
 		});
 		this.swup.navigate('/containers-2.html', { animate: false });
 		cy.get('h1').should('contain', 'Containers 1');
@@ -735,8 +735,8 @@ describe('Containers', function () {
 	});
 
 	it('should be customizable from hook context', function () {
-		this.swup.hooks.before('content:replace', (context) => {
-			context.containers = ['#main'];
+		this.swup.hooks.before('content:replace', (visit) => {
+			visit.containers = ['#main'];
 		});
 		this.swup.navigate('/containers-2.html', { animate: false });
 		cy.get('h1').should('contain', 'Containers 2');

@@ -11,8 +11,8 @@ export class Classes {
 	}
 
 	get selectors(): string[] {
-		const { scope } = this.swup.context.animation;
-		if (scope === 'containers') return this.swup.context.containers;
+		const { scope } = this.swup.visit.animation;
+		if (scope === 'containers') return this.swup.visit.containers;
 		if (scope === 'html') return ['html'];
 		if (Array.isArray(scope)) return scope;
 		return [];

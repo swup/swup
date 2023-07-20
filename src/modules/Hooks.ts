@@ -2,7 +2,7 @@ import { DelegateEvent } from 'delegate-it';
 
 import Swup from '../Swup.js';
 import { isPromise, runAsPromise } from '../utils.js';
-import { Context } from './Context.js';
+import { Visit } from './Visit.js';
 import { FetchOptions, PageData } from './fetchPage.js';
 
 export interface HookDefinitions {
@@ -38,11 +38,11 @@ export type HookArguments<T extends HookName> = HookDefinitions[T];
 export type HookName = keyof HookDefinitions;
 
 export type Handler<T extends HookName> = (
-	/** The global context object for the current visit */
-	context: Context,
-	/** The local arguments passed into the handler */
+	/** Context about the current visit */
+	visit: Visit,
+	/** Local arguments passed into the handler */
 	args: HookArguments<T>,
-	/** The default handler to be executed, available if replacing an internal hook handler */
+	/** Default handler to be executed, available if replacing an internal hook handler */
 	defaultHandler?: Handler<T>
 ) => Promise<any> | void;
 
@@ -324,7 +324,7 @@ export class Hooks {
 	): Promise<any> {
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
-			const result = await runAsPromise(handler, [this.swup.context, args, defaultHandler]);
+			const result = await runAsPromise(handler, [this.swup.visit, args, defaultHandler]);
 			results.push(result);
 			if (once) {
 				this.off(hook, handler);
@@ -344,7 +344,7 @@ export class Hooks {
 	): any[] {
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
-			const result = handler(this.swup.context, args as HookArguments<T>, defaultHandler);
+			const result = handler(this.swup.visit, args as HookArguments<T>, defaultHandler);
 			results.push(result);
 			if (isPromise(result)) {
 				console.warn(
@@ -392,8 +392,8 @@ export class Hooks {
 				const createDefaultHandler = (index: number): Handler<T> | undefined => {
 					const next = replace[index - 1];
 					if (next) {
-						return (context, args) =>
-							next.handler(context, args, createDefaultHandler(index - 1));
+						return (visit, args) =>
+							next.handler(visit, args, createDefaultHandler(index - 1));
 					} else {
 						return defaultHandler;
 					}
@@ -428,7 +428,7 @@ export class Hooks {
 	 * @param hook Name of the hook.
 	 */
 	private dispatchDomEvent<T extends HookName>(hook: T, args?: HookArguments<T>): void {
-		const detail = { hook, args, context: this.swup.context };
+		const detail = { hook, args, visit: this.swup.visit };
 		document.dispatchEvent(new CustomEvent(`swup:${hook}`, { detail }));
 	}
 }

@@ -7,7 +7,7 @@ import { DelegateEventUnsubscribe } from './helpers/delegateEvent.js';
 
 import { Cache } from './modules/Cache.js';
 import { Classes } from './modules/Classes.js';
-import { Context, createContext } from './modules/Context.js';
+import { Visit, createVisit } from './modules/Visit.js';
 import { Hooks } from './modules/Hooks.js';
 import { getAnchorElement } from './modules/getAnchorElement.js';
 import { awaitAnimations } from './modules/awaitAnimations.js';
@@ -52,8 +52,8 @@ export default class Swup {
 	options: Options;
 	/** Registered plugin instances */
 	plugins: Plugin[] = [];
-	/** Global context of the current visit */
-	context: Context;
+	/** Data about the current visit */
+	visit: Visit;
 	/** Cache instance */
 	cache: Cache;
 	/** Hook registry */
@@ -81,7 +81,7 @@ export default class Swup {
 	unuse = unuse;
 	findPlugin = findPlugin;
 	getCurrentUrl = getCurrentUrl;
-	createContext = createContext;
+	createVisit = createVisit;
 	log: (message: string, context?: any) => void = () => {}; // here so it can be used by plugins
 
 	/** Default options before merging user options */
@@ -112,7 +112,7 @@ export default class Swup {
 		this.cache = new Cache(this);
 		this.classes = new Classes(this);
 		this.hooks = new Hooks(this);
-		this.context = this.createContext({ to: undefined });
+		this.visit = this.createVisit({ to: undefined });
 
 		if (!this.checkRequirements()) {
 			return;
@@ -215,7 +215,7 @@ export default class Swup {
 			return;
 		}
 
-		this.context = this.createContext({ to: url, hash, el, event });
+		this.visit = this.createVisit({ to: url, hash, el, event });
 
 		// Exit early if control key pressed
 		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
@@ -229,7 +229,7 @@ export default class Swup {
 		}
 
 		this.hooks.callSync('link:click', { el, event }, () => {
-			const from = this.context.from.url ?? '';
+			const from = this.visit.from.url ?? '';
 
 			event.preventDefault();
 
@@ -240,7 +240,7 @@ export default class Swup {
 					this.hooks.callSync(
 						'link:anchor',
 						{ hash, options: { behavior: 'auto' } },
-						(context, { hash, options }) => {
+						(visit, { hash, options }) => {
 							const target = this.getAnchorElement(hash);
 							if (target) {
 								target.scrollIntoView(options);
@@ -248,8 +248,8 @@ export default class Swup {
 						}
 					);
 				} else {
-					this.hooks.callSync('link:self', undefined, (context) => {
-						if (!context.scroll.reset) return;
+					this.hooks.callSync('link:self', undefined, (visit) => {
+						if (!visit.scroll.reset) return;
 						window.scroll({ top: 0, left: 0, behavior: 'auto' });
 					});
 				}
@@ -295,7 +295,7 @@ export default class Swup {
 		const animate = this.options.animateHistoryBrowsing;
 		const resetScroll = this.options.animateHistoryBrowsing;
 
-		this.context = this.createContext({
+		this.visit = this.createVisit({
 			to: url,
 			hash,
 			event,
@@ -304,13 +304,13 @@ export default class Swup {
 		});
 
 		// Mark as popstate visit
-		this.context.history.popstate = true;
+		this.visit.history.popstate = true;
 
 		// Determine direction of history visit
 		const index = Number(event.state?.index);
 		if (index) {
 			const direction = index - this.currentHistoryIndex > 0 ? 'forwards' : 'backwards';
-			this.context.history.direction = direction;
+			this.visit.history.direction = direction;
 		}
 
 		// Does this even do anything?

@@ -1,12 +1,12 @@
 import Swup from '../Swup.js';
 import { createHistoryRecord, updateHistoryRecord, getCurrentUrl, Location } from '../helpers.js';
 import { FetchOptions } from './fetchPage.js';
-import { ContextInitOptions } from './Context.js';
+import { VisitInitOptions } from './Visit.js';
 
 export type HistoryAction = 'push' | 'replace';
 export type HistoryDirection = 'forwards' | 'backwards';
 
-type VisitOptions = {
+type NavigationOptions = {
 	/** Whether this visit is animated. Default: `true` */
 	animate?: boolean;
 	/** Name of a custom animation to run. */
@@ -24,8 +24,8 @@ type VisitOptions = {
 export function navigate(
 	this: Swup,
 	url: string,
-	options: VisitOptions & FetchOptions = {},
-	context: Omit<ContextInitOptions, 'to'> = {}
+	options: NavigationOptions & FetchOptions = {},
+	init: Omit<VisitInitOptions, 'to'> = {}
 ) {
 	// Check if the visit should be ignored
 	if (this.shouldIgnoreVisit(url)) {
@@ -34,14 +34,14 @@ export function navigate(
 	}
 
 	const { url: to, hash } = Location.fromUrl(url);
-	this.context = this.createContext({ ...context, to, hash });
+	this.visit = this.createVisit({ ...init, to, hash });
 	this.performNavigation(to, options);
 }
 
 /**
  * Start a visit to a new URL.
  *
- * Internal method that assumes the global context has already been set up.
+ * Internal method that assumes the visit context has already been created.
  *
  * As a user, you should call `swup.navigate(url)` instead.
  *
@@ -52,35 +52,35 @@ export function navigate(
 export async function performNavigation(
 	this: Swup,
 	url: string,
-	options: VisitOptions & FetchOptions = {}
+	options: NavigationOptions & FetchOptions = {}
 ) {
 	if (typeof url !== 'string') {
 		throw new Error(`swup.navigate() requires a URL parameter`);
 	}
 
-	const { el } = this.context.trigger;
-	this.context.to.url = Location.fromUrl(url).url;
+	const { el } = this.visit.trigger;
+	this.visit.to.url = Location.fromUrl(url).url;
 	options.referrer = options.referrer || this.currentPageUrl;
 
 	if (options.animate === false) {
-		this.context.animation.animate = false;
+		this.visit.animation.animate = false;
 	}
 
 	// Clean up old animation classes
-	if (!this.context.animation.animate) {
+	if (!this.visit.animation.animate) {
 		this.classes.clear();
 	}
 
 	// Get history action from option or attribute on trigger element
 	const history = options.history || el?.getAttribute('data-swup-history') || undefined;
 	if (history && ['push', 'replace'].includes(history)) {
-		this.context.history.action = history as HistoryAction;
+		this.visit.history.action = history as HistoryAction;
 	}
 
 	// Get custom animation name from option or attribute on trigger element
 	const animation = options.animation || el?.getAttribute('data-swup-animation') || undefined;
 	if (animation) {
-		this.context.animation.name = animation;
+		this.visit.animation.name = animation;
 	}
 
 	try {
@@ -89,14 +89,14 @@ export async function performNavigation(
 		// Begin fetching page
 		const pagePromise = this.hooks.call(
 			'page:request',
-			{ url: this.context.to.url, options },
-			async (context, { options }) => await this.fetchPage(context.to.url as string, options)
+			{ url: this.visit.to.url, options },
+			async (visit, { options }) => await this.fetchPage(visit.to.url as string, options)
 		);
 
 		// Create history record if this is not a popstate call (with or without anchor)
-		if (!this.context.history.popstate) {
-			const newUrl = url + (this.context.scroll.target || '');
-			if (this.context.history.action === 'replace') {
+		if (!this.visit.history.popstate) {
+			const newUrl = url + (this.visit.scroll.target || '');
+			if (this.visit.history.action === 'replace') {
 				updateHistoryRecord(newUrl);
 			} else {
 				const index = this.currentHistoryIndex + 1;
@@ -107,9 +107,9 @@ export async function performNavigation(
 		this.currentPageUrl = getCurrentUrl();
 
 		// Wait for page before starting to animate out?
-		if (this.context.animation.wait) {
+		if (this.visit.animation.wait) {
 			const { html } = await pagePromise;
-			this.context.to.html = html;
+			this.visit.to.html = html;
 		}
 
 		// Wait for page to load and leave animation to finish
@@ -117,7 +117,7 @@ export async function performNavigation(
 		const [page] = await Promise.all([pagePromise, animationPromise]);
 
 		// Render page: replace content and scroll to top/fragment
-		await this.renderPage(this.context.to.url, page);
+		await this.renderPage(this.visit.to.url, page);
 
 		// Wait for enter animation
 		await this.animatePageIn();
@@ -125,9 +125,9 @@ export async function performNavigation(
 		// Finalize visit
 		await this.hooks.call('visit:end', undefined, () => this.classes.clear());
 
-		// Reset context after visit?
-		// if (this.context.to && this.isSameResolvedUrl(this.context.to.url, requestedUrl)) {
-		// 	this.createContext({ to: undefined });
+		// Reset visit info after finish?
+		// if (this.visit.to && this.isSameResolvedUrl(this.visit.to.url, requestedUrl)) {
+		// 	this.createVisit({ to: undefined });
 		// }
 	} catch (error: unknown) {
 		// Return early if error is undefined (probably aborted preload request)
@@ -140,7 +140,7 @@ export async function performNavigation(
 
 		// Rewrite `skipPopStateHandling` to redirect manually when `history.go` is processed
 		this.options.skipPopStateHandling = () => {
-			window.location.href = this.context.to.url as string;
+			window.location.href = this.visit.to.url as string;
 			return true;
 		};
 

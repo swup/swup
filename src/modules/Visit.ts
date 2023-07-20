@@ -1,36 +1,36 @@
 import Swup, { Options } from '../Swup.js';
 import { HistoryAction, HistoryDirection } from './navigate.js';
 
-export interface Context {
+export interface Visit {
 	/** The previous page, about to leave */
-	from: FromContext;
+	from: VisitFrom;
 	/** The next page, about to enter */
-	to: ToContext;
+	to: VisitTo;
 	/** The content containers, about to be replaced */
 	containers: Options['containers'];
 	/** Information about animated page transitions */
-	animation: AnimationContext;
+	animation: VisitAnimation;
 	/** What triggered this visit */
-	trigger: TriggerContext;
+	trigger: VisitTrigger;
 	/** Browser history behavior on this visit */
-	history: HistoryContext;
+	history: VisitHistory;
 	/** Scroll behavior on this visit */
-	scroll: ScrollContext;
+	scroll: VisitScroll;
 }
 
-export interface FromContext {
+export interface VisitFrom {
 	/** The URL of the previous page */
 	url: string;
 }
 
-export interface ToContext {
+export interface VisitTo {
 	/** The URL of the next page */
 	url?: string;
 	/** The HTML content of the next page */
 	html?: string;
 }
 
-export interface AnimationContext {
+export interface VisitAnimation {
 	/** Whether this visit is animated. Default: `true` */
 	animate: boolean;
 	/** Whether to wait for the next page to load before starting the animation. Default: `false` */
@@ -43,21 +43,21 @@ export interface AnimationContext {
 	selector: Options['animationSelector'];
 }
 
-export interface ScrollContext {
+export interface VisitScroll {
 	/** Whether to reset the scroll position after the visit. Default: `true` */
 	reset: boolean;
 	/** Anchor element to scroll to on the next page. */
 	target?: string;
 }
 
-export interface TriggerContext {
+export interface VisitTrigger {
 	/** DOM element that triggered this visit. */
 	el?: Element;
 	/** DOM event that triggered this visit. */
 	event?: Event;
 }
 
-export interface HistoryContext {
+export interface VisitHistory {
 	/** History action to perform: `push` for creating a new history entry, `replace` for replacing the current entry. Default: `push` */
 	action: HistoryAction;
 	/** Whether this visit was triggered by a browser history navigation. */
@@ -66,7 +66,7 @@ export interface HistoryContext {
 	direction: HistoryDirection | undefined;
 }
 
-export interface ContextInitOptions {
+export interface VisitInitOptions {
 	to: string | undefined;
 	from?: string;
 	hash?: string;
@@ -79,7 +79,7 @@ export interface ContextInitOptions {
 	resetScroll?: boolean;
 }
 
-export function createContext(
+export function createVisit(
 	this: Swup,
 	{
 		to,
@@ -91,8 +91,8 @@ export function createContext(
 		event,
 		action = 'push',
 		resetScroll: reset = true
-	}: ContextInitOptions
-): Context {
+	}: VisitInitOptions
+): Visit {
 	return {
 		from: { url: from },
 		to: { url: to },
