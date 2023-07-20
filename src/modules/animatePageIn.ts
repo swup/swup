@@ -10,21 +10,22 @@ export const animatePageIn = async function (this: Swup) {
 		return;
 	}
 
-	const animation = this.hooks.trigger(
-		'animation:await',
-		{ direction: 'in' },
-		async (context, { direction }) => {
-			await this.awaitAnimations({ selector: context.animation.selector, direction });
+	const animation = this.hooks.call(
+		'animation:in:await',
+		{ skip: false },
+		async (context, { skip }) => {
+			if (skip) return;
+			await this.awaitAnimations({ selector: context.animation.selector });
 		}
 	);
 
 	await nextTick();
 
-	await this.hooks.trigger('animation:in:start', undefined, () => {
+	await this.hooks.call('animation:in:start', undefined, () => {
 		this.classes.remove('is-animating');
 	});
 
 	await animation;
 
-	await this.hooks.trigger('animation:in:end');
+	await this.hooks.call('animation:in:end');
 };

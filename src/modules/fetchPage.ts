@@ -36,7 +36,7 @@ export async function fetchPage(
 	if (this.cache.has(url)) {
 		const page = this.cache.get(url) as PageData;
 		if (options.triggerHooks !== false) {
-			await this.hooks.trigger('page:load', { page, cache: true });
+			await this.hooks.call('page:load', { page, cache: true });
 		}
 		return page;
 	}
@@ -45,7 +45,7 @@ export async function fetchPage(
 	options = { ...options, headers };
 
 	// Allow hooking before this and returning a custom response-like object (e.g. custom fetch implementation)
-	const response: Response = await this.hooks.trigger(
+	const response: Response = await this.hooks.call(
 		'fetch:request',
 		{ url, options },
 		(context, { url, options }) => fetch(url, options)
@@ -55,7 +55,7 @@ export async function fetchPage(
 	const html = await response.text();
 
 	if (status === 500) {
-		this.hooks.trigger('fetch:error', { status, response, url: responseUrl });
+		this.hooks.call('fetch:error', { status, response, url: responseUrl });
 		throw new FetchError(`Server error: ${responseUrl}`, { status, url: responseUrl });
 	}
 
@@ -73,7 +73,7 @@ export async function fetchPage(
 	}
 
 	if (options.triggerHooks !== false) {
-		await this.hooks.trigger('page:load', { page, cache: false });
+		await this.hooks.call('page:load', { page, cache: false });
 	}
 
 	return page;

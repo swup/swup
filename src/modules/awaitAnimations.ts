@@ -12,9 +12,8 @@ type AnimationStyleDeclarations = Pick<CSSStyleDeclaration, AnimationStyleKeys>;
 export type AnimationDirection = 'in' | 'out';
 
 /**
- * Return a Promise that resolves when all animations are done on the page.
- *
- * @note We don't make use of the `direction` argument, but it's required by JS plugin
+ * Return a Promise that resolves when all CSS animations and transitions
+ * are done on the page. Filters by selector or takes elements directly.
  */
 export async function awaitAnimations(
 	this: Swup,
@@ -24,10 +23,9 @@ export async function awaitAnimations(
 	}: {
 		selector: Options['animationSelector'];
 		elements?: NodeListOf<HTMLElement> | HTMLElement[];
-		direction?: AnimationDirection;
 	}
 ): Promise<void> {
-	// Allow usage of swup without animations
+	// Allow usage of swup without animations: { animationSelector: false }
 	if (selector === false && !elements) {
 		return;
 	}

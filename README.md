@@ -90,11 +90,11 @@ Take a look at the [interactive demos](https://swup.js.org/getting-started/demos
 
 ## Having trouble?
 
-If you're having trouble implementing swup, check out the [Common Issues](https://swup.js.org/other/common-issues) section of the docs, look at [closed issues](https://github.com/swup/swup/issues?q=is%3Aissue+is%3Aclosed) or create a [new discussion](https://github.com/swup/swup/discussions/new).
+If you're having trouble implementing swup, check out the [Common Issues](https://swup.js.org/getting-started/common-issues/) section of the docs, look at [closed issues](https://github.com/swup/swup/issues?q=is%3Aissue+is%3Aclosed) or create a [new discussion](https://github.com/swup/swup/discussions/new).
 
 ## Want to Contribute?
 
-<a href="https://github.com/swup/swup/discussions/424">We're looking for maintainers!</a>   👀
+[We're looking for maintainers!](https://github.com/swup/swup/discussions/424)   👀
 
 Become a sponsor on [Open Collective](https://opencollective.com/swup) or support development through
 [GitHub sponsors](https://github.com/sponsors/gmrchk).

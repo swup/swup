@@ -126,7 +126,7 @@ describe('Types', () => {
 		// @ts-expect-no-error
 		swup.hooks.on('history:popstate', (ctx: Context, { event: PopStateEvent }) => {});
 		// @ts-expect-no-error
-		await swup.hooks.trigger('history:popstate', { event: new PopStateEvent('') });
+		await swup.hooks.call('history:popstate', { event: new PopStateEvent('') });
 
 		try {
 			// @ts-expect-error
