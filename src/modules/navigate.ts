@@ -21,7 +21,7 @@ type VisitOptions = {
  * @param options Options for how to perform this visit.
  * @returns Promise<void>
  */
-export function visit(
+export function navigate(
 	this: Swup,
 	url: string,
 	options: VisitOptions & FetchOptions = {},
@@ -35,7 +35,7 @@ export function visit(
 
 	const { url: to, hash } = Location.fromUrl(url);
 	this.context = this.createContext({ ...context, to, hash });
-	this.performVisit(to, options);
+	this.performNavigation(to, options);
 }
 
 /**
@@ -43,19 +43,19 @@ export function visit(
  *
  * Internal method that assumes the global context has already been set up.
  *
- * As a user, you should call `swup.visit(url)` instead.
+ * As a user, you should call `swup.navigate(url)` instead.
  *
  * @param url The URL to navigate to.
  * @param options Options for how to perform this visit.
  * @returns Promise<void>
  */
-export async function performVisit(
+export async function performNavigation(
 	this: Swup,
 	url: string,
 	options: VisitOptions & FetchOptions = {}
 ) {
 	if (typeof url !== 'string') {
-		throw new Error(`swup.visit() requires a URL parameter`);
+		throw new Error(`swup.navigate() requires a URL parameter`);
 	}
 
 	const { el } = this.context.trigger;

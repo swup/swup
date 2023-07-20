@@ -87,7 +87,7 @@ describe('ignoreVisit', () => {
 	it('should be called from visit method', () => {
 		const ignoreVisit = vi.fn(() => true);
 		const swup = new Swup({ ignoreVisit });
-		swup.visit('/path/');
+		swup.navigate('/path/');
 
 		expect(ignoreVisit.mock.calls).toHaveLength(1);
 	});

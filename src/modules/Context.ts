@@ -1,5 +1,5 @@
 import Swup, { Options } from '../Swup.js';
-import { HistoryAction, HistoryDirection } from './visit.js';
+import { HistoryAction, HistoryDirection } from './navigate.js';
 
 export interface Context {
 	/** The previous page, about to leave */

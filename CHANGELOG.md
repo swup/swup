@@ -18,7 +18,7 @@ See the [release notes](https://swup.js.org/announcements/swup-4/) and
 - New hook system: `swup.hooks.on('page:view', () => {})`
 - Container selectors now only match a single element per selector
 - Custom animation attribute renamed to `data-swup-animation`
-- Navigation method renamed: `swup.visit(url)`
+- Navigation method renamed: `swup.navigate(url)`
 - Swup no longer adds `data-swup` attributes to containers
 - Use the global context instead of the `swup.transition` object
 - Simplified cache API: `cache.set(url, {})` and `cache.get(url)`

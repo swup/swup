@@ -11,7 +11,7 @@ import { Context, createContext } from './modules/Context.js';
 import { Hooks } from './modules/Hooks.js';
 import { getAnchorElement } from './modules/getAnchorElement.js';
 import { awaitAnimations } from './modules/awaitAnimations.js';
-import { visit, performVisit, HistoryAction } from './modules/visit.js';
+import { navigate, performNavigation } from './modules/navigate.js';
 import { fetchPage } from './modules/fetchPage.js';
 import { animatePageOut } from './modules/animatePageOut.js';
 import { replaceContent } from './modules/replaceContent.js';
@@ -67,8 +67,8 @@ export default class Swup {
 	/** Delegated event subscription handle */
 	private clickDelegate?: DelegateEventUnsubscribe;
 
-	visit = visit;
-	performVisit = performVisit;
+	navigate = navigate;
+	performNavigation = performNavigation;
 	animatePageOut = animatePageOut;
 	renderPage = renderPage;
 	replaceContent = replaceContent;
@@ -262,7 +262,7 @@ export default class Swup {
 			}
 
 			// Finally, proceed with loading the page
-			this.performVisit(url);
+			this.performNavigation(url);
 		});
 	}
 
@@ -319,7 +319,7 @@ export default class Swup {
 		// }
 
 		this.hooks.callSync('history:popstate', { event }, () => {
-			this.performVisit(url);
+			this.performNavigation(url);
 		});
 	}
 

@@ -119,7 +119,7 @@ Cypress.Commands.add('shouldAnimateWithDuration', function (durationInMs, url = 
 		this.swup.hooks.on('animation:skip', () => (durationIn = 0));
 		this.swup.hooks.on('animation:skip', () => (durationOut = 0));
 		url = url || window.location.href;
-		this.swup.visit(url);
+		this.swup.navigate(url);
 	});
 
 	cy.window().should(() => {
