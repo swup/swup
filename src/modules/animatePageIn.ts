@@ -11,11 +11,11 @@ export const animatePageIn = async function (this: Swup) {
 	}
 
 	const animation = this.hooks.trigger(
-		'animation:await',
-		{ direction: 'in', skip: false },
-		async (context, { direction, skip }) => {
+		'animation:in:await',
+		{ skip: false },
+		async (context, { skip }) => {
 			if (skip) return;
-			await this.awaitAnimations({ selector: context.animation.selector, direction });
+			await this.awaitAnimations({ selector: context.animation.selector });
 		}
 	);
 
