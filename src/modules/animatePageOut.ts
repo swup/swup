@@ -7,11 +7,11 @@ import { classify } from '../helpers.js';
  */
 export const animatePageOut = async function (this: Swup) {
 	if (!this.context.animation.animate) {
-		await this.hooks.trigger('animation:skip');
+		await this.hooks.call('animation:skip');
 		return;
 	}
 
-	await this.hooks.trigger('animation:out:start', undefined, () => {
+	await this.hooks.call('animation:out:start', undefined, () => {
 		this.classes.add('is-changing', 'is-leaving', 'is-animating');
 		if (this.context.history.popstate) {
 			this.classes.add('is-popstate');
@@ -21,7 +21,7 @@ export const animatePageOut = async function (this: Swup) {
 		}
 	});
 
-	await this.hooks.trigger(
+	await this.hooks.call(
 		'animation:await',
 		{ direction: 'out', skip: false },
 		async (context, { direction, skip }) => {
@@ -30,5 +30,5 @@ export const animatePageOut = async function (this: Swup) {
 		}
 	);
 
-	await this.hooks.trigger('animation:out:end');
+	await this.hooks.call('animation:out:end');
 };

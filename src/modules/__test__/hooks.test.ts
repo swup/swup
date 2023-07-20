@@ -37,14 +37,14 @@ describe('Hook registry', () => {
 		swup.hooks.on('enable', handler1);
 		swup.hooks.on('enable', handler2);
 
-		await swup.hooks.trigger('enable');
+		await swup.hooks.call('enable');
 
 		expect(handler1).toBeCalledTimes(1);
 		expect(handler2).toBeCalledTimes(1);
 
 		swup.hooks.off('enable', handler2);
 
-		await swup.hooks.trigger('enable');
+		await swup.hooks.call('enable');
 
 		expect(handler1).toBeCalledTimes(2);
 		expect(handler2).toBeCalledTimes(1);
@@ -60,14 +60,14 @@ describe('Hook registry', () => {
 
 		expect(unregister1).toBeTypeOf('function');
 
-		await swup.hooks.trigger('enable');
+		await swup.hooks.call('enable');
 
 		expect(handler1).toBeCalledTimes(1);
 		expect(handler2).toBeCalledTimes(1);
 
 		unregister2();
 
-		await swup.hooks.trigger('enable');
+		await swup.hooks.call('enable');
 
 		expect(handler1).toBeCalledTimes(2);
 		expect(handler2).toBeCalledTimes(1);
@@ -79,7 +79,7 @@ describe('Hook registry', () => {
 
 		swup.hooks.on('enable', handler);
 
-		await swup.hooks.trigger('enable');
+		await swup.hooks.call('enable');
 
 		expect(handler).toBeCalledTimes(1);
 	});
@@ -90,8 +90,8 @@ describe('Hook registry', () => {
 
 		swup.hooks.on('enable', handler, { once: true });
 
-		await swup.hooks.trigger('enable', undefined, () => {});
-		await swup.hooks.trigger('enable', undefined, () => {});
+		await swup.hooks.call('enable', undefined, () => {});
+		await swup.hooks.call('enable', undefined, () => {});
 
 		expect(handler).toBeCalledTimes(1);
 	});
@@ -102,8 +102,8 @@ describe('Hook registry', () => {
 
 		swup.hooks.once('enable', handler);
 
-		await swup.hooks.trigger('enable', undefined, () => {});
-		await swup.hooks.trigger('enable', undefined, () => {});
+		await swup.hooks.call('enable', undefined, () => {});
+		await swup.hooks.call('enable', undefined, () => {});
 
 		expect(handler).toBeCalledTimes(1);
 	});
@@ -112,7 +112,7 @@ describe('Hook registry', () => {
 		const swup = new Swup();
 		const handler = vi.fn();
 
-		await swup.hooks.trigger('enable', undefined, handler);
+		await swup.hooks.call('enable', undefined, handler);
 
 		expect(handler).toBeCalledTimes(1);
 	});
@@ -140,7 +140,7 @@ describe('Hook registry', () => {
 		swup.hooks.on('disable', handlers.normal, {});
 		swup.hooks.on('disable', handlers.after, {});
 
-		await swup.hooks.trigger('disable', undefined, handlers.original);
+		await swup.hooks.call('disable', undefined, handlers.original);
 
 		expect(called).toEqual(['before', 'original', 'normal', 'after']);
 	});
@@ -187,7 +187,7 @@ describe('Hook registry', () => {
 		swup.hooks.on('disable', handlers['8'], { priority: 4 });
 		swup.hooks.on('disable', handlers['7'], { priority: 4 });
 
-		await swup.hooks.trigger('disable', undefined, handlers['5']);
+		await swup.hooks.call('disable', undefined, handlers['5']);
 
 		expect(called).toEqual([2, 1, 5, 9, 4, 3, 8, 7]);
 	});
@@ -199,7 +199,7 @@ describe('Hook registry', () => {
 
 		swup.hooks.on('enable', customHandler, { replace: true });
 
-		await swup.hooks.trigger('enable', undefined, defaultHandler);
+		await swup.hooks.call('enable', undefined, defaultHandler);
 
 		expect(customHandler).toBeCalledTimes(1);
 		expect(defaultHandler).toBeCalledTimes(0);
@@ -213,7 +213,7 @@ describe('Hook registry', () => {
 
 		swup.hooks.on('enable', customHandler, { replace: true });
 
-		await swup.hooks.trigger('enable', undefined, defaultHandler);
+		await swup.hooks.call('enable', undefined, defaultHandler);
 
 		expect(customHandler).toBeCalledWith(ctx, undefined, defaultHandler);
 	});
@@ -226,7 +226,7 @@ describe('Hook registry', () => {
 
 		swup.hooks.on('enable', listener);
 
-		await swup.hooks.trigger('enable', undefined, handler);
+		await swup.hooks.call('enable', undefined, handler);
 
 		expect(listener).toBeCalledWith(ctx, undefined, undefined);
 	});
@@ -238,7 +238,7 @@ describe('Hook registry', () => {
 		const args = { event: new PopStateEvent('') };
 
 		swup.hooks.on('history:popstate', handler);
-		await swup.hooks.trigger('history:popstate', args);
+		await swup.hooks.call('history:popstate', args);
 
 		expect(handler).toBeCalledTimes(1);
 		expect(handler).toBeCalledWith(ctx, args, undefined);
@@ -255,13 +255,13 @@ describe('Types', () => {
 			(ctx: Context, { event }: { event: PopStateEvent }) => {}
 		);
 		// @ts-expect-no-error
-		await swup.hooks.trigger('history:popstate', { event: new PopStateEvent('') });
+		await swup.hooks.call('history:popstate', { event: new PopStateEvent('') });
 
 		// @ts-expect-error
 		swup.hooks.on('history:popstate', ({ event: MouseEvent }) => {});
 		// @ts-expect-error
 		swup.hooks.on('history:popstate', (ctx: Context, { event }: { event: MouseEvent }) => {});
 		// @ts-expect-error
-		await swup.hooks.trigger('history:popstate', { event: new MouseEvent('') });
+		await swup.hooks.call('history:popstate', { event: new MouseEvent('') });
 	});
 });

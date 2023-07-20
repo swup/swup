@@ -152,13 +152,13 @@ export default class Swup {
 		await nextTick();
 
 		// Trigger enable hook
-		await this.hooks.trigger('enable', undefined, () => {
+		await this.hooks.call('enable', undefined, () => {
 			// Add swup-enabled class to html tag
 			document.documentElement.classList.add('swup-enabled');
 		});
 
 		// Trigger page view hook
-		await this.hooks.trigger('page:view', { url: this.currentPageUrl, title: document.title });
+		await this.hooks.call('page:view', { url: this.currentPageUrl, title: document.title });
 	}
 
 	async destroy() {
@@ -175,7 +175,7 @@ export default class Swup {
 		this.options.plugins.forEach((plugin) => this.unuse(plugin));
 
 		// trigger disable hook
-		await this.hooks.trigger('disable', undefined, () => {
+		await this.hooks.call('disable', undefined, () => {
 			// remove swup-enabled class from html tag
 			document.documentElement.classList.remove('swup-enabled');
 		});
@@ -219,7 +219,7 @@ export default class Swup {
 
 		// Exit early if control key pressed
 		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
-			this.hooks.trigger('link:newtab', { href });
+			this.hooks.call('link:newtab', { href });
 			return;
 		}
 
@@ -228,7 +228,7 @@ export default class Swup {
 			return;
 		}
 
-		this.hooks.triggerSync('link:click', { el, event }, () => {
+		this.hooks.callSync('link:click', { el, event }, () => {
 			const from = this.context.from.url ?? '';
 
 			event.preventDefault();
@@ -237,7 +237,7 @@ export default class Swup {
 			if (!url || url === from) {
 				if (hash) {
 					updateHistoryRecord(url + hash);
-					this.hooks.triggerSync(
+					this.hooks.callSync(
 						'link:anchor',
 						{ hash, options: { behavior: 'auto' } },
 						(context, { hash, options }) => {
@@ -248,7 +248,7 @@ export default class Swup {
 						}
 					);
 				} else {
-					this.hooks.triggerSync('link:self', undefined, (context) => {
+					this.hooks.callSync('link:self', undefined, (context) => {
 						if (!context.scroll.reset) return;
 						window.scroll({ top: 0, left: 0, behavior: 'auto' });
 					});
@@ -318,7 +318,7 @@ export default class Swup {
 		// 	event.preventDefault();
 		// }
 
-		this.hooks.triggerSync('history:popstate', { event }, () => {
+		this.hooks.callSync('history:popstate', { event }, () => {
 			this.performVisit(url);
 		});
 	}

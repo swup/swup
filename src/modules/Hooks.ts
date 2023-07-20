@@ -277,15 +277,15 @@ export class Hooks {
 	 * @param defaultHandler A default implementation of this hook to execute
 	 * @returns The resolved return value of the executed default handler
 	 */
-	async trigger<T extends HookName>(
+	async call<T extends HookName>(
 		hook: T,
 		args?: HookArguments<T>,
 		defaultHandler?: Handler<T>
 	): Promise<any> {
 		const { before, handler, after, replaced } = this.getHandlers(hook, defaultHandler);
-		await this.execute(before, args);
-		const [result] = await this.execute(handler, args, replaced ? defaultHandler : undefined);
-		await this.execute(after, args);
+		await this.run(before, args);
+		const [result] = await this.run(handler, args, replaced ? defaultHandler : undefined);
+		await this.run(after, args);
 		this.dispatchDomEvent(hook, args);
 		return result;
 	}
@@ -298,15 +298,15 @@ export class Hooks {
 	 * @param defaultHandler A default implementation of this hook to execute
 	 * @returns The (possibly unresolved) return value of the executed default handler
 	 */
-	triggerSync<T extends HookName>(
+	callSync<T extends HookName>(
 		hook: T,
 		args?: HookArguments<T>,
 		defaultHandler?: Handler<T>
 	): any {
 		const { before, after, handler, replaced } = this.getHandlers(hook, defaultHandler);
-		this.executeSync(before, args);
-		const [result] = this.executeSync(handler, args, replaced ? defaultHandler : undefined);
-		this.executeSync(after, args);
+		this.runSync(before, args);
+		const [result] = this.runSync(handler, args, replaced ? defaultHandler : undefined);
+		this.runSync(after, args);
 		this.dispatchDomEvent(hook, args);
 		return result;
 	}
@@ -316,7 +316,7 @@ export class Hooks {
 	 * @param registrations The registrations (handler + options) to execute
 	 * @param args Arguments to pass to the handler
 	 */
-	async execute<T extends HookName>(
+	private async run<T extends HookName>(
 		registrations: HookRegistration<T>[],
 		args?: HookArguments<T>,
 		defaultHandler?: Handler<T>
@@ -337,7 +337,7 @@ export class Hooks {
 	 * @param registrations The registrations (handler + options) to execute
 	 * @param args Arguments to pass to the handler
 	 */
-	executeSync<T extends HookName>(
+	private runSync<T extends HookName>(
 		registrations: HookRegistration<T>[],
 		args?: HookArguments<T>,
 		defaultHandler?: Handler<T>
@@ -366,7 +366,7 @@ export class Hooks {
 	 * @returns An object with the handlers sorted into `before` and `after` arrays,
 	 *          as well as a flag indicating if the original handler was replaced
 	 */
-	getHandlers<T extends HookName>(hook: T, defaultHandler?: Handler<T>) {
+	private getHandlers<T extends HookName>(hook: T, defaultHandler?: Handler<T>) {
 		const ledger = this.get(hook);
 		if (!ledger) {
 			return { found: false, before: [], handler: [], after: [], replaced: false };
@@ -396,7 +396,10 @@ export class Hooks {
 	 * @param b The other registration object to compare with
 	 * @returns The sort direction
 	 */
-	sortRegistrations<T extends HookName>(a: HookRegistration<T>, b: HookRegistration<T>): number {
+	private sortRegistrations<T extends HookName>(
+		a: HookRegistration<T>,
+		b: HookRegistration<T>
+	): number {
 		const priority = (a.priority ?? 0) - (b.priority ?? 0);
 		const id = a.id - b.id;
 		return priority || id || 0;
@@ -406,7 +409,7 @@ export class Hooks {
 	 * Trigger a custom event on the `document`. Prefixed with `swup:`
 	 * @param hook Name of the hook to trigger.
 	 */
-	dispatchDomEvent<T extends HookName>(hook: T, args?: HookArguments<T>): void {
+	private dispatchDomEvent<T extends HookName>(hook: T, args?: HookArguments<T>): void {
 		const detail = { hook, args, context: this.swup.context };
 		document.dispatchEvent(new CustomEvent(`swup:${hook}`, { detail }));
 	}

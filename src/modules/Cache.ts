@@ -43,7 +43,7 @@ export class Cache {
 		url = this.resolve(url);
 		page = { ...page, url };
 		this.pages.set(url, page);
-		this.swup.hooks.triggerSync('cache:set', { page });
+		this.swup.hooks.callSync('cache:set', { page });
 	}
 
 	/** Update a cache record, overwriting or adding custom data. */
@@ -61,7 +61,7 @@ export class Cache {
 	/** Empty the cache. */
 	public clear(): void {
 		this.pages.clear();
-		this.swup.hooks.triggerSync('cache:clear');
+		this.swup.hooks.callSync('cache:clear');
 	}
 
 	/** Remove all cache entries that return true for a given predicate function.  */
