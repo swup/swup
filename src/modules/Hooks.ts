@@ -4,15 +4,15 @@ import Swup from '../Swup.js';
 import { isPromise, runAsPromise } from '../utils.js';
 import { Context } from './Context.js';
 import { FetchOptions, PageData } from './fetchPage.js';
-import { AnimationDirection } from './awaitAnimations.js';
 
 export interface HookDefinitions {
 	'animation:out:start': undefined;
+	'animation:out:await': { skip: boolean };
 	'animation:out:end': undefined;
 	'animation:in:start': undefined;
+	'animation:in:await': { skip: boolean };
 	'animation:in:end': undefined;
 	'animation:skip': undefined;
-	'animation:await': { direction: AnimationDirection; skip: boolean };
 	'cache:clear': undefined;
 	'cache:set': { page: PageData };
 	'content:replace': { page: PageData };
@@ -91,11 +91,12 @@ export class Hooks {
 	// https://stackoverflow.com/questions/53387838/how-to-ensure-an-arrays-values-the-keys-of-a-typescript-interface/53395649
 	readonly hooks: HookName[] = [
 		'animation:out:start',
+		'animation:out:await',
 		'animation:out:end',
 		'animation:in:start',
+		'animation:in:await',
 		'animation:in:end',
 		'animation:skip',
-		'animation:await',
 		'cache:clear',
 		'cache:set',
 		'content:replace',
@@ -423,8 +424,8 @@ export class Hooks {
 	}
 
 	/**
-	 * Trigger a custom event on the `document`. Prefixed with `swup:`
-	 * @param hook Name of the hook to trigger.
+	 * Dispatch a custom event on the `document` for a hook. Prefixed with `swup:`
+	 * @param hook Name of the hook.
 	 */
 	private dispatchDomEvent<T extends HookName>(hook: T, args?: HookArguments<T>): void {
 		const detail = { hook, args, context: this.swup.context };

@@ -21,14 +21,10 @@ export const animatePageOut = async function (this: Swup) {
 		}
 	});
 
-	await this.hooks.call(
-		'animation:await',
-		{ direction: 'out', skip: false },
-		async (context, { direction, skip }) => {
-			if (skip) return;
-			await this.awaitAnimations({ selector: context.animation.selector, direction });
-		}
-	);
+	await this.hooks.call('animation:out:await', { skip: false }, async (context, { skip }) => {
+		if (skip) return;
+		await this.awaitAnimations({ selector: context.animation.selector });
+	});
 
 	await this.hooks.call('animation:out:end');
 };
