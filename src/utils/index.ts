@@ -27,9 +27,9 @@ export function isPromise<T>(obj: any): obj is PromiseLike<T> {
 	);
 }
 
-export function runAsPromise(func: Function, args: any[] = [], ctx: any = {}): Promise<any> {
+export function runAsPromise(func: Function, args: any[] = []): Promise<any> {
 	return new Promise((resolve, reject) => {
-		const result = func.apply(ctx, args);
+		const result = func(...args);
 		if (isPromise(result)) {
 			result.then(resolve, reject);
 		} else {
