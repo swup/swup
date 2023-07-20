@@ -84,10 +84,10 @@ export async function performVisit(
 	}
 
 	try {
-		await this.hooks.trigger('visit:start');
+		await this.hooks.call('visit:start');
 
 		// Begin fetching page
-		const pagePromise = this.hooks.trigger(
+		const pagePromise = this.hooks.call(
 			'page:request',
 			{ url: this.context.to.url, options },
 			async (context, { options }) => await this.fetchPage(context.to.url as string, options)
@@ -123,7 +123,7 @@ export async function performVisit(
 		await this.animatePageIn();
 
 		// Finalize visit
-		await this.hooks.trigger('visit:end', undefined, () => this.classes.clear());
+		await this.hooks.call('visit:end', undefined, () => this.classes.clear());
 
 		// Reset context after visit?
 		// if (this.context.to && this.isSameResolvedUrl(this.context.to.url, requestedUrl)) {
