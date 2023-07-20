@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import Swup from '../../Swup.js';
 import { Cache, CacheData } from '../Cache.js';
-import { Context } from '../Context.js';
+import { Visit } from '../Visit.js';
 
 interface CacheTtlData {
 	ttl: number;
@@ -15,7 +15,7 @@ interface CacheIndexData {
 interface AugmentedCacheData extends CacheData, CacheTtlData, CacheIndexData {}
 
 const swup = new Swup();
-const ctx = swup.context;
+const visit = swup.visit;
 const cache = new Cache(swup);
 
 const page1 = { url: '/page-1', html: '1' };
@@ -82,7 +82,7 @@ describe('Cache', () => {
 		cache.set(page1.url, page1);
 
 		expect(handler).toBeCalledTimes(1);
-		expect(handler).toBeCalledWith(ctx, { page: page1 }, undefined);
+		expect(handler).toBeCalledWith(visit, { page: page1 }, undefined);
 	});
 
 	it('should allow augmenting cache entries on save', () => {
@@ -124,7 +124,7 @@ describe('Types', () => {
 		const cache = new Cache(swup);
 
 		// @ts-expect-no-error
-		swup.hooks.on('history:popstate', (ctx: Context, { event: PopStateEvent }) => {});
+		swup.hooks.on('history:popstate', (visit: Visit, { event: PopStateEvent }) => {});
 		// @ts-expect-no-error
 		await swup.hooks.call('history:popstate', { event: new PopStateEvent('') });
 
