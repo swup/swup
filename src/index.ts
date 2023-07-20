@@ -3,13 +3,13 @@ import type { Path } from 'path-to-regexp';
 import Swup, { type Options } from './Swup.js';
 import type { CacheData } from './modules/Cache.js';
 import type {
-	Context,
-	FromContext,
-	ToContext,
-	AnimationContext,
-	ScrollContext,
-	HistoryContext
-} from './modules/Context.js';
+	Visit,
+	VisitFrom,
+	VisitTo,
+	VisitAnimation,
+	VisitScroll,
+	VisitHistory
+} from './modules/Visit.js';
 import type {
 	HookDefinitions,
 	HookName,
@@ -28,12 +28,12 @@ export type {
 	Options,
 	Plugin,
 	CacheData,
-	Context,
-	FromContext,
-	ToContext,
-	AnimationContext,
-	ScrollContext,
-	HistoryContext,
+	Visit,
+	VisitFrom,
+	VisitTo,
+	VisitAnimation,
+	VisitScroll,
+	VisitHistory,
 	HookDefinitions,
 	HookName,
 	HookOptions,
