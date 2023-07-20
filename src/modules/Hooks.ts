@@ -67,6 +67,7 @@ export type HookRegistration<T extends HookName> = {
 	id: number;
 	hook: T;
 	handler: Handler<T>;
+	defaultHandler?: Handler<T>;
 } & HookOptions;
 
 type HookLedger<T extends HookName> = Map<Handler<T>, HookRegistration<T>>;
@@ -282,9 +283,9 @@ export class Hooks {
 		args?: HookArguments<T>,
 		defaultHandler?: Handler<T>
 	): Promise<any> {
-		const { before, handler, after, replaced } = this.getHandlers(hook, defaultHandler);
+		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
 		await this.run(before, args);
-		const [result] = await this.run(handler, args, replaced ? defaultHandler : undefined);
+		const [result] = await this.run(handler, args);
 		await this.run(after, args);
 		this.dispatchDomEvent(hook, args);
 		return result;
@@ -303,9 +304,9 @@ export class Hooks {
 		args?: HookArguments<T>,
 		defaultHandler?: Handler<T>
 	): any {
-		const { before, after, handler, replaced } = this.getHandlers(hook, defaultHandler);
+		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
 		this.runSync(before, args);
-		const [result] = this.runSync(handler, args, replaced ? defaultHandler : undefined);
+		const [result] = this.runSync(handler, args);
 		this.runSync(after, args);
 		this.dispatchDomEvent(hook, args);
 		return result;
@@ -318,11 +319,10 @@ export class Hooks {
 	 */
 	private async run<T extends HookName>(
 		registrations: HookRegistration<T>[],
-		args?: HookArguments<T>,
-		defaultHandler?: Handler<T>
+		args?: HookArguments<T>
 	): Promise<any> {
 		const results = [];
-		for (const { hook, handler, once } of registrations) {
+		for (const { hook, handler, defaultHandler, once } of registrations) {
 			const result = await runAsPromise(handler, [this.swup.context, args, defaultHandler]);
 			results.push(result);
 			if (once) {
@@ -339,11 +339,10 @@ export class Hooks {
 	 */
 	private runSync<T extends HookName>(
 		registrations: HookRegistration<T>[],
-		args?: HookArguments<T>,
-		defaultHandler?: Handler<T>
+		args?: HookArguments<T>
 	): any[] {
 		const results = [];
-		for (const { hook, handler, once } of registrations) {
+		for (const { hook, handler, defaultHandler, once } of registrations) {
 			const result = handler(this.swup.context, args as HookArguments<T>, defaultHandler);
 			results.push(result);
 			if (isPromise(result)) {
@@ -375,16 +374,34 @@ export class Hooks {
 		const sort = this.sortRegistrations;
 		const registrations = Array.from(ledger.values());
 
+		// Filter into before, after, and replace handlers
 		const before = registrations.filter(({ before, replace }) => before && !replace).sort(sort);
 		const replace = registrations.filter(({ replace }) => replace).sort(sort);
 		const after = registrations.filter(({ before, replace }) => !before && !replace).sort(sort);
 		const replaced = replace.length > 0;
 
+		// Define main handler registration
+		// This is an array to allow passing it into hooks.run() directly
 		let handler: HookRegistration<T>[] = [];
-		if (replaced) {
-			handler = [{ id: 0, hook, handler: replace[0].handler }];
-		} else if (defaultHandler) {
+		if (defaultHandler) {
 			handler = [{ id: 0, hook, handler: defaultHandler }];
+			if (replaced) {
+				const index = replace.length - 1;
+				const replacingHandler = replace[index].handler;
+				const createDefaultHandler = (index: number): Handler<T> | undefined => {
+					const next = replace[index - 1];
+					if (next) {
+						return (context, args) =>
+							next.handler(context, args, createDefaultHandler(index - 1));
+					} else {
+						return defaultHandler;
+					}
+				};
+				const nestedDefaultHandler = createDefaultHandler(index);
+				handler = [
+					{ id: 0, hook, handler: replacingHandler, defaultHandler: nestedDefaultHandler }
+				];
+			}
 		}
 
 		return { found: true, before, handler, after, replaced };

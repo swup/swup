@@ -36,7 +36,6 @@ describe('replaceContent', () => {
 			<div id="container-3" data-from="current"></div>
 		`);
 
-		console.debug(document.documentElement.querySelector('#container-1'));
 		const page = mockPage(/*html*/ `
 			<div id="container-1" data-from="incoming"></div>
 			<div id="container-2" data-from="incoming"></div>`);

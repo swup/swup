@@ -201,13 +201,30 @@ describe('Hook registry', () => {
 
 		await swup.hooks.call('enable', undefined, defaultHandler);
 
-		expect(customHandler).toBeCalledTimes(1);
 		expect(defaultHandler).toBeCalledTimes(0);
+		expect(customHandler).toBeCalledTimes(1);
+	});
+
+	it('should only execute the last replacing handler', async () => {
+		const swup = new Swup();
+		const firstHandler = vi.fn();
+		const secondHandler = vi.fn();
+		const defaultHandler = vi.fn();
+
+		swup.hooks.on('enable', firstHandler, { replace: true });
+		swup.hooks.on('enable', secondHandler, { replace: true });
+
+		await swup.hooks.call('enable', undefined, defaultHandler);
+
+		expect(defaultHandler).toBeCalledTimes(0);
+		expect(firstHandler).toBeCalledTimes(0);
+		expect(secondHandler).toBeCalledTimes(1);
 	});
 
 	it('should pass original handler into replacing handlers', async () => {
 		const swup = new Swup();
-		const customHandler = vi.fn();
+		const args = { foo: 'bar' };
+		const customHandler = vi.fn((c, a, handler) => handler(c, args));
 		const defaultHandler = vi.fn();
 		const ctx = swup.context;
 
@@ -216,6 +233,42 @@ describe('Hook registry', () => {
 		await swup.hooks.call('enable', undefined, defaultHandler);
 
 		expect(customHandler).toBeCalledWith(ctx, undefined, defaultHandler);
+		expect(defaultHandler).toBeCalledWith(ctx, args);
+	});
+
+	it('should return result of replacing handler', async () => {
+		const swup = new Swup();
+		const customHandler = vi.fn(async () => 'foo');
+		const defaultHandler = vi.fn(async () => 'bar');
+
+		swup.hooks.on('enable', customHandler, { replace: true });
+
+		const result = await swup.hooks.call('enable', undefined, defaultHandler);
+
+		expect(result).toEqual('foo');
+	});
+
+	it('should pass previous handler into nested replacing handlers', async () => {
+		const swup = new Swup();
+		const args1 = { foo: 'bar' };
+		const args2 = { foo: 'baz' };
+		const args3 = { foo: 'bag' };
+		const defaultHandler = vi.fn();
+		const firstHandler = vi.fn((c, a, handler) => handler(c, args1));
+		const secondHandler = vi.fn((c, a, handler) => handler(c, args2));
+		const thirdHandler = vi.fn((c, a, handler) => handler(c, args3, handler));
+		const ctx = swup.context;
+
+		swup.hooks.on('enable', firstHandler, { replace: true });
+		swup.hooks.on('enable', secondHandler, { replace: true });
+		swup.hooks.on('enable', thirdHandler, { replace: true });
+
+		await swup.hooks.call('enable', undefined, defaultHandler);
+
+		expect(defaultHandler).toBeCalledWith(ctx, args1);
+		expect(thirdHandler).toBeCalledWith(ctx, undefined, expect.any(Function));
+		expect(secondHandler).toBeCalledWith(ctx, args3, expect.any(Function));
+		expect(firstHandler).toBeCalledWith(ctx, args2, expect.any(Function));
 	});
 
 	it('should not pass original handler into normal handlers', async () => {
