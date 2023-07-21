@@ -10,24 +10,16 @@ describe('Request', function () {
 		cy.wrapSwupInstance();
 	});
 
-	it('should send the correct referer', function () {
-		const referer = `${baseUrl}/page-1.html`;
-		cy.intercept('GET', '/page-2.html').as('request');
-		cy.triggerClickOnLink('/page-2.html');
-		cy.wait('@request').its('request.headers.referer').should('eq', referer);
-	});
-
-	it('should send the correct request headers', function () {
-		const expected = this.swup.options.requestHeaders;
-		cy.intercept('GET', '/page-3.html').as('request');
-		cy.triggerClickOnLink('/page-3.html');
-		cy.wait('@request')
-			.its('request.headers')
-			.then((headers) => {
-				Object.entries(expected).forEach(([header, value]) => {
-					cy.wrap(headers).its(header.toLowerCase()).should('eq', value);
-				});
-			});
+	it('should force-load on timeout', function () {
+		cy.intercept({ pathname: '/page-2.html', times: 1 }, (req) => {
+			const { pathname: fixture } = new URL(req.url);
+			req.reply({ fixture, delay: 2000 });
+		});
+		cy.shouldHaveReloadedAfterAction(() => {
+			this.swup.options.timeout = 500;
+			this.swup.navigate('/page-2.html');
+		});
+		cy.shouldBeAtPage('/page-2.html');
 	});
 
 	it('should force-load on server error', function () {
@@ -44,6 +36,26 @@ describe('Request', function () {
 			this.swup.navigate('/error-network.html');
 		});
 		cy.shouldBeAtPage('/error-network.html');
+	});
+
+	it('should send the correct referer', function () {
+		const referer = `${baseUrl}/page-1.html`;
+		cy.intercept({ pathname: '/page-2.html', times: 1 }).as('request');
+		cy.triggerClickOnLink('/page-2.html');
+		cy.wait('@request').its('request.headers.referer').should('eq', referer);
+	});
+
+	it('should send the correct request headers', function () {
+		const expected = this.swup.options.requestHeaders;
+		cy.intercept({ pathname: '/page-3.html', times: 1 }).as('request');
+		cy.triggerClickOnLink('/page-3.html');
+		cy.wait('@request')
+			.its('request.headers')
+			.then((headers) => {
+				Object.entries(expected).forEach(([header, value]) => {
+					cy.wrap(headers).its(header.toLowerCase()).should('eq', value);
+				});
+			});
 	});
 });
 
@@ -65,7 +77,7 @@ describe('Fetch', function () {
 
 	it('should allow returning a page object to page:request', function () {
 		let requested = false;
-		cy.intercept('/page-2.html', (req) => {
+		cy.intercept('/page-2.html', { times: 1}, (req) => {
 			requested = true;
 		});
 
@@ -92,18 +104,6 @@ describe('Fetch', function () {
 
 		cy.shouldBeAtPage('/page-3.html');
 		cy.shouldHaveH1('Page 3');
-	});
-
-	it('should reload after timeout', function () {
-		cy.intercept('GET', '/*', async (req) => {
-			const { pathname: fixture } = new URL(req.url);
-			req.reply({ fixture, delay: 2000 });
-		});
-		this.swup.options.timeout = 500;
-		cy.shouldHaveReloadedAfterAction(() => {
-			this.swup.navigate('/page-2.html');
-		});
-		cy.shouldBeAtPage('/page-2.html');
 	});
 });
 

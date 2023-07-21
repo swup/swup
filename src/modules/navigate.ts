@@ -129,9 +129,9 @@ export async function performNavigation(
 		// if (this.visit.to && this.isSameResolvedUrl(this.visit.to.url, requestedUrl)) {
 		// 	this.createVisit({ to: undefined });
 		// }
-	} catch (error: unknown) {
-		// Return early if error is undefined (probably aborted preload request)
-		if (!error || (error as any)?.aborted) {
+	} catch (error: any) {
+		// Return early if error is undefined or signals an aborted request
+		if (!error || error?.aborted) {
 			return;
 		}
 
