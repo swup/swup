@@ -1,8 +1,8 @@
 {
   "name": "swup",
   "amdName": "Swup",
-  "version": "3.0.7",
-  "description": "Complete, flexible, extensible, and easy-to-use page transition library for your server-side rendered website.",
+  "version": "4.0.0-rc.26",
+  "description": "Versatile and extensible page transition library for server-rendered websites",
   "type": "module",
   "source": "./src/Swup.ts",
   "main": "./dist/Swup.cjs",
@@ -29,11 +29,12 @@
     "format": "npm run lint:ts && npm run lint:prettier -- --write",
     "lint:ts": "tsc --noEmit --skipLibCheck",
     "lint:prettier": "prettier 'src/**/*.ts'",
-    "prepublish": "npm run build",
+    "prepublishOnly": "npm run build",
     "postinstall": "opencollective-postinstall || true",
     "test": "npm run test:unit && npm run test:e2e",
     "test:ci": "npm run test:unit && npm run test:e2e:ci",
     "test:unit": "vitest run --config ./vitest/vitest.config.ts",
+    "test:unit:watch": "vitest --config ./vitest/vitest.config.ts",
     "test:e2e": "start-server-and-test test:e2e:start 8274 cy:run",
     "test:e2e:ci": "start-server-and-test test:e2e:start 8274 cy:run:record",
     "test:e2e:dev": "start-server-and-test test:e2e:start 8274 cy:open",
@@ -49,23 +50,25 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/gmrchk/swup.git"
+    "url": "https://github.com/swup/swup.git"
   },
   "keywords": [
     "css",
-    "animation",
     "page",
-    "transition"
+    "transition",
+    "animation"
   ],
   "dependencies": {
     "delegate-it": "^6.0.0",
-    "opencollective-postinstall": "^2.0.2"
+    "opencollective-postinstall": "^2.0.2",
+    "path-to-regexp": "^6.2.1"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.18.6",
     "@cypress/code-coverage": "^3.10.0",
     "@swup/browserslist-config": "^1.0.0",
     "@swup/prettier-config": "^1.0.0",
+    "@types/jsdom": "^21.1.1",
     "cypress": "^12.3.0",
     "http-server": "^14.1.1",
     "husky": "^8.0.0",

@@ -7,4 +7,4 @@ export { updateHistoryRecord } from './helpers/updateHistoryRecord.js';
 export { delegateEvent } from './helpers/delegateEvent.js';
 export { getCurrentUrl } from './helpers/getCurrentUrl.js';
 export { Location } from './helpers/Location.js';
-export { cleanupAnimationClasses } from './helpers/cleanupAnimationClasses.js';
+export { matchPath } from './helpers/matchPath.js';

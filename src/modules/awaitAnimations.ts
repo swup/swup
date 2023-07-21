@@ -9,64 +9,60 @@ type AnimationProperties = 'Delay' | 'Duration';
 type AnimationStyleKeys = `${AnimationTypes}${AnimationProperties}` | 'transitionProperty';
 type AnimationStyleDeclarations = Pick<CSSStyleDeclaration, AnimationStyleKeys>;
 
+export type AnimationDirection = 'in' | 'out';
+
 /**
- * Get an array of Promises that resolve when all animations are done on the page.
- * @note We don't make use of the `direction` argument, but it's required by JS plugin
+ * Return a Promise that resolves when all CSS animations and transitions
+ * are done on the page. Filters by selector or takes elements directly.
  */
-export function getAnimationPromises(
+export async function awaitAnimations(
 	this: Swup,
 	{
 		elements,
 		selector
 	}: {
 		selector: Options['animationSelector'];
-		elements?: HTMLElement[];
-		direction?: 'in' | 'out';
+		elements?: NodeListOf<HTMLElement> | HTMLElement[];
 	}
-): Promise<void>[] {
-	// Use array of a single resolved promise instead of an empty array to allow
-	// possible future use with Promise.race() which requires an actual value
-	const resolved = [Promise.resolve()];
-
-	// Allow usage of swup without animations
-	if (selector === false) {
-		return resolved;
+): Promise<void> {
+	// Allow usage of swup without animations: { animationSelector: false }
+	if (selector === false && !elements) {
+		return;
 	}
 
 	// Allow passing in elements
 	let animatedElements: HTMLElement[] = [];
 	if (elements) {
-		animatedElements = elements;
+		animatedElements = Array.from(elements);
 	} else if (selector) {
 		animatedElements = queryAll(selector, document.body);
+		// Warn if no elements match the selector, but keep things going
+		if (!animatedElements.length) {
+			console.warn(`[swup] No elements found matching animationSelector \`${selector}\``);
+			return;
+		}
 	}
 
-	// Warn if no elements match the selector, but keep things going
-	if (!animatedElements.length) {
-		console.warn(`[swup] No elements found matching animationSelector \`${selector}\``);
-		return resolved;
+	const awaitedAnimations = animatedElements.map((el) => awaitAnimationsOnElement(el));
+	const hasAnimations = awaitedAnimations.filter(Boolean).length > 0;
+	if (!hasAnimations) {
+		if (selector) {
+			console.warn(
+				`[swup] No CSS animation duration defined on elements matching \`${selector}\``
+			);
+		}
+		return;
 	}
 
-	const animationPromises = animatedElements
-		.map((element) => getAnimationPromiseForElement(element))
-		.filter(Boolean) as Promise<void>[];
-
-	if (!animationPromises.length) {
-		console.warn(
-			`[swup] No CSS animation duration defined on elements matching \`${selector}\``
-		);
-		return resolved;
-	}
-
-	return animationPromises;
+	await Promise.all(awaitedAnimations);
 }
 
-function getAnimationPromiseForElement(element: Element): Promise<void> | undefined {
+function awaitAnimationsOnElement(element: Element): Promise<void> | false {
 	const { type, timeout, propCount } = getTransitionInfo(element);
 
 	// Resolve immediately if no transition defined
 	if (!type || !timeout) {
-		return undefined;
+		return false;
 	}
 
 	return new Promise((resolve) => {

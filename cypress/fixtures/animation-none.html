@@ -3,17 +3,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Transition duration: complex</title>
+    <title>Animation duration: none</title>
     <link rel="stylesheet" href="/assets/main.css">
     <script src="/dist/Swup.umd.js"></script>
     <style>
-        .transition-default {
-            transition: opacity 100ms 200ms, transform 400ms 200ms;
-            opacity: 1;
-        }
-        html.is-animating .transition-default {
-            transform: translateY(10px);
-            opacity: 0;
+        .transition-none {
+            transition: none;
         }
     </style>
 </head>
@@ -25,8 +20,8 @@
             <li><a href="/page-3.html">Page 3</a></li>
         </ul>
     </header>
-    <main id="swup" class="wrapper transition-default">
-        <h1>Transition duration: complex</h1>
+    <main id="swup" class="wrapper transition-none">
+        <h1>Animation duration: none</h1>
     </main>
     <script>
         window._swup = new Swup();

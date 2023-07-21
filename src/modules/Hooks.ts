@@ -1,55 +1,65 @@
 import { DelegateEvent } from 'delegate-it';
 
-import Swup, { Options } from '../Swup.js';
+import Swup from '../Swup.js';
 import { isPromise, runAsPromise } from '../utils.js';
-import { Context } from './Context.js';
+import { Visit } from './Visit.js';
 import { FetchOptions, PageData } from './fetchPage.js';
 
 export interface HookDefinitions {
-	animationInDone: undefined;
-	animationInStart: undefined;
-	animationOutDone: undefined;
-	animationOutStart: undefined;
-	animationSkipped: undefined;
-	awaitAnimation: { selector: Options['animationSelector'] };
-	cacheCleared: undefined;
-	clickLink: { event: DelegateEvent<MouseEvent> };
-	disabled: undefined;
-	enabled: undefined;
-	fetchPage: { url: string; options: FetchOptions; response?: Response | Promise<Response> };
-	loadPage: { url: string; options: FetchOptions; page?: PageData | Promise<PageData> };
-	openPageInNewTab: { href: string };
-	pageCached: { page: PageData };
-	pageLoaded: { page: PageData; cache?: boolean };
-	pageView: { url: string; title: string };
-	popState: { event: PopStateEvent };
-	replaceContent: { page: PageData; containers: Options['containers'] };
-	samePage: undefined;
-	samePageWithHash: { hash: string; options: ScrollIntoViewOptions };
-	scrollToContent: { options: ScrollIntoViewOptions };
-	serverError: { url: string; status: number; response: Response };
-	transitionStart: undefined;
-	transitionEnd: undefined;
-	urlUpdated: { url: string };
+	'animation:out:start': undefined;
+	'animation:out:await': { skip: boolean };
+	'animation:out:end': undefined;
+	'animation:in:start': undefined;
+	'animation:in:await': { skip: boolean };
+	'animation:in:end': undefined;
+	'animation:skip': undefined;
+	'cache:clear': undefined;
+	'cache:set': { page: PageData };
+	'content:replace': { page: PageData };
+	'content:scroll': { options: ScrollIntoViewOptions };
+	'enable': undefined;
+	'disable': undefined;
+	'fetch:request': { url: string; options: FetchOptions };
+	'fetch:error': { url: string; status: number; response: Response };
+	'history:popstate': { event: PopStateEvent };
+	'link:click': { el: HTMLAnchorElement; event: DelegateEvent<MouseEvent> };
+	'link:self': undefined;
+	'link:anchor': { hash: string; options: ScrollIntoViewOptions };
+	'link:newtab': { href: string };
+	'page:request': { url: string; options: FetchOptions };
+	'page:load': { page: PageData; cache?: boolean };
+	'page:view': { url: string; title: string };
+	'visit:start': undefined;
+	'visit:end': undefined;
 }
 
-export type HookData<T extends HookName> = HookDefinitions[T];
+export type HookArguments<T extends HookName> = HookDefinitions[T];
 
 export type HookName = keyof HookDefinitions;
 
 export type Handler<T extends HookName> = (
-	context: Context,
-	data: HookData<T>
+	/** Context about the current visit */
+	visit: Visit,
+	/** Local arguments passed into the handler */
+	args: HookArguments<T>,
+	/** Default handler to be executed, available if replacing an internal hook handler */
+	defaultHandler?: Handler<T>
 ) => Promise<any> | void;
 
 export type Handlers = {
 	[K in HookName]: Handler<K>[];
 };
 
+export type HookUnregister = () => void;
+
 export type HookOptions = {
+	/** Execute the hook once, then remove the handler */
 	once?: boolean;
+	/** Execute the hook before the internal default handler */
 	before?: boolean;
+	/** Set a priority for when to execute this hook. Lower numbers execute first. Default: `0` */
 	priority?: number;
+	/** Replace the internal default handler with this hook handler */
 	replace?: boolean;
 };
 
@@ -57,6 +67,7 @@ export type HookRegistration<T extends HookName> = {
 	id: number;
 	hook: T;
 	handler: Handler<T>;
+	defaultHandler?: Handler<T>;
 } & HookOptions;
 
 type HookLedger<T extends HookName> = Map<Handler<T>, HookRegistration<T>>;
@@ -79,31 +90,31 @@ export class Hooks {
 	// Can we deduplicate this somehow? Or make it error when not in sync with HookDefinitions?
 	// https://stackoverflow.com/questions/53387838/how-to-ensure-an-arrays-values-the-keys-of-a-typescript-interface/53395649
 	readonly hooks: HookName[] = [
-		'animationInDone',
-		'animationInStart',
-		'animationOutDone',
-		'animationOutStart',
-		'animationSkipped',
-		'awaitAnimation',
-		'cacheCleared',
-		'clickLink',
-		'disabled',
-		'enabled',
-		'fetchPage',
-		'loadPage',
-		'openPageInNewTab',
-		'pageCached',
-		'pageLoaded',
-		'pageView',
-		'popState',
-		'replaceContent',
-		'samePage',
-		'samePageWithHash',
-		'scrollToContent',
-		'serverError',
-		'transitionStart',
-		'transitionEnd',
-		'urlUpdated'
+		'animation:out:start',
+		'animation:out:await',
+		'animation:out:end',
+		'animation:in:start',
+		'animation:in:await',
+		'animation:in:end',
+		'animation:skip',
+		'cache:clear',
+		'cache:set',
+		'content:replace',
+		'content:scroll',
+		'enable',
+		'disable',
+		'fetch:request',
+		'fetch:error',
+		'history:popstate',
+		'link:click',
+		'link:self',
+		'link:anchor',
+		'link:newtab',
+		'page:request',
+		'page:load',
+		'page:view',
+		'visit:start',
+		'visit:end'
 	];
 
 	constructor(swup: Swup) {
@@ -121,9 +132,9 @@ export class Hooks {
 	/**
 	 * Register a new hook.
 	 */
-	create(hook: HookName) {
-		if (!this.registry.has(hook)) {
-			this.registry.set(hook, new Map());
+	create(hook: string) {
+		if (!this.registry.has(hook as HookName)) {
+			this.registry.set(hook as HookName, new Map());
 		}
 	}
 
@@ -141,9 +152,8 @@ export class Hooks {
 		const ledger = this.registry.get(hook);
 		if (ledger) {
 			return ledger;
-		} else {
-			console.error(`Unknown hook '${hook}'`);
 		}
+		console.error(`Unknown hook '${hook}'`);
 	}
 
 	/**
@@ -163,21 +173,26 @@ export class Hooks {
 	 *                - `before`: Execute the handler before the default handler
 	 *                - `priority`: Specify the order in which the handlers are executed
 	 *                - `replace`: Replace the default handler with this handler
-	 * @returns The handler function
+	 * @returns A function to unregister the handler
 	 */
-	on<T extends HookName>(hook: T, handler: Handler<T>): Handler<T>;
-	on<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions): Handler<T>;
-	on<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions = {}): Handler<T> {
+	on<T extends HookName>(hook: T, handler: Handler<T>): HookUnregister;
+	on<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions): HookUnregister;
+	on<T extends HookName>(
+		hook: T,
+		handler: Handler<T>,
+		options: HookOptions = {}
+	): HookUnregister {
 		const ledger = this.get(hook);
 		if (!ledger) {
 			console.warn(`Hook '${hook}' not found.`);
-			return handler;
+			return () => {};
 		}
 
 		const id = ledger.size + 1;
 		const registration: HookRegistration<T> = { ...options, id, hook, handler };
 		ledger.set(handler, registration);
-		return handler;
+
+		return () => this.off(hook, handler);
 	}
 
 	/**
@@ -186,16 +201,16 @@ export class Hooks {
 	 * @param hook Name of the hook to listen for
 	 * @param handler The handler function to execute
 	 * @param options Any other event options (see `hooks.on()` for details)
-	 * @returns The handler function
+	 * @returns A function to unregister the handler
 	 * @see on
 	 */
-	before<T extends HookName>(hook: T, handler: Handler<T>): Handler<T>;
-	before<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions): Handler<T>;
+	before<T extends HookName>(hook: T, handler: Handler<T>): HookUnregister;
+	before<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions): HookUnregister;
 	before<T extends HookName>(
 		hook: T,
 		handler: Handler<T>,
 		options: HookOptions = {}
-	): Handler<T> {
+	): HookUnregister {
 		return this.on(hook, handler, { ...options, before: true });
 	}
 
@@ -205,16 +220,16 @@ export class Hooks {
 	 * @param hook Name of the hook to listen for
 	 * @param handler The handler function to execute instead of the default handler
 	 * @param options Any other event options (see `hooks.on()` for details)
-	 * @returns The handler function
+	 * @returns A function to unregister the handler
 	 * @see on
 	 */
-	replace<T extends HookName>(hook: T, handler: Handler<T>): Handler<T>;
-	replace<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions): Handler<T>;
+	replace<T extends HookName>(hook: T, handler: Handler<T>): HookUnregister;
+	replace<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions): HookUnregister;
 	replace<T extends HookName>(
 		hook: T,
 		handler: Handler<T>,
 		options: HookOptions = {}
-	): Handler<T> {
+	): HookUnregister {
 		return this.on(hook, handler, { ...options, replace: true });
 	}
 
@@ -226,9 +241,13 @@ export class Hooks {
 	 * @param options Any other event options (see `hooks.on()` for details)
 	 * @see on
 	 */
-	once<T extends HookName>(hook: T, handler: Handler<T>): Handler<T>;
-	once<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions): Handler<T>;
-	once<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions = {}): Handler<T> {
+	once<T extends HookName>(hook: T, handler: Handler<T>): HookUnregister;
+	once<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions): HookUnregister;
+	once<T extends HookName>(
+		hook: T,
+		handler: Handler<T>,
+		options: HookOptions = {}
+	): HookUnregister {
 		return this.on(hook, handler, { ...options, once: true });
 	}
 
@@ -242,7 +261,6 @@ export class Hooks {
 	off<T extends HookName>(hook: T, handler: Handler<T>): void;
 	off<T extends HookName>(hook: T, handler?: Handler<T>): void {
 		const ledger = this.get(hook);
-
 		if (ledger && handler) {
 			const deleted = ledger.delete(handler);
 			if (!deleted) {
@@ -257,20 +275,20 @@ export class Hooks {
 	 * Trigger a hook asynchronously, executing its default handler and all registered handlers.
 	 * Will execute all handlers in order and `await` any `Promise`s they return.
 	 * @param hook Name of the hook to trigger
-	 * @param data Data to pass to the handler
+	 * @param args Arguments to pass to the handler
 	 * @param defaultHandler A default implementation of this hook to execute
 	 * @returns The resolved return value of the executed default handler
 	 */
-	async trigger<T extends HookName>(
+	async call<T extends HookName>(
 		hook: T,
-		data?: HookData<T>,
+		args?: HookArguments<T>,
 		defaultHandler?: Handler<T>
 	): Promise<any> {
 		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
-		await this.execute(before, data);
-		const [result] = await this.execute(handler, data);
-		await this.execute(after, data);
-		this.dispatchDomEvent(hook);
+		await this.run(before, args);
+		const [result] = await this.run(handler, args);
+		await this.run(after, args);
+		this.dispatchDomEvent(hook, args);
 		return result;
 	}
 
@@ -278,31 +296,35 @@ export class Hooks {
 	 * Trigger a hook synchronously, executing its default handler and all registered handlers.
 	 * Will execute all handlers in order, but will **not** `await` any `Promise`s they return.
 	 * @param hook Name of the hook to trigger
-	 * @param data Data to pass to the handler
+	 * @param args Arguments to pass to the handler
 	 * @param defaultHandler A default implementation of this hook to execute
 	 * @returns The (possibly unresolved) return value of the executed default handler
 	 */
-	triggerSync<T extends HookName>(hook: T, data?: HookData<T>, defaultHandler?: Handler<T>): any {
-		const { before, after, handler } = this.getHandlers(hook, defaultHandler);
-		this.executeSync(before, data);
-		const [result] = this.executeSync(handler, data);
-		this.executeSync(after, data);
-		this.dispatchDomEvent(hook);
+	callSync<T extends HookName>(
+		hook: T,
+		args?: HookArguments<T>,
+		defaultHandler?: Handler<T>
+	): any {
+		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
+		this.runSync(before, args);
+		const [result] = this.runSync(handler, args);
+		this.runSync(after, args);
+		this.dispatchDomEvent(hook, args);
 		return result;
 	}
 
 	/**
 	 * Execute the handlers for a hook, in order, as `Promise`s that will be `await`ed.
 	 * @param registrations The registrations (handler + options) to execute
-	 * @param data Data to pass to the handlers
+	 * @param args Arguments to pass to the handler
 	 */
-	async execute<T extends HookName>(
+	private async run<T extends HookName>(
 		registrations: HookRegistration<T>[],
-		data?: HookData<T>
+		args?: HookArguments<T>
 	): Promise<any> {
 		const results = [];
-		for (const { hook, handler, once } of registrations) {
-			const result = await runAsPromise(handler, [this.swup.context, data]);
+		for (const { hook, handler, defaultHandler, once } of registrations) {
+			const result = await runAsPromise(handler, [this.swup.visit, args, defaultHandler]);
 			results.push(result);
 			if (once) {
 				this.off(hook, handler);
@@ -314,15 +336,15 @@ export class Hooks {
 	/**
 	 * Execute the handlers for a hook, in order, without `await`ing any returned `Promise`s.
 	 * @param registrations The registrations (handler + options) to execute
-	 * @param data Data to pass to the handlers
+	 * @param args Arguments to pass to the handler
 	 */
-	executeSync<T extends HookName>(
+	private runSync<T extends HookName>(
 		registrations: HookRegistration<T>[],
-		data?: HookData<T>
+		args?: HookArguments<T>
 	): any[] {
 		const results = [];
-		for (const { hook, handler, once } of registrations) {
-			const result = handler(this.swup.context, data as HookData<T>);
+		for (const { hook, handler, defaultHandler, once } of registrations) {
+			const result = handler(this.swup.visit, args as HookArguments<T>, defaultHandler);
 			results.push(result);
 			if (isPromise(result)) {
 				console.warn(
@@ -344,7 +366,7 @@ export class Hooks {
 	 * @returns An object with the handlers sorted into `before` and `after` arrays,
 	 *          as well as a flag indicating if the original handler was replaced
 	 */
-	getHandlers<T extends HookName>(hook: T, defaultHandler?: Handler<T>) {
+	private getHandlers<T extends HookName>(hook: T, defaultHandler?: Handler<T>) {
 		const ledger = this.get(hook);
 		if (!ledger) {
 			return { found: false, before: [], handler: [], after: [], replaced: false };
@@ -353,16 +375,34 @@ export class Hooks {
 		const sort = this.sortRegistrations;
 		const registrations = Array.from(ledger.values());
 
+		// Filter into before, after, and replace handlers
 		const before = registrations.filter(({ before, replace }) => before && !replace).sort(sort);
 		const replace = registrations.filter(({ replace }) => replace).sort(sort);
 		const after = registrations.filter(({ before, replace }) => !before && !replace).sort(sort);
 		const replaced = replace.length > 0;
 
+		// Define main handler registration
+		// This is an array to allow passing it into hooks.run() directly
 		let handler: HookRegistration<T>[] = [];
-		if (replaced) {
-			handler = [{ id: 0, hook, handler: replace[0].handler }];
-		} else if (defaultHandler) {
+		if (defaultHandler) {
 			handler = [{ id: 0, hook, handler: defaultHandler }];
+			if (replaced) {
+				const index = replace.length - 1;
+				const replacingHandler = replace[index].handler;
+				const createDefaultHandler = (index: number): Handler<T> | undefined => {
+					const next = replace[index - 1];
+					if (next) {
+						return (visit, args) =>
+							next.handler(visit, args, createDefaultHandler(index - 1));
+					} else {
+						return defaultHandler;
+					}
+				};
+				const nestedDefaultHandler = createDefaultHandler(index);
+				handler = [
+					{ id: 0, hook, handler: replacingHandler, defaultHandler: nestedDefaultHandler }
+				];
+			}
 		}
 
 		return { found: true, before, handler, after, replaced };
@@ -374,17 +414,21 @@ export class Hooks {
 	 * @param b The other registration object to compare with
 	 * @returns The sort direction
 	 */
-	sortRegistrations<T extends HookName>(a: HookRegistration<T>, b: HookRegistration<T>): number {
-		const priority = (b.priority ?? 0) - (a.priority ?? 0);
+	private sortRegistrations<T extends HookName>(
+		a: HookRegistration<T>,
+		b: HookRegistration<T>
+	): number {
+		const priority = (a.priority ?? 0) - (b.priority ?? 0);
 		const id = a.id - b.id;
 		return priority || id || 0;
 	}
 
 	/**
-	 * Trigger a custom event on the `document`. Prefixed with `swup:`
-	 * @param hook Name of the hook to trigger.
+	 * Dispatch a custom event on the `document` for a hook. Prefixed with `swup:`
+	 * @param hook Name of the hook.
 	 */
-	dispatchDomEvent<T extends HookName>(hook: T): void {
-		document.dispatchEvent(new CustomEvent(`swup:${hook}`, { detail: hook }));
+	private dispatchDomEvent<T extends HookName>(hook: T, args?: HookArguments<T>): void {
+		const detail = { hook, args, visit: this.swup.visit };
+		document.dispatchEvent(new CustomEvent(`swup:${hook}`, { detail }));
 	}
 }

@@ -9,10 +9,12 @@ export const queryAll = (
 	return Array.from(context.querySelectorAll(selector));
 };
 
-export const nextTick = (callback: () => void) => {
-	requestAnimationFrame(() => {
+export const nextTick = (): Promise<void> => {
+	return new Promise((resolve) => {
 		requestAnimationFrame(() => {
-			callback();
+			requestAnimationFrame(() => {
+				resolve();
+			});
 		});
 	});
 };
@@ -25,9 +27,9 @@ export function isPromise<T>(obj: any): obj is PromiseLike<T> {
 	);
 }
 
-export function runAsPromise(func: Function, args: any[] = [], ctx: any = {}): Promise<any> {
+export function runAsPromise(func: Function, args: any[] = []): Promise<any> {
 	return new Promise((resolve, reject) => {
-		const result = func.apply(ctx, args);
+		const result = func(...args);
 		if (isPromise(result)) {
 			result.then(resolve, reject);
 		} else {
@@ -36,13 +38,22 @@ export function runAsPromise(func: Function, args: any[] = [], ctx: any = {}): P
 	});
 }
 
+/**
+ * Force a layout reflow, e.g. after adding classnames
+ * @returns The offset height, just here so it doesn't get optimized away by the JS engine
+ * @see https://stackoverflow.com/a/21665117/3759615
+ */
+export function forceReflow(element?: HTMLElement) {
+	element = element || document.body;
+	return element?.offsetHeight;
+}
+
 export const escapeCssIdentifier = (ident: string) => {
 	// @ts-ignore this is for support check, so it's correct that TS complains
 	if (window.CSS && window.CSS.escape) {
 		return CSS.escape(ident);
-	} else {
-		return ident;
 	}
+	return ident;
 };
 
 // Fix for Chrome below v61 formatting CSS floats with comma in some locales

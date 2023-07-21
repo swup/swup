@@ -39,12 +39,12 @@ export async function fetchPage(
 	url: URL | string,
 	options: FetchOptions & { triggerHooks?: boolean } = {}
 ): Promise<PageData> {
-	const { url: requestUrl } = Location.fromUrl(url);
+	url = Location.fromUrl(url).url;
 
-	if (this.cache.has(requestUrl)) {
-		const page = this.cache.get(requestUrl) as PageData;
+	if (this.cache.has(url)) {
+		const page = this.cache.get(url) as PageData;
 		if (options.triggerHooks !== false) {
-			await this.hooks.trigger('pageLoaded', { page, cache: true });
+			await this.hooks.call('page:load', { page, cache: true });
 		}
 		return page;
 	}
@@ -68,21 +68,21 @@ export async function fetchPage(
 	// Allow hooking before this and returning a custom response-like object (e.g. custom fetch implementation)
 	let response: Response;
 	try {
-		response = await this.hooks.trigger(
-			'fetchPage',
-			{ url: requestUrl, options },
-			async (context, { url, options, response }) => await (response || fetch(url, options))
+		response = await this.hooks.call(
+			'fetch:request',
+			{ url, options },
+			(visit, { url, options }) => fetch(url, options)
 		);
 		if (timeoutId) {
 			clearTimeout(timeoutId);
 		}
 	} catch (error: any) {
 		if (timedOut) {
-			throw new FetchError(`Request timed out: ${requestUrl}`, { url: requestUrl, timedOut });
+			throw new FetchError(`Request timed out: ${url}`, { url, timedOut });
 		}
 		if (error?.name === 'AbortError' || signal.aborted) {
-			throw new FetchError(`Request aborted: ${requestUrl}`, {
-				url: requestUrl,
+			throw new FetchError(`Request aborted: ${url}`, {
+				url: url,
 				aborted: true
 			});
 		}
@@ -93,7 +93,7 @@ export async function fetchPage(
 	const html = await response.text();
 
 	if (status === 500) {
-		this.hooks.trigger('serverError', { status, response, url: responseUrl });
+		this.hooks.call('fetch:error', { status, response, url: responseUrl });
 		throw new FetchError(`Server error: ${responseUrl}`, { status, url: responseUrl });
 	}
 
@@ -102,16 +102,16 @@ export async function fetchPage(
 	}
 
 	// Resolve real url after potential redirect
-	const { url: finalUrl } = new Location(responseUrl);
+	const { url: finalUrl } = Location.fromUrl(responseUrl);
 	const page = { url: finalUrl, html };
 
 	// Only save cache entry for non-redirects
-	if (requestUrl === finalUrl) {
+	if (url === finalUrl) {
 		this.cache.set(page.url, page);
 	}
 
 	if (options.triggerHooks !== false) {
-		await this.hooks.trigger('pageLoaded', { page, cache: false });
+		await this.hooks.call('page:load', { page, cache: false });
 	}
 
 	return page;
