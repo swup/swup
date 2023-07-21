@@ -101,7 +101,7 @@ describe('Fetch', function () {
 		});
 		this.swup.options.timeout = 500;
 		cy.shouldHaveReloadedAfterAction(() => {
-			this.swup.loadPage('/page-2.html');
+			this.swup.navigate('/page-2.html');
 		});
 		cy.shouldBeAtPage('/page-2.html');
 	});
