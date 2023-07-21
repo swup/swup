@@ -78,6 +78,7 @@ export async function fetchPage(
 		}
 	} catch (error: any) {
 		if (timedOut) {
+			this.hooks.call('fetch:timeout', { url });
 			throw new FetchError(`Request timed out: ${url}`, { url, timedOut });
 		}
 		if (error?.name === 'AbortError' || signal.aborted) {

@@ -21,6 +21,7 @@ export interface HookDefinitions {
 	'disable': undefined;
 	'fetch:request': { url: string; options: FetchOptions };
 	'fetch:error': { url: string; status: number; response: Response };
+	'fetch:timeout': { url: string };
 	'history:popstate': { event: PopStateEvent };
 	'link:click': { el: HTMLAnchorElement; event: DelegateEvent<MouseEvent> };
 	'link:self': undefined;
@@ -105,6 +106,7 @@ export class Hooks {
 		'disable',
 		'fetch:request',
 		'fetch:error',
+		'fetch:timeout',
 		'history:popstate',
 		'link:click',
 		'link:self',
