@@ -130,7 +130,7 @@ export class Hooks {
 	}
 
 	/**
-	 * Register a new hook.
+	 * Create a new hook type.
 	 */
 	create(hook: string) {
 		if (!this.registry.has(hook as HookName)) {
@@ -139,9 +139,9 @@ export class Hooks {
 	}
 
 	/**
-	 * Check if a hook is registered.
+	 * Check if a hook type exists.
 	 */
-	has(hook: HookName): boolean {
+	exists(hook: HookName): boolean {
 		return this.registry.has(hook);
 	}
 
