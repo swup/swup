@@ -89,7 +89,7 @@ export class Hooks {
 
 	// Can we deduplicate this somehow? Or make it error when not in sync with HookDefinitions?
 	// https://stackoverflow.com/questions/53387838/how-to-ensure-an-arrays-values-the-keys-of-a-typescript-interface/53395649
-	readonly hooks: HookName[] = [
+	protected readonly hooks: HookName[] = [
 		'animation:out:start',
 		'animation:out:await',
 		'animation:out:end',
