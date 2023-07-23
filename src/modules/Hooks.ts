@@ -37,12 +37,13 @@ export type HookArguments<T extends HookName> = HookDefinitions[T];
 
 export type HookName = keyof HookDefinitions;
 
+/** A hook handler. */
 export type Handler<T extends HookName> = (
-	/** Context about the current visit */
+	/** Context about the current visit. */
 	visit: Visit,
-	/** Local arguments passed into the handler */
+	/** Local arguments passed into the handler. */
 	args: HookArguments<T>,
-	/** Default handler to be executed, available if replacing an internal hook handler */
+	/** Default handler to be executed. Available if replacing an internal hook handler. */
 	defaultHandler?: Handler<T>
 ) => Promise<any> | void;
 
@@ -50,8 +51,10 @@ export type Handlers = {
 	[K in HookName]: Handler<K>[];
 };
 
+/** Unregister a previously registered hook handler. */
 export type HookUnregister = () => void;
 
+/** Define when and how a hook handler is executed. */
 export type HookOptions = {
 	/** Execute the hook once, then remove the handler */
 	once?: boolean;
@@ -84,7 +87,10 @@ interface HookRegistry extends Map<HookName, HookLedger<HookName>> {
  *
  */
 export class Hooks {
+	/** Swup instance this registry belongs to */
 	protected swup: Swup;
+
+	/** Map of all registered hook handlers. */
 	protected registry: HookRegistry = new Map();
 
 	// Can we deduplicate this somehow? Or make it error when not in sync with HookDefinitions?

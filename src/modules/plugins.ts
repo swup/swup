@@ -25,6 +25,7 @@ const isSwupPlugin = (maybeInvalidPlugin: unknown): maybeInvalidPlugin is Plugin
 	return maybeInvalidPlugin?.isSwupPlugin;
 };
 
+/** Install a plugin. */
 export const use = function (this: Swup, plugin: unknown) {
 	if (!isSwupPlugin(plugin)) {
 		console.error('Not a swup plugin instance', plugin);
@@ -47,6 +48,7 @@ export const use = function (this: Swup, plugin: unknown) {
 	return this.plugins;
 };
 
+/** Uninstall a plugin. */
 export function unuse(this: Swup, pluginOrName: Plugin | string) {
 	const plugin = this.findPlugin(pluginOrName);
 	if (!plugin) {
@@ -64,6 +66,7 @@ export function unuse(this: Swup, pluginOrName: Plugin | string) {
 	return this.plugins;
 }
 
+/** Find a plugin by name or reference. */
 export function findPlugin(this: Swup, pluginOrName: Plugin | string) {
 	return this.plugins.find(
 		(plugin) =>
