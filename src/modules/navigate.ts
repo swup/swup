@@ -6,6 +6,7 @@ import { VisitInitOptions } from './Visit.js';
 export type HistoryAction = 'push' | 'replace';
 export type HistoryDirection = 'forwards' | 'backwards';
 
+/** Define how to navigate to a page. */
 type NavigationOptions = {
 	/** Whether this visit is animated. Default: `true` */
 	animate?: boolean;

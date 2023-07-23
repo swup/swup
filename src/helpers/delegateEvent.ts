@@ -5,6 +5,7 @@ export type DelegateEventUnsubscribe = {
 	destroy: () => void;
 };
 
+/** Register a delegated event listener. */
 export const delegateEvent = <Selector extends string, TEvent extends EventType>(
 	selector: Selector,
 	type: TEvent,
