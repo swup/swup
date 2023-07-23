@@ -148,7 +148,7 @@ export default class Swup {
 		// Modify initial history record
 		updateHistoryRecord(null, { index: 1 });
 
-		// Give consumers a chance to hook into enable and page:view
+		// Give consumers a chance to hook into enable
 		await nextTick();
 
 		// Trigger enable hook
@@ -156,9 +156,6 @@ export default class Swup {
 			// Add swup-enabled class to html tag
 			document.documentElement.classList.add('swup-enabled');
 		});
-
-		// Trigger page view hook
-		await this.hooks.call('page:view', { url: this.currentPageUrl, title: document.title });
 	}
 
 	async destroy() {
