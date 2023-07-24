@@ -87,12 +87,13 @@ export async function performNavigation(
 	try {
 		await this.hooks.call('visit:start');
 
-		// Begin fetching page
-		const pagePromise = this.hooks.call(
-			'page:request',
-			{ url: this.visit.to.url, options },
-			async (visit, { options }) => await this.fetchPage(visit.to.url as string, options)
-		);
+		// Begin loading page
+		const pagePromise = this.hooks.call('page:load', { options }, async (visit, args) => {
+			const cachedPage = this.cache.get(visit.to.url!);
+			args.page = cachedPage || (await this.fetchPage(visit.to.url!, args.options));
+			args.cache = !!cachedPage;
+			return args.page;
+		});
 
 		// Create history record if this is not a popstate call (with or without anchor)
 		if (!this.visit.history.popstate) {

@@ -26,8 +26,7 @@ export interface HookDefinitions {
 	'link:self': undefined;
 	'link:anchor': { hash: string };
 	'link:newtab': { href: string };
-	'page:request': { url: string; options: FetchOptions };
-	'page:load': { page: PageData; cache?: boolean };
+	'page:load': { page?: PageData; cache?: boolean; options: FetchOptions };
 	'page:view': { url: string; title: string };
 	'scroll:top': { options: ScrollIntoViewOptions };
 	'scroll:anchor': { hash: string; options: ScrollIntoViewOptions };
@@ -118,7 +117,6 @@ export class Hooks {
 		'link:self',
 		'link:anchor',
 		'link:newtab',
-		'page:request',
 		'page:load',
 		'page:view',
 		'scroll:top',
