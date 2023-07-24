@@ -1,18 +1,19 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import Swup from '../../Swup.js';
-import { Cache, CacheData } from '../Cache.js';
+import { Cache } from '../Cache.js';
+import type { PageData } from '../fetchPage.js';
 import { Visit } from '../Visit.js';
 
-interface CacheTtlData {
+interface PageTtlData {
 	ttl: number;
 	created: number;
 }
 
-interface CacheIndexData {
+interface PageIndexData {
 	index: number;
 }
 
-interface AugmentedCacheData extends CacheData, CacheTtlData, CacheIndexData {}
+interface AugmentedPageData extends PageData, PageTtlData, PageIndexData {}
 
 const swup = new Swup();
 const visit = swup.visit;
@@ -89,27 +90,27 @@ describe('Cache', () => {
 		const now = Date.now();
 
 		swup.hooks.on('cache:set', (_, { page }) => {
-			const ttl: CacheTtlData = { ttl: 1000, created: now };
-			cache.update(page.url, ttl as AugmentedCacheData);
+			const ttl: PageTtlData = { ttl: 1000, created: now };
+			cache.update(page.url, ttl as AugmentedPageData);
 		});
 
 		cache.set('/page', { url: '/page', html: '' });
 
-		const page = cache.get('/page') as AugmentedCacheData;
+		const page = cache.get('/page') as AugmentedPageData;
 
 		expect(page).toEqual({ url: '/page', html: '', ttl: 1000, created: now });
 	});
 
 	it('should allow manual pruning', () => {
 		swup.hooks.on('cache:set', (_, { page }) => {
-			cache.update(page.url, { index: cache.size } as AugmentedCacheData);
+			cache.update(page.url, { index: cache.size } as AugmentedPageData);
 		});
 
 		cache.set(page1.url, page1);
 		cache.set(page2.url, page2);
 		cache.set(page3.url, page3);
 
-		cache.prune((url, page) => (page as AugmentedCacheData).index > 2);
+		cache.prune((url, page) => (page as AugmentedPageData).index > 2);
 
 		expect(cache.size).toBe(2);
 		expect(cache.has(page1.url)).toBe(true);

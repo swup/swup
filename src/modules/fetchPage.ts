@@ -40,12 +40,12 @@ export async function fetchPage(
 ): Promise<PageData> {
 	url = Location.fromUrl(url).url;
 
-	if (this.cache.has(url)) {
-		const page = this.cache.get(url) as PageData;
+	const cachedPage = this.cache.get(url);
+	if (cachedPage) {
 		if (options.triggerHooks !== false) {
-			await this.hooks.call('page:load', { page, cache: true });
+			await this.hooks.call('page:load', { page: cachedPage, cache: true });
 		}
-		return page;
+		return cachedPage;
 	}
 
 	const headers = { ...this.options.requestHeaders, ...options.headers };
