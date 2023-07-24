@@ -15,11 +15,13 @@ import { navigate, performNavigation } from './modules/navigate.js';
 import { fetchPage } from './modules/fetchPage.js';
 import { animatePageOut } from './modules/animatePageOut.js';
 import { replaceContent } from './modules/replaceContent.js';
+import { scrollToContent } from './modules/scrollToContent.js';
 import { animatePageIn } from './modules/animatePageIn.js';
 import { renderPage } from './modules/renderPage.js';
 import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
 import { nextTick } from './utils.js';
 
+/** Options for customizing swup's behavior. */
 export type Options = {
 	/** Whether history visits are animated. Default: `false` */
 	animateHistoryBrowsing: boolean;
@@ -45,6 +47,7 @@ export type Options = {
 	skipPopStateHandling: (event: any) => boolean;
 };
 
+/** Swup page transition library. */
 export default class Swup {
 	/** Library version */
 	version: string = version;
@@ -72,6 +75,7 @@ export default class Swup {
 	animatePageOut = animatePageOut;
 	renderPage = renderPage;
 	replaceContent = replaceContent;
+	scrollToContent = scrollToContent;
 	animatePageIn = animatePageIn;
 	delegateEvent = delegateEvent;
 	fetchPage = fetchPage;
@@ -129,6 +133,7 @@ export default class Swup {
 		return true;
 	}
 
+	/** Enable this instance, adding listeners and classnames. */
 	async enable() {
 		// Add event listener
 		const { linkSelector } = this.options;
@@ -148,7 +153,7 @@ export default class Swup {
 		// Modify initial history record
 		updateHistoryRecord(null, { index: 1 });
 
-		// Give consumers a chance to hook into enable and page:view
+		// Give consumers a chance to hook into enable
 		await nextTick();
 
 		// Trigger enable hook
@@ -156,11 +161,9 @@ export default class Swup {
 			// Add swup-enabled class to html tag
 			document.documentElement.classList.add('swup-enabled');
 		});
-
-		// Trigger page view hook
-		await this.hooks.call('page:view', { url: this.currentPageUrl, title: document.title });
 	}
 
+	/** Disable this instance, removing listeners and classnames. */
 	async destroy() {
 		// remove delegated listener
 		this.clickDelegate!.destroy();
@@ -184,6 +187,7 @@ export default class Swup {
 		this.hooks.clear();
 	}
 
+	/** Determine if a visit should be ignored by swup, based on URL or trigger element. */
 	shouldIgnoreVisit(href: string, { el, event }: { el?: Element; event?: Event } = {}) {
 		const { origin, url, hash } = Location.fromUrl(href);
 
@@ -236,21 +240,13 @@ export default class Swup {
 			// Handle links to the same page: with or without hash
 			if (!url || url === from) {
 				if (hash) {
-					updateHistoryRecord(url + hash);
-					this.hooks.callSync(
-						'link:anchor',
-						{ hash, options: { behavior: 'auto' } },
-						(visit, { hash, options }) => {
-							const target = this.getAnchorElement(hash);
-							if (target) {
-								target.scrollIntoView(options);
-							}
-						}
-					);
+					this.hooks.callSync('link:anchor', { hash }, () => {
+						updateHistoryRecord(url + hash);
+						this.scrollToContent();
+					});
 				} else {
-					this.hooks.callSync('link:self', undefined, (visit) => {
-						if (!visit.scroll.reset) return;
-						window.scroll({ top: 0, left: 0, behavior: 'auto' });
+					this.hooks.callSync('link:self', undefined, () => {
+						this.scrollToContent();
 					});
 				}
 				return;
@@ -266,6 +262,7 @@ export default class Swup {
 		});
 	}
 
+	/** Determine whether an element will open a new tab when clicking/activating. */
 	triggerWillOpenNewWindow(triggerEl: Element) {
 		if (triggerEl.matches('[download], [target="_blank"]')) {
 			return true;

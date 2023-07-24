@@ -16,7 +16,7 @@ export interface HookDefinitions {
 	'cache:clear': undefined;
 	'cache:set': { page: PageData };
 	'content:replace': { page: PageData };
-	'content:scroll': { options: ScrollIntoViewOptions };
+	'content:scroll': undefined;
 	'enable': undefined;
 	'disable': undefined;
 	'fetch:request': { url: string; options: FetchOptions };
@@ -24,11 +24,13 @@ export interface HookDefinitions {
 	'history:popstate': { event: PopStateEvent };
 	'link:click': { el: HTMLAnchorElement; event: DelegateEvent<MouseEvent> };
 	'link:self': undefined;
-	'link:anchor': { hash: string; options: ScrollIntoViewOptions };
+	'link:anchor': { hash: string };
 	'link:newtab': { href: string };
 	'page:request': { url: string; options: FetchOptions };
 	'page:load': { page: PageData; cache?: boolean };
 	'page:view': { url: string; title: string };
+	'scroll:top': { options: ScrollIntoViewOptions };
+	'scroll:anchor': { hash: string; options: ScrollIntoViewOptions };
 	'visit:start': undefined;
 	'visit:end': undefined;
 }
@@ -37,21 +39,24 @@ export type HookArguments<T extends HookName> = HookDefinitions[T];
 
 export type HookName = keyof HookDefinitions;
 
+/** A hook handler. */
 export type Handler<T extends HookName> = (
-	/** Context about the current visit */
+	/** Context about the current visit. */
 	visit: Visit,
-	/** Local arguments passed into the handler */
+	/** Local arguments passed into the handler. */
 	args: HookArguments<T>,
-	/** Default handler to be executed, available if replacing an internal hook handler */
+	/** Default handler to be executed. Available if replacing an internal hook handler. */
 	defaultHandler?: Handler<T>
-) => Promise<any> | void;
+) => Promise<any> | any;
 
 export type Handlers = {
 	[K in HookName]: Handler<K>[];
 };
 
+/** Unregister a previously registered hook handler. */
 export type HookUnregister = () => void;
 
+/** Define when and how a hook handler is executed. */
 export type HookOptions = {
 	/** Execute the hook once, then remove the handler */
 	once?: boolean;
@@ -84,12 +89,15 @@ interface HookRegistry extends Map<HookName, HookLedger<HookName>> {
  *
  */
 export class Hooks {
+	/** Swup instance this registry belongs to */
 	protected swup: Swup;
+
+	/** Map of all registered hook handlers. */
 	protected registry: HookRegistry = new Map();
 
 	// Can we deduplicate this somehow? Or make it error when not in sync with HookDefinitions?
 	// https://stackoverflow.com/questions/53387838/how-to-ensure-an-arrays-values-the-keys-of-a-typescript-interface/53395649
-	readonly hooks: HookName[] = [
+	protected readonly hooks: HookName[] = [
 		'animation:out:start',
 		'animation:out:await',
 		'animation:out:end',
@@ -113,6 +121,8 @@ export class Hooks {
 		'page:request',
 		'page:load',
 		'page:view',
+		'scroll:top',
+		'scroll:anchor',
 		'visit:start',
 		'visit:end'
 	];
@@ -130,7 +140,7 @@ export class Hooks {
 	}
 
 	/**
-	 * Register a new hook.
+	 * Create a new hook type.
 	 */
 	create(hook: string) {
 		if (!this.registry.has(hook as HookName)) {
@@ -139,9 +149,9 @@ export class Hooks {
 	}
 
 	/**
-	 * Check if a hook is registered.
+	 * Check if a hook type exists.
 	 */
-	has(hook: HookName): boolean {
+	exists(hook: HookName): boolean {
 		return this.registry.has(hook);
 	}
 

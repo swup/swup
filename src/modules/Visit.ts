@@ -1,6 +1,7 @@
 import Swup, { Options } from '../Swup.js';
 import { HistoryAction, HistoryDirection } from './navigate.js';
 
+/** An object holding details about the current visit. */
 export interface Visit {
 	/** The previous page, about to leave */
 	from: VisitFrom;
@@ -79,6 +80,7 @@ export interface VisitInitOptions {
 	resetScroll?: boolean;
 }
 
+/** Create a new visit object. */
 export function createVisit(
 	this: Swup,
 	{

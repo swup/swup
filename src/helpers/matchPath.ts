@@ -10,6 +10,7 @@ import type {
 
 export { Path };
 
+/** Create a match function from a path pattern that checks if a URLs matches it. */
 export const matchPath = <P extends object = object>(
 	path: Path,
 	options?: ParseOptions & TokensToRegexpOptions & RegexpToFunctionOptions

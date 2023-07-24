@@ -3,7 +3,6 @@
  * or a URL object/string
  *
  */
-
 export class Location extends URL {
 	constructor(url: URL | string, base: string = document.baseURI) {
 		super(url.toString(), base);

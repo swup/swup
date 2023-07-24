@@ -46,22 +46,10 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 		}
 	});
 
-	await this.hooks.call(
-		'content:scroll',
-		{ options: { behavior: 'auto' } },
-		(visit, { options }) => {
-			if (visit.scroll.target) {
-				const target = this.getAnchorElement(visit.scroll.target);
-				if (target) {
-					target.scrollIntoView(options);
-					return;
-				}
-			}
-			if (visit.scroll.reset) {
-				window.scrollTo(0, 0);
-			}
-		}
-	);
+	// scroll into view: either anchor or top of page
+	await this.hooks.call('content:scroll', undefined, () => {
+		return this.scrollToContent();
+	});
 
 	await this.hooks.call('page:view', { url: this.currentPageUrl, title: document.title });
 

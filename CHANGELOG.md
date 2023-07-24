@@ -5,22 +5,22 @@
 ## [4.0.0] - 2023-07
 
 - Built-in scroll support
-- New hook system
-- Global context object
-- Optionally add animation classes to containers
-- Cache pruning
+- New hook system for customizing the page load lifecycle
+- Globally available visit object for controlling the transition process
+- Animation scope: add animation classes to html element or to containers
+- Allow pruning cache entries
 
 See the [release notes](https://swup.js.org/announcements/swup-4/) and
 [upgrade guide](https://swup.js.org/getting-started/upgrading/) for details.
 
 ### Breaking changes
 
-- New hook system: `swup.hooks.on('page:view', () => {})`
-- Container selectors now only match a single element per selector
+- Hooks replace events: `swup.hooks.on('page:view', () => {})`
+- Use the `visit` argument in hooks instead of `swup.transition`
+- Container selectors now only match one single element per selector
 - Custom animation attribute renamed to `data-swup-animation`
-- Navigation method renamed: `swup.navigate(url)`
 - Swup no longer adds `data-swup` attributes to containers
-- Use the global context instead of the `swup.transition` object
+- Navigation method renamed: `swup.navigate(url)`
 - Simplified cache API: `cache.set(url, {})` and `cache.get(url)`
 - Support for custom payload formats was dropped
 

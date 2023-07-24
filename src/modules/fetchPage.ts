@@ -1,14 +1,21 @@
 import Swup from '../Swup.js';
 import { Location } from '../helpers.js';
 
+/** A page object as used by swup and its cache. */
 export interface PageData {
+	/** The URL of the page */
 	url: string;
+	/** The complete HTML response received from the server */
 	html: string;
 }
 
+/** Define how a page is fetched. */
 export interface FetchOptions extends RequestInit {
+	/** The request method. */
 	method?: 'GET' | 'POST';
+	/** The body of the request: raw string, form data object or URL params. */
 	body?: string | FormData | URLSearchParams;
+	/** The headers of the request: key/value object. */
 	headers?: Record<string, string>;
 }
 
