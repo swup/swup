@@ -241,11 +241,13 @@ export default class Swup {
 			if (!url || url === from) {
 				if (hash) {
 					this.hooks.callSync('link:anchor', { hash }, () => {
-						this.scrollToContent();
 						updateHistoryRecord(url + hash);
+						this.scrollToContent();
 					});
 				} else {
-					this.hooks.callSync('link:self', undefined, () => this.scrollToContent());
+					this.hooks.callSync('link:self', undefined, () => {
+						this.scrollToContent();
+					});
 				}
 				return;
 			}
