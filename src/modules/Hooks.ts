@@ -16,7 +16,7 @@ export interface HookDefinitions {
 	'cache:clear': undefined;
 	'cache:set': { page: PageData };
 	'content:replace': { page: PageData };
-	'content:scroll': { options: ScrollIntoViewOptions };
+	'content:scroll': undefined;
 	'enable': undefined;
 	'disable': undefined;
 	'fetch:request': { url: string; options: FetchOptions };
@@ -24,11 +24,13 @@ export interface HookDefinitions {
 	'history:popstate': { event: PopStateEvent };
 	'link:click': { el: HTMLAnchorElement; event: DelegateEvent<MouseEvent> };
 	'link:self': undefined;
-	'link:anchor': { hash: string; options: ScrollIntoViewOptions };
+	'link:anchor': { hash: string };
 	'link:newtab': { href: string };
 	'page:request': { url: string; options: FetchOptions };
 	'page:load': { page: PageData; cache?: boolean };
 	'page:view': { url: string; title: string };
+	'scroll:top': { options: ScrollIntoViewOptions };
+	'scroll:anchor': { hash: string; options: ScrollIntoViewOptions };
 	'visit:start': undefined;
 	'visit:end': undefined;
 }
@@ -119,6 +121,8 @@ export class Hooks {
 		'page:request',
 		'page:load',
 		'page:view',
+		'scroll:top',
+		'scroll:anchor',
 		'visit:start',
 		'visit:end'
 	];
