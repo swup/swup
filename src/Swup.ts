@@ -241,21 +241,9 @@ export default class Swup {
 			if (!url || url === from) {
 				if (hash) {
 					updateHistoryRecord(url + hash);
-					this.hooks.callSync(
-						'link:anchor',
-						{ hash, options: { behavior: 'auto' } },
-						(visit, { hash, options }) => {
-							const target = this.getAnchorElement(hash);
-							if (target) {
-								target.scrollIntoView(options);
-							}
-						}
-					);
+					this.hooks.callSync('link:anchor', { hash }, () => this.scrollToContent());
 				} else {
-					this.hooks.callSync('link:self', undefined, (visit) => {
-						if (!visit.scroll.reset) return;
-						window.scroll({ top: 0, left: 0, behavior: 'auto' });
-					});
+					this.hooks.callSync('link:self', undefined, () => this.scrollToContent());
 				}
 				return;
 			}
