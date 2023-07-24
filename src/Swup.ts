@@ -240,8 +240,10 @@ export default class Swup {
 			// Handle links to the same page: with or without hash
 			if (!url || url === from) {
 				if (hash) {
-					updateHistoryRecord(url + hash);
-					this.hooks.callSync('link:anchor', { hash }, () => this.scrollToContent());
+					this.hooks.callSync('link:anchor', { hash }, () => {
+						this.scrollToContent();
+						updateHistoryRecord(url + hash);
+					});
 				} else {
 					this.hooks.callSync('link:self', undefined, () => this.scrollToContent());
 				}
