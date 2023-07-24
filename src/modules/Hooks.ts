@@ -47,7 +47,7 @@ export type Handler<T extends HookName> = (
 	args: HookArguments<T>,
 	/** Default handler to be executed. Available if replacing an internal hook handler. */
 	defaultHandler?: Handler<T>
-) => Promise<any> | void;
+) => Promise<any> | any;
 
 export type Handlers = {
 	[K in HookName]: Handler<K>[];

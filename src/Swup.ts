@@ -15,6 +15,7 @@ import { navigate, performNavigation } from './modules/navigate.js';
 import { fetchPage } from './modules/fetchPage.js';
 import { animatePageOut } from './modules/animatePageOut.js';
 import { replaceContent } from './modules/replaceContent.js';
+import { scrollToContent } from './modules/scrollToContent.js';
 import { animatePageIn } from './modules/animatePageIn.js';
 import { renderPage } from './modules/renderPage.js';
 import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
@@ -74,6 +75,7 @@ export default class Swup {
 	animatePageOut = animatePageOut;
 	renderPage = renderPage;
 	replaceContent = replaceContent;
+	scrollToContent = scrollToContent;
 	animatePageIn = animatePageIn;
 	delegateEvent = delegateEvent;
 	fetchPage = fetchPage;
