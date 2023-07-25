@@ -19,6 +19,7 @@ import { scrollToContent } from './modules/scrollToContent.js';
 import { animatePageIn } from './modules/animatePageIn.js';
 import { renderPage } from './modules/renderPage.js';
 import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
+import { isSameResolvedUrl, resolveUrl } from './modules/resolveUrl.js';
 import { nextTick } from './utils.js';
 
 /** Options for customizing swup's behavior. */
@@ -47,49 +48,98 @@ export type Options = {
 	skipPopStateHandling: (event: any) => boolean;
 };
 
-/** Swup page transition library. */
-export default class Swup {
+/** Interface for Swup page transition library. */
+export interface SwupCore {
 	/** Library version */
-	version: string = version;
+	readonly version: string;
 	/** Options passed into the instance */
 	options: Options;
+	/** Default options before merging user options */
+	readonly defaults: Readonly<Options>;
 	/** Registered plugin instances */
-	plugins: Plugin[] = [];
+	readonly plugins: Plugin[];
 	/** Data about the current visit */
-	visit: Visit;
+	readonly visit: Visit;
 	/** Cache instance */
-	cache: Cache;
+	readonly cache: Cache;
 	/** Hook registry */
-	hooks: Hooks;
+	readonly hooks: Hooks;
 	/** Animation class manager */
-	classes: Classes;
+	readonly classes: Classes;
 	/** URL of the currently visible page */
-	currentPageUrl = getCurrentUrl();
-	/** Index of the current history entry */
-	currentHistoryIndex = 1;
-	/** Delegated event subscription handle */
-	private clickDelegate?: DelegateEventUnsubscribe;
+	currentPageUrl: string;
 
-	navigate = navigate;
-	performNavigation = performNavigation;
-	animatePageOut = animatePageOut;
-	renderPage = renderPage;
-	replaceContent = replaceContent;
-	scrollToContent = scrollToContent;
-	animatePageIn = animatePageIn;
-	delegateEvent = delegateEvent;
-	fetchPage = fetchPage;
-	awaitAnimations = awaitAnimations;
-	getAnchorElement = getAnchorElement;
+	/** Enable the instance */
+	enable(): Promise<void>;
+	/** Disable the instance and clean up */
+	destroy(): Promise<void>;
+
+	/** Install a plugin */
+	use: typeof use;
+	/** Uninstall a plugin */
+	unuse: typeof unuse;
+	/** Find a plugin by name or instance */
+	findPlugin: typeof findPlugin;
+
+	/** Log a message. Has no effect unless debug plugin is installed */
+	log: (message: string, context?: any) => void;
+
+	/** Navigate to a new URL */
+	navigate: typeof navigate;
+	/** Replace the content after page load */
+	replaceContent: typeof replaceContent;
+	/** Register a delegated event listener */
+	delegateEvent: typeof delegateEvent;
+	/** Fetch a page from the server */
+	fetchPage: typeof fetchPage;
+	/** Resolve when animations on the page finish */
+	awaitAnimations: typeof awaitAnimations;
+	/** Find the anchor element for a given hash */
+	getAnchorElement: typeof getAnchorElement;
+
+	/** Get the current page URL */
+	getCurrentUrl: typeof getCurrentUrl;
+	/** Resolve a URL to its final location */
+	resolveUrl(url: string): string;
+}
+
+/** Swup page transition library. */
+export default class Swup implements SwupCore {
+	version = version;
+	options: Options;
+	plugins: Plugin[] = [];
+	cache: Cache;
+	hooks: Hooks;
+	visit: Visit;
+	classes: Classes;
+
+	currentPageUrl = getCurrentUrl();
+	getCurrentUrl = getCurrentUrl;
+
 	use = use;
 	unuse = unuse;
 	findPlugin = findPlugin;
-	getCurrentUrl = getCurrentUrl;
-	createVisit = createVisit;
-	log: (message: string, context?: any) => void = () => {}; // here so it can be used by plugins
 
-	/** Default options before merging user options */
-	defaults: Options = {
+	log = () => {};
+
+	getAnchorElement = getAnchorElement;
+
+	navigate = navigate;
+	protected performNavigation = performNavigation;
+	delegateEvent = delegateEvent;
+	fetchPage = fetchPage;
+	awaitAnimations = awaitAnimations;
+	protected renderPage = renderPage;
+	replaceContent = replaceContent;
+	protected animatePageIn = animatePageIn;
+	protected animatePageOut = animatePageOut;
+	protected scrollToContent = scrollToContent;
+
+	protected createVisit = createVisit;
+	resolveUrl = resolveUrl;
+	protected isSameResolvedUrl = isSameResolvedUrl;
+
+	readonly defaults: Options = {
 		animateHistoryBrowsing: false,
 		animationSelector: '[class*="transition-"]',
 		animationScope: 'html',
@@ -106,12 +156,18 @@ export default class Swup {
 		skipPopStateHandling: (event) => event.state?.source !== 'swup'
 	};
 
+	/** Index of the current history entry */
+	protected currentHistoryIndex = 1;
+
+	/** Delegated event subscription handle */
+	protected clickDelegate?: DelegateEventUnsubscribe;
+
 	constructor(options: Partial<Options> = {}) {
 		// Merge defaults and options
 		this.options = { ...this.defaults, ...options };
 
-		this.linkClickHandler = this.linkClickHandler.bind(this);
-		this.popStateHandler = this.popStateHandler.bind(this);
+		this.handleLinkClick = this.handleLinkClick.bind(this);
+		this.handlePopState = this.handlePopState.bind(this);
 
 		this.cache = new Cache(this);
 		this.classes = new Classes(this);
@@ -125,7 +181,7 @@ export default class Swup {
 		this.enable();
 	}
 
-	checkRequirements() {
+	protected checkRequirements() {
 		if (typeof Promise === 'undefined') {
 			console.warn('Promise is not supported');
 			return false;
@@ -137,9 +193,9 @@ export default class Swup {
 	async enable() {
 		// Add event listener
 		const { linkSelector } = this.options;
-		this.clickDelegate = this.delegateEvent(linkSelector, 'click', this.linkClickHandler);
+		this.clickDelegate = this.delegateEvent(linkSelector, 'click', this.handleLinkClick);
 
-		window.addEventListener('popstate', this.popStateHandler);
+		window.addEventListener('popstate', this.handlePopState);
 
 		// Initial save to cache
 		if (this.options.cache) {
@@ -169,7 +225,7 @@ export default class Swup {
 		this.clickDelegate!.destroy();
 
 		// remove popstate listener
-		window.removeEventListener('popstate', this.popStateHandler);
+		window.removeEventListener('popstate', this.handlePopState);
 
 		// empty cache
 		this.cache.clear();
@@ -210,7 +266,7 @@ export default class Swup {
 		return false;
 	}
 
-	linkClickHandler(event: DelegateEvent<MouseEvent>) {
+	protected handleLinkClick(event: DelegateEvent<MouseEvent>) {
 		const el = event.delegateTarget as HTMLAnchorElement;
 		const { href, url, hash } = Location.fromElement(el);
 
@@ -262,15 +318,7 @@ export default class Swup {
 		});
 	}
 
-	/** Determine whether an element will open a new tab when clicking/activating. */
-	triggerWillOpenNewWindow(triggerEl: Element) {
-		if (triggerEl.matches('[download], [target="_blank"]')) {
-			return true;
-		}
-		return false;
-	}
-
-	popStateHandler(event: PopStateEvent) {
+	protected handlePopState(event: PopStateEvent) {
 		const href = event.state?.url ?? location.href;
 
 		// Exit early if this event should be ignored
@@ -320,35 +368,11 @@ export default class Swup {
 		});
 	}
 
-	/**
-	 * Utility function to validate and run the global option 'resolveUrl'
-	 * @param {string} url
-	 * @returns {string} the resolved url
-	 */
-	resolveUrl(url: string) {
-		if (typeof this.options.resolveUrl !== 'function') {
-			console.warn(`[swup] options.resolveUrl expects a callback function.`);
-			return url;
+	/** Determine whether an element will open a new tab when clicking/activating. */
+	protected triggerWillOpenNewWindow(triggerEl: Element) {
+		if (triggerEl.matches('[download], [target="_blank"]')) {
+			return true;
 		}
-		const result = this.options.resolveUrl(url);
-		if (!result || typeof result !== 'string') {
-			console.warn(`[swup] options.resolveUrl needs to return a url`);
-			return url;
-		}
-		if (result.startsWith('//') || result.startsWith('http')) {
-			console.warn(`[swup] options.resolveUrl needs to return a relative url`);
-			return url;
-		}
-		return result;
-	}
-
-	/**
-	 * Compares the resolved version of two paths and returns true if they are the same
-	 * @param {string} url1
-	 * @param {string} url2
-	 * @returns {boolean}
-	 */
-	isSameResolvedUrl(url1: string, url2: string) {
-		return this.resolveUrl(url1) === this.resolveUrl(url2);
+		return false;
 	}
 }
