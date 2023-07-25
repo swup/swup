@@ -49,7 +49,7 @@ export type Options = {
 };
 
 /** Interface for Swup page transition library. */
-interface SwupCore {
+export interface SwupCore {
 	/** Library version */
 	readonly version: string;
 	/** Options passed into the instance */
