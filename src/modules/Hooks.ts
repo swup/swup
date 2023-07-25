@@ -326,7 +326,7 @@ export class Hooks {
 	 * @param registrations The registrations (handler + options) to execute
 	 * @param args Arguments to pass to the handler
 	 */
-	private async run<T extends HookName>(
+	protected async run<T extends HookName>(
 		registrations: HookRegistration<T>[],
 		args?: HookArguments<T>
 	): Promise<any> {
@@ -346,7 +346,7 @@ export class Hooks {
 	 * @param registrations The registrations (handler + options) to execute
 	 * @param args Arguments to pass to the handler
 	 */
-	private runSync<T extends HookName>(
+	protected runSync<T extends HookName>(
 		registrations: HookRegistration<T>[],
 		args?: HookArguments<T>
 	): any[] {
@@ -374,7 +374,7 @@ export class Hooks {
 	 * @returns An object with the handlers sorted into `before` and `after` arrays,
 	 *          as well as a flag indicating if the original handler was replaced
 	 */
-	private getHandlers<T extends HookName>(hook: T, defaultHandler?: Handler<T>) {
+	protected getHandlers<T extends HookName>(hook: T, defaultHandler?: Handler<T>) {
 		const ledger = this.get(hook);
 		if (!ledger) {
 			return { found: false, before: [], handler: [], after: [], replaced: false };
@@ -422,7 +422,7 @@ export class Hooks {
 	 * @param b The other registration object to compare with
 	 * @returns The sort direction
 	 */
-	private sortRegistrations<T extends HookName>(
+	protected sortRegistrations<T extends HookName>(
 		a: HookRegistration<T>,
 		b: HookRegistration<T>
 	): number {
@@ -435,7 +435,7 @@ export class Hooks {
 	 * Dispatch a custom event on the `document` for a hook. Prefixed with `swup:`
 	 * @param hook Name of the hook.
 	 */
-	private dispatchDomEvent<T extends HookName>(hook: T, args?: HookArguments<T>): void {
+	protected dispatchDomEvent<T extends HookName>(hook: T, args?: HookArguments<T>): void {
 		const detail = { hook, args, visit: this.swup.visit };
 		document.dispatchEvent(new CustomEvent(`swup:${hook}`, { detail }));
 	}
