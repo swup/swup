@@ -29,7 +29,7 @@ export function navigate(
 	init: Omit<VisitInitOptions, 'to'> = {}
 ) {
 	// Check if the visit should be ignored
-	if (this.shouldIgnoreVisit(url)) {
+	if (this.shouldIgnoreVisit(url, { el: init.el, event: init.event })) {
 		window.location.href = url;
 		return;
 	}
