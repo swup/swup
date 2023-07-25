@@ -36,17 +36,9 @@ export class FetchError extends Error {
 export async function fetchPage(
 	this: Swup,
 	url: URL | string,
-	options: FetchOptions & { triggerHooks?: boolean } = {}
+	options: FetchOptions = {}
 ): Promise<PageData> {
 	url = Location.fromUrl(url).url;
-
-	if (this.cache.has(url)) {
-		const page = this.cache.get(url) as PageData;
-		if (options.triggerHooks !== false) {
-			await this.hooks.call('page:load', { page, cache: true });
-		}
-		return page;
-	}
 
 	const headers = { ...this.options.requestHeaders, ...options.headers };
 	options = { ...options, headers };
@@ -77,10 +69,6 @@ export async function fetchPage(
 	// Only save cache entry for non-redirects
 	if (url === finalUrl) {
 		this.cache.set(page.url, page);
-	}
-
-	if (options.triggerHooks !== false) {
-		await this.hooks.call('page:load', { page, cache: false });
 	}
 
 	return page;

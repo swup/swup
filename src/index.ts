@@ -1,6 +1,6 @@
 import type { Path } from 'path-to-regexp';
 
-import Swup, { type Options } from './Swup.js';
+import Swup, { type SwupCore, type Options } from './Swup.js';
 import type { CacheData } from './modules/Cache.js';
 import type {
 	Visit,
@@ -25,6 +25,7 @@ export * from './helpers.js';
 export * from './utils.js';
 
 export type {
+	SwupCore as Swup,
 	Options,
 	Plugin,
 	CacheData,
