@@ -48,24 +48,24 @@ export type Options = {
 	skipPopStateHandling: (event: any) => boolean;
 };
 
-export interface Swup {
+/** Interface for Swup page transition library. */
+export interface SwupCore {
 	/** Library version */
-	version: string;
-	/** Registered plugin instances */
-	plugins: Plugin[];
-	/** Data about the current visit */
-	visit: Visit;
-	/** Cache instance */
-	cache: Cache;
-	/** Hook registry */
-	hooks: Hooks;
-	/** Animation class manager */
-	classes: Classes;
-	/** Default options before merging user options */
-	defaults: Readonly<Options>;
+	readonly version: string;
 	/** Options passed into the instance */
 	options: Options;
-
+	/** Default options before merging user options */
+	readonly defaults: Readonly<Options>;
+	/** Registered plugin instances */
+	readonly plugins: Plugin[];
+	/** Data about the current visit */
+	readonly visit: Visit;
+	/** Cache instance */
+	readonly cache: Cache;
+	/** Hook registry */
+	readonly hooks: Hooks;
+	/** Animation class manager */
+	readonly classes: Classes;
 	/** URL of the currently visible page */
 	currentPageUrl: string;
 
@@ -104,14 +104,14 @@ export interface Swup {
 }
 
 /** Swup page transition library. */
-export class Swup {
+export default class Swup implements SwupCore {
 	version = version;
+	options: Options;
 	plugins: Plugin[] = [];
 	cache: Cache;
 	hooks: Hooks;
 	visit: Visit;
 	classes: Classes;
-	options: Options;
 
 	currentPageUrl = getCurrentUrl();
 	getCurrentUrl = getCurrentUrl;
@@ -120,7 +120,7 @@ export class Swup {
 	unuse = unuse;
 	findPlugin = findPlugin;
 
-	log = (message: string, context?: any) => {};
+	log = () => {};
 
 	getAnchorElement = getAnchorElement;
 
@@ -139,7 +139,7 @@ export class Swup {
 	resolveUrl = resolveUrl;
 	protected isSameResolvedUrl = isSameResolvedUrl;
 
-	defaults: Readonly<Options> = {
+	readonly defaults: Options = {
 		animateHistoryBrowsing: false,
 		animationSelector: '[class*="transition-"]',
 		animationScope: 'html',
@@ -166,13 +166,13 @@ export class Swup {
 		// Merge defaults and options
 		this.options = { ...this.defaults, ...options };
 
+		this.handleLinkClick = this.handleLinkClick.bind(this);
+		this.handlePopState = this.handlePopState.bind(this);
+
 		this.cache = new Cache(this);
 		this.classes = new Classes(this);
 		this.hooks = new Hooks(this);
 		this.visit = this.createVisit({ to: undefined });
-
-		this.handleLinkClick = this.handleLinkClick.bind(this);
-		this.handlePopState = this.handlePopState.bind(this);
 
 		if (!this.checkRequirements()) {
 			return;
@@ -376,5 +376,3 @@ export class Swup {
 		return false;
 	}
 }
-
-export default Swup;
