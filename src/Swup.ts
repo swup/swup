@@ -19,6 +19,7 @@ import { scrollToContent } from './modules/scrollToContent.js';
 import { animatePageIn } from './modules/animatePageIn.js';
 import { renderPage } from './modules/renderPage.js';
 import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
+import { isSameResolvedUrl, resolveUrl } from './modules/resolveUrl.js';
 import { nextTick } from './utils.js';
 
 /** Options for customizing swup's behavior. */
@@ -90,6 +91,8 @@ export default class Swup {
 
 	/** Default options before merging user options */
 	defaults: Options = {
+	resolveUrl = resolveUrl;
+	protected isSameResolvedUrl = isSameResolvedUrl;
 		animateHistoryBrowsing: false,
 		animationSelector: '[class*="transition-"]',
 		animationScope: 'html',
@@ -262,14 +265,6 @@ export default class Swup {
 		});
 	}
 
-	/** Determine whether an element will open a new tab when clicking/activating. */
-	triggerWillOpenNewWindow(triggerEl: Element) {
-		if (triggerEl.matches('[download], [target="_blank"]')) {
-			return true;
-		}
-		return false;
-	}
-
 	popStateHandler(event: PopStateEvent) {
 		const href = event.state?.url ?? location.href;
 
@@ -320,35 +315,11 @@ export default class Swup {
 		});
 	}
 
-	/**
-	 * Utility function to validate and run the global option 'resolveUrl'
-	 * @param {string} url
-	 * @returns {string} the resolved url
-	 */
-	resolveUrl(url: string) {
-		if (typeof this.options.resolveUrl !== 'function') {
-			console.warn(`[swup] options.resolveUrl expects a callback function.`);
-			return url;
+	/** Determine whether an element will open a new tab when clicking/activating. */
+	protected triggerWillOpenNewWindow(triggerEl: Element) {
+		if (triggerEl.matches('[download], [target="_blank"]')) {
+			return true;
 		}
-		const result = this.options.resolveUrl(url);
-		if (!result || typeof result !== 'string') {
-			console.warn(`[swup] options.resolveUrl needs to return a url`);
-			return url;
-		}
-		if (result.startsWith('//') || result.startsWith('http')) {
-			console.warn(`[swup] options.resolveUrl needs to return a relative url`);
-			return url;
-		}
-		return result;
-	}
-
-	/**
-	 * Compares the resolved version of two paths and returns true if they are the same
-	 * @param {string} url1
-	 * @param {string} url2
-	 * @returns {boolean}
-	 */
-	isSameResolvedUrl(url1: string, url2: string) {
-		return this.resolveUrl(url1) === this.resolveUrl(url2);
+		return false;
 	}
 }
