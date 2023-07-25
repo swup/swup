@@ -65,7 +65,7 @@ describe('ignoreVisit', () => {
 
 		const ignoreVisit = vi.fn(() => true);
 		const swup = new Swup({ ignoreVisit });
-		swup.linkClickHandler(event);
+		swup.navigate(el.href, {}, { el, event });
 
 		expect(ignoreVisit.mock.calls).toHaveLength(1);
 		expect((ignoreVisit.mock.lastCall as any)[1]).toEqual(

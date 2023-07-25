@@ -48,51 +48,98 @@ export type Options = {
 	skipPopStateHandling: (event: any) => boolean;
 };
 
-/** Swup page transition library. */
-export default class Swup {
+/** Interface for Swup page transition library. */
+interface SwupCore {
 	/** Library version */
-	version: string = version;
+	readonly version: string;
 	/** Options passed into the instance */
 	options: Options;
+	/** Default options before merging user options */
+	readonly defaults: Readonly<Options>;
 	/** Registered plugin instances */
-	plugins: Plugin[] = [];
+	readonly plugins: Plugin[];
 	/** Data about the current visit */
-	visit: Visit;
+	readonly visit: Visit;
 	/** Cache instance */
-	cache: Cache;
+	readonly cache: Cache;
 	/** Hook registry */
-	hooks: Hooks;
+	readonly hooks: Hooks;
 	/** Animation class manager */
-	classes: Classes;
+	readonly classes: Classes;
 	/** URL of the currently visible page */
-	currentPageUrl = getCurrentUrl();
-	/** Index of the current history entry */
-	currentHistoryIndex = 1;
-	/** Delegated event subscription handle */
-	private clickDelegate?: DelegateEventUnsubscribe;
+	currentPageUrl: string;
 
-	navigate = navigate;
-	performNavigation = performNavigation;
-	animatePageOut = animatePageOut;
-	renderPage = renderPage;
-	replaceContent = replaceContent;
-	scrollToContent = scrollToContent;
-	animatePageIn = animatePageIn;
-	delegateEvent = delegateEvent;
-	fetchPage = fetchPage;
-	awaitAnimations = awaitAnimations;
-	getAnchorElement = getAnchorElement;
+	/** Enable the instance */
+	enable(): Promise<void>;
+	/** Disable the instance and clean up */
+	destroy(): Promise<void>;
+
+	/** Install a plugin */
+	use: typeof use;
+	/** Uninstall a plugin */
+	unuse: typeof unuse;
+	/** Find a plugin by name or instance */
+	findPlugin: typeof findPlugin;
+
+	/** Log a message. Has no effect unless debug plugin is installed */
+	log: (message: string, context?: any) => void;
+
+	/** Navigate to a new URL */
+	navigate: typeof navigate;
+	/** Replace the content after page load */
+	replaceContent: typeof replaceContent;
+	/** Register a delegated event listener */
+	delegateEvent: typeof delegateEvent;
+	/** Fetch a page from the server */
+	fetchPage: typeof fetchPage;
+	/** Resolve when animations on the page finish */
+	awaitAnimations: typeof awaitAnimations;
+	/** Find the anchor element for a given hash */
+	getAnchorElement: typeof getAnchorElement;
+
+	/** Get the current page URL */
+	getCurrentUrl: typeof getCurrentUrl;
+	/** Resolve a URL to its final location */
+	resolveUrl(url: string): string;
+}
+
+/** Swup page transition library. */
+export default class Swup implements SwupCore {
+	version = version;
+	options: Options;
+	plugins: Plugin[] = [];
+	cache: Cache;
+	hooks: Hooks;
+	visit: Visit;
+	classes: Classes;
+
+	currentPageUrl = getCurrentUrl();
+	getCurrentUrl = getCurrentUrl;
+
 	use = use;
 	unuse = unuse;
 	findPlugin = findPlugin;
-	getCurrentUrl = getCurrentUrl;
-	createVisit = createVisit;
-	log: (message: string, context?: any) => void = () => {}; // here so it can be used by plugins
 
-	/** Default options before merging user options */
-	defaults: Options = {
+	log = () => {};
+
+	getAnchorElement = getAnchorElement;
+
+	navigate = navigate;
+	protected performNavigation = performNavigation;
+	delegateEvent = delegateEvent;
+	fetchPage = fetchPage;
+	awaitAnimations = awaitAnimations;
+	protected renderPage = renderPage;
+	replaceContent = replaceContent;
+	protected animatePageIn = animatePageIn;
+	protected animatePageOut = animatePageOut;
+	protected scrollToContent = scrollToContent;
+
+	protected createVisit = createVisit;
 	resolveUrl = resolveUrl;
 	protected isSameResolvedUrl = isSameResolvedUrl;
+
+	readonly defaults: Options = {
 		animateHistoryBrowsing: false,
 		animationSelector: '[class*="transition-"]',
 		animationScope: 'html',
@@ -108,6 +155,12 @@ export default class Swup {
 		},
 		skipPopStateHandling: (event) => event.state?.source !== 'swup'
 	};
+
+	/** Index of the current history entry */
+	protected currentHistoryIndex = 1;
+
+	/** Delegated event subscription handle */
+	protected clickDelegate?: DelegateEventUnsubscribe;
 
 	constructor(options: Partial<Options> = {}) {
 		// Merge defaults and options
@@ -128,7 +181,7 @@ export default class Swup {
 		this.enable();
 	}
 
-	checkRequirements() {
+	protected checkRequirements() {
 		if (typeof Promise === 'undefined') {
 			console.warn('Promise is not supported');
 			return false;
