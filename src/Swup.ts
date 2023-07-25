@@ -113,8 +113,8 @@ export default class Swup {
 		// Merge defaults and options
 		this.options = { ...this.defaults, ...options };
 
-		this.linkClickHandler = this.linkClickHandler.bind(this);
-		this.popStateHandler = this.popStateHandler.bind(this);
+		this.handleLinkClick = this.handleLinkClick.bind(this);
+		this.handlePopState = this.handlePopState.bind(this);
 
 		this.cache = new Cache(this);
 		this.classes = new Classes(this);
@@ -140,9 +140,9 @@ export default class Swup {
 	async enable() {
 		// Add event listener
 		const { linkSelector } = this.options;
-		this.clickDelegate = this.delegateEvent(linkSelector, 'click', this.linkClickHandler);
+		this.clickDelegate = this.delegateEvent(linkSelector, 'click', this.handleLinkClick);
 
-		window.addEventListener('popstate', this.popStateHandler);
+		window.addEventListener('popstate', this.handlePopState);
 
 		// Initial save to cache
 		if (this.options.cache) {
@@ -172,7 +172,7 @@ export default class Swup {
 		this.clickDelegate!.destroy();
 
 		// remove popstate listener
-		window.removeEventListener('popstate', this.popStateHandler);
+		window.removeEventListener('popstate', this.handlePopState);
 
 		// empty cache
 		this.cache.clear();
@@ -213,7 +213,7 @@ export default class Swup {
 		return false;
 	}
 
-	linkClickHandler(event: DelegateEvent<MouseEvent>) {
+	protected handleLinkClick(event: DelegateEvent<MouseEvent>) {
 		const el = event.delegateTarget as HTMLAnchorElement;
 		const { href, url, hash } = Location.fromElement(el);
 
@@ -265,7 +265,7 @@ export default class Swup {
 		});
 	}
 
-	popStateHandler(event: PopStateEvent) {
+	protected handlePopState(event: PopStateEvent) {
 		const href = event.state?.url ?? location.href;
 
 		// Exit early if this event should be ignored
