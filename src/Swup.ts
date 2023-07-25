@@ -48,18 +48,35 @@ export type Options = {
 	skipPopStateHandling: (event: any) => boolean;
 };
 
-/** Interface for Swup page transition library. */
-export interface SwupCore {
+const defaults: Options = {
+	animateHistoryBrowsing: false,
+	animationSelector: '[class*="transition-"]',
+	animationScope: 'html',
+	cache: true,
+	containers: ['#swup'],
+	ignoreVisit: (url, { el, event } = {}) => !!el?.closest('[data-no-swup]'),
+	linkSelector: 'a[href]',
+	plugins: [],
+	resolveUrl: (url) => url,
+	requestHeaders: {
+		'X-Requested-With': 'swup',
+		'Accept': 'text/html, application/xhtml+xml'
+	},
+	skipPopStateHandling: (event) => event.state?.source !== 'swup'
+};
+
+/** Swup page transition library. */
+export default class Swup {
 	/** Library version */
-	readonly version: string;
+	readonly version: string = version;
 	/** Options passed into the instance */
 	options: Options;
 	/** Default options before merging user options */
-	readonly defaults: Readonly<Options>;
+	readonly defaults: Options = defaults;
 	/** Registered plugin instances */
-	readonly plugins: Plugin[];
+	plugins: Plugin[] = [];
 	/** Data about the current visit */
-	readonly visit: Visit;
+	visit: Visit;
 	/** Cache instance */
 	readonly cache: Cache;
 	/** Hook registry */
@@ -67,100 +84,49 @@ export interface SwupCore {
 	/** Animation class manager */
 	readonly classes: Classes;
 	/** URL of the currently visible page */
-	currentPageUrl: string;
-
-	/** Enable the instance */
-	enable(): Promise<void>;
-	/** Disable the instance and clean up */
-	destroy(): Promise<void>;
+	currentPageUrl: string = getCurrentUrl();
+	/** Index of the current history entry */
+	protected currentHistoryIndex = 1;
+	/** Delegated event subscription handle */
+	protected clickDelegate?: DelegateEventUnsubscribe;
 
 	/** Install a plugin */
-	use: typeof use;
-	/** Uninstall a plugin */
-	unuse: typeof unuse;
-	/** Find a plugin by name or instance */
-	findPlugin: typeof findPlugin;
-
-	/** Log a message. Has no effect unless debug plugin is installed */
-	log: (message: string, context?: any) => void;
-
-	/** Navigate to a new URL */
-	navigate: typeof navigate;
-	/** Replace the content after page load */
-	replaceContent: typeof replaceContent;
-	/** Register a delegated event listener */
-	delegateEvent: typeof delegateEvent;
-	/** Fetch a page from the server */
-	fetchPage: typeof fetchPage;
-	/** Resolve when animations on the page finish */
-	awaitAnimations: typeof awaitAnimations;
-	/** Find the anchor element for a given hash */
-	getAnchorElement: typeof getAnchorElement;
-
-	/** Get the current page URL */
-	getCurrentUrl: typeof getCurrentUrl;
-	/** Resolve a URL to its final location */
-	resolveUrl(url: string): string;
-}
-
-/** Swup page transition library. */
-export default class Swup implements SwupCore {
-	version = version;
-	options: Options;
-	plugins: Plugin[] = [];
-	cache: Cache;
-	hooks: Hooks;
-	visit: Visit;
-	classes: Classes;
-
-	currentPageUrl = getCurrentUrl();
-	getCurrentUrl = getCurrentUrl;
-
 	use = use;
+	/** Uninstall a plugin */
 	unuse = unuse;
+	/** Find a plugin by name or instance */
 	findPlugin = findPlugin;
 
-	log = () => {};
+	/** Log a message. Has no effect unless debug plugin is installed */
+	log: (message: string, context?: any) => void = () => {};
 
-	getAnchorElement = getAnchorElement;
-
+	/** Navigate to a new URL */
 	navigate = navigate;
+	/** Actually perform a navigation */
 	protected performNavigation = performNavigation;
+	/** Create a new context for this visit */
+	protected createVisit = createVisit;
+	/** Register a delegated event listener */
 	delegateEvent = delegateEvent;
+	/** Fetch a page from the server */
 	fetchPage = fetchPage;
+	/** Resolve when animations on the page finish */
 	awaitAnimations = awaitAnimations;
 	protected renderPage = renderPage;
+	/** Replace the content after page load */
 	replaceContent = replaceContent;
 	protected animatePageIn = animatePageIn;
 	protected animatePageOut = animatePageOut;
 	protected scrollToContent = scrollToContent;
+	/** Find the anchor element for a given hash */
+	getAnchorElement = getAnchorElement;
 
-	protected createVisit = createVisit;
+	/** Get the current page URL */
+	getCurrentUrl = getCurrentUrl;
+	/** Resolve a URL to its final location */
 	resolveUrl = resolveUrl;
+	/** Check if two URLs resolve to the same location */
 	protected isSameResolvedUrl = isSameResolvedUrl;
-
-	readonly defaults: Options = {
-		animateHistoryBrowsing: false,
-		animationSelector: '[class*="transition-"]',
-		animationScope: 'html',
-		cache: true,
-		containers: ['#swup'],
-		ignoreVisit: (url, { el, event } = {}) => !!el?.closest('[data-no-swup]'),
-		linkSelector: 'a[href]',
-		plugins: [],
-		resolveUrl: (url) => url,
-		requestHeaders: {
-			'X-Requested-With': 'swup',
-			'Accept': 'text/html, application/xhtml+xml'
-		},
-		skipPopStateHandling: (event) => event.state?.source !== 'swup'
-	};
-
-	/** Index of the current history entry */
-	protected currentHistoryIndex = 1;
-
-	/** Delegated event subscription handle */
-	protected clickDelegate?: DelegateEventUnsubscribe;
 
 	constructor(options: Partial<Options> = {}) {
 		// Merge defaults and options
