@@ -48,24 +48,24 @@ export type Options = {
 	skipPopStateHandling: (event: any) => boolean;
 };
 
-/** Interface for Swup page transition library. */
-export interface SwupCore {
+export interface Swup {
 	/** Library version */
-	readonly version: string;
+	version: string;
+	/** Registered plugin instances */
+	plugins: Plugin[];
+	/** Data about the current visit */
+	visit: Visit;
+	/** Cache instance */
+	cache: Cache;
+	/** Hook registry */
+	hooks: Hooks;
+	/** Animation class manager */
+	classes: Classes;
+	/** Default options before merging user options */
+	defaults: Readonly<Options>;
 	/** Options passed into the instance */
 	options: Options;
-	/** Default options before merging user options */
-	readonly defaults: Readonly<Options>;
-	/** Registered plugin instances */
-	readonly plugins: Plugin[];
-	/** Data about the current visit */
-	readonly visit: Visit;
-	/** Cache instance */
-	readonly cache: Cache;
-	/** Hook registry */
-	readonly hooks: Hooks;
-	/** Animation class manager */
-	readonly classes: Classes;
+
 	/** URL of the currently visible page */
 	currentPageUrl: string;
 
@@ -104,14 +104,14 @@ export interface SwupCore {
 }
 
 /** Swup page transition library. */
-export default class Swup implements SwupCore {
+export class Swup {
 	version = version;
-	options: Options;
 	plugins: Plugin[] = [];
 	cache: Cache;
 	hooks: Hooks;
 	visit: Visit;
 	classes: Classes;
+	options: Options;
 
 	currentPageUrl = getCurrentUrl();
 	getCurrentUrl = getCurrentUrl;
@@ -120,7 +120,7 @@ export default class Swup implements SwupCore {
 	unuse = unuse;
 	findPlugin = findPlugin;
 
-	log = () => {};
+	log = (message: string, context?: any) => {};
 
 	getAnchorElement = getAnchorElement;
 
@@ -139,7 +139,7 @@ export default class Swup implements SwupCore {
 	resolveUrl = resolveUrl;
 	protected isSameResolvedUrl = isSameResolvedUrl;
 
-	readonly defaults: Options = {
+	defaults: Readonly<Options> = {
 		animateHistoryBrowsing: false,
 		animationSelector: '[class*="transition-"]',
 		animationScope: 'html',
@@ -166,13 +166,13 @@ export default class Swup implements SwupCore {
 		// Merge defaults and options
 		this.options = { ...this.defaults, ...options };
 
-		this.handleLinkClick = this.handleLinkClick.bind(this);
-		this.handlePopState = this.handlePopState.bind(this);
-
 		this.cache = new Cache(this);
 		this.classes = new Classes(this);
 		this.hooks = new Hooks(this);
 		this.visit = this.createVisit({ to: undefined });
+
+		this.handleLinkClick = this.handleLinkClick.bind(this);
+		this.handlePopState = this.handlePopState.bind(this);
 
 		if (!this.checkRequirements()) {
 			return;
@@ -376,3 +376,5 @@ export default class Swup implements SwupCore {
 		return false;
 	}
 }
+
+export default Swup;

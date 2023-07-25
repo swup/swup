@@ -1,7 +1,7 @@
 {
   "name": "swup",
   "amdName": "Swup",
-  "version": "4.0.0-rc.28",
+  "version": "4.0.0-rc.29",
   "description": "Versatile and extensible page transition library for server-rendered websites",
   "type": "module",
   "source": "./src/Swup.ts",
@@ -23,7 +23,7 @@
   "scripts": {
     "build": "npm run build:module && npm run build:bundle",
     "build:module": "BROWSERSLIST_ENV=modern microbundle src/index.ts -f modern,esm,cjs",
-    "build:bundle": "BROWSERSLIST_ENV=production microbundle src/Swup.ts -f umd --external none",
+    "build:bundle": "BROWSERSLIST_ENV=production microbundle src/umd.ts -f umd --external none",
     "dev": "BROWSERSLIST_ENV=development microbundle src/*.ts -w",
     "lint": "npm run lint:ts && npm run lint:prettier -- --check",
     "format": "npm run lint:ts && npm run lint:prettier -- --write",
