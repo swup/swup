@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
+import { describe, expect, it, vi, afterEach } from 'vitest';
 import Swup from '../../Swup.js';
 import type { PageData } from '../fetchPage.js';
 import { JSDOM } from 'jsdom';
