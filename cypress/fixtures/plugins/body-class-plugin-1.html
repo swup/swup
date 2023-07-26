@@ -25,8 +25,21 @@
         vel veniam vero voluptate voluptatem.</p>
     </main>
     <script>
+        class CustomBodyClassPlugin {
+            name = 'CustomBodyClassPlugin';
+            isSwupPlugin = true;
+            mount() {
+                this.swup.hooks.on('content:replace', (visit, { page: { html } }) => {
+                    const doc = new DOMParser().parseFromString(html, 'text/html');
+                    const body = doc.querySelector('body');
+                    if (body) {
+                        document.body.className = body.className;
+                    }
+                });
+            }
+        }
         window._swup = new Swup({
-            plugins: [new SwupBodyClassPlugin()]
+            plugins: [new CustomBodyClassPlugin()]
         });
     </script>
 </body>

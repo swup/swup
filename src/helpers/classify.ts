@@ -1,3 +1,4 @@
+/** Turn a string into a slug by lowercasing and replacing whitespace. */
 export const classify = (text: string, fallback?: string): string => {
 	const output = String(text)
 		.toLowerCase()

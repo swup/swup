@@ -3,15 +3,16 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Transition duration: partial</title>
+    <title>Animation duration: complex</title>
     <link rel="stylesheet" href="/assets/main.css">
     <script src="/dist/Swup.umd.js"></script>
     <style>
-        .transition-default {
-            transition: 0.4s opacity;
+        html.is-changing .transition-default {
+            transition: opacity 100ms 200ms, transform 400ms 200ms;
             opacity: 1;
         }
         html.is-animating .transition-default {
+            transform: translateY(10px);
             opacity: 0;
         }
     </style>
@@ -25,9 +26,8 @@
         </ul>
     </header>
     <main id="swup" class="wrapper transition-default">
-        <h1>Transition duration: partial</h1>
+        <h1>Animation duration: complex</h1>
     </main>
-    <aside class="transition-none"></aside>
     <script>
         window._swup = new Swup();
     </script>

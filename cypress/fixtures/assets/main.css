@@ -89,11 +89,18 @@ li span > span {
   animation: slideUp 0.8s cubic-bezier(0.075, 0.82, 0.165, 1) forwards;
   transform: translate3d(0, 100%, 0);
 }
-.transition-default {
+html.is-changing .transition-default {
   transition: 0.1s;
   opacity: 1;
 }
 html.is-animating .transition-default {
+  opacity: 0;
+}
+.transition-default.is-changing {
+  transition: 0.1s;
+  opacity: 1;
+}
+.transition-default.is-animating {
   opacity: 0;
 }
 .wrapper {
@@ -107,7 +114,7 @@ html.is-animating .transition-default {
   padding: 40px 20px;
 }
 .wrapper-inner {
-  max-width: 480px;
+  max-width: 600px;
   margin: 0 auto;
 }
 .button {

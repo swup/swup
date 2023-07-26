@@ -1,5 +1,6 @@
 import { getCurrentUrl } from './getCurrentUrl.js';
 
+/** Update the current history record with a custom swup identifier. */
 export const updateHistoryRecord = (
 	url: string | null = null,
 	customData: Record<string, unknown> = {}

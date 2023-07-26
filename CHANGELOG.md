@@ -2,6 +2,31 @@
 
 <!-- ## [Unreleased] -->
 
+## [4.0.0] - 2023-07-26
+
+See the [release notes](https://swup.js.org/announcements/swup-4/) and
+[upgrade guide](https://swup.js.org/getting-started/upgrading/) for details.
+
+### Features
+
+- Built-in scroll support
+- New hook system for customizing the page load lifecycle
+- Context object for controlling the transition process
+- Animation scope: add animation classes to html element or to containers
+- Easier customization of official themes
+- Allow pruning cache entries
+
+### Breaking changes
+
+- Hooks replace events: `swup.hooks.on()`
+- Use the `visit` argument in hooks instead of `swup.transition`
+- Container selectors now only match one single element per selector
+- Custom animation attribute renamed to `data-swup-animation`
+- Swup no longer adds `data-swup` attributes to containers
+- Navigation method renamed: `swup.navigate()`
+- Simplified cache API: `cache.set()`
+- Support for custom payload formats was dropped
+
 ## [3.1.1] - 2023-06-23
 
 - Accept `#top` as special scroll target
@@ -58,8 +83,7 @@
 
 ### Breaking changes
 
-See [Upgrade instructions for swup 3](https://swup.js.org/getting-started/upgrading)
-for details.
+See [upgrade instructions](https://swup.js.org/getting-started/upgrading-v3/) for details.
 
 - Swup will now wait for the longest transitioned property
 - Swup will no longer add `to-*` classes for the next URL
@@ -105,8 +129,9 @@ for details.
 
 - Fix bug where animateHistoryBrowsing option was ignored for OUT animations
 
-[Unreleased]: https://github.com/swup/swup/compare/3.1.1...HEAD
+[Unreleased]: https://github.com/swup/swup/compare/4.0.0...HEAD
 
+[4.0.0]: https://github.com/swup/swup/releases/tag/4.0.0
 [3.1.1]: https://github.com/swup/swup/releases/tag/3.1.1
 [3.1.0]: https://github.com/swup/swup/releases/tag/3.1.0
 [3.0.8]: https://github.com/swup/swup/releases/tag/3.0.8

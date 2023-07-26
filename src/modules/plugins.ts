@@ -1,17 +1,20 @@
 import Swup from '../Swup.js';
 
 export type Plugin = {
-	name: string;
+	/** Identify as a swup plugin */
 	isSwupPlugin: true;
-	mount: () => void;
-	unmount: () => void;
-
-	// the instance is assigned later on after passing to swup
-	swup?: Swup;
-
-	// these are possibly undefined for backward compatibility
+	/** Name of this plugin */
+	name: string;
+	/** Version of this plugin. Currently not in use, defined here for backward compatiblity. */
 	version?: string;
-	requires?: Record<string, string>;
+	/** The swup instance that mounted this plugin */
+	swup?: Swup;
+	/** Version requirements of this plugin. Example: `{ swup: '>=4' }` */
+	requires?: Record<string, string | string[]>;
+	/** Run on mount */
+	mount: () => void;
+	/** Run on unmount */
+	unmount: () => void;
 	_beforeMount?: () => void;
 	_afterUnmount?: () => void;
 	_checkRequirements?: () => boolean;
@@ -22,6 +25,7 @@ const isSwupPlugin = (maybeInvalidPlugin: unknown): maybeInvalidPlugin is Plugin
 	return maybeInvalidPlugin?.isSwupPlugin;
 };
 
+/** Install a plugin. */
 export const use = function (this: Swup, plugin: unknown) {
 	if (!isSwupPlugin(plugin)) {
 		console.error('Not a swup plugin instance', plugin);
@@ -44,6 +48,7 @@ export const use = function (this: Swup, plugin: unknown) {
 	return this.plugins;
 };
 
+/** Uninstall a plugin. */
 export function unuse(this: Swup, pluginOrName: Plugin | string) {
 	const plugin = this.findPlugin(pluginOrName);
 	if (!plugin) {
@@ -61,6 +66,12 @@ export function unuse(this: Swup, pluginOrName: Plugin | string) {
 	return this.plugins;
 }
 
+/** Find a plugin by name or reference. */
 export function findPlugin(this: Swup, pluginOrName: Plugin | string) {
-	return this.plugins.find((plugin) => plugin === pluginOrName || plugin.name === pluginOrName);
+	return this.plugins.find(
+		(plugin) =>
+			plugin === pluginOrName ||
+			plugin.name === pluginOrName ||
+			plugin.name === `Swup${pluginOrName}`
+	);
 }
