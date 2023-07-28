@@ -25,7 +25,7 @@ export class Cache {
 
 	/** All cached pages. */
 	get all() {
-		return this.pages;
+		return structuredClone(this.pages);
 	}
 
 	/** Check if the given URL has been cached. */
