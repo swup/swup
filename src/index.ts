@@ -14,6 +14,7 @@ import type {
 	VisitHistory
 } from './modules/Visit.js';
 import type {
+	HookArguments,
 	HookDefinitions,
 	HookName,
 	HookOptions,
@@ -37,6 +38,7 @@ export type {
 	VisitAnimation,
 	VisitScroll,
 	VisitHistory,
+	HookArguments,
 	HookDefinitions,
 	HookName,
 	HookOptions,
