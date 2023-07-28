@@ -21,10 +21,11 @@
     "dist"
   ],
   "scripts": {
+    "clean": "rm -rf ./dist",
     "build": "npm run build:module && npm run build:bundle",
     "build:module": "BROWSERSLIST_ENV=modern microbundle src/index.ts -f modern,esm,cjs",
     "build:bundle": "BROWSERSLIST_ENV=production microbundle src/Swup.ts -f umd --external none",
-    "dev": "BROWSERSLIST_ENV=development microbundle src/*.ts -w",
+    "dev": "npm run clean && BROWSERSLIST_ENV=development microbundle src/index.ts -w -f modern",
     "lint": "npm run lint:ts && npm run lint:prettier -- --check",
     "format": "npm run lint:ts && npm run lint:prettier -- --write",
     "lint:ts": "tsc --noEmit --skipLibCheck",
