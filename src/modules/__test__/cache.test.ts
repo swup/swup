@@ -116,6 +116,13 @@ describe('Cache', () => {
 		expect(cache.has(page2.url)).toBe(true);
 		expect(cache.has(page3.url)).toBe(false);
 	});
+
+	it('should get a copy of a cache entry', () => {
+		cache.set(page1.url, page1);
+		const page = cache.get(page1.url);
+		page!.html = 'new';
+		expect(cache.get(page1.url)?.html).toEqual(page1.html);
+	});
 });
 
 describe('Types', () => {

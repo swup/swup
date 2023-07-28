@@ -35,7 +35,9 @@ export class Cache {
 
 	/** Return the cached page object if cached. */
 	get(url: string): CacheData | undefined {
-		return this.pages.get(this.resolve(url));
+		const result = this.pages.get(this.resolve(url));
+		if (!result) return result;
+		return structuredClone(result);
 	}
 
 	/** Create a cache record for the specified URL. */
