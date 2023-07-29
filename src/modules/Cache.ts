@@ -53,7 +53,7 @@ export class Cache {
 	}
 
 	/** Update a cache record, overwriting or adding custom data. */
-	update(url: string, payload: CacheData) {
+	update(url: string, payload: Omit<CacheData, 'url'>) {
 		url = this.resolve(url);
 		const page = { ...this.get(url), ...payload, url };
 		this.pages.set(url, page);
