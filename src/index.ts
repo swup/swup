@@ -1,8 +1,10 @@
 import type { Path } from 'path-to-regexp';
-
-import Swup, { type Options } from './Swup.js';
-import type { PageData } from './modules/fetchPage.js';
+import type { DelegateEventUnsubscribe } from './helpers/delegateEvent.js';
+import type { DelegateEvent, DelegateEventHandler } from 'delegate-it';
+import Swup from './Swup.js';
+import type { Options } from './Swup.js';
 import type { CacheData } from './modules/Cache.js';
+import type { PageData } from './modules/fetchPage.js';
 import type {
 	Visit,
 	VisitFrom,
@@ -12,6 +14,7 @@ import type {
 	VisitHistory
 } from './modules/Visit.js';
 import type {
+	HookArguments,
 	HookDefinitions,
 	HookName,
 	HookOptions,
@@ -21,11 +24,10 @@ import type {
 import type { Plugin } from './modules/plugins.js';
 
 export default Swup;
-
 export * from './helpers.js';
 export * from './utils.js';
-
 export type {
+	Swup,
 	Options,
 	Plugin,
 	CacheData,
@@ -36,10 +38,14 @@ export type {
 	VisitAnimation,
 	VisitScroll,
 	VisitHistory,
+	HookArguments,
 	HookDefinitions,
 	HookName,
 	HookOptions,
 	HookUnregister,
 	Handler,
-	Path
+	Path,
+	DelegateEvent,
+	DelegateEventHandler,
+	DelegateEventUnsubscribe
 };

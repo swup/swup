@@ -16,7 +16,7 @@ export interface HookDefinitions {
 	'cache:clear': undefined;
 	'cache:set': { page: PageData };
 	'content:replace': { page: PageData };
-	'content:scroll': { options: ScrollIntoViewOptions };
+	'content:scroll': undefined;
 	'enable': undefined;
 	'disable': undefined;
 	'fetch:request': { url: string; options: FetchOptions };
@@ -25,11 +25,12 @@ export interface HookDefinitions {
 	'history:popstate': { event: PopStateEvent };
 	'link:click': { el: HTMLAnchorElement; event: DelegateEvent<MouseEvent> };
 	'link:self': undefined;
-	'link:anchor': { hash: string; options: ScrollIntoViewOptions };
+	'link:anchor': { hash: string };
 	'link:newtab': { href: string };
-	'page:request': { url: string; options: FetchOptions };
-	'page:load': { page: PageData; cache?: boolean };
+	'page:load': { page?: PageData; cache?: boolean; options: FetchOptions };
 	'page:view': { url: string; title: string };
+	'scroll:top': { options: ScrollIntoViewOptions };
+	'scroll:anchor': { hash: string; options: ScrollIntoViewOptions };
 	'visit:start': undefined;
 	'visit:end': undefined;
 }
@@ -46,7 +47,7 @@ export type Handler<T extends HookName> = (
 	args: HookArguments<T>,
 	/** Default handler to be executed. Available if replacing an internal hook handler. */
 	defaultHandler?: Handler<T>
-) => Promise<any> | void;
+) => Promise<any> | any;
 
 export type Handlers = {
 	[K in HookName]: Handler<K>[];
@@ -118,9 +119,10 @@ export class Hooks {
 		'link:self',
 		'link:anchor',
 		'link:newtab',
-		'page:request',
 		'page:load',
 		'page:view',
+		'scroll:top',
+		'scroll:anchor',
 		'visit:start',
 		'visit:end'
 	];
@@ -326,7 +328,7 @@ export class Hooks {
 	 * @param registrations The registrations (handler + options) to execute
 	 * @param args Arguments to pass to the handler
 	 */
-	private async run<T extends HookName>(
+	protected async run<T extends HookName>(
 		registrations: HookRegistration<T>[],
 		args?: HookArguments<T>
 	): Promise<any> {
@@ -346,7 +348,7 @@ export class Hooks {
 	 * @param registrations The registrations (handler + options) to execute
 	 * @param args Arguments to pass to the handler
 	 */
-	private runSync<T extends HookName>(
+	protected runSync<T extends HookName>(
 		registrations: HookRegistration<T>[],
 		args?: HookArguments<T>
 	): any[] {
@@ -374,7 +376,7 @@ export class Hooks {
 	 * @returns An object with the handlers sorted into `before` and `after` arrays,
 	 *          as well as a flag indicating if the original handler was replaced
 	 */
-	private getHandlers<T extends HookName>(hook: T, defaultHandler?: Handler<T>) {
+	protected getHandlers<T extends HookName>(hook: T, defaultHandler?: Handler<T>) {
 		const ledger = this.get(hook);
 		if (!ledger) {
 			return { found: false, before: [], handler: [], after: [], replaced: false };
@@ -422,7 +424,7 @@ export class Hooks {
 	 * @param b The other registration object to compare with
 	 * @returns The sort direction
 	 */
-	private sortRegistrations<T extends HookName>(
+	protected sortRegistrations<T extends HookName>(
 		a: HookRegistration<T>,
 		b: HookRegistration<T>
 	): number {
@@ -435,7 +437,7 @@ export class Hooks {
 	 * Dispatch a custom event on the `document` for a hook. Prefixed with `swup:`
 	 * @param hook Name of the hook.
 	 */
-	private dispatchDomEvent<T extends HookName>(hook: T, args?: HookArguments<T>): void {
+	protected dispatchDomEvent<T extends HookName>(hook: T, args?: HookArguments<T>): void {
 		const detail = { hook, args, visit: this.swup.visit };
 		document.dispatchEvent(new CustomEvent(`swup:${hook}`, { detail }));
 	}

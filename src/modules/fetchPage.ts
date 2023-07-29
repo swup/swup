@@ -17,6 +17,7 @@ export interface FetchOptions extends RequestInit {
 	body?: string | FormData | URLSearchParams;
 	/** The headers of the request: key/value object. */
 	headers?: Record<string, string>;
+	/** The request timeout in milliseconds. */
 	timeout?: number;
 }
 
@@ -44,23 +45,14 @@ export class FetchError extends Error {
 export async function fetchPage(
 	this: Swup,
 	url: URL | string,
-	options: FetchOptions & { triggerHooks?: boolean } = {}
+	options: FetchOptions = {}
 ): Promise<PageData> {
 	url = Location.fromUrl(url).url;
 
-	if (this.cache.has(url)) {
-		const page = this.cache.get(url) as PageData;
-		if (options.triggerHooks !== false) {
-			await this.hooks.call('page:load', { page, cache: true });
-		}
-		return page;
-	}
-
-	const controller = new AbortController();
-	const { signal } = controller;
-
 	const headers = { ...this.options.requestHeaders, ...options.headers };
 	const timeout = options.timeout ?? this.options.timeout;
+	const controller = new AbortController();
+	const { signal } = controller;
 	options = { ...options, headers, signal };
 
 	let timedOut = false;
@@ -116,10 +108,6 @@ export async function fetchPage(
 	// Only save cache entry for non-redirects
 	if (url === finalUrl) {
 		this.cache.set(page.url, page);
-	}
-
-	if (options.triggerHooks !== false) {
-		await this.hooks.call('page:load', { page, cache: false });
 	}
 
 	return page;

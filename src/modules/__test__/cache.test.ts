@@ -116,6 +116,23 @@ describe('Cache', () => {
 		expect(cache.has(page2.url)).toBe(true);
 		expect(cache.has(page3.url)).toBe(false);
 	});
+
+	it('should return a copy from cache.get()', () => {
+		cache.set(page1.url, page1);
+		const page = cache.get(page1.url);
+		page!.html = 'new';
+		expect(cache.get(page1.url)?.html).toEqual(page1.html);
+	});
+
+	it('should return a new Map with shallow copies from cache.all', () => {
+		cache.set(page1.url, page1);
+		cache.set(page2.url, page2);
+
+		const all = cache.all;
+		all.get(page1.url)!.html = 'new';
+
+		expect(cache.get(page1.url)?.html).toEqual(page1.html);
+	});
 });
 
 describe('Types', () => {

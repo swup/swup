@@ -1,7 +1,7 @@
 {
   "name": "swup",
   "amdName": "Swup",
-  "version": "4.0.0-rc.26",
+  "version": "4.1.0",
   "description": "Versatile and extensible page transition library for server-rendered websites",
   "type": "module",
   "source": "./src/Swup.ts",
@@ -11,9 +11,9 @@
   "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
-      "require": "./dist/Swup.cjs",
+      "types": "./dist/types/index.d.ts",
       "import": "./dist/Swup.modern.js",
-      "types": "./dist/types/index.d.ts"
+      "require": "./dist/Swup.cjs"
     }
   },
   "files": [
@@ -21,10 +21,11 @@
     "dist"
   ],
   "scripts": {
+    "clean": "rm -rf ./dist",
     "build": "npm run build:module && npm run build:bundle",
     "build:module": "BROWSERSLIST_ENV=modern microbundle src/index.ts -f modern,esm,cjs",
     "build:bundle": "BROWSERSLIST_ENV=production microbundle src/Swup.ts -f umd --external none",
-    "dev": "BROWSERSLIST_ENV=development microbundle src/*.ts -w",
+    "dev": "npm run clean && BROWSERSLIST_ENV=development microbundle src/index.ts -w -f modern",
     "lint": "npm run lint:ts && npm run lint:prettier -- --check",
     "format": "npm run lint:ts && npm run lint:prettier -- --write",
     "lint:ts": "tsc --noEmit --skipLibCheck",
