@@ -124,7 +124,7 @@ describe('Cache', () => {
 		expect(cache.get(page1.url)?.html).toEqual(page1.html);
 	});
 
-	it('should return a copy from cache.all', () => {
+	it('should return a new Map with shallow copies from cache.all', () => {
 		cache.set(page1.url, page1);
 		cache.set(page2.url, page2);
 
