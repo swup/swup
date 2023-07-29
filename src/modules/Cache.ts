@@ -33,11 +33,11 @@ export class Cache {
 		return this.pages.has(this.resolve(url));
 	}
 
-	/** Return the cached page object if cached. */
+	/** Return a shallow copy of the cached page object if available. */
 	get(url: string): CacheData | undefined {
 		const result = this.pages.get(this.resolve(url));
 		if (!result) return result;
-		return structuredClone(result);
+		return { ...result };
 	}
 
 	/** Create a cache record for the specified URL. */
