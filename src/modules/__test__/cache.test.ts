@@ -117,10 +117,20 @@ describe('Cache', () => {
 		expect(cache.has(page3.url)).toBe(false);
 	});
 
-	it('should get a copy of a cache entry', () => {
+	it('should return a copy from cache.get()', () => {
 		cache.set(page1.url, page1);
 		const page = cache.get(page1.url);
 		page!.html = 'new';
+		expect(cache.get(page1.url)?.html).toEqual(page1.html);
+	});
+
+	it('should return a copy from cache.all', () => {
+		cache.set(page1.url, page1);
+		cache.set(page2.url, page2);
+
+		const all = cache.all;
+		all.get(page1.url)!.html = 'new';
+
 		expect(cache.get(page1.url)?.html).toEqual(page1.html);
 	});
 });

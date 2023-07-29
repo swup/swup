@@ -25,7 +25,11 @@ export class Cache {
 
 	/** All cached pages. */
 	get all() {
-		return structuredClone(this.pages);
+		const copy = new Map();
+		this.pages.forEach((page, key) => {
+			copy.set(key, { ...page });
+		});
+		return copy;
 	}
 
 	/** Check if the given URL has been cached. */
