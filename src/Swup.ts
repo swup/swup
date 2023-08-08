@@ -262,14 +262,16 @@ export default class Swup {
 
 			event.preventDefault();
 
-			// Handle links to the same page: with or without hash
+			// Handle links to the same page
 			if (!url || url === from) {
 				if (hash) {
+					// With hash: scroll to anchor
 					this.hooks.callSync('link:anchor', { hash }, () => {
 						updateHistoryRecord(url + hash);
 						this.scrollToContent();
 					});
 				} else {
+					// Without hash: scroll to top or load/reload page
 					this.hooks.callSync('link:self', undefined, () => {
 						switch (this.options.linkToSelf) {
 							case 'scroll':
