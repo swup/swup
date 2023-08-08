@@ -774,6 +774,7 @@ describe('Containers', function () {
 describe('Scrolling', function () {
 	beforeEach(() => {
 		cy.visit('/scrolling-1.html');
+		cy.wrapSwupInstance();
 	});
 
 	it('should scroll to hash element and back to top', function () {
@@ -839,9 +840,8 @@ describe('Scrolling', function () {
 			this.swup.hooks.once('visit:start', (visit) => (visit.scroll.target = '#anchor'));
 		});
 		cy.get('[data-cy=link-to-page]').click();
-		cy.window().should(() => {
-			const urlEndsWithHash = this.swup.getCurrentUrl({ hash: true }).endsWith('#anchor');
-			expect(urlEndsWithHash).to.be.false;
-		});
+		cy.shouldBeAtPage('/scrolling-2.html');
+		cy.shouldHaveH1('Scrolling 2');
+		cy.shouldHaveElementInViewport('[data-cy=anchor]');
 	});
 });
