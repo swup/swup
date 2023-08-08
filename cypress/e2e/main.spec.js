@@ -313,6 +313,20 @@ describe('Navigation', function () {
 		cy.shouldHaveH1('Page 2');
 	});
 
+	it('should reset scroll when clicking link to same page', function () {
+		let navigated = false;
+		cy.window().then(() => {
+			this.swup.hooks.once('visit:start', () => (navigated = true));
+		});
+		cy.scrollTo(0, 200);
+		cy.window().its('scrollY').should('equal', 200);
+		cy.get('[data-cy=nav-link-self]').click();
+		cy.window().its('scrollY').should('equal', 0);
+		cy.window().should(() => {
+			expect(navigated).to.be.false;
+		});
+	});
+
 	// it('should ignore visit when meta key pressed', function() {
 	//     cy.triggerClickOnLink('/page-2.html', { metaKey: true });
 	//     cy.wait(200);
@@ -819,6 +833,7 @@ describe('Containers', function () {
 describe('Scrolling', function () {
 	beforeEach(() => {
 		cy.visit('/scrolling-1.html');
+		cy.wrapSwupInstance();
 	});
 
 	it('should scroll to hash element and back to top', function () {
@@ -877,5 +892,17 @@ describe('Scrolling', function () {
 		cy.shouldBeAtPage('/scrolling-2.html#anchor');
 		cy.shouldHaveH1('Scrolling 2');
 		cy.shouldHaveElementInViewport('[data-cy=anchor]');
+	});
+
+	it.only('should not append the hash if changing visit.scroll.target on the fly', function () {
+		let navigated = false;
+		cy.window().then(() => {
+			this.swup.hooks.once('visit:start', (visit) => (visit.scroll.target = '#anchor'));
+		});
+		cy.get('[data-cy=link-to-page]').click();
+		cy.window().should(() => {
+			const urlEndsWithHash = this.swup.getCurrentUrl({ hash: true }).endsWith('#anchor');
+			expect(urlEndsWithHash).to.be.false;
+		});
 	});
 });
