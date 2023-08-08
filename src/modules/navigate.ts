@@ -97,7 +97,8 @@ export async function performNavigation(
 
 		// Create history record if this is not a popstate call (with or without anchor)
 		if (!this.visit.history.popstate) {
-			const newUrl = url + (this.visit.scroll.target || '');
+			// Add the hash directly from the trigger element
+			const newUrl = url + (el ? Location.fromElement(el).hash : '');
 			if (this.visit.history.action === 'replace') {
 				updateHistoryRecord(newUrl);
 			} else {
