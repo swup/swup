@@ -895,7 +895,6 @@ describe('Scrolling', function () {
 	});
 
 	it.only('should not append the hash if changing visit.scroll.target on the fly', function () {
-		let navigated = false;
 		cy.window().then(() => {
 			this.swup.hooks.once('visit:start', (visit) => (visit.scroll.target = '#anchor'));
 		});
