@@ -38,8 +38,8 @@ export type Options = {
 	ignoreVisit: (url: string, { el, event }: { el?: Element; event?: Event }) => boolean;
 	/** Selector for links that trigger visits. Default: `'a[href]'` */
 	linkSelector: string;
-	/** How swup handles links to the same page. Default: `ignore` */
-	linkToSelf: 'scroll' | 'navigate' | 'reload' | 'ignore';
+	/** How swup handles links to the same page. Default: `scroll` */
+	linkToSelf: 'scroll' | 'navigate' | 'reload';
 	/** Plugins to register on startup. */
 	plugins: Plugin[];
 	/** Custom headers sent along with fetch requests. */
@@ -58,7 +58,7 @@ const defaults: Options = {
 	containers: ['#swup'],
 	ignoreVisit: (url, { el, event } = {}) => !!el?.closest('[data-no-swup]'),
 	linkSelector: 'a[href]',
-	linkToSelf: 'ignore',
+	linkToSelf: 'scroll',
 	plugins: [],
 	resolveUrl: (url) => url,
 	requestHeaders: {
@@ -280,9 +280,6 @@ export default class Swup {
 								break;
 							case 'reload':
 								window.location.href = url;
-								break;
-							case 'ignore':
-								// do nothing
 								break;
 						}
 					});
