@@ -11,7 +11,7 @@ import { Visit, createVisit } from './modules/Visit.js';
 import { Hooks } from './modules/Hooks.js';
 import { getAnchorElement } from './modules/getAnchorElement.js';
 import { awaitAnimations } from './modules/awaitAnimations.js';
-import { navigate, performNavigation } from './modules/navigate.js';
+import { navigate, performNavigation, NavigationToSelfAction } from './modules/navigate.js';
 import { fetchPage } from './modules/fetchPage.js';
 import { animatePageOut } from './modules/animatePageOut.js';
 import { replaceContent } from './modules/replaceContent.js';
@@ -39,7 +39,9 @@ export type Options = {
 	/** Selector for links that trigger visits. Default: `'a[href]'` */
 	linkSelector: string;
 	/** How swup handles links to the same page. Default: `scroll` */
-	linkToSelf: 'scroll' | 'navigate';
+	linkToSelf:
+		| NavigationToSelfAction
+		| ((url: string, { el, event }: { el?: Element; event?: Event }) => NavigationToSelfAction);
 	/** Plugins to register on startup. */
 	plugins: Plugin[];
 	/** Custom headers sent along with fetch requests. */
@@ -273,7 +275,11 @@ export default class Swup {
 				} else {
 					// Without hash: scroll to top or load/reload page
 					this.hooks.callSync('link:self', undefined, () => {
-						switch (this.options.linkToSelf) {
+						let action: NavigationToSelfAction | Function = this.options.linkToSelf;
+						if (typeof action === 'function') {
+							action = action();
+						}
+						switch (action) {
 							case 'scroll':
 								return this.scrollToContent();
 							case 'navigate':
