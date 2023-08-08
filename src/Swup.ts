@@ -309,11 +309,6 @@ export default class Swup {
 			return;
 		}
 
-		// Exit early if the link should be ignored
-		if (this.shouldIgnoreVisit(href, { event })) {
-			return;
-		}
-
 		const { url, hash } = Location.fromUrl(href);
 		const animate = this.options.animateHistoryBrowsing;
 		const resetScroll = this.options.animateHistoryBrowsing;
