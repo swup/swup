@@ -324,6 +324,7 @@ describe('Navigation', function () {
 describe('Link resolution', function () {
 	beforeEach(() => {
 		cy.visit('/link-resolution.html');
+		cy.wrapSwupInstance();
 	});
 
 	it('should skip links to different origins', function () {
@@ -346,6 +347,20 @@ describe('Link resolution', function () {
 		cy.get('[data-cy=nav-link-sub]').click();
 		cy.shouldBeAtPage('/nested/nested-2.html');
 		cy.shouldHaveH1('Nested Page 2');
+	});
+
+	it('should reset scroll when clicking link to same page', function () {
+		let navigated = false;
+		cy.window().then(() => {
+			this.swup.hooks.once('visit:start', () => (navigated = true));
+		});
+		cy.scrollTo(0, 200);
+		cy.window().its('scrollY').should('equal', 200);
+		cy.get('[data-cy=nav-link-self]').click();
+		cy.window().its('scrollY').should('equal', 0);
+		cy.window().should(() => {
+			expect(navigated).to.be.false;
+		});
 	});
 });
 
