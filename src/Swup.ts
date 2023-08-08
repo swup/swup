@@ -273,14 +273,11 @@ export default class Swup {
 					this.hooks.callSync('link:self', undefined, () => {
 						switch (this.options.linkToSelf) {
 							case 'scroll':
-								this.scrollToContent();
-								break;
+								return this.scrollToContent();
 							case 'navigate':
-								this.performNavigation(url);
-								break;
+								return this.performNavigation(url);
 							case 'reload':
 								window.location.href = url;
-								break;
 						}
 					});
 				}
