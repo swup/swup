@@ -22,7 +22,7 @@ export class Location extends URL {
 	 */
 	static fromElement(el: Element): Location {
 		const href = el.getAttribute('href') || el.getAttribute('xlink:href') || '';
-		return new Location(href!);
+		return new Location(href);
 	}
 
 	/**
