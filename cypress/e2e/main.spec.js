@@ -377,6 +377,14 @@ describe('Link resolution', function () {
 			expect(navigated).to.be.true;
 		});
 	});
+
+	it('should reload the same page if configured via linkToSelf option', function () {
+		cy.shouldHaveReloadedAfterAction(() => {
+			this.swup.options.linkToSelf = 'reload';
+			cy.get('[data-cy=nav-link-self]').click();
+		});
+		cy.shouldBeAtPage('/link-resolution.html');
+	});
 });
 
 describe('Redirects', function () {
