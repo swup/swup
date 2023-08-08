@@ -96,9 +96,11 @@ export async function performNavigation(
 			return args.page;
 		});
 
-		// Create history record if this is not a popstate call (with or without anchor)
-		if (!this.visit.history.popstate) {
-			const newUrl = url + (this.visit.scroll.target || '');
+		// Create/update history record if this is not a popstate call or leads to the same URL
+		const modifyHistory =
+			!this.visit.history.popstate && this.visit.to.url !== this.currentPageUrl;
+		if (modifyHistory) {
+			const newUrl = this.visit.to.url + (this.visit.scroll.target || '');
 			if (this.visit.history.action === 'replace') {
 				updateHistoryRecord(newUrl);
 			} else {
