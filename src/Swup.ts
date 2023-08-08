@@ -11,7 +11,7 @@ import { Visit, createVisit } from './modules/Visit.js';
 import { Hooks } from './modules/Hooks.js';
 import { getAnchorElement } from './modules/getAnchorElement.js';
 import { awaitAnimations } from './modules/awaitAnimations.js';
-import { navigate, performNavigation } from './modules/navigate.js';
+import { navigate, performNavigation, NavigationToSelfAction } from './modules/navigate.js';
 import { fetchPage } from './modules/fetchPage.js';
 import { animatePageOut } from './modules/animatePageOut.js';
 import { replaceContent } from './modules/replaceContent.js';
@@ -38,6 +38,10 @@ export type Options = {
 	ignoreVisit: (url: string, { el, event }: { el?: Element; event?: Event }) => boolean;
 	/** Selector for links that trigger visits. Default: `'a[href]'` */
 	linkSelector: string;
+	/** How swup handles links to the same page. Default: `scroll` */
+	linkToSelf:
+		| NavigationToSelfAction
+		| ((url: string, { el, event }: { el?: Element; event?: Event }) => NavigationToSelfAction);
 	/** Plugins to register on startup. */
 	plugins: Plugin[];
 	/** Custom headers sent along with fetch requests. */
@@ -56,6 +60,7 @@ const defaults: Options = {
 	containers: ['#swup'],
 	ignoreVisit: (url, { el, event } = {}) => !!el?.closest('[data-no-swup]'),
 	linkSelector: 'a[href]',
+	linkToSelf: 'scroll',
 	plugins: [],
 	resolveUrl: (url) => url,
 	requestHeaders: {
@@ -259,16 +264,28 @@ export default class Swup {
 
 			event.preventDefault();
 
-			// Handle links to the same page: with or without hash
+			// Handle links to the same page
 			if (!url || url === from) {
 				if (hash) {
+					// With hash: scroll to anchor
 					this.hooks.callSync('link:anchor', { hash }, () => {
 						updateHistoryRecord(url + hash);
 						this.scrollToContent();
 					});
 				} else {
+					// Without hash: scroll to top or load/reload page
 					this.hooks.callSync('link:self', undefined, () => {
-						this.scrollToContent();
+						let action: NavigationToSelfAction | Function = this.options.linkToSelf;
+						if (typeof action === 'function') {
+							action = action();
+						}
+						switch (action) {
+							case 'navigate':
+								return this.performNavigation(url);
+							case 'scroll':
+							default:
+								return this.scrollToContent();
+						}
 					});
 				}
 				return;
@@ -294,11 +311,6 @@ export default class Swup {
 
 		// Exit early if the resolved path hasn't changed
 		if (this.isSameResolvedUrl(getCurrentUrl(), this.currentPageUrl)) {
-			return;
-		}
-
-		// Exit early if the link should be ignored
-		if (this.shouldIgnoreVisit(href, { event })) {
 			return;
 		}
 

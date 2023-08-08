@@ -5,6 +5,7 @@ import { VisitInitOptions } from './Visit.js';
 
 export type HistoryAction = 'push' | 'replace';
 export type HistoryDirection = 'forwards' | 'backwards';
+export type NavigationToSelfAction = 'scroll' | 'navigate';
 
 /** Define how to navigate to a page. */
 type NavigationOptions = {
@@ -95,10 +96,13 @@ export async function performNavigation(
 			return args.page;
 		});
 
-		// Create history record if this is not a popstate call (with or without anchor)
+		// Create/update history record if this is not a popstate call or leads to the same URL
 		if (!this.visit.history.popstate) {
-			const newUrl = url + (this.visit.scroll.target || '');
-			if (this.visit.history.action === 'replace') {
+			const newUrl = this.visit.to.url + (this.visit.scroll.target || '');
+			if (
+				this.visit.history.action === 'replace' ||
+				this.visit.to.url === this.currentPageUrl
+			) {
 				updateHistoryRecord(newUrl);
 			} else {
 				const index = this.currentHistoryIndex + 1;
