@@ -2,6 +2,16 @@
 
 <!-- ## [Unreleased] -->
 
+## [4.1.0] - 2023-07-29
+
+- Prevent unintentional cache mutation
+- Use recommended order for package.json exports
+- Infer element type from delegate selector
+
+## [4.0.1] - 2023-07-28
+
+- Export additional types to allow augmentation from plugins
+
 ## [4.0.0] - 2023-07-26
 
 See the [release notes](https://swup.js.org/announcements/swup-4/) and
@@ -129,8 +139,10 @@ See [upgrade instructions](https://swup.js.org/getting-started/upgrading-v3/) fo
 
 - Fix bug where animateHistoryBrowsing option was ignored for OUT animations
 
-[Unreleased]: https://github.com/swup/swup/compare/4.0.0...HEAD
+[Unreleased]: https://github.com/swup/swup/compare/4.1.0...HEAD
 
+[4.1.0]: https://github.com/swup/swup/releases/tag/4.1.0
+[4.0.1]: https://github.com/swup/swup/releases/tag/4.0.1
 [4.0.0]: https://github.com/swup/swup/releases/tag/4.0.0
 [3.1.1]: https://github.com/swup/swup/releases/tag/3.1.1
 [3.1.0]: https://github.com/swup/swup/releases/tag/3.1.0
