@@ -280,10 +280,11 @@ export default class Swup {
 							action = action();
 						}
 						switch (action) {
-							case 'scroll':
-								return this.scrollToContent();
 							case 'navigate':
 								return this.performNavigation(url);
+							case 'scroll':
+							default:
+								return this.scrollToContent();
 						}
 					});
 				}
