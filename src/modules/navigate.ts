@@ -97,11 +97,12 @@ export async function performNavigation(
 		});
 
 		// Create/update history record if this is not a popstate call or leads to the same URL
-		const modifyHistory =
-			!this.visit.history.popstate && this.visit.to.url !== this.currentPageUrl;
-		if (modifyHistory) {
+		if (!this.visit.history.popstate) {
 			const newUrl = this.visit.to.url + (this.visit.scroll.target || '');
-			if (this.visit.history.action === 'replace') {
+			if (
+				this.visit.history.action === 'replace' ||
+				this.visit.to.url === this.currentPageUrl
+			) {
 				updateHistoryRecord(newUrl);
 			} else {
 				const index = this.currentHistoryIndex + 1;
