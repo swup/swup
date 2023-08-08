@@ -39,7 +39,7 @@ export type Options = {
 	/** Selector for links that trigger visits. Default: `'a[href]'` */
 	linkSelector: string;
 	/** How swup handles links to the same page. Default: `scroll` */
-	linkToSelf: 'scroll' | 'navigate' | 'reload';
+	linkToSelf: 'scroll' | 'navigate';
 	/** Plugins to register on startup. */
 	plugins: Plugin[];
 	/** Custom headers sent along with fetch requests. */
@@ -278,8 +278,6 @@ export default class Swup {
 								return this.scrollToContent();
 							case 'navigate':
 								return this.performNavigation(url);
-							case 'reload':
-								window.location.href = url;
 						}
 					});
 				}
