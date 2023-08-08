@@ -833,4 +833,15 @@ describe('Scrolling', function () {
 		cy.shouldHaveH1('Scrolling 2');
 		cy.shouldHaveElementInViewport('[data-cy=anchor]');
 	});
+
+	it.only('should not append the hash if changing visit.scroll.target on the fly', function () {
+		cy.window().then(() => {
+			this.swup.hooks.once('visit:start', (visit) => (visit.scroll.target = '#anchor'));
+		});
+		cy.get('[data-cy=link-to-page]').click();
+		cy.window().should(() => {
+			const urlEndsWithHash = this.swup.getCurrentUrl({ hash: true }).endsWith('#anchor');
+			expect(urlEndsWithHash).to.be.false;
+		});
+	});
 });
