@@ -2,6 +2,12 @@
 
 <!-- ## [Unreleased] -->
 
+## [4.2.0] - 2023-08-09
+
+- Add option `linkToSelf` to control behavior for links to the current page
+- Don't create history records for repeated visits to the current page
+- Allow updating `visit.to.hash` and `visit.scroll.target` separately
+
 ## [4.1.0] - 2023-07-29
 
 - Prevent unintentional cache mutation
@@ -139,8 +145,9 @@ See [upgrade instructions](https://swup.js.org/getting-started/upgrading-v3/) fo
 
 - Fix bug where animateHistoryBrowsing option was ignored for OUT animations
 
-[Unreleased]: https://github.com/swup/swup/compare/4.1.0...HEAD
+[Unreleased]: https://github.com/swup/swup/compare/4.2.0...HEAD
 
+[4.2.0]: https://github.com/swup/swup/releases/tag/4.2.0
 [4.1.0]: https://github.com/swup/swup/releases/tag/4.1.0
 [4.0.1]: https://github.com/swup/swup/releases/tag/4.0.1
 [4.0.0]: https://github.com/swup/swup/releases/tag/4.0.0
