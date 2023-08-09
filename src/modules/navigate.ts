@@ -29,6 +29,10 @@ export function navigate(
 	options: NavigationOptions & FetchOptions = {},
 	init: Omit<VisitInitOptions, 'to'> = {}
 ) {
+	if (typeof url !== 'string') {
+		throw new Error(`swup.navigate() requires a URL parameter`);
+	}
+
 	// Check if the visit should be ignored
 	if (this.shouldIgnoreVisit(url, { el: init.el, event: init.event })) {
 		window.location.href = url;
@@ -37,7 +41,7 @@ export function navigate(
 
 	const { url: to, hash } = Location.fromUrl(url);
 	this.visit = this.createVisit({ ...init, to, hash });
-	this.performNavigation(to, options);
+	this.performNavigation(options);
 }
 
 /**
@@ -53,15 +57,9 @@ export function navigate(
  */
 export async function performNavigation(
 	this: Swup,
-	url: string,
 	options: NavigationOptions & FetchOptions = {}
 ) {
-	if (typeof url !== 'string') {
-		throw new Error(`swup.navigate() requires a URL parameter`);
-	}
-
 	const { el } = this.visit.trigger;
-	this.visit.to.url = Location.fromUrl(url).url;
 	options.referrer = options.referrer || this.currentPageUrl;
 
 	if (options.animate === false) {
@@ -98,7 +96,8 @@ export async function performNavigation(
 
 		// Create/update history record if this is not a popstate call or leads to the same URL
 		if (!this.visit.history.popstate) {
-			const newUrl = this.visit.to.url + (this.visit.scroll.target || '');
+			// Add the hash directly from the trigger element
+			const newUrl = this.visit.to.url + this.visit.to.hash;
 			if (
 				this.visit.history.action === 'replace' ||
 				this.visit.to.url === this.currentPageUrl
@@ -146,7 +145,7 @@ export async function performNavigation(
 
 		// Rewrite `skipPopStateHandling` to redirect manually when `history.go` is processed
 		this.options.skipPopStateHandling = () => {
-			window.location.href = this.visit.to.url as string;
+			window.location.href = this.visit.to.url + this.visit.to.hash;
 			return true;
 		};
 
