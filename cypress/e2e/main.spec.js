@@ -378,20 +378,6 @@ describe('Link resolution', function () {
 		});
 	});
 
-	it('should allow callbacks for linkToSelf option', function () {
-		let navigated = false;
-		cy.window().then(() => {
-			this.swup.options.linkToSelf = () => 'navigate';
-			this.swup.hooks.once('visit:start', () => (navigated = true));
-		});
-		cy.scrollTo(0, 200);
-		cy.window().its('scrollY').should('equal', 200);
-		cy.get('[data-cy=nav-link-self]').click();
-		cy.window().its('scrollY').should('equal', 0);
-		cy.window().should(() => {
-			expect(navigated).to.be.true;
-		});
-	});
 });
 
 describe('Redirects', function () {

@@ -39,9 +39,7 @@ export type Options = {
 	/** Selector for links that trigger visits. Default: `'a[href]'` */
 	linkSelector: string;
 	/** How swup handles links to the same page. Default: `scroll` */
-	linkToSelf:
-		| NavigationToSelfAction
-		| ((url: string, { el, event }: { el?: Element; event?: Event }) => NavigationToSelfAction);
+	linkToSelf: NavigationToSelfAction;
 	/** Plugins to register on startup. */
 	plugins: Plugin[];
 	/** Custom headers sent along with fetch requests. */
@@ -275,11 +273,7 @@ export default class Swup {
 				} else {
 					// Without hash: scroll to top or load/reload page
 					this.hooks.callSync('link:self', undefined, () => {
-						let action: NavigationToSelfAction | Function = this.options.linkToSelf;
-						if (typeof action === 'function') {
-							action = action();
-						}
-						switch (action) {
+						switch (this.options.linkToSelf) {
 							case 'navigate':
 								return this.performNavigation();
 							case 'scroll':
