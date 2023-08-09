@@ -143,7 +143,7 @@ export default class Swup {
 		this.cache = new Cache(this);
 		this.classes = new Classes(this);
 		this.hooks = new Hooks(this);
-		this.visit = this.createVisit({ to: undefined });
+		this.visit = this.createVisit({ to: '' });
 
 		if (!this.checkRequirements()) {
 			return;
@@ -281,7 +281,7 @@ export default class Swup {
 						}
 						switch (action) {
 							case 'navigate':
-								return this.performNavigation(url);
+								return this.performNavigation();
 							case 'scroll':
 							default:
 								return this.scrollToContent();
@@ -297,7 +297,7 @@ export default class Swup {
 			}
 
 			// Finally, proceed with loading the page
-			this.performNavigation(url);
+			this.performNavigation();
 		});
 	}
 
@@ -342,7 +342,7 @@ export default class Swup {
 		// }
 
 		this.hooks.callSync('history:popstate', { event }, () => {
-			this.performNavigation(url);
+			this.performNavigation();
 		});
 	}
 

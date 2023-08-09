@@ -880,7 +880,17 @@ describe('Scrolling', function () {
 		cy.shouldHaveElementInViewport('[data-cy=anchor]');
 	});
 
-	it.only('should not append the hash if changing visit.scroll.target on the fly', function () {
+	it('should append the hash if changing visit.to.hash on the fly', function () {
+		cy.window().then(() => {
+			this.swup.hooks.once('visit:start', (visit) => (visit.to.hash = '#anchor'));
+		});
+		cy.get('[data-cy=link-to-page]').click();
+		cy.shouldBeAtPage('/scrolling-2.html#anchor');
+		cy.shouldHaveH1('Scrolling 2');
+		cy.shouldHaveElementInViewport('[data-cy=anchor]');
+	});
+
+	it('should not append the hash if changing visit.scroll.target on the fly', function () {
 		cy.window().then(() => {
 			this.swup.hooks.once('visit:start', (visit) => (visit.scroll.target = '#anchor'));
 		});

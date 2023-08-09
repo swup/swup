@@ -26,7 +26,9 @@ export interface VisitFrom {
 
 export interface VisitTo {
 	/** The URL of the next page */
-	url?: string;
+	url: string;
+	/** The hash of the next page */
+	hash?: string;
 	/** The HTML content of the next page */
 	html?: string;
 }
@@ -68,7 +70,7 @@ export interface VisitHistory {
 }
 
 export interface VisitInitOptions {
-	to: string | undefined;
+	to: string;
 	from?: string;
 	hash?: string;
 	animate?: boolean;
@@ -86,7 +88,7 @@ export function createVisit(
 	{
 		to,
 		from = this.currentPageUrl,
-		hash: target,
+		hash,
 		animate = true,
 		animation: name,
 		el,
@@ -97,7 +99,7 @@ export function createVisit(
 ): Visit {
 	return {
 		from: { url: from },
-		to: { url: to },
+		to: { url: to, hash },
 		containers: this.options.containers,
 		animation: {
 			animate,
@@ -117,7 +119,7 @@ export function createVisit(
 		},
 		scroll: {
 			reset,
-			target
+			target: undefined
 		}
 	};
 }
