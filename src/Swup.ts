@@ -65,7 +65,7 @@ const defaults: Options = {
 		'X-Requested-With': 'swup',
 		'Accept': 'text/html, application/xhtml+xml'
 	},
-	skipPopStateHandling: (event) => event.state?.source !== 'swup'
+	skipPopStateHandling: (event) => (event.state as Record<string, unknown>)?.source !== 'swup'
 };
 
 /** Swup page transition library. */
@@ -296,7 +296,7 @@ export default class Swup {
 	}
 
 	protected handlePopState(event: PopStateEvent) {
-		const href = event.state?.url ?? location.href;
+		const href = (event.state as Record<string, unknown>)?.url ?? location.href;
 
 		// Exit early if this event should be ignored
 		if (this.options.skipPopStateHandling(event)) {
@@ -324,7 +324,7 @@ export default class Swup {
 		this.visit.history.popstate = true;
 
 		// Determine direction of history visit
-		const index = Number(event.state?.index);
+		const index = Number((event.state as Record<string, unknown>)?.index);
 		if (index) {
 			const direction = index - this.currentHistoryIndex > 0 ? 'forwards' : 'backwards';
 			this.visit.history.direction = direction;

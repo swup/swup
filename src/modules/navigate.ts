@@ -88,8 +88,8 @@ export async function performNavigation(
 
 		// Begin loading page
 		const pagePromise = this.hooks.call('page:load', { options }, async (visit, args) => {
-			const cachedPage = this.cache.get(visit.to.url!);
-			args.page = cachedPage || (await this.fetchPage(visit.to.url!, args.options));
+			const cachedPage = this.cache.get(visit.to.url);
+			args.page = cachedPage || (await this.fetchPage(visit.to.url, args.options));
 			args.cache = !!cachedPage;
 			return args.page;
 		});

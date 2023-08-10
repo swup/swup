@@ -18,6 +18,6 @@ export const matchPath = <P extends object = object>(
 	try {
 		return match<P>(path, options);
 	} catch (error) {
-		throw new Error(`[swup] Error parsing path "${path}":\n${error}`);
+		throw new Error(`[swup] Error parsing path "${String(path)}":\n${String(error)}`);
 	}
 };

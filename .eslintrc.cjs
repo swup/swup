@@ -6,6 +6,8 @@ module.exports = {
 	rules: {
 		'no-unused-vars': ['error', { vars: 'all', args: 'none' }],
 		'@typescript-eslint/ban-ts-comment': ['error', { 'ts-ignore': 'allow-with-description' }],
+		'@typescript-eslint/unbound-method': 'off',
+		'@typescript-eslint/no-floating-promises': 'off'
 	},
 	parser: '@typescript-eslint/parser',
 	parserOptions: {
