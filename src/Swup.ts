@@ -296,7 +296,7 @@ export default class Swup {
 	}
 
 	protected handlePopState(event: PopStateEvent) {
-		const href = (event.state as Record<string, unknown>)?.url ?? location.href;
+		const href: string = (event.state as { url?: string })?.url ?? location.href;
 
 		// Exit early if this event should be ignored
 		if (this.options.skipPopStateHandling(event)) {
