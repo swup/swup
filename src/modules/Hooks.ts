@@ -83,10 +83,10 @@ export type HookOptions = {
 	replace?: boolean;
 };
 
-export type HookRegistration<T extends HookName> = {
+export type HookRegistration<T extends HookName, H extends Handler<T> | DefaultHandler<T> = Handler<T>> = {
 	id: number;
 	hook: T;
-	handler: Handler<T>;
+	handler: H;
 	defaultHandler?: DefaultHandler<T>;
 } & HookOptions;
 
@@ -308,7 +308,7 @@ export class Hooks {
 		hook: T,
 		args?: HookArguments<T>,
 		defaultHandler?: DefaultHandler<T>
-	): Promise<any> {
+	): Promise<ReturnType<DefaultHandler<T>>> {
 		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
 		await this.run(before, args);
 		const [result] = await this.run(handler, args);
@@ -329,7 +329,7 @@ export class Hooks {
 		hook: T,
 		args?: HookArguments<T>,
 		defaultHandler?: DefaultHandler<T>
-	): any {
+	): ReturnType<DefaultHandler<T>> {
 		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
 		this.runSync(before, args);
 		const [result] = this.runSync(handler, args);
@@ -398,17 +398,18 @@ export class Hooks {
 		}
 
 		const sort = this.sortRegistrations;
+		const def = this.returnsDefaultHandler;
 		const registrations = Array.from(ledger.values());
 
 		// Filter into before, after, and replace handlers
 		const before = registrations.filter(({ before, replace }) => before && !replace).sort(sort);
-		const replace = registrations.filter(({ replace }) => replace).sort(sort);
+		const replace = registrations.filter(({ replace }) => replace).filter(def).sort(sort);
 		const after = registrations.filter(({ before, replace }) => !before && !replace).sort(sort);
 		const replaced = replace.length > 0;
 
 		// Define main handler registration
 		// This is an array to allow passing it into hooks.run() directly
-		let handler: HookRegistration<T>[] = [];
+		let handler: HookRegistration<T, DefaultHandler<T>>[] = [];
 		if (defaultHandler) {
 			handler = [{ id: 0, hook, handler: defaultHandler }];
 			if (replaced) {
@@ -431,6 +432,11 @@ export class Hooks {
 		}
 
 		return { found: true, before, handler, after, replaced };
+	}
+
+	/** Slightly hacky way of making TypeScript happy */
+	protected returnsDefaultHandler<T extends HookName>(registration: HookRegistration<T>): registration is HookRegistration<T, DefaultHandler<T>> {
+		return true;
 	}
 
 	/**
