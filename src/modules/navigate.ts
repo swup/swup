@@ -90,15 +90,15 @@ export async function performNavigation(
 		const pagePromise = this.hooks.call('page:load', { options }, async (visit, args) => {
 			// Check cache for page
 			let cachedPage: PageData | undefined;
-			if (!options.bypassCache) {
-				cachedPage = this.cache.get(visit.to.url!);
+			if (!options.cacheBypass) {
+				cachedPage = this.cache.get(visit.to.url);
 			}
 
 			args.page = cachedPage || (await this.fetchPage(visit.to.url!, args.options));
 			args.cache = !!cachedPage;
 
 			// Only save cache entry for non-redirects
-			if (visit.to.url === page.url && !options.skipCacheSave) {
+			if (visit.to.url === page.url && !options.cacheSkipSave) {
 				this.cache.set(page.url, args.page);
 			}
 
