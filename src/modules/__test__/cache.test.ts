@@ -90,19 +90,19 @@ describe('Cache', () => {
 
 		swup.hooks.on('cache:set', (_, { page }) => {
 			const ttl: CacheTtlData = { ttl: 1000, created: now };
-			cache.update(page.url, ttl as AugmentedCacheData);
+			cache.update(page.url, ttl);
 		});
 
 		cache.set('/page', { url: '/page', html: '' });
 
-		const page = cache.get('/page') as AugmentedCacheData;
+		const page = cache.get('/page');
 
 		expect(page).toEqual({ url: '/page', html: '', ttl: 1000, created: now });
 	});
 
 	it('should allow manual pruning', () => {
 		swup.hooks.on('cache:set', (_, { page }) => {
-			cache.update(page.url, { index: cache.size } as AugmentedCacheData);
+			cache.update(page.url, { index: cache.size });
 		});
 
 		cache.set(page1.url, page1);
