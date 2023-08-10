@@ -46,7 +46,7 @@ export type Handler<T extends HookName> = (
 	args: HookArguments<T>,
 	/** Default handler to be executed. Available if replacing an internal hook handler. */
 	defaultHandler?: Handler<T>
-) => Promise<any> | any;
+) => Promise<unknown> | unknown;
 
 export type Handlers = {
 	[K in HookName]: Handler<K>[];
@@ -291,7 +291,7 @@ export class Hooks {
 		hook: T,
 		args?: HookArguments<T>,
 		defaultHandler?: Handler<T>
-	): Promise<any> {
+	): Promise<unknown> {
 		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
 		await this.run(before, args);
 		const [result] = await this.run(handler, args);
@@ -312,7 +312,7 @@ export class Hooks {
 		hook: T,
 		args?: HookArguments<T>,
 		defaultHandler?: Handler<T>
-	): any {
+	): unknown {
 		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
 		this.runSync(before, args);
 		const [result] = this.runSync(handler, args);
@@ -329,7 +329,7 @@ export class Hooks {
 	protected async run<T extends HookName>(
 		registrations: HookRegistration<T>[],
 		args?: HookArguments<T>
-	): Promise<any> {
+	): Promise<unknown> {
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
 			const result = await runAsPromise(handler, [this.swup.visit, args, defaultHandler]);
@@ -349,7 +349,7 @@ export class Hooks {
 	protected runSync<T extends HookName>(
 		registrations: HookRegistration<T>[],
 		args?: HookArguments<T>
-	): any[] {
+	): unknown[] {
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
 			const result = handler(this.swup.visit, args as HookArguments<T>, defaultHandler);

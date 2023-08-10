@@ -23,16 +23,16 @@ export const nextTick = (): Promise<void> => {
 };
 
 /** Check if an object is a Promise or a Thenable */
-export function isPromise<T>(obj: any): obj is PromiseLike<T> {
+export function isPromise<T>(obj: unknown): obj is PromiseLike<T> {
 	return (
 		!!obj &&
 		(typeof obj === 'object' || typeof obj === 'function') &&
-		typeof obj.then === 'function'
+		typeof (obj as Record<string, unknown>).then === 'function'
 	);
 }
 
 /** Call a function as a Promise. Resolves with the returned Promsise or immediately. */
-export function runAsPromise(func: Function, args: any[] = []): Promise<any> {
+export function runAsPromise(func: (...args: unknown[]) => unknown, args: unknown[] = []): Promise<unknown> {
 	return new Promise((resolve, reject) => {
 		const result = func(...args);
 		if (isPromise(result)) {

@@ -47,7 +47,7 @@ export type Options = {
 	/** Rewrite URLs before loading them. */
 	resolveUrl: (url: string) => string;
 	/** Callback for telling swup to ignore certain popstate events.  */
-	skipPopStateHandling: (event: any) => boolean;
+	skipPopStateHandling: (event: PopStateEvent) => boolean;
 };
 
 const defaults: Options = {
@@ -56,7 +56,7 @@ const defaults: Options = {
 	animationScope: 'html',
 	cache: true,
 	containers: ['#swup'],
-	ignoreVisit: (url, { el, event } = {}) => !!el?.closest('[data-no-swup]'),
+	ignoreVisit: (url, { el } = {}) => !!el?.closest('[data-no-swup]'),
 	linkSelector: 'a[href]',
 	linkToSelf: 'scroll',
 	plugins: [],
@@ -101,7 +101,7 @@ export default class Swup {
 	findPlugin = findPlugin;
 
 	/** Log a message. Has no effect unless debug plugin is installed */
-	log: (message: string, context?: any) => void = () => {};
+	log: (message: string, context?: unknown) => void = () => {};
 
 	/** Navigate to a new URL */
 	navigate = navigate;
