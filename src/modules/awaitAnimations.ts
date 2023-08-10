@@ -150,7 +150,7 @@ export function getTransitionInfo(element: Element, expectedType?: AnimationType
 	};
 }
 
-function isTransitionOrAnimationEvent(event: any): event is TransitionEvent | AnimationEvent {
+function isTransitionOrAnimationEvent(event: Event): event is TransitionEvent | AnimationEvent {
 	return [`${TRANSITION}end`, `${ANIMATION}end`].includes(event.type);
 }
 
