@@ -1,6 +1,6 @@
 import Swup from '../Swup.js';
 import { createHistoryRecord, updateHistoryRecord, getCurrentUrl, Location } from '../helpers.js';
-import { FetchOptions } from './fetchPage.js';
+import { FetchOptions, PageData } from './fetchPage.js';
 import { VisitInitOptions } from './Visit.js';
 
 export type HistoryAction = 'push' | 'replace';
@@ -88,9 +88,20 @@ export async function performNavigation(
 
 		// Begin loading page
 		const pagePromise = this.hooks.call('page:load', { options }, async (visit, args) => {
-			const cachedPage = this.cache.get(visit.to.url!);
+			// Check cache for page
+			let cachedPage: PageData | undefined;
+			if (!options.bypassCache) {
+				cachedPage = this.cache.get(visit.to.url!);
+			}
+
 			args.page = cachedPage || (await this.fetchPage(visit.to.url!, args.options));
 			args.cache = !!cachedPage;
+
+			// Only save cache entry for non-redirects
+			if (visit.to.url === page.url && !options.skipCacheSave) {
+				this.cache.set(page.url, args.page);
+			}
+
 			return args.page;
 		});
 

@@ -15,8 +15,10 @@ export interface FetchOptions extends RequestInit {
 	method?: 'GET' | 'POST';
 	/** The body of the request: raw string, form data object or URL params. */
 	body?: string | FormData | URLSearchParams;
-	/** The headers of the request: key/value object. */
-	headers?: Record<string, string>;
+	/** Whether this request should ignore existing cache entries. */
+	bypassCache?: boolean;
+	/** Whether the response should be kept out of the cache.  */
+	skipCacheSave?: boolean;
 }
 
 export class FetchError extends Error {
@@ -65,11 +67,6 @@ export async function fetchPage(
 	// Resolve real url after potential redirect
 	const { url: finalUrl } = Location.fromUrl(responseUrl);
 	const page = { url: finalUrl, html };
-
-	// Only save cache entry for non-redirects
-	if (url === finalUrl) {
-		this.cache.set(page.url, page);
-	}
 
 	return page;
 }
