@@ -34,6 +34,14 @@ export interface HookDefinitions {
 	'visit:end': undefined;
 }
 
+export interface HookReturnValues {
+	'content:scroll': boolean;
+	'fetch:request': Response;
+	'page:load': PageData;
+	'scroll:top': boolean;
+	'scroll:anchor': boolean;
+}
+
 export type HookArguments<T extends HookName> = HookDefinitions[T];
 
 export type HookName = keyof HookDefinitions;
@@ -46,7 +54,7 @@ export type Handler<T extends HookName> = (
 	args: HookArguments<T>,
 	/** Default handler to be executed. Available if replacing an internal hook handler. */
 	defaultHandler?: Handler<T>
-) => Promise<unknown> | unknown;
+) => (T extends keyof HookReturnValues ? HookReturnValues[T] : Promise<unknown> | unknown);
 
 export type Handlers = {
 	[K in HookName]: Handler<K>[];
@@ -291,7 +299,8 @@ export class Hooks {
 		hook: T,
 		args?: HookArguments<T>,
 		defaultHandler?: Handler<T>
-	): Promise<unknown> {
+	): Promise<Awaited<ReturnType<Handler<T>>>> {
+		let result: Awaited<ReturnType<Handler<T>>;
 		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
 		await this.run(before, args);
 		const [result] = await this.run(handler, args);
@@ -329,7 +338,7 @@ export class Hooks {
 	protected async run<T extends HookName>(
 		registrations: HookRegistration<T>[],
 		args?: HookArguments<T>
-	): Promise<unknown> {
+	): Promise<unknown[]> {
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
 			const result = await runAsPromise(handler, [this.swup.visit, args, defaultHandler]);
