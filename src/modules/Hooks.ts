@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { DelegateEvent } from 'delegate-it';
 
 import Swup from '../Swup.js';
@@ -291,7 +293,7 @@ export class Hooks {
 		hook: T,
 		args?: HookArguments<T>,
 		defaultHandler?: Handler<T>
-	): Promise<unknown> {
+	): Promise<any> {
 		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
 		await this.run(before, args);
 		const [result] = await this.run(handler, args);
@@ -312,7 +314,7 @@ export class Hooks {
 		hook: T,
 		args?: HookArguments<T>,
 		defaultHandler?: Handler<T>
-	): unknown {
+	): any {
 		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
 		this.runSync(before, args);
 		const [result] = this.runSync(handler, args);
@@ -329,7 +331,7 @@ export class Hooks {
 	protected async run<T extends HookName>(
 		registrations: HookRegistration<T>[],
 		args?: HookArguments<T>
-	): Promise<unknown> {
+	): Promise<any[]> {
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
 			const result = await runAsPromise(handler, [this.swup.visit, args, defaultHandler]);
@@ -349,7 +351,7 @@ export class Hooks {
 	protected runSync<T extends HookName>(
 		registrations: HookRegistration<T>[],
 		args?: HookArguments<T>
-	): unknown[] {
+	): any[] {
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
 			const result = handler(this.swup.visit, args as HookArguments<T>, defaultHandler);
