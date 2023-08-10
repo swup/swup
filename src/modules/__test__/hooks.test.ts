@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import Swup from '../../Swup.js';
-import { Handler, Hooks } from '../Hooks.js';
+import { DefaultHandler, Handler, Hooks } from '../Hooks.js';
 import { Visit } from '../Visit.js';
 
 describe('Hook registry', () => {
@@ -316,5 +316,8 @@ describe('Types', () => {
 		swup.hooks.on('history:popstate', (visit: Visit, { event }: { event: MouseEvent }) => {});
 		// @ts-expect-error
 		await swup.hooks.call('history:popstate', { event: new MouseEvent('') });
+
+		// @ts-expect-error
+		swup.hooks.replace('enable', (visit: Visit, args: any, handler: DefaultHandler<'enable'>) => {});
 	});
 });
