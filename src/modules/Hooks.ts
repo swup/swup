@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { DelegateEvent } from 'delegate-it';
 
 import Swup from '../Swup.js';
@@ -48,15 +46,31 @@ export type HookArguments<T extends HookName> = HookDefinitions[T];
 
 export type HookName = keyof HookDefinitions;
 
-/** A hook handler. */
+/** A generic hook handler. */
 export type Handler<T extends HookName> = (
+	/** Context about the current visit. */
+	visit: Visit,
+	/** Local arguments passed into the handler. */
+	args: HookArguments<T>
+) => Promise<unknown> | unknown;
+
+/** A default hook handler with a return type. */
+export type DefaultHandler<T extends HookName> = (
+	/** Context about the current visit. */
+	visit: Visit,
+	/** Local arguments passed into the handler. */
+	args: HookArguments<T>
+) => (T extends keyof HookReturnValues ? Promise<HookReturnValues[T]> | HookReturnValues[T] : Promise<unknown> | unknown);
+
+/** A replacing hook handler with a default handler and a return type. */
+export type ReplacingHandler<T extends HookName> = (
 	/** Context about the current visit. */
 	visit: Visit,
 	/** Local arguments passed into the handler. */
 	args: HookArguments<T>,
 	/** Default handler to be executed. Available if replacing an internal hook handler. */
-	defaultHandler?: Handler<T>
-) => (T extends keyof HookReturnValues ? HookReturnValues[T] : Promise<unknown> | unknown);
+	defaultHandler?: DefaultHandler<T>
+) => (T extends keyof HookReturnValues ? Promise<HookReturnValues[T]> | HookReturnValues[T] : Promise<unknown> | unknown);
 
 export type Handlers = {
 	[K in HookName]: Handler<K>[];
@@ -194,11 +208,12 @@ export class Hooks {
 	 * @returns A function to unregister the handler
 	 */
 	on<T extends HookName>(hook: T, handler: Handler<T>): HookUnregister;
-	on<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions): HookUnregister;
-	on<T extends HookName>(
+	on<T extends HookName, O extends HookOptions>(hook: T, handler: Handler<T>, options: O): HookUnregister;
+	on<T extends HookName, O extends HookOptions>(hook: T, handler: Handler<T>, options: O & { replace: true }): HookUnregister;
+	on<T extends HookName, O extends HookOptions>(
 		hook: T,
-		handler: Handler<T>,
-		options: HookOptions = {}
+		handler: O['replace'] extends true ? ReplacingHandler<T> : Handler<T>,
+		options: Partial<O> = {}
 	): HookUnregister {
 		const ledger = this.get(hook);
 		if (!ledger) {
@@ -229,7 +244,7 @@ export class Hooks {
 		handler: Handler<T>,
 		options: HookOptions = {}
 	): HookUnregister {
-		return this.on(hook, handler, { ...options, before: true });
+		return this.on(hook, handler, { ...options, replace: false, before: true });
 	}
 
 	/**
@@ -241,14 +256,14 @@ export class Hooks {
 	 * @returns A function to unregister the handler
 	 * @see on
 	 */
-	replace<T extends HookName>(hook: T, handler: Handler<T>): HookUnregister;
-	replace<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions): HookUnregister;
+	replace<T extends HookName>(hook: T, handler: ReplacingHandler<T>): HookUnregister;
+	replace<T extends HookName>(hook: T, handler: ReplacingHandler<T>, options: HookOptions): HookUnregister;
 	replace<T extends HookName>(
 		hook: T,
-		handler: Handler<T>,
+		handler: ReplacingHandler<T>,
 		options: HookOptions = {}
 	): HookUnregister {
-		return this.on(hook, handler, { ...options, replace: true });
+		return this.on(hook, handler, { ...options, before: false, replace: true });
 	}
 
 	/**
@@ -266,7 +281,7 @@ export class Hooks {
 		handler: Handler<T>,
 		options: HookOptions = {}
 	): HookUnregister {
-		return this.on(hook, handler, { ...options, once: true });
+		return this.on(hook, handler, { ...options, replace: false, once: true });
 	}
 
 	/**
@@ -302,7 +317,6 @@ export class Hooks {
 		args?: HookArguments<T>,
 		defaultHandler?: Handler<T>
 	): Promise<Awaited<ReturnType<Handler<T>>>> {
-		let result: Awaited<ReturnType<Handler<T>>;
 		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
 		await this.run(before, args);
 		const [result] = await this.run(handler, args);
@@ -340,7 +354,7 @@ export class Hooks {
 	protected async run<T extends HookName>(
 		registrations: HookRegistration<T>[],
 		args?: HookArguments<T>
-	): Promise<unknown[]> {
+	): Promise<ReturnType<Handler<T>>[]> {
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
 			const result = await runAsPromise(handler, [this.swup.visit, args, defaultHandler]);
