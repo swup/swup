@@ -1,6 +1,6 @@
 import Swup from '../Swup.js';
 import { createHistoryRecord, updateHistoryRecord, getCurrentUrl, Location } from '../helpers.js';
-import { FetchOptions } from './fetchPage.js';
+import { FetchOptions, PageData } from './fetchPage.js';
 import { VisitInitOptions } from './Visit.js';
 
 export type HistoryAction = 'push' | 'replace';
@@ -87,7 +87,7 @@ export async function performNavigation(
 		await this.hooks.call('visit:start');
 
 		// Begin loading page
-		const pagePromise = this.hooks.call('page:load', { options }, async (visit, args) => {
+		const pagePromise: Promise<PageData> = this.hooks.call('page:load', { options }, async (visit, args) => {
 			const cachedPage = this.cache.get(visit.to.url);
 			args.page = cachedPage || (await this.fetchPage(visit.to.url, args.options));
 			args.cache = !!cachedPage;
