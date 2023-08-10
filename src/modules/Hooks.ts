@@ -59,14 +59,6 @@ export type DefaultHandler<T extends HookName> = (
 	/** Context about the current visit. */
 	visit: Visit,
 	/** Local arguments passed into the handler. */
-	args: HookArguments<T>
-) => (T extends keyof HookReturnValues ? Promise<HookReturnValues[T]> | HookReturnValues[T] : Promise<unknown> | unknown);
-
-/** A replacing hook handler with a default handler and a return type. */
-export type ReplacingHandler<T extends HookName> = (
-	/** Context about the current visit. */
-	visit: Visit,
-	/** Local arguments passed into the handler. */
 	args: HookArguments<T>,
 	/** Default handler to be executed. Available if replacing an internal hook handler. */
 	defaultHandler?: DefaultHandler<T>
@@ -95,7 +87,7 @@ export type HookRegistration<T extends HookName> = {
 	id: number;
 	hook: T;
 	handler: Handler<T>;
-	defaultHandler?: Handler<T>;
+	defaultHandler?: DefaultHandler<T>;
 } & HookOptions;
 
 type HookLedger<T extends HookName> = Map<Handler<T>, HookRegistration<T>>;
@@ -209,10 +201,10 @@ export class Hooks {
 	 */
 	on<T extends HookName>(hook: T, handler: Handler<T>): HookUnregister;
 	on<T extends HookName, O extends HookOptions>(hook: T, handler: Handler<T>, options: O): HookUnregister;
-	on<T extends HookName, O extends HookOptions>(hook: T, handler: Handler<T>, options: O & { replace: true }): HookUnregister;
+	on<T extends HookName, O extends HookOptions>(hook: T, handler: DefaultHandler<T>, options: O & { replace: true }): HookUnregister;
 	on<T extends HookName, O extends HookOptions>(
 		hook: T,
-		handler: O['replace'] extends true ? ReplacingHandler<T> : Handler<T>,
+		handler: O['replace'] extends true ? DefaultHandler<T> : Handler<T>,
 		options: Partial<O> = {}
 	): HookUnregister {
 		const ledger = this.get(hook);
@@ -256,11 +248,11 @@ export class Hooks {
 	 * @returns A function to unregister the handler
 	 * @see on
 	 */
-	replace<T extends HookName>(hook: T, handler: ReplacingHandler<T>): HookUnregister;
-	replace<T extends HookName>(hook: T, handler: ReplacingHandler<T>, options: HookOptions): HookUnregister;
+	replace<T extends HookName>(hook: T, handler: DefaultHandler<T>): HookUnregister;
+	replace<T extends HookName>(hook: T, handler: DefaultHandler<T>, options: HookOptions): HookUnregister;
 	replace<T extends HookName>(
 		hook: T,
-		handler: ReplacingHandler<T>,
+		handler: DefaultHandler<T>,
 		options: HookOptions = {}
 	): HookUnregister {
 		return this.on(hook, handler, { ...options, before: false, replace: true });
@@ -281,7 +273,7 @@ export class Hooks {
 		handler: Handler<T>,
 		options: HookOptions = {}
 	): HookUnregister {
-		return this.on(hook, handler, { ...options, replace: false, once: true });
+		return this.on(hook, handler, { ...options, once: true });
 	}
 
 	/**
@@ -291,8 +283,8 @@ export class Hooks {
 	 *                If omitted, all handlers for the hook will be removed.
 	 */
 	off<T extends HookName>(hook: T): void;
-	off<T extends HookName>(hook: T, handler: Handler<T>): void;
-	off<T extends HookName>(hook: T, handler?: Handler<T>): void {
+	off<T extends HookName>(hook: T, handler: Handler<T> | DefaultHandler<T>): void;
+	off<T extends HookName>(hook: T, handler?: Handler<T> | DefaultHandler<T>): void {
 		const ledger = this.get(hook);
 		if (ledger && handler) {
 			const deleted = ledger.delete(handler);
@@ -315,8 +307,8 @@ export class Hooks {
 	async call<T extends HookName>(
 		hook: T,
 		args?: HookArguments<T>,
-		defaultHandler?: Handler<T>
-	): Promise<Awaited<ReturnType<Handler<T>>>> {
+		defaultHandler?: DefaultHandler<T>
+	): Promise<any> {
 		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
 		await this.run(before, args);
 		const [result] = await this.run(handler, args);
@@ -336,7 +328,7 @@ export class Hooks {
 	callSync<T extends HookName>(
 		hook: T,
 		args?: HookArguments<T>,
-		defaultHandler?: Handler<T>
+		defaultHandler?: DefaultHandler<T>
 	): any {
 		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
 		this.runSync(before, args);
@@ -354,7 +346,7 @@ export class Hooks {
 	protected async run<T extends HookName>(
 		registrations: HookRegistration<T>[],
 		args?: HookArguments<T>
-	): Promise<ReturnType<Handler<T>>[]> {
+	): Promise<any[]> {
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
 			const result = await runAsPromise(handler, [this.swup.visit, args, defaultHandler]);
@@ -399,7 +391,7 @@ export class Hooks {
 	 * @returns An object with the handlers sorted into `before` and `after` arrays,
 	 *          as well as a flag indicating if the original handler was replaced
 	 */
-	protected getHandlers<T extends HookName>(hook: T, defaultHandler?: Handler<T>) {
+	protected getHandlers<T extends HookName>(hook: T, defaultHandler?: DefaultHandler<T>) {
 		const ledger = this.get(hook);
 		if (!ledger) {
 			return { found: false, before: [], handler: [], after: [], replaced: false };
@@ -421,8 +413,8 @@ export class Hooks {
 			handler = [{ id: 0, hook, handler: defaultHandler }];
 			if (replaced) {
 				const index = replace.length - 1;
-				const replacingHandler = replace[index].handler;
-				const createDefaultHandler = (index: number): Handler<T> | undefined => {
+				const defaultHandler = replace[index].handler;
+				const createDefaultHandler = (index: number): DefaultHandler<T> | undefined => {
 					const next = replace[index - 1];
 					if (next) {
 						return (visit, args) =>
@@ -433,7 +425,7 @@ export class Hooks {
 				};
 				const nestedDefaultHandler = createDefaultHandler(index);
 				handler = [
-					{ id: 0, hook, handler: replacingHandler, defaultHandler: nestedDefaultHandler }
+					{ id: 0, hook, handler: defaultHandler, defaultHandler: nestedDefaultHandler }
 				];
 			}
 		}
