@@ -90,7 +90,7 @@ export async function performNavigation(
 	if (typeof options.cache === 'object') {
 		this.visit.cache.read = options.cache.read ?? this.visit.cache.read;
 		this.visit.cache.write = options.cache.write ?? this.visit.cache.write;
-	} else {
+	} else if (options.cache !== undefined) {
 		this.visit.cache = { read: !!options.cache, write: !!options.cache };
 	}
 	// Delete this so that window.fetch doesn't mis-interpret it
