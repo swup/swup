@@ -64,8 +64,12 @@ export async function fetchPage(
 	const { url: finalUrl } = Location.fromUrl(responseUrl);
 	const page = { url: finalUrl, html };
 
-	// Write to cache for non-redirects
-	if (this.visit.cache.write && url === finalUrl) {
+	// Write to cache for safe methods and non-redirects
+	if (
+		this.visit.cache.write &&
+		(!options.method || options.method === 'GET') &&
+		url === finalUrl
+	) {
 		this.cache.set(page.url, page);
 	}
 
