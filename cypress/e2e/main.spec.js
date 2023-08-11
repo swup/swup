@@ -113,6 +113,12 @@ describe('Cache', function () {
 		cy.shouldHaveCacheEntry('/page-2.html');
 	});
 
+	it('should not cache pages for POST requests', function () {
+		this.swup.navigate(`${baseUrl}/page-2.html`, { method: 'POST' });
+		cy.shouldBeAtPage('/page-2.html');
+		cy.shouldNotHaveCacheEntry('/page-2.html');
+	});
+
 	it('should disable cache from swup options', function () {
 		const cacheAccessed = { read: null, write: null };
 		this.swup.options.cache = false;
