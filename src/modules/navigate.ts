@@ -6,7 +6,7 @@ import { VisitInitOptions } from './Visit.js';
 export type HistoryAction = 'push' | 'replace';
 export type HistoryDirection = 'forwards' | 'backwards';
 export type NavigationToSelfAction = 'scroll' | 'navigate';
-export type CacheControl = boolean | Partial<{ read: boolean; write: boolean }>;
+export type CacheControl = Partial<{ read: boolean; write: boolean }>;
 
 /** Define how to navigate to a page. */
 type NavigationOptions = {
@@ -87,11 +87,11 @@ export async function performNavigation(
 	}
 
 	// Sanitize cache option
-	if (typeof options.cache === 'boolean') {
-		this.visit.cache = { read: options.cache, write: options.cache };
-	} else if (typeof options.cache === 'object') {
+	if (typeof options.cache === 'object') {
 		this.visit.cache.read = options.cache.read ?? this.visit.cache.read;
 		this.visit.cache.write = options.cache.write ?? this.visit.cache.write;
+	} else {
+		this.visit.cache = { read: !!options.cache, write: !!options.cache };
 	}
 	// Delete this so that window.fetch doesn't mis-interpret it
 	delete options.cache;
