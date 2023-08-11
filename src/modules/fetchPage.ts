@@ -10,7 +10,7 @@ export interface PageData {
 }
 
 /** Define how a page is fetched. */
-export interface FetchOptions extends RequestInit {
+export interface FetchOptions extends Omit<RequestInit, 'cache'> {
 	/** The request method. */
 	method?: 'GET' | 'POST';
 	/** The body of the request: raw string, form data object or URL params. */
