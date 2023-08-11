@@ -6,6 +6,7 @@ import { VisitInitOptions } from './Visit.js';
 export type HistoryAction = 'push' | 'replace';
 export type HistoryDirection = 'forwards' | 'backwards';
 export type NavigationToSelfAction = 'scroll' | 'navigate';
+export type CacheControl = boolean | Partial<{ read: boolean; write: boolean }>;
 
 /** Define how to navigate to a page. */
 type NavigationOptions = {
@@ -15,6 +16,8 @@ type NavigationOptions = {
 	animation?: string;
 	/** History action to perform: `push` for creating a new history entry, `replace` for replacing the current entry. Default: `push` */
 	history?: HistoryAction;
+	/** Whether this visit should read from or write to the cache. */
+	cache?: CacheControl;
 };
 
 /**
@@ -83,24 +86,27 @@ export async function performNavigation(
 		this.visit.animation.name = animation;
 	}
 
+	// Sanitize cache option
+	if (typeof options.cache === 'boolean') {
+		this.visit.cache = { read: options.cache, write: options.cache };
+	} else if (typeof options.cache === 'object') {
+		this.visit.cache.read = options.cache.read ?? this.visit.cache.read;
+		this.visit.cache.write = options.cache.write ?? this.visit.cache.write;
+	}
+
 	try {
 		await this.hooks.call('visit:start');
 
 		// Begin loading page
 		const pagePromise = this.hooks.call('page:load', { options }, async (visit, args) => {
-			// Check cache for page
+			// Read from cache
 			let cachedPage: PageData | undefined;
-			if (!options.cacheBypass) {
+			if (this.visit.cache.read) {
 				cachedPage = this.cache.get(visit.to.url);
 			}
 
 			args.page = cachedPage || (await this.fetchPage(visit.to.url!, args.options));
 			args.cache = !!cachedPage;
-
-			// Only save cache entry for non-redirects
-			if (visit.to.url === page.url && !options.cacheSkipSave) {
-				this.cache.set(page.url, args.page);
-			}
 
 			return args.page;
 		});

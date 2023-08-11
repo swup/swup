@@ -15,10 +15,6 @@ export interface FetchOptions extends Omit<RequestInit, 'cache'> {
 	method?: 'GET' | 'POST';
 	/** The body of the request: raw string, form data object or URL params. */
 	body?: string | FormData | URLSearchParams;
-	/** Whether this request should ignore existing cache entries. */
-	cacheBypass?: boolean;
-	/** Whether the response should be kept out of to the cache.  */
-	cacheSkipSave?: boolean;
 }
 
 export class FetchError extends Error {
@@ -67,6 +63,11 @@ export async function fetchPage(
 	// Resolve real url after potential redirect
 	const { url: finalUrl } = Location.fromUrl(responseUrl);
 	const page = { url: finalUrl, html };
+
+	// Write to cache for non-redirects
+	if (this.visit.cache.write && url === finalUrl) {
+		this.cache.set(page.url, page);
+	}
 
 	return page;
 }

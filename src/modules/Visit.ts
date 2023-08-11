@@ -13,6 +13,8 @@ export interface Visit {
 	animation: VisitAnimation;
 	/** What triggered this visit */
 	trigger: VisitTrigger;
+	/** Cache behavior for this visit */
+	cache: VisitCache;
 	/** Browser history behavior on this visit */
 	history: VisitHistory;
 	/** Scroll behavior on this visit */
@@ -58,6 +60,13 @@ export interface VisitTrigger {
 	el?: Element;
 	/** DOM event that triggered this visit. */
 	event?: Event;
+}
+
+export interface VisitCache {
+	/** Whether this visit will try to load the requested page from cache. */
+	read: boolean;
+	/** Whether this visit will save the loaded page in cache. */
+	write: boolean;
 }
 
 export interface VisitHistory {
@@ -111,6 +120,10 @@ export function createVisit(
 		trigger: {
 			el,
 			event
+		},
+		cache: {
+			read: this.options.cache,
+			write: this.options.cache
 		},
 		history: {
 			action,
