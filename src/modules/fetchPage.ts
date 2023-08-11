@@ -75,12 +75,12 @@ export async function fetchPage(
 		if (timeoutId) {
 			clearTimeout(timeoutId);
 		}
-	} catch (error: any) {
+	} catch (error) {
 		if (timedOut) {
 			this.hooks.call('fetch:timeout', { url });
 			throw new FetchError(`Request timed out: ${url}`, { url, timedOut });
 		}
-		if (error?.name === 'AbortError' || signal.aborted) {
+		if ((error as Error)?.name === 'AbortError' || signal.aborted) {
 			throw new FetchError(`Request aborted: ${url}`, {
 				url: url,
 				aborted: true

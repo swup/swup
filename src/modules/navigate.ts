@@ -1,10 +1,11 @@
 import Swup from '../Swup.js';
 import { createHistoryRecord, updateHistoryRecord, getCurrentUrl, Location } from '../helpers.js';
-import { FetchOptions } from './fetchPage.js';
+import { FetchError, FetchOptions } from './fetchPage.js';
 import { VisitInitOptions } from './Visit.js';
 
 export type HistoryAction = 'push' | 'replace';
 export type HistoryDirection = 'forwards' | 'backwards';
+export type NavigationToSelfAction = 'scroll' | 'navigate';
 
 /** Define how to navigate to a page. */
 type NavigationOptions = {
@@ -28,6 +29,10 @@ export function navigate(
 	options: NavigationOptions & FetchOptions = {},
 	init: Omit<VisitInitOptions, 'to'> = {}
 ) {
+	if (typeof url !== 'string') {
+		throw new Error(`swup.navigate() requires a URL parameter`);
+	}
+
 	// Check if the visit should be ignored
 	if (this.shouldIgnoreVisit(url, { el: init.el, event: init.event })) {
 		window.location.href = url;
@@ -36,7 +41,7 @@ export function navigate(
 
 	const { url: to, hash } = Location.fromUrl(url);
 	this.visit = this.createVisit({ ...init, to, hash });
-	this.performNavigation(to, options);
+	this.performNavigation(options);
 }
 
 /**
@@ -52,15 +57,9 @@ export function navigate(
  */
 export async function performNavigation(
 	this: Swup,
-	url: string,
 	options: NavigationOptions & FetchOptions = {}
 ) {
-	if (typeof url !== 'string') {
-		throw new Error(`swup.navigate() requires a URL parameter`);
-	}
-
 	const { el } = this.visit.trigger;
-	this.visit.to.url = Location.fromUrl(url).url;
 	options.referrer = options.referrer || this.currentPageUrl;
 
 	if (options.animate === false) {
@@ -95,10 +94,14 @@ export async function performNavigation(
 			return args.page;
 		});
 
-		// Create history record if this is not a popstate call (with or without anchor)
+		// Create/update history record if this is not a popstate call or leads to the same URL
 		if (!this.visit.history.popstate) {
-			const newUrl = url + (this.visit.scroll.target || '');
-			if (this.visit.history.action === 'replace') {
+			// Add the hash directly from the trigger element
+			const newUrl = this.visit.to.url + this.visit.to.hash;
+			if (
+				this.visit.history.action === 'replace' ||
+				this.visit.to.url === this.currentPageUrl
+			) {
 				updateHistoryRecord(newUrl);
 			} else {
 				const index = this.currentHistoryIndex + 1;
@@ -131,9 +134,9 @@ export async function performNavigation(
 		// if (this.visit.to && this.isSameResolvedUrl(this.visit.to.url, requestedUrl)) {
 		// 	this.createVisit({ to: undefined });
 		// }
-	} catch (error: any) {
+	} catch (error) {
 		// Return early if error is undefined or signals an aborted request
-		if (!error || error?.aborted) {
+		if (!error || (error as FetchError)?.aborted) {
 			return;
 		}
 
@@ -142,7 +145,7 @@ export async function performNavigation(
 
 		// Rewrite `skipPopStateHandling` to redirect manually when `history.go` is processed
 		this.options.skipPopStateHandling = () => {
-			window.location.href = this.visit.to.url as string;
+			window.location.href = this.visit.to.url + this.visit.to.hash;
 			return true;
 		};
 

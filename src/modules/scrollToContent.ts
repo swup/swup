@@ -7,14 +7,16 @@ import Swup from '../Swup.js';
 export const scrollToContent = function (this: Swup): boolean {
 	const options: ScrollIntoViewOptions = { behavior: 'auto' };
 	const { target, reset } = this.visit.scroll;
+	const scrollTarget = target || this.visit.to.hash;
+
 	let scrolled = false;
 
-	if (target) {
+	if (scrollTarget) {
 		scrolled = this.hooks.callSync(
 			'scroll:anchor',
-			{ hash: target, options },
+			{ hash: scrollTarget, options },
 			(visit, { hash, options }) => {
-				const anchor = this.getAnchorElement(hash || '');
+				const anchor = this.getAnchorElement(hash);
 				if (anchor) {
 					anchor.scrollIntoView(options);
 				}

@@ -11,7 +11,7 @@ import { Visit, createVisit } from './modules/Visit.js';
 import { Hooks } from './modules/Hooks.js';
 import { getAnchorElement } from './modules/getAnchorElement.js';
 import { awaitAnimations } from './modules/awaitAnimations.js';
-import { navigate, performNavigation } from './modules/navigate.js';
+import { navigate, performNavigation, NavigationToSelfAction } from './modules/navigate.js';
 import { fetchPage } from './modules/fetchPage.js';
 import { animatePageOut } from './modules/animatePageOut.js';
 import { replaceContent } from './modules/replaceContent.js';
@@ -38,6 +38,8 @@ export type Options = {
 	ignoreVisit: (url: string, { el, event }: { el?: Element; event?: Event }) => boolean;
 	/** Selector for links that trigger visits. Default: `'a[href]'` */
 	linkSelector: string;
+	/** How swup handles links to the same page. Default: `scroll` */
+	linkToSelf: NavigationToSelfAction;
 	/** Plugins to register on startup. */
 	plugins: Plugin[];
 	/** Custom headers sent along with fetch requests. */
@@ -45,7 +47,7 @@ export type Options = {
 	/** Rewrite URLs before loading them. */
 	resolveUrl: (url: string) => string;
 	/** Callback for telling swup to ignore certain popstate events.  */
-	skipPopStateHandling: (event: any) => boolean;
+	skipPopStateHandling: (event: PopStateEvent) => boolean;
 	/** Request timeout in milliseconds. */
 	timeout: number;
 };
@@ -56,8 +58,9 @@ const defaults: Options = {
 	animationScope: 'html',
 	cache: true,
 	containers: ['#swup'],
-	ignoreVisit: (url, { el, event } = {}) => !!el?.closest('[data-no-swup]'),
+	ignoreVisit: (url, { el } = {}) => !!el?.closest('[data-no-swup]'),
 	linkSelector: 'a[href]',
+	linkToSelf: 'scroll',
 	plugins: [],
 	resolveUrl: (url) => url,
 	requestHeaders: {
@@ -101,7 +104,7 @@ export default class Swup {
 	findPlugin = findPlugin;
 
 	/** Log a message. Has no effect unless debug plugin is installed */
-	log: (message: string, context?: any) => void = () => {};
+	log: (message: string, context?: unknown) => void = () => {};
 
 	/** Navigate to a new URL */
 	navigate = navigate;
@@ -141,7 +144,7 @@ export default class Swup {
 		this.cache = new Cache(this);
 		this.classes = new Classes(this);
 		this.hooks = new Hooks(this);
-		this.visit = this.createVisit({ to: undefined });
+		this.visit = this.createVisit({ to: '' });
 
 		if (!this.checkRequirements()) {
 			return;
@@ -262,16 +265,24 @@ export default class Swup {
 
 			event.preventDefault();
 
-			// Handle links to the same page: with or without hash
+			// Handle links to the same page
 			if (!url || url === from) {
 				if (hash) {
+					// With hash: scroll to anchor
 					this.hooks.callSync('link:anchor', { hash }, () => {
 						updateHistoryRecord(url + hash);
 						this.scrollToContent();
 					});
 				} else {
+					// Without hash: scroll to top or load/reload page
 					this.hooks.callSync('link:self', undefined, () => {
-						this.scrollToContent();
+						switch (this.options.linkToSelf) {
+							case 'navigate':
+								return this.performNavigation();
+							case 'scroll':
+							default:
+								return this.scrollToContent();
+						}
 					});
 				}
 				return;
@@ -283,7 +294,7 @@ export default class Swup {
 			}
 
 			// Finally, proceed with loading the page
-			this.performNavigation(url);
+			this.performNavigation();
 		});
 	}
 
@@ -297,11 +308,6 @@ export default class Swup {
 
 		// Exit early if the resolved path hasn't changed
 		if (this.isSameResolvedUrl(getCurrentUrl(), this.currentPageUrl)) {
-			return;
-		}
-
-		// Exit early if the link should be ignored
-		if (this.shouldIgnoreVisit(href, { event })) {
 			return;
 		}
 
@@ -333,7 +339,7 @@ export default class Swup {
 		// }
 
 		this.hooks.callSync('history:popstate', { event }, () => {
-			this.performNavigation(url);
+			this.performNavigation();
 		});
 	}
 

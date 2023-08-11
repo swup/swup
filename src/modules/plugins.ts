@@ -21,7 +21,7 @@ export type Plugin = {
 };
 
 const isSwupPlugin = (maybeInvalidPlugin: unknown): maybeInvalidPlugin is Plugin => {
-	// @ts-ignore
+	// @ts-ignore: this might be anything, object or no
 	return maybeInvalidPlugin?.isSwupPlugin;
 };
 

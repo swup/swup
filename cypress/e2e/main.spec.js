@@ -336,6 +336,7 @@ describe('Navigation', function () {
 describe('Link resolution', function () {
 	beforeEach(() => {
 		cy.visit('/link-resolution.html');
+		cy.wrapSwupInstance();
 	});
 
 	it('should skip links to different origins', function () {
@@ -359,6 +360,36 @@ describe('Link resolution', function () {
 		cy.shouldBeAtPage('/nested/nested-2.html');
 		cy.shouldHaveH1('Nested Page 2');
 	});
+
+	it('should reset scroll when clicking link to same page', function () {
+		let navigated = false;
+		cy.window().then(() => {
+			this.swup.hooks.once('visit:start', () => (navigated = true));
+		});
+		cy.scrollTo(0, 200);
+		cy.window().its('scrollY').should('equal', 200);
+		cy.get('[data-cy=nav-link-self]').click();
+		cy.window().its('scrollY').should('equal', 0);
+		cy.window().should(() => {
+			expect(navigated).to.be.false;
+		});
+	});
+
+	it('should navigate to same page if configured via linkToSelf option', function () {
+		let navigated = false;
+		cy.window().then(() => {
+			this.swup.options.linkToSelf = 'navigate';
+			this.swup.hooks.once('visit:start', () => (navigated = true));
+		});
+		cy.scrollTo(0, 200);
+		cy.window().its('scrollY').should('equal', 200);
+		cy.get('[data-cy=nav-link-self]').click();
+		cy.window().its('scrollY').should('equal', 0);
+		cy.window().should(() => {
+			expect(navigated).to.be.true;
+		});
+	});
+
 });
 
 describe('Redirects', function () {
@@ -786,6 +817,7 @@ describe('Containers', function () {
 describe('Scrolling', function () {
 	beforeEach(() => {
 		cy.visit('/scrolling-1.html');
+		cy.wrapSwupInstance();
 	});
 
 	it('should scroll to hash element and back to top', function () {
@@ -842,6 +874,26 @@ describe('Scrolling', function () {
 	it('should scroll to requested hash after navigation', function () {
 		cy.get('[data-cy=link-to-page-anchor]').click();
 		cy.shouldBeAtPage('/scrolling-2.html#anchor');
+		cy.shouldHaveH1('Scrolling 2');
+		cy.shouldHaveElementInViewport('[data-cy=anchor]');
+	});
+
+	it('should append the hash if changing visit.to.hash on the fly', function () {
+		cy.window().then(() => {
+			this.swup.hooks.once('visit:start', (visit) => (visit.to.hash = '#anchor'));
+		});
+		cy.get('[data-cy=link-to-page]').click();
+		cy.shouldBeAtPage('/scrolling-2.html#anchor');
+		cy.shouldHaveH1('Scrolling 2');
+		cy.shouldHaveElementInViewport('[data-cy=anchor]');
+	});
+
+	it('should not append the hash if changing visit.scroll.target on the fly', function () {
+		cy.window().then(() => {
+			this.swup.hooks.once('visit:start', (visit) => (visit.scroll.target = '#anchor'));
+		});
+		cy.get('[data-cy=link-to-page]').click();
+		cy.shouldBeAtPage('/scrolling-2.html');
 		cy.shouldHaveH1('Scrolling 2');
 		cy.shouldHaveElementInViewport('[data-cy=anchor]');
 	});
