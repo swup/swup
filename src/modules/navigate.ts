@@ -93,6 +93,8 @@ export async function performNavigation(
 		this.visit.cache.read = options.cache.read ?? this.visit.cache.read;
 		this.visit.cache.write = options.cache.write ?? this.visit.cache.write;
 	}
+	// Delete this so that window.fetch doesn't mis-interpret it
+	delete options.cache;
 
 	try {
 		await this.hooks.call('visit:start');
