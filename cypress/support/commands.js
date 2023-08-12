@@ -36,10 +36,13 @@ Cypress.Commands.add('triggerClickOnLink', (buttonHref, options = {}) => {
 		.click(options);
 });
 
-Cypress.Commands.add('shouldBeAtPage', (href) => {
+Cypress.Commands.add('shouldBeAtPage', (href, h1 = null) => {
 	cy.location().should((loc) => {
 		expect(loc.pathname + loc.hash).to.eq(href);
 	});
+	if (h1) {
+		cy.shouldHaveH1(h1);
+	}
 });
 
 Cypress.Commands.add('shouldHaveCacheEntries', (urls) => {

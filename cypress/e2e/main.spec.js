@@ -103,19 +103,19 @@ describe('Cache', function () {
 
 	it('should cache pages', function () {
 		this.swup.navigate('/page-2.html');
-		cy.shouldBeAtPage('/page-2.html');
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
 		cy.shouldHaveCacheEntry('/page-2.html');
 	});
 
 	it('should cache pages from absolute URLs', function () {
 		this.swup.navigate(`${baseUrl}/page-2.html`);
-		cy.shouldBeAtPage('/page-2.html');
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
 		cy.shouldHaveCacheEntry('/page-2.html');
 	});
 
 	it('should not cache pages for POST requests', function () {
 		this.swup.navigate(`${baseUrl}/page-2.html`, { method: 'POST' });
-		cy.shouldBeAtPage('/page-2.html');
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
 		cy.shouldNotHaveCacheEntry('/page-2.html');
 	});
 
@@ -128,11 +128,11 @@ describe('Cache', function () {
 		});
 
 		cy.window().then(() => this.swup.navigate('/page-2.html'));
-		cy.shouldBeAtPage('/page-2.html');
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
 		cy.window().then(() => this.swup.navigate('/page-1.html'));
-		cy.shouldBeAtPage('/page-1.html');
+		cy.shouldBeAtPage('/page-1.html', 'Page 1');
 		cy.window().then(() => this.swup.navigate('/page-2.html'));
-		cy.shouldBeAtPage('/page-2.html');
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
 		cy.window().should(() => expect(cacheAccessed.read).to.be.false);
 		cy.window().should(() => expect(cacheAccessed.write).to.be.false);
 	});
@@ -146,20 +146,20 @@ describe('Cache', function () {
 
 		// Check disabling completely
 		cy.window().then(() => this.swup.navigate('/page-2.html', { cache: false }));
-		cy.shouldBeAtPage('/page-2.html');
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
 		cy.window().should(() => expect(cacheAccessed.read['/page-2.html']).to.be.false);
 		cy.window().should(() => expect(cacheAccessed.write['/page-2.html']).to.be.false);
 
 		// Check disabling writes
 		cy.window().then(() => this.swup.navigate('/page-1.html', { cache: { write: false } }));
-		cy.shouldBeAtPage('/page-1.html');
+		cy.shouldBeAtPage('/page-1.html', 'Page 1');
 		cy.window().should(() => expect(cacheAccessed.write['/page-1.html']).to.be.false);
 
 		cy.window().then(() => this.swup.cache.clear());
 
 		// Check disabling reads
 		cy.window().then(() => this.swup.navigate('/page-2.html', { cache: { read: false } }));
-		cy.shouldBeAtPage('/page-2.html');
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
 		cy.window().should(() => expect(cacheAccessed.read['/page-2.html']).to.be.false);
 		cy.window().should(() => expect(cacheAccessed.write['/page-2.html']).to.be.true);
 	});
@@ -176,18 +176,18 @@ describe('Cache', function () {
 			this.swup.hooks.once('visit:start', (visit) => visit.cache.write = false);
 			this.swup.navigate('/page-2.html');
 		});
-		cy.shouldBeAtPage('/page-2.html');
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
 		cy.window().should(() => expect(cacheAccessed.write['/page-2.html']).to.be.false);
 
 		cy.window().then(() => this.swup.navigate('/page-1.html'));
-		cy.shouldBeAtPage('/page-1.html');
+		cy.shouldBeAtPage('/page-1.html', 'Page 1');
 		cy.window().then(() => this.swup.navigate('/page-2.html'));
-		cy.shouldBeAtPage('/page-2.html');
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
 
 		// Check disabling reads
 		cy.window().then(() => {
 			this.swup.hooks.once('visit:start', (visit) => visit.cache.read = false);
-			this.swup.navigate('/page-1.html');
+			this.swup.navigate('/page-1.html', 'Page 1');
 		});
 		cy.shouldBeAtPage('/page-1.html');
 		cy.window().should(() => expect(cacheAccessed.read['/page-1.html']).to.be.false);
@@ -195,19 +195,19 @@ describe('Cache', function () {
 
 	// Passes locally, but not in CI. TODO: investigate
 
-	// it('should mark pages as cached in page:load', function () {
-	// 	let cached = null;
-	// 	this.swup.hooks.on('page:load', (visit, { cache }) => cached = cache);
+	it('should mark pages as cached in page:load', function () {
+		let cached = null;
+		this.swup.hooks.on('page:load', (visit, { cache }) => cached = cache);
 
-	// 	cy.window().then(() => this.swup.navigate('/page-2.html'));
-	// 	cy.shouldBeAtPage('/page-2.html');
-	// 	cy.window().should(() => expect(cached).to.be.false);
-	// 	cy.window().then(() => this.swup.navigate('/page-1.html'));
-	// 	cy.shouldBeAtPage('/page-1.html');
-	// 	cy.window().then(() => this.swup.navigate('/page-2.html'));
-	// 	cy.shouldBeAtPage('/page-2.html');
-	// 	cy.window().should(() => expect(cached).to.be.true);
-	// });
+		cy.window().then(() => this.swup.navigate('/page-2.html'));
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
+		cy.window().should(() => expect(cached).to.be.false);
+		cy.window().then(() => this.swup.navigate('/page-1.html'));
+		cy.shouldBeAtPage('/page-1.html', 'Page 1');
+		cy.window().then(() => this.swup.navigate('/page-2.html'));
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
+		cy.window().should(() => expect(cached).to.be.true);
+	});
 });
 
 describe('Markup', function () {
