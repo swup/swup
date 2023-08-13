@@ -21,6 +21,7 @@ import { renderPage } from './modules/renderPage.js';
 import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
 import { isSameResolvedUrl, resolveUrl } from './modules/resolveUrl.js';
 import { nextTick } from './utils.js';
+import { HistoryState } from './helpers/createHistoryRecord.js';
 
 /** Options for customizing swup's behavior. */
 export type Options = {
@@ -65,7 +66,7 @@ const defaults: Options = {
 		'X-Requested-With': 'swup',
 		'Accept': 'text/html, application/xhtml+xml'
 	},
-	skipPopStateHandling: (event) => (event.state as Record<string, unknown>)?.source !== 'swup'
+	skipPopStateHandling: (event) => (event.state as HistoryState)?.source !== 'swup'
 };
 
 /** Swup page transition library. */
@@ -296,7 +297,7 @@ export default class Swup {
 	}
 
 	protected handlePopState(event: PopStateEvent) {
-		const href: string = (event.state as { url?: string })?.url ?? location.href;
+		const href: string = (event.state as HistoryState)?.url ?? location.href;
 
 		// Exit early if this event should be ignored
 		if (this.options.skipPopStateHandling(event)) {
@@ -324,7 +325,7 @@ export default class Swup {
 		this.visit.history.popstate = true;
 
 		// Determine direction of history visit
-		const index = Number((event.state as Record<string, unknown>)?.index);
+		const index = Number((event.state as HistoryState)?.index);
 		if (index) {
 			const direction = index - this.currentHistoryIndex > 0 ? 'forwards' : 'backwards';
 			this.visit.history.direction = direction;
