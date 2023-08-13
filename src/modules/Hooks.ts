@@ -453,13 +453,13 @@ export class Hooks {
 		const replaced = replace.length > 0;
 
 		// Define main handler registration
-		// This is an array to allow passing it into hooks.run() directly
+		// Created as HookRegistration[] array to allow passing it into hooks.run() directly
 		let handler: HookRegistration<T, DefaultHandler<T>>[] = [];
 		if (defaultHandler) {
 			handler = [{ id: 0, hook, handler: defaultHandler }];
 			if (replaced) {
 				const index = replace.length - 1;
-				const defaultHandler = replace[index].handler;
+				const replacingHandler = replace[index].handler;
 				const createDefaultHandler = (index: number): DefaultHandler<T> | undefined => {
 					const next = replace[index - 1];
 					if (next) {
@@ -471,7 +471,7 @@ export class Hooks {
 				};
 				const nestedDefaultHandler = createDefaultHandler(index);
 				handler = [
-					{ id: 0, hook, handler: defaultHandler, defaultHandler: nestedDefaultHandler }
+					{ id: 0, hook, handler: replacingHandler, defaultHandler: nestedDefaultHandler }
 				];
 			}
 		}
