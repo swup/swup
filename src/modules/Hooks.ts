@@ -201,11 +201,11 @@ export class Hooks {
 	 */
 
 	// Overload: replacing default handler
-	on<T extends HookName, O extends HookOptions>(hook: T, handler: DefaultHandler<T>, options: O & { replace: true }): HookUnregister;
+	on<T extends HookName, O extends HookOptions>(hook: T, handler: DefaultHandler<T>, options: O & { replace: true }): HookUnregister; // prettier-ignore
 	// Overload: passed in handler options
-	on<T extends HookName, O extends HookOptions>(hook: T, handler: Handler<T>, options: O): HookUnregister;
+	on<T extends HookName, O extends HookOptions>(hook: T, handler: Handler<T>, options: O): HookUnregister; // prettier-ignore
 	// Overload: no handler options
-	on<T extends HookName>(hook: T, handler: Handler<T>): HookUnregister;
+	on<T extends HookName>(hook: T, handler: Handler<T>): HookUnregister; // prettier-ignore
 	// Implementation
 	on<T extends HookName, O extends HookOptions>(
 		hook: T,
@@ -257,9 +257,9 @@ export class Hooks {
 	 * @see on
 	 */
 	// Overload: passed in handler options
-	replace<T extends HookName>(hook: T, handler: DefaultHandler<T>, options: HookOptions): HookUnregister;
+	replace<T extends HookName>(hook: T, handler: DefaultHandler<T>, options: HookOptions): HookUnregister; // prettier-ignore
 	// Overload: no handler options
-	replace<T extends HookName>(hook: T, handler: DefaultHandler<T>): HookUnregister;
+	replace<T extends HookName>(hook: T, handler: DefaultHandler<T>): HookUnregister; // prettier-ignore
 	// Implementation
 	replace<T extends HookName>(
 		hook: T,
