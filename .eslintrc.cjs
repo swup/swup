@@ -1,6 +1,10 @@
 /* eslint-env node */
 module.exports = {
-	extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended-type-checked'],
+	extends: [
+		'eslint:recommended',
+		'plugin:@typescript-eslint/recommended-type-checked',
+		'plugin:prettier/recommended', // needs to be last
+	],
 	plugins: ['@typescript-eslint'],
 	/* First exclude everything, then re-include /src, then exclude tests */
 	ignorePatterns: ['/*', '!/src', '*.test.ts'],
