@@ -22,7 +22,7 @@ export type Plugin = {
 
 const isSwupPlugin = (maybeInvalidPlugin: unknown): maybeInvalidPlugin is Plugin => {
 	// @ts-ignore: this might be anything, object or no
-	return maybeInvalidPlugin?.isSwupPlugin;
+	return Boolean(maybeInvalidPlugin?.isSwupPlugin);
 };
 
 /** Install a plugin. */
@@ -72,6 +72,6 @@ export function findPlugin(this: Swup, pluginOrName: Plugin | string) {
 		(plugin) =>
 			plugin === pluginOrName ||
 			plugin.name === pluginOrName ||
-			plugin.name === `Swup${pluginOrName}`
+			plugin.name === `Swup${String(pluginOrName)}`
 	);
 }

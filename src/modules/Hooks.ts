@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { DelegateEvent } from 'delegate-it';
 
 import Swup from '../Swup.js';
@@ -36,19 +34,35 @@ export interface HookDefinitions {
 	'visit:end': undefined;
 }
 
+export interface HookReturnValues {
+	'content:scroll': Promise<boolean>;
+	'fetch:request': Promise<Response>;
+	'page:load': Promise<PageData>;
+	'scroll:top': boolean;
+	'scroll:anchor': boolean;
+}
+
 export type HookArguments<T extends HookName> = HookDefinitions[T];
 
 export type HookName = keyof HookDefinitions;
 
-/** A hook handler. */
+/** A generic hook handler. */
 export type Handler<T extends HookName> = (
+	/** Context about the current visit. */
+	visit: Visit,
+	/** Local arguments passed into the handler. */
+	args: HookArguments<T>
+) => Promise<unknown> | unknown;
+
+/** A default hook handler with an expected return type. */
+export type DefaultHandler<T extends HookName> = (
 	/** Context about the current visit. */
 	visit: Visit,
 	/** Local arguments passed into the handler. */
 	args: HookArguments<T>,
 	/** Default handler to be executed. Available if replacing an internal hook handler. */
-	defaultHandler?: Handler<T>
-) => Promise<any> | any;
+	defaultHandler?: DefaultHandler<T>
+) => T extends keyof HookReturnValues ? HookReturnValues[T] : Promise<unknown> | unknown;
 
 export type Handlers = {
 	[K in HookName]: Handler<K>[];
@@ -69,11 +83,14 @@ export type HookOptions = {
 	replace?: boolean;
 };
 
-export type HookRegistration<T extends HookName> = {
+export type HookRegistration<
+	T extends HookName,
+	H extends Handler<T> | DefaultHandler<T> = Handler<T>
+> = {
 	id: number;
 	hook: T;
-	handler: Handler<T>;
-	defaultHandler?: Handler<T>;
+	handler: H;
+	defaultHandler?: DefaultHandler<T>;
 } & HookOptions;
 
 type HookLedger<T extends HookName> = Map<Handler<T>, HookRegistration<T>>;
@@ -185,12 +202,18 @@ export class Hooks {
 	 *                - `replace`: Replace the default handler with this handler
 	 * @returns A function to unregister the handler
 	 */
-	on<T extends HookName>(hook: T, handler: Handler<T>): HookUnregister;
-	on<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions): HookUnregister;
-	on<T extends HookName>(
+
+	// Overload: replacing default handler
+	on<T extends HookName, O extends HookOptions>(hook: T, handler: DefaultHandler<T>, options: O & { replace: true }): HookUnregister; // prettier-ignore
+	// Overload: passed in handler options
+	on<T extends HookName, O extends HookOptions>(hook: T, handler: Handler<T>, options: O): HookUnregister; // prettier-ignore
+	// Overload: no handler options
+	on<T extends HookName>(hook: T, handler: Handler<T>): HookUnregister; // prettier-ignore
+	// Implementation
+	on<T extends HookName, O extends HookOptions>(
 		hook: T,
-		handler: Handler<T>,
-		options: HookOptions = {}
+		handler: O['replace'] extends true ? DefaultHandler<T> : Handler<T>,
+		options: Partial<O> = {}
 	): HookUnregister {
 		const ledger = this.get(hook);
 		if (!ledger) {
@@ -214,8 +237,11 @@ export class Hooks {
 	 * @returns A function to unregister the handler
 	 * @see on
 	 */
-	before<T extends HookName>(hook: T, handler: Handler<T>): HookUnregister;
+	// Overload: passed in handler options
 	before<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions): HookUnregister;
+	// Overload: no handler options
+	before<T extends HookName>(hook: T, handler: Handler<T>): HookUnregister;
+	// Implementation
 	before<T extends HookName>(
 		hook: T,
 		handler: Handler<T>,
@@ -233,11 +259,14 @@ export class Hooks {
 	 * @returns A function to unregister the handler
 	 * @see on
 	 */
-	replace<T extends HookName>(hook: T, handler: Handler<T>): HookUnregister;
-	replace<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions): HookUnregister;
+	// Overload: passed in handler options
+	replace<T extends HookName>(hook: T, handler: DefaultHandler<T>, options: HookOptions): HookUnregister; // prettier-ignore
+	// Overload: no handler options
+	replace<T extends HookName>(hook: T, handler: DefaultHandler<T>): HookUnregister; // prettier-ignore
+	// Implementation
 	replace<T extends HookName>(
 		hook: T,
-		handler: Handler<T>,
+		handler: DefaultHandler<T>,
 		options: HookOptions = {}
 	): HookUnregister {
 		return this.on(hook, handler, { ...options, replace: true });
@@ -251,8 +280,11 @@ export class Hooks {
 	 * @param options Any other event options (see `hooks.on()` for details)
 	 * @see on
 	 */
-	once<T extends HookName>(hook: T, handler: Handler<T>): HookUnregister;
+	// Overload: passed in handler options
 	once<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions): HookUnregister;
+	// Overload: no handler options
+	once<T extends HookName>(hook: T, handler: Handler<T>): HookUnregister;
+	// Implementation
 	once<T extends HookName>(
 		hook: T,
 		handler: Handler<T>,
@@ -267,9 +299,12 @@ export class Hooks {
 	 * @param handler The handler function that was registered.
 	 *                If omitted, all handlers for the hook will be removed.
 	 */
+	// Overload: unregister a specific handler
+	off<T extends HookName>(hook: T, handler: Handler<T> | DefaultHandler<T>): void;
+	// Overload: unregister all handlers
 	off<T extends HookName>(hook: T): void;
-	off<T extends HookName>(hook: T, handler: Handler<T>): void;
-	off<T extends HookName>(hook: T, handler?: Handler<T>): void {
+	// Implementation
+	off<T extends HookName>(hook: T, handler?: Handler<T> | DefaultHandler<T>): void {
 		const ledger = this.get(hook);
 		if (ledger && handler) {
 			const deleted = ledger.delete(handler);
@@ -291,9 +326,9 @@ export class Hooks {
 	 */
 	async call<T extends HookName>(
 		hook: T,
-		args?: HookArguments<T>,
-		defaultHandler?: Handler<T>
-	): Promise<any> {
+		args: HookArguments<T>,
+		defaultHandler?: DefaultHandler<T>
+	): Promise<Awaited<ReturnType<DefaultHandler<T>>>> {
 		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
 		await this.run(before, args);
 		const [result] = await this.run(handler, args);
@@ -312,9 +347,9 @@ export class Hooks {
 	 */
 	callSync<T extends HookName>(
 		hook: T,
-		args?: HookArguments<T>,
-		defaultHandler?: Handler<T>
-	): any {
+		args: HookArguments<T>,
+		defaultHandler?: DefaultHandler<T>
+	): ReturnType<DefaultHandler<T>> {
 		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
 		this.runSync(before, args);
 		const [result] = this.runSync(handler, args);
@@ -328,10 +363,16 @@ export class Hooks {
 	 * @param registrations The registrations (handler + options) to execute
 	 * @param args Arguments to pass to the handler
 	 */
-	protected async run<T extends HookName>(
-		registrations: HookRegistration<T>[],
-		args?: HookArguments<T>
-	): Promise<any[]> {
+
+	// Overload: running DefaultHandler: expect DefaultHandler return type
+	protected async run<T extends HookName>(registrations: HookRegistration<T, DefaultHandler<T>>[], args: HookArguments<T>): Promise<Awaited<ReturnType<DefaultHandler<T>>>[]>; // prettier-ignore
+	// Overload:  running user handler: expect no specific type
+	protected async run<T extends HookName>(registrations: HookRegistration<T>[], args: HookArguments<T>): Promise<unknown[]>; // prettier-ignore
+	// Implementation
+	protected async run<T extends HookName, R extends HookRegistration<T>[]>(
+		registrations: R,
+		args: HookArguments<T>
+	): Promise<Awaited<ReturnType<DefaultHandler<T>>> | unknown[]> {
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
 			const result = await runAsPromise(handler, [this.swup.visit, args, defaultHandler]);
@@ -348,13 +389,19 @@ export class Hooks {
 	 * @param registrations The registrations (handler + options) to execute
 	 * @param args Arguments to pass to the handler
 	 */
-	protected runSync<T extends HookName>(
-		registrations: HookRegistration<T>[],
-		args?: HookArguments<T>
-	): any[] {
+
+	// Overload: running DefaultHandler: expect DefaultHandler return type
+	protected runSync<T extends HookName>(registrations: HookRegistration<T, DefaultHandler<T>>[], args: HookArguments<T> ): ReturnType<DefaultHandler<T>>[]; // prettier-ignore
+	// Overload: running user handler: expect no specific type
+	protected runSync<T extends HookName>(registrations: HookRegistration<T>[], args: HookArguments<T>): unknown[]; // prettier-ignore
+	// Implementation
+	protected runSync<T extends HookName, R extends HookRegistration<T>[]>(
+		registrations: R,
+		args: HookArguments<T>
+	): (ReturnType<DefaultHandler<T>> | unknown)[] {
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
-			const result = handler(this.swup.visit, args as HookArguments<T>, defaultHandler);
+			const result = (handler as DefaultHandler<T>)(this.swup.visit, args, defaultHandler);
 			results.push(result);
 			if (isPromise(result)) {
 				console.warn(
@@ -376,30 +423,33 @@ export class Hooks {
 	 * @returns An object with the handlers sorted into `before` and `after` arrays,
 	 *          as well as a flag indicating if the original handler was replaced
 	 */
-	protected getHandlers<T extends HookName>(hook: T, defaultHandler?: Handler<T>) {
+	protected getHandlers<T extends HookName>(hook: T, defaultHandler?: DefaultHandler<T>) {
 		const ledger = this.get(hook);
 		if (!ledger) {
 			return { found: false, before: [], handler: [], after: [], replaced: false };
 		}
 
-		const sort = this.sortRegistrations;
 		const registrations = Array.from(ledger.values());
+
+		// Let TypeScript know that replaced handlers are default handlers by filtering to true
+		const def = (T: HookRegistration<T>): T is HookRegistration<T, DefaultHandler<T>> => true;
+		const sort = this.sortRegistrations;
 
 		// Filter into before, after, and replace handlers
 		const before = registrations.filter(({ before, replace }) => before && !replace).sort(sort);
-		const replace = registrations.filter(({ replace }) => replace).sort(sort);
+		const replace = registrations.filter(({ replace }) => replace).filter(def).sort(sort); // prettier-ignore
 		const after = registrations.filter(({ before, replace }) => !before && !replace).sort(sort);
 		const replaced = replace.length > 0;
 
 		// Define main handler registration
-		// This is an array to allow passing it into hooks.run() directly
-		let handler: HookRegistration<T>[] = [];
+		// Created as HookRegistration[] array to allow passing it into hooks.run() directly
+		let handler: HookRegistration<T, DefaultHandler<T>>[] = [];
 		if (defaultHandler) {
 			handler = [{ id: 0, hook, handler: defaultHandler }];
 			if (replaced) {
 				const index = replace.length - 1;
 				const replacingHandler = replace[index].handler;
-				const createDefaultHandler = (index: number): Handler<T> | undefined => {
+				const createDefaultHandler = (index: number): DefaultHandler<T> | undefined => {
 					const next = replace[index - 1];
 					if (next) {
 						return (visit, args) =>

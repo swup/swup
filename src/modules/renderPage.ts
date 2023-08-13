@@ -47,6 +47,7 @@ export const renderPage = async function (this: Swup, requestedUrl: string, page
 	});
 
 	// scroll into view: either anchor or top of page
+	// @ts-ignore: not returning a promise is intentional to allow users to pause in handler
 	await this.hooks.call('content:scroll', undefined, () => {
 		return this.scrollToContent();
 	});

@@ -97,7 +97,7 @@ export async function performNavigation(
 	delete options.cache;
 
 	try {
-		await this.hooks.call('visit:start');
+		await this.hooks.call('visit:start', undefined);
 
 		// Begin loading page
 		const pagePromise = this.hooks.call('page:load', { options }, async (visit, args) => {
@@ -107,7 +107,7 @@ export async function performNavigation(
 				cachedPage = this.cache.get(visit.to.url);
 			}
 
-			args.page = cachedPage || (await this.fetchPage(visit.to.url!, args.options));
+			args.page = cachedPage || (await this.fetchPage(visit.to.url, args.options));
 			args.cache = !!cachedPage;
 
 			return args.page;

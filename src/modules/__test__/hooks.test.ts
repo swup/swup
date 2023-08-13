@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import Swup from '../../Swup.js';
-import { Handler, Hooks } from '../Hooks.js';
+import { DefaultHandler, Handler, Hooks } from '../Hooks.js';
 import { Visit } from '../Visit.js';
 
 describe('Hook registry', () => {
@@ -37,14 +37,14 @@ describe('Hook registry', () => {
 		swup.hooks.on('enable', handler1);
 		swup.hooks.on('enable', handler2);
 
-		await swup.hooks.call('enable');
+		await swup.hooks.call('enable', undefined);
 
 		expect(handler1).toBeCalledTimes(1);
 		expect(handler2).toBeCalledTimes(1);
 
 		swup.hooks.off('enable', handler2);
 
-		await swup.hooks.call('enable');
+		await swup.hooks.call('enable', undefined);
 
 		expect(handler1).toBeCalledTimes(2);
 		expect(handler2).toBeCalledTimes(1);
@@ -60,14 +60,14 @@ describe('Hook registry', () => {
 
 		expect(unregister1).toBeTypeOf('function');
 
-		await swup.hooks.call('enable');
+		await swup.hooks.call('enable', undefined);
 
 		expect(handler1).toBeCalledTimes(1);
 		expect(handler2).toBeCalledTimes(1);
 
 		unregister2();
 
-		await swup.hooks.call('enable');
+		await swup.hooks.call('enable', undefined);
 
 		expect(handler1).toBeCalledTimes(2);
 		expect(handler2).toBeCalledTimes(1);
@@ -79,7 +79,7 @@ describe('Hook registry', () => {
 
 		swup.hooks.on('enable', handler);
 
-		await swup.hooks.call('enable');
+		await swup.hooks.call('enable', undefined);
 
 		expect(handler).toBeCalledTimes(1);
 	});
@@ -303,18 +303,17 @@ describe('Types', () => {
 		const swup = new Swup();
 
 		// @ts-expect-no-error
-		swup.hooks.on(
-			'history:popstate',
-			(visit: Visit, { event }: { event: PopStateEvent }) => {}
-		);
+		swup.hooks.on('history:popstate', (visit: Visit, { event }: { event: PopStateEvent }) => {});
 		// @ts-expect-no-error
 		await swup.hooks.call('history:popstate', { event: new PopStateEvent('') });
 
-		// @ts-expect-error
+		// @ts-expect-error: first arg must be Visit object
 		swup.hooks.on('history:popstate', ({ event: MouseEvent }) => {});
-		// @ts-expect-error
+		// @ts-expect-error: event arg must be PopStateEvent
 		swup.hooks.on('history:popstate', (visit: Visit, { event }: { event: MouseEvent }) => {});
-		// @ts-expect-error
+		// @ts-expect-error: event arg must be PopStateEvent
 		await swup.hooks.call('history:popstate', { event: new MouseEvent('') });
+		// @ts-expect-error: handler arg must be optional: handler?
+		swup.hooks.replace('enable', (visit: Visit, args: undefined, handler: DefaultHandler<'enable'>) => {});
 	});
 });

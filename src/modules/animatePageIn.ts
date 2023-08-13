@@ -27,5 +27,5 @@ export const animatePageIn = async function (this: Swup) {
 
 	await animation;
 
-	await this.hooks.call('animation:in:end');
+	await this.hooks.call('animation:in:end', undefined);
 };
