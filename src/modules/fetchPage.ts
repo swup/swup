@@ -10,13 +10,11 @@ export interface PageData {
 }
 
 /** Define how a page is fetched. */
-export interface FetchOptions extends RequestInit {
+export interface FetchOptions extends Omit<RequestInit, 'cache'> {
 	/** The request method. */
 	method?: 'GET' | 'POST';
 	/** The body of the request: raw string, form data object or URL params. */
 	body?: string | FormData | URLSearchParams;
-	/** The headers of the request: key/value object. */
-	headers?: Record<string, string>;
 }
 
 export class FetchError extends Error {
@@ -66,8 +64,12 @@ export async function fetchPage(
 	const { url: finalUrl } = Location.fromUrl(responseUrl);
 	const page = { url: finalUrl, html };
 
-	// Only save cache entry for non-redirects
-	if (url === finalUrl) {
+	// Write to cache for safe methods and non-redirects
+	if (
+		this.visit.cache.write &&
+		(!options.method || options.method === 'GET') &&
+		url === finalUrl
+	) {
 		this.cache.set(page.url, page);
 	}
 
