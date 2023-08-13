@@ -83,7 +83,10 @@ export type HookOptions = {
 	replace?: boolean;
 };
 
-export type HookRegistration<T extends HookName, H extends Handler<T> | DefaultHandler<T> = Handler<T>> = {
+export type HookRegistration<
+	T extends HookName,
+	H extends Handler<T> | DefaultHandler<T> = Handler<T>
+> = {
 	id: number;
 	hook: T;
 	handler: H;
