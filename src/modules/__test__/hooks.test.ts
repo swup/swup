@@ -303,10 +303,7 @@ describe('Types', () => {
 		const swup = new Swup();
 
 		// @ts-expect-no-error
-		swup.hooks.on(
-			'history:popstate',
-			(visit: Visit, { event }: { event: PopStateEvent }) => {}
-		);
+		swup.hooks.on('history:popstate', (visit: Visit, { event }: { event: PopStateEvent }) => {});
 		// @ts-expect-no-error
 		await swup.hooks.call('history:popstate', { event: new PopStateEvent('') });
 
@@ -316,7 +313,6 @@ describe('Types', () => {
 		swup.hooks.on('history:popstate', (visit: Visit, { event }: { event: MouseEvent }) => {});
 		// @ts-expect-error
 		await swup.hooks.call('history:popstate', { event: new MouseEvent('') });
-
 		// @ts-expect-error
 		swup.hooks.replace('enable', (visit: Visit, args: any, handler: DefaultHandler<'enable'>) => {});
 	});
