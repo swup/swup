@@ -107,7 +107,7 @@ export async function performNavigation(
 				cachedPage = this.cache.get(visit.to.url);
 			}
 
-			args.page = cachedPage || (await this.fetchPage(visit.to.url!, args.options));
+			args.page = cachedPage || (await this.fetchPage(visit.to.url, args.options));
 			args.cache = !!cachedPage;
 
 			return args.page;

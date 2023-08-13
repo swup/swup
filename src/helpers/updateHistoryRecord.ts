@@ -6,8 +6,9 @@ export const updateHistoryRecord = (
 	customData: Record<string, unknown> = {}
 ): void => {
 	url = url || getCurrentUrl({ hash: true });
+	const state = (history.state as Record<string, unknown>) || {};
 	const data: Record<string, unknown> = {
-		...(history.state as Record<string, unknown> || {}),
+		...state,
 		url,
 		random: Math.random(),
 		source: 'swup',
