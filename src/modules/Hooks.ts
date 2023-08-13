@@ -442,13 +442,15 @@ export class Hooks {
 			return { found: false, before: [], handler: [], after: [], replaced: false };
 		}
 
-		const sort = this.sortRegistrations;
-		const def = this.returnsDefaultHandler;
 		const registrations = Array.from(ledger.values());
+
+		// Let TypeScript know that replaced handlers are default handlers by filtering to true
+		const def = (T: HookRegistration<T>): T is HookRegistration<T, DefaultHandler<T>> => true;
+		const sort = this.sortRegistrations;
 
 		// Filter into before, after, and replace handlers
 		const before = registrations.filter(({ before, replace }) => before && !replace).sort(sort);
-		const replace = registrations.filter(({ replace }) => replace).filter(def).sort(sort);
+		const replace = registrations.filter(({ replace }) => replace).filter(def).sort(sort); // prettier-ignore
 		const after = registrations.filter(({ before, replace }) => !before && !replace).sort(sort);
 		const replaced = replace.length > 0;
 
@@ -477,11 +479,6 @@ export class Hooks {
 		}
 
 		return { found: true, before, handler, after, replaced };
-	}
-
-	/** Slightly hacky way of making TypeScript happy */
-	protected returnsDefaultHandler<T extends HookName>(registration: HookRegistration<T>): registration is HookRegistration<T, DefaultHandler<T>> {
-		return true;
 	}
 
 	/**
