@@ -35,9 +35,9 @@ export interface HookDefinitions {
 }
 
 export interface HookReturnValues {
-	'content:scroll': boolean;
-	'fetch:request': Response;
-	'page:load': PageData;
+	'content:scroll': Promise<boolean>;
+	'fetch:request': Promise<Response>;
+	'page:load': Promise<PageData>;
 	'scroll:top': boolean;
 	'scroll:anchor': boolean;
 }
@@ -54,7 +54,7 @@ export type Handler<T extends HookName> = (
 	args: HookArguments<T>
 ) => Promise<unknown> | unknown;
 
-/** A default hook handler with a return type. */
+/** A default hook handler with an expected return type. */
 export type DefaultHandler<T extends HookName> = (
 	/** Context about the current visit. */
 	visit: Visit,
@@ -62,7 +62,7 @@ export type DefaultHandler<T extends HookName> = (
 	args: HookArguments<T>,
 	/** Default handler to be executed. Available if replacing an internal hook handler. */
 	defaultHandler?: DefaultHandler<T>
-) => (T extends keyof HookReturnValues ? Promise<HookReturnValues[T]> | HookReturnValues[T] : Promise<unknown> | unknown);
+) => T extends keyof HookReturnValues ? HookReturnValues[T] : Promise<unknown> | unknown;
 
 export type Handlers = {
 	[K in HookName]: Handler<K>[];
@@ -199,9 +199,14 @@ export class Hooks {
 	 *                - `replace`: Replace the default handler with this handler
 	 * @returns A function to unregister the handler
 	 */
-	on<T extends HookName>(hook: T, handler: Handler<T>): HookUnregister;
-	on<T extends HookName, O extends HookOptions>(hook: T, handler: Handler<T>, options: O): HookUnregister;
+
+	// Overload: replacing default handler
 	on<T extends HookName, O extends HookOptions>(hook: T, handler: DefaultHandler<T>, options: O & { replace: true }): HookUnregister;
+	// Overload: passed in handler options
+	on<T extends HookName, O extends HookOptions>(hook: T, handler: Handler<T>, options: O): HookUnregister;
+	// Overload: no handler options
+	on<T extends HookName>(hook: T, handler: Handler<T>): HookUnregister;
+	// Implementation
 	on<T extends HookName, O extends HookOptions>(
 		hook: T,
 		handler: O['replace'] extends true ? DefaultHandler<T> : Handler<T>,
@@ -229,8 +234,11 @@ export class Hooks {
 	 * @returns A function to unregister the handler
 	 * @see on
 	 */
-	before<T extends HookName>(hook: T, handler: Handler<T>): HookUnregister;
+	// Overload: passed in handler options
 	before<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions): HookUnregister;
+	// Overload: no handler options
+	before<T extends HookName>(hook: T, handler: Handler<T>): HookUnregister;
+	// Implementation
 	before<T extends HookName>(
 		hook: T,
 		handler: Handler<T>,
@@ -248,8 +256,11 @@ export class Hooks {
 	 * @returns A function to unregister the handler
 	 * @see on
 	 */
-	replace<T extends HookName>(hook: T, handler: DefaultHandler<T>): HookUnregister;
+	// Overload: passed in handler options
 	replace<T extends HookName>(hook: T, handler: DefaultHandler<T>, options: HookOptions): HookUnregister;
+	// Overload: no handler options
+	replace<T extends HookName>(hook: T, handler: DefaultHandler<T>): HookUnregister;
+	// Implementation
 	replace<T extends HookName>(
 		hook: T,
 		handler: DefaultHandler<T>,
@@ -266,8 +277,11 @@ export class Hooks {
 	 * @param options Any other event options (see `hooks.on()` for details)
 	 * @see on
 	 */
-	once<T extends HookName>(hook: T, handler: Handler<T>): HookUnregister;
+	// Overload: passed in handler options
 	once<T extends HookName>(hook: T, handler: Handler<T>, options: HookOptions): HookUnregister;
+	// Overload: no handler options
+	once<T extends HookName>(hook: T, handler: Handler<T>): HookUnregister;
+	// Implementation
 	once<T extends HookName>(
 		hook: T,
 		handler: Handler<T>,
@@ -282,8 +296,11 @@ export class Hooks {
 	 * @param handler The handler function that was registered.
 	 *                If omitted, all handlers for the hook will be removed.
 	 */
-	off<T extends HookName>(hook: T): void;
+	// Overload: unregister a specific handler
 	off<T extends HookName>(hook: T, handler: Handler<T> | DefaultHandler<T>): void;
+	// Overload: unregister all handlers
+	off<T extends HookName>(hook: T): void;
+	// Implementation
 	off<T extends HookName>(hook: T, handler?: Handler<T> | DefaultHandler<T>): void {
 		const ledger = this.get(hook);
 		if (ledger && handler) {
@@ -306,9 +323,9 @@ export class Hooks {
 	 */
 	async call<T extends HookName>(
 		hook: T,
-		args?: HookArguments<T>,
+		args: HookArguments<T>,
 		defaultHandler?: DefaultHandler<T>
-	): Promise<ReturnType<DefaultHandler<T>>> {
+	): Promise<Awaited<ReturnType<DefaultHandler<T>>>> {
 		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
 		await this.run(before, args);
 		const [result] = await this.run(handler, args);
@@ -327,7 +344,7 @@ export class Hooks {
 	 */
 	callSync<T extends HookName>(
 		hook: T,
-		args?: HookArguments<T>,
+		args: HookArguments<T>,
 		defaultHandler?: DefaultHandler<T>
 	): ReturnType<DefaultHandler<T>> {
 		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
@@ -343,10 +360,24 @@ export class Hooks {
 	 * @param registrations The registrations (handler + options) to execute
 	 * @param args Arguments to pass to the handler
 	 */
+
+	// Overload for running DefaultHandler: expect DefaultHandler return type
+	protected async run<T extends HookName>(
+		registrations: HookRegistration<T, DefaultHandler<T>>[],
+		args: HookArguments<T>
+	): Promise<Awaited<ReturnType<DefaultHandler<T>>>[]>;
+
+	// Overload for running user handler: expect no specific type
 	protected async run<T extends HookName>(
 		registrations: HookRegistration<T>[],
-		args?: HookArguments<T>
-	): Promise<any[]> {
+		args: HookArguments<T>
+	): Promise<unknown[]>;
+
+	// Implementation
+	protected async run<T extends HookName, R extends HookRegistration<T>[]>(
+		registrations: R,
+		args: HookArguments<T>
+	): Promise<Awaited<ReturnType<DefaultHandler<T>>> | unknown[]> {
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
 			const result = await runAsPromise(handler, [this.swup.visit, args, defaultHandler]);
@@ -363,13 +394,27 @@ export class Hooks {
 	 * @param registrations The registrations (handler + options) to execute
 	 * @param args Arguments to pass to the handler
 	 */
+
+	// Overload for running DefaultHandler: expect DefaultHandler return type
+	protected runSync<T extends HookName>(
+		registrations: HookRegistration<T, DefaultHandler<T>>[],
+		args: HookArguments<T>
+	): ReturnType<DefaultHandler<T>>[];
+
+	// Overload for running user handler: expect no specific type
 	protected runSync<T extends HookName>(
 		registrations: HookRegistration<T>[],
-		args?: HookArguments<T>
-	): any[] {
+		args: HookArguments<T>
+	): unknown[];
+
+	// Implementation
+	protected runSync<T extends HookName, R extends HookRegistration<T>[]>(
+		registrations: R,
+		args: HookArguments<T>
+	): (ReturnType<DefaultHandler<T>> | unknown)[] {
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
-			const result = handler(this.swup.visit, args as HookArguments<T>, defaultHandler);
+			const result = (handler as DefaultHandler<T>)(this.swup.visit, args, defaultHandler);
 			results.push(result);
 			if (isPromise(result)) {
 				console.warn(
