@@ -364,18 +364,10 @@ export class Hooks {
 	 * @param args Arguments to pass to the handler
 	 */
 
-	// Overload for running DefaultHandler: expect DefaultHandler return type
-	protected async run<T extends HookName>(
-		registrations: HookRegistration<T, DefaultHandler<T>>[],
-		args: HookArguments<T>
-	): Promise<Awaited<ReturnType<DefaultHandler<T>>>[]>;
-
-	// Overload for running user handler: expect no specific type
-	protected async run<T extends HookName>(
-		registrations: HookRegistration<T>[],
-		args: HookArguments<T>
-	): Promise<unknown[]>;
-
+	// Overload: running DefaultHandler: expect DefaultHandler return type
+	protected async run<T extends HookName>(registrations: HookRegistration<T, DefaultHandler<T>>[], args: HookArguments<T>): Promise<Awaited<ReturnType<DefaultHandler<T>>>[]>; // prettier-ignore
+	// Overload:  running user handler: expect no specific type
+	protected async run<T extends HookName>(registrations: HookRegistration<T>[], args: HookArguments<T>): Promise<unknown[]>; // prettier-ignore
 	// Implementation
 	protected async run<T extends HookName, R extends HookRegistration<T>[]>(
 		registrations: R,
@@ -398,18 +390,10 @@ export class Hooks {
 	 * @param args Arguments to pass to the handler
 	 */
 
-	// Overload for running DefaultHandler: expect DefaultHandler return type
-	protected runSync<T extends HookName>(
-		registrations: HookRegistration<T, DefaultHandler<T>>[],
-		args: HookArguments<T>
-	): ReturnType<DefaultHandler<T>>[];
-
-	// Overload for running user handler: expect no specific type
-	protected runSync<T extends HookName>(
-		registrations: HookRegistration<T>[],
-		args: HookArguments<T>
-	): unknown[];
-
+	// Overload: running DefaultHandler: expect DefaultHandler return type
+	protected runSync<T extends HookName>(registrations: HookRegistration<T, DefaultHandler<T>>[], args: HookArguments<T> ): ReturnType<DefaultHandler<T>>[]; // prettier-ignore
+	// Overload: running user handler: expect no specific type
+	protected runSync<T extends HookName>(registrations: HookRegistration<T>[], args: HookArguments<T>): unknown[]; // prettier-ignore
 	// Implementation
 	protected runSync<T extends HookName, R extends HookRegistration<T>[]>(
 		registrations: R,
