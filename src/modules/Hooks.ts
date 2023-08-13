@@ -244,7 +244,7 @@ export class Hooks {
 		handler: Handler<T>,
 		options: HookOptions = {}
 	): HookUnregister {
-		return this.on(hook, handler, { ...options, replace: false, before: true });
+		return this.on(hook, handler, { ...options, before: true });
 	}
 
 	/**
@@ -266,7 +266,7 @@ export class Hooks {
 		handler: DefaultHandler<T>,
 		options: HookOptions = {}
 	): HookUnregister {
-		return this.on(hook, handler, { ...options, before: false, replace: true });
+		return this.on(hook, handler, { ...options, replace: true });
 	}
 
 	/**
