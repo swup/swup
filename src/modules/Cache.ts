@@ -67,7 +67,7 @@ export class Cache {
 	/** Empty the cache. */
 	clear(): void {
 		this.pages.clear();
-		this.swup.hooks.callSync('cache:clear');
+		this.swup.hooks.callSync('cache:clear', undefined);
 	}
 
 	/** Remove all cache entries that return true for a given predicate function.  */

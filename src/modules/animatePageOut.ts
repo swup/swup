@@ -7,7 +7,7 @@ import { classify } from '../helpers.js';
  */
 export const animatePageOut = async function (this: Swup) {
 	if (!this.visit.animation.animate) {
-		await this.hooks.call('animation:skip');
+		await this.hooks.call('animation:skip', undefined);
 		return;
 	}
 
@@ -26,5 +26,5 @@ export const animatePageOut = async function (this: Swup) {
 		await this.awaitAnimations({ selector: visit.animation.selector });
 	});
 
-	await this.hooks.call('animation:out:end');
+	await this.hooks.call('animation:out:end', undefined);
 };

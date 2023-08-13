@@ -37,14 +37,14 @@ describe('Hook registry', () => {
 		swup.hooks.on('enable', handler1);
 		swup.hooks.on('enable', handler2);
 
-		await swup.hooks.call('enable');
+		await swup.hooks.call('enable', undefined);
 
 		expect(handler1).toBeCalledTimes(1);
 		expect(handler2).toBeCalledTimes(1);
 
 		swup.hooks.off('enable', handler2);
 
-		await swup.hooks.call('enable');
+		await swup.hooks.call('enable', undefined);
 
 		expect(handler1).toBeCalledTimes(2);
 		expect(handler2).toBeCalledTimes(1);
@@ -60,14 +60,14 @@ describe('Hook registry', () => {
 
 		expect(unregister1).toBeTypeOf('function');
 
-		await swup.hooks.call('enable');
+		await swup.hooks.call('enable', undefined);
 
 		expect(handler1).toBeCalledTimes(1);
 		expect(handler2).toBeCalledTimes(1);
 
 		unregister2();
 
-		await swup.hooks.call('enable');
+		await swup.hooks.call('enable', undefined);
 
 		expect(handler1).toBeCalledTimes(2);
 		expect(handler2).toBeCalledTimes(1);
@@ -79,7 +79,7 @@ describe('Hook registry', () => {
 
 		swup.hooks.on('enable', handler);
 
-		await swup.hooks.call('enable');
+		await swup.hooks.call('enable', undefined);
 
 		expect(handler).toBeCalledTimes(1);
 	});

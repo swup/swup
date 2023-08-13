@@ -97,7 +97,7 @@ export async function performNavigation(
 	delete options.cache;
 
 	try {
-		await this.hooks.call('visit:start');
+		await this.hooks.call('visit:start', undefined);
 
 		// Begin loading page
 		const pagePromise: Promise<PageData> = this.hooks.call('page:load', { options }, async (visit, args) => {
