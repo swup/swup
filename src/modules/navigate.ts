@@ -100,7 +100,7 @@ export async function performNavigation(
 		await this.hooks.call('visit:start', undefined);
 
 		// Begin loading page
-		const pagePromise: Promise<PageData> = this.hooks.call('page:load', { options }, async (visit, args) => {
+		const pagePromise = this.hooks.call('page:load', { options }, async (visit, args) => {
 			// Read from cache
 			let cachedPage: PageData | undefined;
 			if (this.visit.cache.read) {
