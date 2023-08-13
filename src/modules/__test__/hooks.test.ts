@@ -307,13 +307,13 @@ describe('Types', () => {
 		// @ts-expect-no-error
 		await swup.hooks.call('history:popstate', { event: new PopStateEvent('') });
 
-		// @ts-expect-error
+		// @ts-expect-error: first arg must be Visit object
 		swup.hooks.on('history:popstate', ({ event: MouseEvent }) => {});
-		// @ts-expect-error
+		// @ts-expect-error: event arg must be PopStateEvent
 		swup.hooks.on('history:popstate', (visit: Visit, { event }: { event: MouseEvent }) => {});
-		// @ts-expect-error
+		// @ts-expect-error: event arg must be PopStateEvent
 		await swup.hooks.call('history:popstate', { event: new MouseEvent('') });
-		// @ts-expect-error
-		swup.hooks.replace('enable', (visit: Visit, args: any, handler: DefaultHandler<'enable'>) => {});
+		// @ts-expect-error: handler arg must be optional: handler?
+		swup.hooks.replace('enable', (visit: Visit, args: undefined, handler: DefaultHandler<'enable'>) => {});
 	});
 });
