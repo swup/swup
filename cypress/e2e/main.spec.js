@@ -878,7 +878,7 @@ describe('Containers', function () {
 	});
 });
 
-describe.only('Persist', function () {
+describe('Persist', function () {
 	beforeEach(() => {
 		cy.visit('/persist-1.html');
 		cy.wrapSwupInstance();
