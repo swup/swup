@@ -22,7 +22,7 @@ export const replaceContent = function (
 	document.title = title;
 
 	// Save persisted elements
-	const persistedElements = queryAll('[data-swup-persist]');
+	const persistedElements = queryAll('[data-swup-persist]:not([data-swup-persist=""])');
 
 	// Update content containers
 	const replaced = containers
@@ -47,7 +47,7 @@ export const replaceContent = function (
 	persistedElements.forEach((existing) => {
 		const key = existing.getAttribute('data-swup-persist');
 		const replacement = query(`[data-swup-persist="${key}"]`);
-		if (replacement) {
+		if (replacement && replacement !== existing) {
 			replacement.replaceWith(existing);
 		}
 	});
