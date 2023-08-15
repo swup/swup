@@ -878,6 +878,29 @@ describe('Containers', function () {
 	});
 });
 
+describe.only('Persist', function () {
+	beforeEach(() => {
+		cy.visit('/persist-1.html');
+		cy.wrapSwupInstance();
+	});
+
+	it('should persist elements across page loads', function () {
+		let state = Math.random();
+		let newState = Math.random();
+		cy.get('[data-cy="persisted"]').then(($el) => {
+			$el[0].__state = state;
+			this.swup.navigate('/persist-2.html', { animate: false });
+		});
+		cy.shouldBeAtPage('/persist-2.html', 'Persist 2');
+		cy.get('[data-cy="persisted"]').should('contain', 'Persist 1');
+		cy.get('[data-cy="unpersisted"]').should('contain', 'Persist 2');
+		cy.get('[data-cy="persisted"]').then(($el) => {
+			newState = $el[0].__state;
+			expect(state).to.eq(newState);
+		});
+	});
+});
+
 describe('Scrolling', function () {
 	beforeEach(() => {
 		cy.visit('/scrolling-1.html');
