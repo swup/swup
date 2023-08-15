@@ -1,4 +1,5 @@
 import Swup, { Options } from '../Swup.js';
+import { query, queryAll } from '../utils.js';
 import { PageData } from './fetchPage.js';
 
 /**
@@ -20,6 +21,9 @@ export const replaceContent = function (
 	const title = incomingDocument.querySelector('title')?.innerText || '';
 	document.title = title;
 
+	// Save persisted elements
+	const persistedElements = queryAll('[data-swup-persist]');
+
 	// Update content containers
 	const replaced = containers
 		.map((selector) => {
@@ -38,6 +42,15 @@ export const replaceContent = function (
 			return false;
 		})
 		.filter(Boolean);
+
+	// Restore persisted elements
+	persistedElements.forEach((existing) => {
+		const key = existing.getAttribute('data-swup-persist');
+		const replacement = query(`[data-swup-persist="${key}"]`);
+		if (replacement) {
+			replacement.replaceWith(existing);
+		}
+	});
 
 	return replaced.length === containers.length;
 };
