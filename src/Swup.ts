@@ -331,6 +331,7 @@ export default class Swup {
 		// Disable animation & scrolling for history visits
 		this.visit.animation.animate = false;
 		this.visit.scroll.reset = false;
+		this.visit.scroll.target = false;
 
 		// Animated history visit: re-enable animation & scroll reset
 		if (this.options.animateHistoryBrowsing) {
