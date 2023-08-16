@@ -52,7 +52,7 @@ export interface VisitScroll {
 	/** Whether to reset the scroll position after the visit. Default: `true` */
 	reset: boolean;
 	/** Anchor element to scroll to on the next page. */
-	target?: string;
+	target?: string | false;
 }
 
 export interface VisitTrigger {
