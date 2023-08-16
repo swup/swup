@@ -2,6 +2,12 @@
 
 <!-- ## [Unreleased] -->
 
+## [4.3.0] - 2023-08-16
+
+- Persist elements across page loads using `data-swup-persist`
+- Add `visit.cache` key to control cache behavior
+- Enforce parameter and return types of hook handlers
+
 ## [4.2.0] - 2023-08-09
 
 - Add option `linkToSelf` to control behavior for links to the current page
@@ -145,8 +151,9 @@ See [upgrade instructions](https://swup.js.org/getting-started/upgrading-v3/) fo
 
 - Fix bug where animateHistoryBrowsing option was ignored for OUT animations
 
-[Unreleased]: https://github.com/swup/swup/compare/4.2.0...HEAD
+[Unreleased]: https://github.com/swup/swup/compare/4.3.0...HEAD
 
+[4.3.0]: https://github.com/swup/swup/releases/tag/4.3.0
 [4.2.0]: https://github.com/swup/swup/releases/tag/4.2.0
 [4.1.0]: https://github.com/swup/swup/releases/tag/4.1.0
 [4.0.1]: https://github.com/swup/swup/releases/tag/4.0.1
