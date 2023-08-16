@@ -167,6 +167,11 @@ export default class Swup {
 
 		window.addEventListener('popstate', this.handlePopState);
 
+		// Set scroll restoration to manual if animating history visits
+		if (this.options.animateHistoryBrowsing) {
+			window.history.scrollRestoration = 'manual';
+		}
+
 		// Initial save to cache
 		if (this.options.cache) {
 			// Disabled to avoid caching modified dom state: logic moved to preload plugin
