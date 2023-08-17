@@ -2,6 +2,10 @@
 
 <!-- ## [Unreleased] -->
 
+## [4.3.1] - 2023-08-17
+
+- Improve scroll restoration on history visits
+
 ## [4.3.0] - 2023-08-16
 
 - Persist elements across page loads using `data-swup-persist`
@@ -151,8 +155,9 @@ See [upgrade instructions](https://swup.js.org/getting-started/upgrading-v3/) fo
 
 - Fix bug where animateHistoryBrowsing option was ignored for OUT animations
 
-[Unreleased]: https://github.com/swup/swup/compare/4.3.0...HEAD
+[Unreleased]: https://github.com/swup/swup/compare/4.3.1...HEAD
 
+[4.3.1]: https://github.com/swup/swup/releases/tag/4.3.1
 [4.3.0]: https://github.com/swup/swup/releases/tag/4.3.0
 [4.2.0]: https://github.com/swup/swup/releases/tag/4.2.0
 [4.1.0]: https://github.com/swup/swup/releases/tag/4.1.0
