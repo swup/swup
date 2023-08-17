@@ -167,6 +167,11 @@ export default class Swup {
 
 		window.addEventListener('popstate', this.handlePopState);
 
+		// Set scroll restoration to manual if animating history visits
+		if (this.options.animateHistoryBrowsing) {
+			window.history.scrollRestoration = 'manual';
+		}
+
 		// Initial save to cache
 		if (this.options.cache) {
 			// Disabled to avoid caching modified dom state: logic moved to preload plugin
@@ -310,18 +315,10 @@ export default class Swup {
 		}
 
 		const { url, hash } = Location.fromUrl(href);
-		const animate = this.options.animateHistoryBrowsing;
-		const resetScroll = this.options.animateHistoryBrowsing;
 
-		this.visit = this.createVisit({
-			to: url,
-			hash,
-			event,
-			animate,
-			resetScroll
-		});
+		this.visit = this.createVisit({ to: url, hash, event });
 
-		// Mark as popstate visit
+		// Mark as history visit
 		this.visit.history.popstate = true;
 
 		// Determine direction of history visit
@@ -329,6 +326,17 @@ export default class Swup {
 		if (index) {
 			const direction = index - this.currentHistoryIndex > 0 ? 'forwards' : 'backwards';
 			this.visit.history.direction = direction;
+		}
+
+		// Disable animation & scrolling for history visits
+		this.visit.animation.animate = false;
+		this.visit.scroll.reset = false;
+		this.visit.scroll.target = false;
+
+		// Animated history visit: re-enable animation & scroll reset
+		if (this.options.animateHistoryBrowsing) {
+			this.visit.animation.animate = true;
+			this.visit.scroll.reset = true;
 		}
 
 		// Does this even do anything?

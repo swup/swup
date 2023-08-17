@@ -52,7 +52,7 @@ export interface VisitScroll {
 	/** Whether to reset the scroll position after the visit. Default: `true` */
 	reset: boolean;
 	/** Anchor element to scroll to on the next page. */
-	target?: string;
+	target?: string | false;
 }
 
 export interface VisitTrigger {
@@ -82,38 +82,23 @@ export interface VisitInitOptions {
 	to: string;
 	from?: string;
 	hash?: string;
-	animate?: boolean;
-	animation?: string;
-	targets?: string[];
 	el?: Element;
 	event?: Event;
-	action?: HistoryAction;
-	resetScroll?: boolean;
 }
 
 /** Create a new visit object. */
 export function createVisit(
 	this: Swup,
-	{
-		to,
-		from = this.currentPageUrl,
-		hash,
-		animate = true,
-		animation: name,
-		el,
-		event,
-		action = 'push',
-		resetScroll: reset = true
-	}: VisitInitOptions
+	{ to, from = this.currentPageUrl, hash, el, event }: VisitInitOptions
 ): Visit {
 	return {
 		from: { url: from },
 		to: { url: to, hash },
 		containers: this.options.containers,
 		animation: {
-			animate,
+			animate: true,
 			wait: false,
-			name,
+			name: undefined,
 			scope: this.options.animationScope,
 			selector: this.options.animationSelector
 		},
@@ -126,12 +111,12 @@ export function createVisit(
 			write: this.options.cache
 		},
 		history: {
-			action,
+			action: 'push',
 			popstate: false,
 			direction: undefined
 		},
 		scroll: {
-			reset,
+			reset: true,
 			target: undefined
 		}
 	};

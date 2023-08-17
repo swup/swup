@@ -7,7 +7,7 @@ import Swup from '../Swup.js';
 export const scrollToContent = function (this: Swup): boolean {
 	const options: ScrollIntoViewOptions = { behavior: 'auto' };
 	const { target, reset } = this.visit.scroll;
-	const scrollTarget = target || this.visit.to.hash;
+	const scrollTarget = target ?? this.visit.to.hash;
 
 	let scrolled = false;
 
