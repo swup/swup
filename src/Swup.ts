@@ -284,6 +284,7 @@ export default class Swup {
 								return this.performNavigation();
 							case 'scroll':
 							default:
+								updateHistoryRecord(url);
 								return this.scrollToContent();
 						}
 					});
