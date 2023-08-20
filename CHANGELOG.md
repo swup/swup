@@ -2,6 +2,10 @@
 
 <!-- ## [Unreleased] -->
 
+## [4.3.2] - 2023-08-20
+
+- Update history entry on links to the current page
+
 ## [4.3.1] - 2023-08-17
 
 - Improve scroll restoration on history visits
@@ -155,8 +159,9 @@ See [upgrade instructions](https://swup.js.org/getting-started/upgrading-v3/) fo
 
 - Fix bug where animateHistoryBrowsing option was ignored for OUT animations
 
-[Unreleased]: https://github.com/swup/swup/compare/4.3.1...HEAD
+[Unreleased]: https://github.com/swup/swup/compare/4.3.2...HEAD
 
+[4.3.2]: https://github.com/swup/swup/releases/tag/4.3.2
 [4.3.1]: https://github.com/swup/swup/releases/tag/4.3.1
 [4.3.0]: https://github.com/swup/swup/releases/tag/4.3.0
 [4.2.0]: https://github.com/swup/swup/releases/tag/4.2.0
