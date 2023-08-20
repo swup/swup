@@ -23,7 +23,7 @@ export class Classes {
 
 	protected get targets(): HTMLElement[] {
 		if (!this.selector.trim()) return [];
-		return queryAll(this.selector) as HTMLElement[];
+		return queryAll(this.selector);
 	}
 
 	add(...classes: string[]): void {

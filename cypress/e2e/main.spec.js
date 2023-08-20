@@ -115,35 +115,111 @@ describe('Cache', function () {
 
 	it('should cache pages', function () {
 		this.swup.navigate('/page-2.html');
-		cy.shouldBeAtPage('/page-2.html');
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
 		cy.shouldHaveCacheEntry('/page-2.html');
 	});
 
 	it('should cache pages from absolute URLs', function () {
 		this.swup.navigate(`${baseUrl}/page-2.html`);
-		cy.shouldBeAtPage('/page-2.html');
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
 		cy.shouldHaveCacheEntry('/page-2.html');
+	});
+
+	it('should not cache pages for POST requests', function () {
+		this.swup.navigate(`${baseUrl}/page-2.html`, { method: 'POST' });
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
+		cy.shouldNotHaveCacheEntry('/page-2.html');
+	});
+
+	it('should disable cache from swup options', function () {
+		const cacheAccessed = { read: null, write: null };
+		this.swup.options.cache = false;
+		this.swup.hooks.on('page:load', (visit, { cache }) => {
+			cacheAccessed.read = cache;
+			cacheAccessed.write = this.swup.cache.has(visit.to.url);
+		});
+
+		cy.window().then(() => this.swup.navigate('/page-2.html'));
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
+		cy.window().then(() => this.swup.navigate('/page-1.html'));
+		cy.shouldBeAtPage('/page-1.html', 'Page 1');
+		cy.window().then(() => this.swup.navigate('/page-2.html'));
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
+		cy.window().should(() => expect(cacheAccessed.read).to.be.false);
+		cy.window().should(() => expect(cacheAccessed.write).to.be.false);
+	});
+
+	it('should disable cache from navigation options', function () {
+		const cacheAccessed = { read: {}, write: {} };
+		this.swup.hooks.on('page:load', (visit, { cache }) => {
+			cacheAccessed.read[visit.to.url] = cache;
+			cacheAccessed.write[visit.to.url] = this.swup.cache.has(visit.to.url);
+		});
+
+		// Check disabling completely
+		cy.window().then(() => this.swup.navigate('/page-2.html', { cache: false }));
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
+		cy.window().should(() => expect(cacheAccessed.read['/page-2.html']).to.be.false);
+		cy.window().should(() => expect(cacheAccessed.write['/page-2.html']).to.be.false);
+
+		// Check disabling writes
+		cy.window().then(() => this.swup.navigate('/page-1.html', { cache: { write: false } }));
+		cy.shouldBeAtPage('/page-1.html', 'Page 1');
+		cy.window().should(() => expect(cacheAccessed.write['/page-1.html']).to.be.false);
+
+		cy.window().then(() => this.swup.cache.clear());
+
+		// Check disabling reads
+		cy.window().then(() => this.swup.navigate('/page-2.html', { cache: { read: false } }));
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
+		cy.window().should(() => expect(cacheAccessed.read['/page-2.html']).to.be.false);
+		cy.window().should(() => expect(cacheAccessed.write['/page-2.html']).to.be.true);
+	});
+
+	it('should disable cache in visit object', function () {
+		const cacheAccessed = { read: {}, write: {} };
+		this.swup.hooks.on('page:load', (visit, { cache }) => {
+			cacheAccessed.read[visit.to.url] = cache;
+			cacheAccessed.write[visit.to.url] = this.swup.cache.has(visit.to.url);
+		});
+
+		// Check disabling writes
+		cy.window().then(() => {
+			this.swup.hooks.once('visit:start', (visit) => visit.cache.write = false);
+			this.swup.navigate('/page-2.html');
+		});
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
+		cy.window().should(() => expect(cacheAccessed.write['/page-2.html']).to.be.false);
+
+		cy.window().then(() => this.swup.navigate('/page-1.html'));
+		cy.shouldBeAtPage('/page-1.html', 'Page 1');
+		cy.window().then(() => this.swup.navigate('/page-2.html'));
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
+
+		// Check disabling reads
+		cy.window().then(() => {
+			this.swup.hooks.once('visit:start', (visit) => visit.cache.read = false);
+			this.swup.navigate('/page-1.html', 'Page 1');
+		});
+		cy.shouldBeAtPage('/page-1.html');
+		cy.window().should(() => expect(cacheAccessed.read['/page-1.html']).to.be.false);
 	});
 
 	// Passes locally, but not in CI. TODO: investigate
 
-	// it('should mark pages as cached in page:load', function () {
-	// 	let cached = null;
-	// 	this.swup.hooks.on('page:load', (visit, { cache }) => {
-	// 		cached = cache;
-	// 	});
+	it('should mark pages as cached in page:load', function () {
+		let cached = null;
+		this.swup.hooks.on('page:load', (visit, { cache }) => cached = cache);
 
-	// 	cy.window().then(() => this.swup.navigate('/page-2.html'));
-	// 	cy.shouldBeAtPage('/page-2.html');
-	// 	cy.window().should(() => expect(cached).to.be.false);
-
-	// 	cy.window().then(() => this.swup.navigate('/page-1.html'));
-	// 	cy.shouldBeAtPage('/page-1.html');
-
-	// 	cy.window().then(() => this.swup.navigate('/page-2.html'));
-	// 	cy.shouldBeAtPage('/page-2.html');
-	// 	cy.window().should(() => expect(cached).to.be.true);
-	// });
+		cy.window().then(() => this.swup.navigate('/page-2.html'));
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
+		cy.window().should(() => expect(cached).to.be.false);
+		cy.window().then(() => this.swup.navigate('/page-1.html'));
+		cy.shouldBeAtPage('/page-1.html', 'Page 1');
+		cy.window().then(() => this.swup.navigate('/page-2.html'));
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
+		cy.window().should(() => expect(cached).to.be.true);
+	});
 });
 
 describe('Markup', function () {
@@ -811,6 +887,29 @@ describe('Containers', function () {
 			this.swup.navigate('/containers-missing.html');
 		});
 		cy.shouldBeAtPage('/containers-missing.html');
+	});
+});
+
+describe('Persist', function () {
+	beforeEach(() => {
+		cy.visit('/persist-1.html');
+		cy.wrapSwupInstance();
+	});
+
+	it('should persist elements across page loads', function () {
+		let state = Math.random();
+		let newState = Math.random();
+		cy.get('[data-cy="persisted"]').then(($el) => {
+			$el[0].__state = state;
+			this.swup.navigate('/persist-2.html', { animate: false });
+		});
+		cy.shouldBeAtPage('/persist-2.html', 'Persist 2');
+		cy.get('[data-cy="persisted"]').should('contain', 'Persist 1');
+		cy.get('[data-cy="unpersisted"]').should('contain', 'Persist 2');
+		cy.get('[data-cy="persisted"]').then(($el) => {
+			newState = $el[0].__state;
+			expect(state).to.eq(newState);
+		});
 	});
 });
 

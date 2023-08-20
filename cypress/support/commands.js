@@ -36,10 +36,13 @@ Cypress.Commands.add('triggerClickOnLink', (buttonHref, options = {}) => {
 		.click(options);
 });
 
-Cypress.Commands.add('shouldBeAtPage', (href) => {
+Cypress.Commands.add('shouldBeAtPage', (href, h1 = null) => {
 	cy.location().should((loc) => {
 		expect(loc.pathname + loc.hash).to.eq(href);
 	});
+	if (h1) {
+		cy.shouldHaveH1(h1);
+	}
 });
 
 Cypress.Commands.add('shouldHaveCacheEntries', (urls) => {
@@ -52,12 +55,23 @@ Cypress.Commands.add('shouldHaveCacheEntries', (urls) => {
 
 Cypress.Commands.add('shouldHaveCacheEntry', (url) => {
 	cy.window().should((window) => {
+		expect(url).to.be.a('string');
 		const { cache } = window._swup;
 		const exists = cache.has(url);
 		const page = cache.get(url);
-		expect(url).to.be.a('string');
 		expect(exists).to.be.true;
 		expect(page).not.to.be.undefined;
+	});
+});
+
+Cypress.Commands.add('shouldNotHaveCacheEntry', (url) => {
+	cy.window().should((window) => {
+		expect(url).to.be.a('string');
+		const { cache } = window._swup;
+		const exists = cache.has(url);
+		const page = cache.get(url);
+		expect(exists).to.be.false;
+		expect(page).to.be.undefined;
 	});
 });
 
