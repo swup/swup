@@ -90,7 +90,7 @@ export default class Swup {
 	/** URL of the currently visible page */
 	currentPageUrl: string = getCurrentUrl();
 	/** Index of the current history entry */
-	protected currentHistoryIndex = 1;
+	protected currentHistoryIndex: number;
 	/** Delegated event subscription handle */
 	protected clickDelegate?: DelegateEventUnsubscribe;
 
@@ -143,6 +143,8 @@ export default class Swup {
 		this.classes = new Classes(this);
 		this.hooks = new Hooks(this);
 		this.visit = this.createVisit({ to: '' });
+
+		this.currentHistoryIndex = (history.state as HistoryState)?.index ?? 1;
 
 		if (!this.checkRequirements()) {
 			return;
