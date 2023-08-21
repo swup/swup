@@ -327,7 +327,7 @@ export default class Swup {
 		this.visit.history.popstate = true;
 
 		// Determine direction of history visit
-		const index = Number((event.state as HistoryState)?.index);
+		const index = (event.state as HistoryState)?.index ?? 0;
 		if (index) {
 			const direction = index - this.currentHistoryIndex > 0 ? 'forwards' : 'backwards';
 			this.visit.history.direction = direction;
