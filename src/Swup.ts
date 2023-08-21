@@ -90,7 +90,7 @@ export default class Swup {
 	/** URL of the currently visible page */
 	currentPageUrl: string = getCurrentUrl();
 	/** Index of the current history entry */
-	protected currentHistoryIndex = 1;
+	protected currentHistoryIndex: number;
 	/** Delegated event subscription handle */
 	protected clickDelegate?: DelegateEventUnsubscribe;
 
@@ -144,6 +144,8 @@ export default class Swup {
 		this.hooks = new Hooks(this);
 		this.visit = this.createVisit({ to: '' });
 
+		this.currentHistoryIndex = (history.state as HistoryState)?.index ?? 1;
+
 		if (!this.checkRequirements()) {
 			return;
 		}
@@ -181,8 +183,10 @@ export default class Swup {
 		// Mount plugins
 		this.options.plugins.forEach((plugin) => this.use(plugin));
 
-		// Modify initial history record
-		updateHistoryRecord(null, { index: 1 });
+		// Create initial history record
+		if ((history.state as HistoryState)?.source !== 'swup') {
+			updateHistoryRecord(null, { index: this.currentHistoryIndex });
+		}
 
 		// Give consumers a chance to hook into enable
 		await nextTick();
@@ -323,10 +327,11 @@ export default class Swup {
 		this.visit.history.popstate = true;
 
 		// Determine direction of history visit
-		const index = Number((event.state as HistoryState)?.index);
-		if (index) {
+		const index = (event.state as HistoryState)?.index ?? 0;
+		if (index && index !== this.currentHistoryIndex) {
 			const direction = index - this.currentHistoryIndex > 0 ? 'forwards' : 'backwards';
 			this.visit.history.direction = direction;
+			this.currentHistoryIndex = index;
 		}
 
 		// Disable animation & scrolling for history visits
