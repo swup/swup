@@ -331,6 +331,7 @@ export default class Swup {
 		if (index) {
 			const direction = index - this.currentHistoryIndex > 0 ? 'forwards' : 'backwards';
 			this.visit.history.direction = direction;
+			this.currentHistoryIndex = index;
 		}
 
 		// Disable animation & scrolling for history visits
