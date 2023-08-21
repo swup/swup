@@ -123,7 +123,8 @@ export async function performNavigation(
 			) {
 				updateHistoryRecord(newUrl);
 			} else {
-				createHistoryRecord(newUrl, { index: this.currentHistoryIndex++ });
+				this.currentHistoryIndex++;
+				createHistoryRecord(newUrl, { index: this.currentHistoryIndex });
 			}
 		}
 
