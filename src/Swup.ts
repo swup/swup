@@ -183,8 +183,10 @@ export default class Swup {
 		// Mount plugins
 		this.options.plugins.forEach((plugin) => this.use(plugin));
 
-		// Modify initial history record
-		updateHistoryRecord(null, { index: 1 });
+		// Create initial history record
+		if ((history.state as HistoryState)?.source !== 'swup') {
+			updateHistoryRecord(null, { index: this.currentHistoryIndex });
+		}
 
 		// Give consumers a chance to hook into enable
 		await nextTick();
