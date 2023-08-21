@@ -701,12 +701,8 @@ describe('History', function () {
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
 
-		cy.window().then((window) => {
-			window.history.back();
-		});
-		cy.window().should(() => {
-			expect(handlers.popstate).to.be.called;
-		});
+		cy.window().then((window) => window.history.back());
+		cy.window().should(() => expect(handlers.popstate).to.be.called);
 	});
 
 	it('should skip popstate handling for foreign state entries', function () {
@@ -799,9 +795,7 @@ describe('Visit context', function () {
 			this.swup.navigate('/page-2.html');
 		});
 		cy.shouldBeAtPage('/page-2.html');
-		cy.window().then((window) => {
-			window.history.back();
-		});
+		cy.window().then((window) => window.history.back());
 		cy.shouldBeAtPage('/page-1.html');
 		cy.window().should((win) => {
 			expect(event).to.be.instanceof(win.PopStateEvent);
