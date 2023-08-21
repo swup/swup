@@ -675,33 +675,21 @@ describe('History', function () {
 		});
 
 		cy.triggerClickOnLink('/page-2.html');
-		cy.shouldBeAtPage('/page-2.html');
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
 
-		cy.window().then((window) => {
-			window.history.back();
-			cy.window().should(() => {
-				expect(direction).to.equal('backwards');
-			});
-		});
+		cy.window().then((window) => window.history.back());
+		cy.window().should(() => expect(direction).to.equal('backwards'));
 
-		cy.shouldBeAtPage('/page-1.html');
+		cy.shouldBeAtPage('/page-1.html', 'Page 1');
 
-		cy.window().then((window) => {
-			window.history.forward();
-			cy.window().should(() => {
-				expect(direction).to.equal('forwards');
-			});
-		});
+		cy.window().then((window) => window.history.forward());
+		cy.window().should(() => expect(direction).to.equal('forwards'));
 
 		cy.triggerClickOnLink('/page-3.html');
-		cy.shouldBeAtPage('/page-3.html');
+		cy.shouldBeAtPage('/page-3.html', 'Page 3');
 
-		cy.window().then((window) => {
-			window.history.go(-2);
-			cy.window().should(() => {
-				expect(direction).to.equal('backwards');
-			});
-		});
+		cy.window().then((window) => window.history.go(-2));
+		cy.window().should(() => expect(direction).to.equal('backwards'));
 	});
 
 	it('should trigger a custom popstate event', function () {
