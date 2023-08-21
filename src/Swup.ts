@@ -328,7 +328,7 @@ export default class Swup {
 
 		// Determine direction of history visit
 		const index = (event.state as HistoryState)?.index ?? 0;
-		if (index) {
+		if (index && index !== this.currentHistoryIndex) {
 			const direction = index - this.currentHistoryIndex > 0 ? 'forwards' : 'backwards';
 			this.visit.history.direction = direction;
 			this.currentHistoryIndex = index;
