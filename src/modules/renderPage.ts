@@ -1,18 +1,19 @@
 import { updateHistoryRecord, getCurrentUrl, classify } from '../helpers.js';
 import Swup from '../Swup.js';
 import { PageData } from './fetchPage.js';
+import { Visit } from './Visit.js';
 
 /**
  * Render the next page: replace the content and update scroll position.
  * @returns Promise<void>
  */
-export const renderPage = async function (this: Swup, requestedUrl: string, page: PageData) {
+export const renderPage = async function (this: Swup, visit: Visit, page: PageData) {
 	const { url, html } = page;
 
 	this.classes.remove('is-leaving');
 
-	// do nothing if another page was requested in the meantime
-	if (!this.isSameResolvedUrl(getCurrentUrl(), requestedUrl)) {
+	// do nothing if another visit was started in the meantime
+	if (visit.id !== this.visit.id) {
 		return;
 	}
 
