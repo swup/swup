@@ -62,7 +62,8 @@ export async function performNavigation(
 	this: Swup,
 	options: NavigationOptions & FetchOptions = {}
 ) {
-	// Save this to allow aborting the navigation if a new visit was started in the meantime
+	// Save this localy to a) allow ignoring the visit if a new one was started in the meantime
+	// and b) avoid unintended modifications to any newer visits
 	const visit = this.visit;
 
 	const { el } = visit.trigger;

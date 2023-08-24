@@ -5,7 +5,7 @@ import { Visit } from './Visit.js';
 
 /**
  * Render the next page: replace the content and update scroll position.
- * @returns Promise<void>
+ * @returns Promise<boolean> Indicates whether the page was rendered or ignored
  */
 export const renderPage = async function (
 	this: Swup,
