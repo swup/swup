@@ -62,36 +62,39 @@ export async function performNavigation(
 	this: Swup,
 	options: NavigationOptions & FetchOptions = {}
 ) {
-	const { el } = this.visit.trigger;
+	// Save this to allow aborting the navigation if a new visit was started in the meantime
+	const visit = this.visit;
+
+	const { el } = visit.trigger;
 	options.referrer = options.referrer || this.currentPageUrl;
 
 	if (options.animate === false) {
-		this.visit.animation.animate = false;
+		visit.animation.animate = false;
 	}
 
 	// Clean up old animation classes
-	if (!this.visit.animation.animate) {
+	if (!visit.animation.animate) {
 		this.classes.clear();
 	}
 
 	// Get history action from option or attribute on trigger element
 	const history = options.history || el?.getAttribute('data-swup-history') || undefined;
 	if (history && ['push', 'replace'].includes(history)) {
-		this.visit.history.action = history as HistoryAction;
+		visit.history.action = history as HistoryAction;
 	}
 
 	// Get custom animation name from option or attribute on trigger element
 	const animation = options.animation || el?.getAttribute('data-swup-animation') || undefined;
 	if (animation) {
-		this.visit.animation.name = animation;
+		visit.animation.name = animation;
 	}
 
 	// Sanitize cache option
 	if (typeof options.cache === 'object') {
-		this.visit.cache.read = options.cache.read ?? this.visit.cache.read;
-		this.visit.cache.write = options.cache.write ?? this.visit.cache.write;
+		visit.cache.read = options.cache.read ?? visit.cache.read;
+		visit.cache.write = options.cache.write ?? visit.cache.write;
 	} else if (options.cache !== undefined) {
-		this.visit.cache = { read: !!options.cache, write: !!options.cache };
+		visit.cache = { read: !!options.cache, write: !!options.cache };
 	}
 	// Delete this so that window.fetch doesn't mis-interpret it
 	delete options.cache;
@@ -103,7 +106,7 @@ export async function performNavigation(
 		const pagePromise = this.hooks.call('page:load', { options }, async (visit, args) => {
 			// Read from cache
 			let cachedPage: PageData | undefined;
-			if (this.visit.cache.read) {
+			if (visit.cache.read) {
 				cachedPage = this.cache.get(visit.to.url);
 			}
 
@@ -114,13 +117,10 @@ export async function performNavigation(
 		});
 
 		// Create/update history record if this is not a popstate call or leads to the same URL
-		if (!this.visit.history.popstate) {
+		if (!visit.history.popstate) {
 			// Add the hash directly from the trigger element
-			const newUrl = this.visit.to.url + this.visit.to.hash;
-			if (
-				this.visit.history.action === 'replace' ||
-				this.visit.to.url === this.currentPageUrl
-			) {
+			const newUrl = visit.to.url + visit.to.hash;
+			if (visit.history.action === 'replace' || visit.to.url === this.currentPageUrl) {
 				updateHistoryRecord(newUrl);
 			} else {
 				this.currentHistoryIndex++;
@@ -131,9 +131,9 @@ export async function performNavigation(
 		this.currentPageUrl = getCurrentUrl();
 
 		// Wait for page before starting to animate out?
-		if (this.visit.animation.wait) {
+		if (visit.animation.wait) {
 			const { html } = await pagePromise;
-			this.visit.to.html = html;
+			visit.to.html = html;
 		}
 
 		// Wait for page to load and leave animation to finish
@@ -141,7 +141,7 @@ export async function performNavigation(
 		const [page] = await Promise.all([pagePromise, animationPromise]);
 
 		// Render page: replace content and scroll to top/fragment
-		const handled = await this.renderPage(this.visit, page);
+		const handled = await this.renderPage(visit, page);
 		if (!handled) {
 			return;
 		}
@@ -153,8 +153,8 @@ export async function performNavigation(
 		await this.hooks.call('visit:end', undefined, () => this.classes.clear());
 
 		// Reset visit info after finish?
-		// if (this.visit.to && this.isSameResolvedUrl(this.visit.to.url, requestedUrl)) {
-		// 	this.createVisit({ to: undefined });
+		// if (visit.to && this.isSameResolvedUrl(visit.to.url, requestedUrl)) {
+		// 	this.visit = this.createVisit({ to: undefined });
 		// }
 	} catch (error: unknown) {
 		// Return early if error is undefined (probably aborted preload request)
@@ -167,7 +167,7 @@ export async function performNavigation(
 
 		// Rewrite `skipPopStateHandling` to redirect manually when `history.go` is processed
 		this.options.skipPopStateHandling = () => {
-			window.location.href = this.visit.to.url + this.visit.to.hash;
+			window.location.href = visit.to.url + visit.to.hash;
 			return true;
 		};
 
