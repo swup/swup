@@ -7,14 +7,18 @@ import { Visit } from './Visit.js';
  * Render the next page: replace the content and update scroll position.
  * @returns Promise<void>
  */
-export const renderPage = async function (this: Swup, visit: Visit, page: PageData) {
+export const renderPage = async function (
+	this: Swup,
+	visit: Visit,
+	page: PageData
+): Promise<boolean> {
 	const { url, html } = page;
 
 	this.classes.remove('is-leaving');
 
 	// do nothing if another visit was started in the meantime
 	if (visit.id !== this.visit.id) {
-		return;
+		return false;
 	}
 
 	// update state if the url was redirected
@@ -54,4 +58,6 @@ export const renderPage = async function (this: Swup, visit: Visit, page: PageDa
 	});
 
 	await this.hooks.call('page:view', { url: this.currentPageUrl, title: document.title });
+
+	return true;
 };

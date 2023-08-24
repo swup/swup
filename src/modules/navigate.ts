@@ -141,7 +141,10 @@ export async function performNavigation(
 		const [page] = await Promise.all([pagePromise, animationPromise]);
 
 		// Render page: replace content and scroll to top/fragment
-		await this.renderPage(this.visit, page);
+		const handled = await this.renderPage(this.visit, page);
+		if (!handled) {
+			return;
+		}
 
 		// Wait for enter animation
 		await this.animatePageIn();
