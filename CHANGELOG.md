@@ -2,6 +2,10 @@
 
 <!-- ## [Unreleased] -->
 
+## [4.3.4] - 2023-08-24
+
+- Add unique id to visit object
+
 ## [4.3.3] - 2023-08-21
 
 - Restore history index on reload
@@ -163,8 +167,9 @@ See [upgrade instructions](https://swup.js.org/getting-started/upgrading-v3/) fo
 
 - Fix bug where animateHistoryBrowsing option was ignored for OUT animations
 
-[Unreleased]: https://github.com/swup/swup/compare/4.3.3...HEAD
+[Unreleased]: https://github.com/swup/swup/compare/4.3.4...HEAD
 
+[4.3.4]: https://github.com/swup/swup/releases/tag/4.3.4
 [4.3.3]: https://github.com/swup/swup/releases/tag/4.3.3
 [4.3.2]: https://github.com/swup/swup/releases/tag/4.3.2
 [4.3.1]: https://github.com/swup/swup/releases/tag/4.3.1
