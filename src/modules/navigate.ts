@@ -61,7 +61,7 @@ export function navigate(
 export async function performNavigation(
 	this: Swup,
 	options: NavigationOptions & FetchOptions = {}
-) {
+): Promise<void> {
 	// Save this localy to a) allow ignoring the visit if a new one was started in the meantime
 	// and b) avoid unintended modifications to any newer visits
 	const visit = this.visit;
@@ -141,11 +141,13 @@ export async function performNavigation(
 		const animationPromise = this.animatePageOut();
 		const [page] = await Promise.all([pagePromise, animationPromise]);
 
-		// Render page: replace content and scroll to top/fragment
-		const handled = await this.renderPage(visit, page);
-		if (!handled) {
+		// Abort if another visit was started in the meantime
+		if (visit.id !== this.visit.id) {
 			return;
 		}
+
+		// Render page: replace content and scroll to top/fragment
+		await this.renderPage(page);
 
 		// Wait for enter animation
 		await this.animatePageIn();
