@@ -389,6 +389,31 @@ describe('Navigation', function () {
 		cy.shouldHaveH1('Page 2');
 	});
 
+	it('should ignore visit if a new visit has started', function() {
+		cy.delayRequest('/page-2.html', 1000);
+		cy.triggerClickOnLink('/page-2.html');
+		cy.wait(50);
+		cy.triggerClickOnLink('/page-3.html');
+		cy.shouldBeAtPage('/page-3.html', 'Page 3');
+		cy.wait(1000);
+		cy.shouldBeAtPage('/page-3.html', 'Page 3');
+	});
+
+	it('should ignore visit if a new visit to same URL has started', function() {
+		const titles = [];
+		this.swup.options.linkToSelf = 'navigate';
+		this.swup.hooks.on('visit:start', (visit) => titles.push(visit.id));
+		this.swup.hooks.on('content:replace', () => document.title = titles[titles.length - 1]);
+
+		cy.delayRequest('/page-2.html', 500);
+		cy.triggerClickOnLink('/page-2.html');
+		cy.wait(50);
+		cy.triggerClickOnLink('/page-2.html');
+		cy.shouldBeAtPage('/page-2.html', titles[1]);
+		cy.wait(500);
+		cy.shouldBeAtPage('/page-2.html', titles[1]);
+	});
+
 	// it('should ignore visit when meta key pressed', function() {
 	//     cy.triggerClickOnLink('/page-2.html', { metaKey: true });
 	//     cy.wait(200);
