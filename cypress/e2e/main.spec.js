@@ -457,7 +457,7 @@ describe('Link resolution', function () {
 		});
 		cy.scrollTo(0, 200);
 		cy.window().its('scrollY').should('equal', 200);
-		cy.get('[data-cy=nav-link-self]').click();
+		cy.get('[data-testid=nav-link-self]').click();
 		cy.window().its('scrollY').should('equal', 0);
 		cy.window().should(() => {
 			expect(navigated).to.be.false;
@@ -472,7 +472,7 @@ describe('Link resolution', function () {
 		});
 		cy.scrollTo(0, 200);
 		cy.window().its('scrollY').should('equal', 200);
-		cy.get('[data-cy=nav-link-self]').click();
+		cy.get('[data-testid=nav-link-self]').click();
 		cy.window().its('scrollY').should('equal', 0);
 		cy.window().should(() => {
 			expect(navigated).to.be.true;
@@ -894,14 +894,14 @@ describe('Persist', function () {
 	it('should persist elements across page loads', function () {
 		let state = Math.random();
 		let newState = Math.random();
-		cy.get('[data-cy="persisted"]').then(($el) => {
+		cy.get('[data-testid="persisted"]').then(($el) => {
 			$el[0].__state = state;
 			this.swup.navigate('/persist-2.html', { animate: false });
 		});
 		cy.shouldBeAtPage('/persist-2.html', 'Persist 2');
-		cy.get('[data-cy="persisted"]').should('contain', 'Persist 1');
-		cy.get('[data-cy="unpersisted"]').should('contain', 'Persist 2');
-		cy.get('[data-cy="persisted"]').then(($el) => {
+		cy.get('[data-testid="persisted"]').should('contain', 'Persist 1');
+		cy.get('[data-testid="unpersisted"]').should('contain', 'Persist 2');
+		cy.get('[data-testid="persisted"]').then(($el) => {
 			newState = $el[0].__state;
 			expect(state).to.eq(newState);
 		});
@@ -976,19 +976,19 @@ describe('Scrolling', function () {
 		cy.window().then(() => {
 			this.swup.hooks.once('visit:start', (visit) => (visit.to.hash = '#anchor'));
 		});
-		cy.get('[data-cy=link-to-page]').click();
+		cy.get('[data-testid=link-to-page]').click();
 		cy.shouldBeAtPage('/scrolling-2.html#anchor');
 		cy.shouldHaveH1('Scrolling 2');
-		cy.shouldHaveElementInViewport('[data-cy=anchor]');
+		cy.shouldHaveElementInViewport('[data-testid=anchor]');
 	});
 
 	it('should not append the hash if changing visit.scroll.target on the fly', function () {
 		cy.window().then(() => {
 			this.swup.hooks.once('visit:start', (visit) => (visit.scroll.target = '#anchor'));
 		});
-		cy.get('[data-cy=link-to-page]').click();
+		cy.get('[data-testid=link-to-page]').click();
 		cy.shouldBeAtPage('/scrolling-2.html');
 		cy.shouldHaveH1('Scrolling 2');
-		cy.shouldHaveElementInViewport('[data-cy=anchor]');
+		cy.shouldHaveElementInViewport('[data-testid=anchor]');
 	});
 });
