@@ -577,7 +577,7 @@ test.describe('history', () => {
 			window.data = null;
 			window._swup.hooks.on('history:popstate', () => window.data = true);
 		});
-		await clickOnLink(page, '/page-2.html');
+		await navigateWithSwup(page, '/page-2.html');
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
 		await page.goBack();
 		expect(await page.evaluate(() => window.data)).toEqual(true);
@@ -588,5 +588,76 @@ test.describe('history', () => {
 		await pushHistoryState(page, '/page-3.html', { source: 'not-swup' });
 		await page.goBack();
 		await expectToBeAt(page, '/page-2.html', 'History');
+	});
+});
+
+test.describe('api', () => {
+	test.beforeEach(async ({ page }) => {
+		await page.goto('/page-1.html');
+	});
+
+	test('navigate to pages using swup api', async ({ page }) => {
+		await page.evaluate(() => window._swup.navigate('/page-2.html'));
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+	});
+});
+
+test.describe('visit object', () => {
+	test.beforeEach(async ({ page }) => {
+		await page.goto('/page-1.html');
+	});
+
+	test('has the current and next url', async ({ page }) => {
+		await page.evaluate(() => {
+			window.data = { from: null, to: null };
+			window._swup.hooks.on('visit:start', (visit) => {
+				window.data.from = visit.from.url;
+				window.data.to = visit.to.url;
+			});
+		});
+		await navigateWithSwup(page, '/page-2.html');
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+		expect(await page.evaluate(() => window.data)).toMatchObject({
+			from: '/page-1.html',
+			to: '/page-2.html'
+		});
+	});
+
+	test('passes along click trigger and event', async ({ page }) => {
+		await page.evaluate(() => {
+			window.data = { el: null, event: null };
+			window._swup.hooks.on('visit:start', (visit) => {
+				window.data.el = (visit.trigger.el instanceof HTMLAnchorElement);
+				window.data.event = (visit.trigger.event instanceof MouseEvent);
+			});
+		});
+		await clickOnLink(page, '/page-2.html');
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+		expect(await page.evaluate(() => window.data)).toMatchObject({ el: true, event: true });
+	});
+
+	test('passes along popstate status and event', async ({ page }) => {
+		await page.evaluate(() => {
+			window.data = { popstate: null, event: null };
+			window._swup.hooks.on('visit:start', (visit) => {
+				window.data.popstate = visit.history.popstate;
+				window.data.event = (visit.trigger.event instanceof PopStateEvent);
+			});
+		});
+		await clickOnLink(page, '/page-2.html');
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+		await page.goBack();
+		await expectToBeAt(page, '/page-1.html', 'Page 1');
+		expect(await page.evaluate(() => window.data)).toMatchObject({ popstate: true, event: true });
+	});
+
+	test('passes along the custom animation', async ({ page }) => {
+		const link = page.locator('a[data-swup-animation]');
+		const animation = await link.getAttribute('data-swup-animation');
+		await page.evaluate(() => {
+			window._swup.hooks.on('visit:start', (visit) => window.data = visit.animation.name);
+		});
+		await link.click();
+		expect(await page.evaluate(() => window.data)).toEqual(animation);
 	});
 });
