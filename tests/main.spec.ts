@@ -450,12 +450,12 @@ test.describe('ignoring visits', () => {
 	});
 
 	test('ignores links with data-no-swup attr', async ({ page }) => {
-		await expectFullPageReload(page, () => page.locator('[data-testid="ignore-element"]').click());
+		await expectFullPageReload(page, () => page.getByTestId('ignore-element').click());
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
 	});
 
 	test('ignores links with data-no-swup parent', async ({ page }) => {
-		await expectFullPageReload(page, () => page.locator('[data-testid="ignore-parent"]').click());
+		await expectFullPageReload(page, () =>  page.getByTestId('ignore-parent').click());
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
 	});
 
@@ -467,7 +467,7 @@ test.describe('ignoring visits', () => {
 
 	test('ignores links via custom ignored path', async ({ page }) => {
 		await page.evaluate(() => window._swup.options.ignoreVisit = (url) => url.endsWith('#hash'));
-		await expectFullPageReload(page, () => page.locator('[data-testid="ignore-path-end"]').click());
+		await expectFullPageReload(page, () => page.getByTestId('ignore-path-end').click());
 		await expectToBeAt(page, '/page-2.html#hash', 'Page 2');
 	});
 });
@@ -507,7 +507,7 @@ test.describe('history', () => {
 		const state = await page.evaluate(() => window.history.state);
 		await navigateWithSwup(page, '/page-2.html');
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
-		await page.locator('[data-testid=update-link]').click();
+		await page.getByTestId('update-link').click();
 		await expectToBeAt(page, '/page-3.html', 'Page 3');
 		await page.goBack();
 		expect(await page.evaluate(() => window.history.state)).toEqual(state);
@@ -691,8 +691,8 @@ test.describe('persisting', () => {
 	});
 
 	test('persists elements across page loads', async ({ page }) => {
-		const persisted = page.locator('[data-testid="persisted"]');
-		const unpersisted = page.locator('[data-testid="unpersisted"]');
+		const persisted = page.getByTestId('persisted');
+		const unpersisted = page.getByTestId('unpersisted');
 		const state = await persisted.evaluate((el) => el.__state = Math.random());
 		await navigateWithSwup(page, '/persist-2.html');
 		await expectToBeAt(page, '/persist-2.html', 'Persist 2');
@@ -701,5 +701,81 @@ test.describe('persisting', () => {
 		const newState = await persisted.evaluate((el) => el.__state);
 		expect(newState).toBeGreaterThan(0);
 		expect(newState).toBe(state);
+	});
+});
+
+test.describe('scrolling', () => {
+	test.beforeEach(async ({ page }) => {
+		await page.goto('/scrolling-1.html');
+	});
+
+	test('scrolls to anchor and back to top', async ({ page }) => {
+		await page.getByTestId('link-to-anchor').click();
+		await expect(page.getByTestId('anchor')).toBeInViewport();
+		await page.getByTestId('link-to-page').click();
+		expectScrollPosition(page, 0);
+	});
+
+	test('scrolls to anchor with path', async ({ page }) => {
+		await page.getByTestId('link-to-self-anchor').click();
+		await expect(page.getByTestId('anchor')).toBeInViewport();
+	});
+
+	test('scrolls to top', async ({ page }) => {
+		await page.getByTestId('link-to-self-anchor').click();
+		await expect(page.getByTestId('anchor')).toBeInViewport();
+		await page.getByTestId('link-to-top').click();
+		expectScrollPosition(page, 0);
+	});
+
+	test('scrolls to id-based anchor', async ({ page }) => {
+		await page.getByTestId('link-to-anchor-by-id').click();
+		await expect(page.getByTestId('anchor-by-id')).toBeInViewport();
+	});
+
+	test('scrolls to name-based anchor', async ({ page }) => {
+		await page.getByTestId('link-to-anchor-by-name').click();
+		await expect(page.getByTestId('anchor-by-name')).toBeInViewport();
+	});
+
+	test('prefers undecoded id attributes', async ({ page }) => {
+		await page.getByTestId('link-to-anchor-encoded').click();
+		await expect(page.getByTestId('anchor-encoded')).toBeInViewport();
+	});
+
+	test('accepts unencoded anchor links', async ({ page }) => {
+		await page.getByTestId('link-to-anchor-unencoded').click();
+		await expect(page.getByTestId('anchor-unencoded')).toBeInViewport();
+	});
+
+	test('scrolls to anchor with special characters', async ({ page }) => {
+		await page.getByTestId('link-to-anchor-with-colon').click();
+		await expect(page.getByTestId('anchor-with-colon')).toBeInViewport();
+		await page.getByTestId('link-to-anchor-with-unicode').click();
+		await expect(page.getByTestId('anchor-with-unicode')).toBeInViewport();
+	});
+
+	test('scrolls to requested hash after navigation', async ({ page }) => {
+		await page.getByTestId('link-to-page-anchor').click();
+		expectToBeAt(page, '/scrolling-2.html#anchor', 'Scrolling 2');
+		await expect(page.getByTestId('anchor')).toBeInViewport();
+	});
+
+	test('appends the hash if changing visit.to.hash on the fly', async ({ page }) => {
+		await page.evaluate(() => {
+			window._swup.hooks.once('visit:start', (visit) => (visit.to.hash = '#anchor'));
+		});
+		await page.getByTestId('link-to-page').click();
+		expectToBeAt(page, '/scrolling-2.html#anchor', 'Scrolling 2');
+		await expect(page.getByTestId('anchor')).toBeInViewport();
+	});
+
+	test('does not append the hash if changing visit.scroll.target on the fly', async ({ page }) => {
+		await page.evaluate(() => {
+			window._swup.hooks.once('visit:start', (visit) => (visit.scroll.target = '#anchor'));
+		});
+		await page.getByTestId('link-to-page').click();
+		expectToBeAt(page, '/scrolling-2.html', 'Scrolling 2');
+		await expect(page.getByTestId('anchor')).toBeInViewport();
 	});
 });
