@@ -7,15 +7,20 @@ declare global {
 	interface Window {
 		_swup: Swup;
 		_beforeReload?: boolean;
+		measure: (key: string, val: number) => Promise<void>;
 	}
+}
+
+export function sleep(timeout = 0): Promise<void> {
+  return new Promise((resolve) => setTimeout(() => resolve(undefined), timeout))
 }
 
 export function clickOnLink(page: Page, url: string) {
 	return page.click(`a[href="${url}"]`);
 }
 
-export function loadWithSwup(page: Page, url: string) {
-	return page.evaluate((url) => window._swup.loadPage(url), url);
+export function navigateWithSwup(page: Page, url: string) {
+	return page.evaluate((url) => window._swup.navigate(url), url);
 }
 
 export async function expectToBeAt(page: Page, url: string, title?: string) {
@@ -44,7 +49,7 @@ export async function expectToHaveCacheEntries(page: Page, urls: string[]) {
 	}
 }
 
-export async function expectToHaveReloadedAfterAction(page: Page, action: (page: Page) => void) {
+export async function expectFullPageReload(page: Page, action: (page: Page) => Promise<void> | void) {
 	await page.evaluate(() => (window._beforeReload = true));
 	const reloadPromise = page.waitForFunction(() => window._beforeReload !== true);
 	await action(page);
@@ -59,9 +64,8 @@ export function expectToHaveClass(locator: Locator, className: string, not = fal
 }
 
 export function expectToHaveClasses(locator: Locator, classNames: string, not = false) {
-	return Promise.all(
-		classNames.split(' ').map(className => expectToHaveClass(locator, className, not))
-	);
+	const classes = classNames.split(' ');
+	return Promise.all(classes.map(className => expectToHaveClass(locator, className, not)));
 }
 
 export function expectNotToHaveClasses(locator: Locator, classNames: string) {
@@ -76,26 +80,26 @@ export async function expectTransitionDuration(page: Page, duration: number) {
 		duration * (1 + tolerance)
 	];
 
-	await page.exposeBinding('timing', async (_, key, val) => (timing[key] = val));
-
 	const timing = {
-		measureStart: 0,
-		measureEnd: 0,
+		start: 0,
+		end: 0,
 		outStart: 0,
 		outEnd: 0,
 		inStart: 0,
 		inEnd: 0
 	};
 
-	await page.evaluate((url) => {
-		window._swup.hooks.before('awaitAnimation', () => window.timing('measureStart', performance.now()));
-		window._swup.hooks.on('awaitAnimation', () => window.timing('measureEnd', performance.now()));
-		window._swup.hooks.on('animationOutStart', () => window.timing('outStart', performance.now()));
-		window._swup.hooks.on('animationOutDone', () => window.timing('outEnd', performance.now()));
-		window._swup.hooks.on('animationInStart', () => window.timing('inStart', performance.now()));
-		window._swup.hooks.on('animationInDone', () => window.timing('inEnd', performance.now()));
-		window._swup.loadPage(url);
-	}, url);
+	await page.exposeBinding('measure', async (_, key, val) => (timing[key] = val));
+	await page.evaluate(() => {
+		window._swup.hooks.before('visit:start', () => window.measure('start', performance.now()));
+		window._swup.hooks.on('visit:end', () => window.measure('end', performance.now()));
+		window._swup.hooks.on('animation:out:start', () => window.measure('outStart', performance.now()));
+		window._swup.hooks.on('animation:out:end', () => window.measure('outEnd', performance.now()));
+		window._swup.hooks.on('animation:in:start', () => window.measure('inStart', performance.now()));
+		window._swup.hooks.on('animation:in:end', () => window.measure('inEnd', performance.now()));
+	});
+
+	await navigateWithSwup(page, url);
 
 	await expect(async () => expect(timing.inEnd - timing.inStart).toBeGreaterThan(0)).toPass();
 	const outDuration = timing.outEnd - timing.outStart;
