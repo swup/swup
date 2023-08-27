@@ -491,3 +491,41 @@ test.describe('link selector', () => {
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
 	});
 });
+
+test.describe('history', () => {
+	test.beforeEach(async ({ page }) => {
+		await page.goto('/history.html');
+	});
+
+	test('creates a new history state on visit', async ({ page }) => {
+		await navigateWithSwup(page, '/page-2.html');
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+		expect(await page.evaluate(() => window.history.state.url)).toEqual('/page-2.html');
+	});
+
+	test('replaces history state via data attribute', async ({ page }) => {
+		await navigateWithSwup(page, '/page-2.html');
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+		await page.goBack();
+		const state = await page.evaluate(() => window.history.state);
+		await navigateWithSwup(page, '/page-2.html');
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+		await page.locator('[data-testid=update-link]').click();
+		await expectToBeAt(page, '/page-3.html', 'Page 3');
+		await page.goBack();
+		expect(await page.evaluate(() => window.history.state)).toEqual(state);
+	});
+
+	test('replaces history state via API', async ({ page }) => {
+		await navigateWithSwup(page, '/page-2.html');
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+		await page.goBack();
+		const state = await page.evaluate(() => window.history.state);
+		await navigateWithSwup(page, '/page-2.html');
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+		await navigateWithSwup(page, '/page-3.html', { history: 'replace' });
+		await expectToBeAt(page, '/page-3.html', 'Page 3');
+		await page.goBack();
+		expect(await page.evaluate(() => window.history.state)).toEqual(state);
+	});
+});
