@@ -50,10 +50,13 @@ export async function expectToHaveCacheEntries(page: Page, urls: string[]) {
 }
 
 export async function expectFullPageReload(page: Page, action: (page: Page) => Promise<void> | void) {
-	await page.evaluate(() => (window._beforeReload = true));
-	const reloadPromise = page.waitForFunction(() => window._beforeReload !== true);
+	let fetchedInBackground: boolean;
+	page.on('request', (request) => {
+		fetchedInBackground = ['xhr', 'fetch'].includes(request.resourceType());
+	});
 	await action(page);
-	await reloadPromise;
+	await page.waitForLoadState('load');
+	expect(async () => expect(fetchedInBackground).toBe(false)).toPass();
 }
 
 export function expectToHaveClass(locator: Locator, className: string, not = false) {
