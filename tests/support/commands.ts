@@ -19,8 +19,8 @@ export function clickOnLink(page: Page, url: string) {
 	return page.click(`a[href="${url}"]`);
 }
 
-export function navigateWithSwup(page: Page, url: string) {
-	return page.evaluate((url) => window._swup.navigate(url), url);
+export function navigateWithSwup(page: Page, url: string, options?: Parameters<Swup['navigate']>[1]) {
+	return page.evaluate(([url, options]) => window._swup.navigate(url, options), [url, options]);
 }
 
 export async function expectToBeAt(page: Page, url: string, title?: string) {
