@@ -428,3 +428,31 @@ test.describe('redirects', () => {
 		await expectToHaveCacheEntries(page, []);
 	});
 });
+
+test.describe('ignoring visits', () => {
+	test.beforeEach(async ({ page }) => {
+		await page.goto('/ignore-visits.html');
+	});
+
+	test('ignores links with data-no-swup attr', async ({ page }) => {
+		await expectFullPageReload(page, () => page.locator('[data-testid="ignore-element"]').click());
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+	});
+
+	test('ignores links with data-no-swup parent', async ({ page }) => {
+		await expectFullPageReload(page, () => page.locator('[data-testid="ignore-parent"]').click());
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+	});
+
+	test('ignores visits in ignoreVisit', async ({ page }) => {
+		await page.evaluate(() => window._swup.options.ignoreVisit = () => true);
+		await expectFullPageReload(page, () => navigateWithSwup(page, '/page-2.html'));
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+	});
+
+	test('ignores links via custom ignored path', async ({ page }) => {
+		await page.evaluate(() => window._swup.options.ignoreVisit = (url) => url.endsWith('#hash'));
+		await expectFullPageReload(page, () => page.locator('[data-testid="ignore-path-end"]').click());
+		await expectToBeAt(page, '/page-2.html#hash', 'Page 2');
+	});
+});
