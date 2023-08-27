@@ -16,7 +16,8 @@ import {
 	delayRequest,
 	scrollToPosition,
 	expectScrollPosition,
-	expectSwupNavigation
+	expectSwupNavigation,
+	pushHistoryState
 } from './support/commands.js';
 
 declare global {
@@ -407,6 +408,22 @@ test.describe('link resolution', () => {
 		await page.getByTestId('nav-link-self').click();
 		await expectScrollPosition(page, 0);
 		expect(navigated).toBe(true);
+	});
+
+	test('ignores links for equal resolved urls', async ({ page }) => {
+		await page.evaluate(() => (window._swup.options.resolveUrl = () => window.location.pathname));
+		await clickOnLink(page, '/page-2.html');
+		await sleep(100);
+		await expectToBeAt(page, '/link-resolution.html', 'Link resolution');
+	});
+
+	test('ignores popstate events for equal resolved urls', async ({ page }) => {
+		await page.evaluate(() => (window._swup.options.resolveUrl = () => '/page-1.html'));
+		await pushHistoryState(page, '/pushed-page-1/');
+		await pushHistoryState(page, '/pushed-page-2/');
+		await sleep(100);
+		await page.goBack();
+		await expectToBeAt(page, '/pushed-page-1/', 'Link resolution');
 	});
 });
 

@@ -139,3 +139,8 @@ export async function expectScrollPosition(page: Page, y: number) {
 		).toEqual(y)
 	).toPass();
 }
+
+export async function pushHistoryState(page: Page, url: string, data: Record<string, unknown> = {}) {
+	const state = { url, random: Math.random(), source: 'swup', ...data };
+	await page.evaluate(({ url, state }) => window.history.pushState(state, '', url), { url, state });
+}
