@@ -15,7 +15,8 @@ import {
 	expectToHaveCacheEntries,
 	delayRequest,
 	scrollToPosition,
-	expectScrollPosition
+	expectScrollPosition,
+	expectSwupNavigation
 } from './support/commands.js';
 
 declare global {
@@ -454,5 +455,22 @@ test.describe('ignoring visits', () => {
 		await page.evaluate(() => window._swup.options.ignoreVisit = (url) => url.endsWith('#hash'));
 		await expectFullPageReload(page, () => page.locator('[data-testid="ignore-path-end"]').click());
 		await expectToBeAt(page, '/page-2.html#hash', 'Page 2');
+	});
+});
+
+test.describe('link selector', () => {
+	test.beforeEach(async ({ page }) => {
+		await page.goto('/link-selector.html');
+	});
+
+	test('ignores SVG links by default', async ({ page }) => {
+		await expectFullPageReload(page, () => page.locator('svg a').click());
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+	});
+
+	test('follow SVG links when added to selector', async ({ page }) => {
+		await page.evaluate(() => window._swup.options.linkSelector = 'a[href], svg a[*|href]');
+		await expectSwupNavigation(page, () => page.locator('svg a').click());
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
 	});
 });

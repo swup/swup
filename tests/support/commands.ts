@@ -49,14 +49,16 @@ export async function expectToHaveCacheEntries(page: Page, urls: string[]) {
 	}
 }
 
-export async function expectFullPageReload(page: Page, action: (page: Page) => Promise<void> | void) {
+export async function expectFullPageReload(page: Page, action: (page: Page) => Promise<void> | void, not: boolean = false) {
 	let fetchedInBackground: boolean;
-	page.on('request', (request) => {
-		fetchedInBackground = ['xhr', 'fetch'].includes(request.resourceType());
-	});
+	page.on('request', (request) => fetchedInBackground = ['xhr', 'fetch'].includes(request.resourceType()));
 	await action(page);
 	await page.waitForLoadState('load');
-	expect(async () => expect(fetchedInBackground).toBe(false)).toPass();
+	expect(async () => expect(fetchedInBackground).toBe(not ? true : false)).toPass();
+}
+
+export function expectSwupNavigation(page: Page, action: (page: Page) => Promise<void> | void) {
+	return expectFullPageReload(page, action, true);
 }
 
 export function expectToHaveClass(locator: Locator, className: string, not = false) {
