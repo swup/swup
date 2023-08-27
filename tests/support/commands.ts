@@ -25,9 +25,21 @@ export function navigateWithSwup(page: Page, url: string, options?: Parameters<S
 export async function expectToBeAt(page: Page, url: string, title?: string) {
 	await expect(page).toHaveURL(url);
 	if (title) {
-		await expect(page).toHaveTitle(title);
-		await expect(page.locator('h1')).toContainText(title);
+		await expectTitle(page, title);
+		await expectH1(page, title);
 	}
+}
+
+export async function expectTitle(page: Page, title: string) {
+	await expect(page).toHaveTitle(title);
+}
+
+export async function expectH1(page: Page, title: string) {
+	await expect(page.locator('h1')).toContainText(title);
+}
+
+export async function expectH2(page: Page, title: string) {
+	await expect(page.locator('h2')).toContainText(title);
 }
 
 export async function expectRequestHeaders(request: Request, headers: Record<string, string>) {
