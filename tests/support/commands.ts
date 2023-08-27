@@ -122,3 +122,15 @@ export function delayRequest(page: Page, url: string, timeout: number) {
 		});
 	})
 }
+
+export function scrollToPosition(page: Page,y: number) {
+	return page.evaluate((y) => window.scrollTo(0, y), y);
+}
+
+export async function expectScrollPosition(page: Page, y: number) {
+	await expect(
+		async () => expect(
+			await page.evaluate(() => window.scrollY)
+		).toEqual(y)
+	).toPass();
+}
