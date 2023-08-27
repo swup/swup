@@ -1,12 +1,11 @@
 import { expect } from '@playwright/test';
-import type { Page, Request, Locator } from '@playwright/test';
+import type { Page, Request, Locator, BrowserContext } from '@playwright/test';
 
 import type Swup from '../../src/Swup.js';
 
 declare global {
 	interface Window {
 		_swup: Swup;
-		_beforeReload?: boolean;
 		measure: (key: string) => Promise<void>;
 	}
 }
@@ -20,7 +19,7 @@ export function clickOnLink(page: Page, url: string, options?: Parameters<Page['
 }
 
 export function navigateWithSwup(page: Page, url: string, options?: Parameters<Swup['navigate']>[1]) {
-	return page.evaluate(([url, options]) => window._swup.navigate(url, options), [url, options]);
+	return page.evaluate(({ url, options }) => window._swup.navigate(url, options), { url, options });
 }
 
 export async function expectToBeAt(page: Page, url: string, title?: string) {
@@ -117,14 +116,10 @@ export async function expectAnimationDuration(page: Page, duration: number) {
 	expect(inDuration).toBeLessThanOrEqual(expectedRange[1]);
 }
 
-export function delayRequest(page: Page, url: string, timeout: number) {
-	page.route(url, async (route) => {
-		const response = await route.fetch();
+export async function delayRequest(page: Page, url: string, timeout: number) {
+	await page.route(url, async (route) => {
 		await sleep(timeout);
-		route.fulfill({
-			status: response.status(),
-			body: await response.text()
-		});
+		route.continue();
 	})
 }
 

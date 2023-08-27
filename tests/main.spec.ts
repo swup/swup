@@ -340,26 +340,20 @@ test.describe('navigation', () => {
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
 	});
 
-	test('ignores visit if a new visit has started', async ({ page }) => {
-		await page.evaluate(() => {
-			window._swup.options.animationSelector = false;
-		});
-		delayRequest(page, '/page-2.html', 500);
-		await clickOnLink(page, '/page-2.html');
-		await sleep(50);
-		await clickOnLink(page, '/page-3.html');
-		await expectToBeAt(page, '/page-3.html', 'Page 3');
-		await sleep(700);
-		await expectToBeAt(page, '/page-3.html', 'Page 3');
+	test('ignores visit when meta key pressed', async ({ page, context }) => {
+		await clickOnLink(page, '/page-2.html', { modifiers: ['Meta'] });
+		await sleep(300);
+		await expectToBeAt(page, '/page-1.html', 'Page 1');
 	});
 
-	test('ignore visit when meta key pressed', async ({ page }) => {
-		await page.evaluate(() => {
-			window._swup.options.animationSelector = false;
-		});
-		await clickOnLink(page, '/page-2.html', { modifiers: ['Meta'] });
-		sleep(300);
-		await expectToBeAt(page, '/page-1.html', 'Page 1');
+	test('ignores visit if a new visit has started', async ({ page }) => {
+		await delayRequest(page, '/page-2.html', 500);
+		await navigateWithSwup(page, '/page-2.html');
+		await page.waitForTimeout(100);
+		await navigateWithSwup(page, '/page-3.html');
+		await expectToBeAt(page, '/page-3.html', 'Page 3');
+		await page.waitForTimeout(700);
+		await expectToBeAt(page, '/page-3.html', 'Page 3');
 	});
 });
 
