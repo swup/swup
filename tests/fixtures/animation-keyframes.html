@@ -7,13 +7,13 @@
     <link rel="stylesheet" href="/assets/main.css">
     <script src="/dist/Swup.umd.js"></script>
     <style>
-        html.is-changing .transition-default {
+        html.is-changing .transition-custom {
             animation: test-animation 400ms 300ms;
             animation-fill-mode: both;
             transition: none;
             opacity: initial
         }
-        html.is-rendering .transition-default {
+        html.is-rendering .transition-custom {
             animation-direction: reverse;
         }
         @keyframes test-animation {
@@ -36,7 +36,7 @@
             <li><a href="/page-3.html">Page 3</a></li>
         </ul>
     </header>
-    <main id="swup" class="wrapper transition-default">
+    <main id="swup" class="wrapper transition-custom">
         <h1>Animation duration: keyframes</h1>
     </main>
     <script>
