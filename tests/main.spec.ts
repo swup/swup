@@ -10,9 +10,10 @@ import {
 	expectToHaveCacheEntry,
 	expectFullPageReload,
 	navigateWithSwup,
-	expectTransitionDuration,
+	expectAnimationDuration,
 	sleep,
-	expectToHaveCacheEntries
+	expectToHaveCacheEntries,
+	delayRequest
 } from './support/commands.js';
 
 declare global {
@@ -218,16 +219,17 @@ test.describe('markup', () => {
 		await page.goto('/page-1.html');
 	});
 
-	test('should add swup class to html element', async ({ page }) => {
+	test('adds swup class to html element', async ({ page }) => {
 		await page.waitForSelector('html.swup-enabled');
 	});
 
-	test('should remove swup class from html element', async ({ page }) => {
+	test('removes swup class from html element', async ({ page }) => {
+		const el = page.waitForSelector('html:not(.swup-enabled)');
 		page.evaluate(() => window._swup.destroy());
-		await page.waitForSelector('html:not(.swup-enabled)');
+		await el;
 	});
 
-	test('should set transition classes on html element', async ({ page }) => {
+	test('sets animation classes on html element', async ({ page }) => {
 		await page.evaluate(() => {
 			const el = document.documentElement;
 			window.data = {};
@@ -248,7 +250,7 @@ test.describe('markup', () => {
 		});
 	});
 
-	test('should set transition classes on container element', async ({ page }) => {
+	test('sets animation classes on container element', async ({ page }) => {
 		await page.evaluate(() => window._swup.options.animationScope = 'containers');
 		await page.evaluate(() => {
 			const el = () => document.querySelector('#swup');
@@ -276,7 +278,7 @@ test.describe('events', () => {
 		await page.goto('/page-1.html');
 	});
 
-	test('should trigger custom dom events', async ({ page }) => {
+	test('triggers custom dom events', async ({ page }) => {
 		let triggered = false;
 		await page.exposeBinding('triggered', async (_, data) => (triggered = data));
 		await page.evaluate(() => {
@@ -286,7 +288,7 @@ test.describe('events', () => {
 		expect(triggered).toStrictEqual('link:click');
 	});
 
-	test('should prevent the default click event', async ({ page }) => {
+	test('prevents the default click event', async ({ page }) => {
 		let prevented = null;
 		await page.exposeBinding('prevented', async (_, data) => (prevented = data));
 		await page.evaluate(() => {
@@ -297,19 +299,62 @@ test.describe('events', () => {
 	});
 });
 
-test.describe('transitions', () => {
-	test('should detect transition timing', async ({ page }) => {
-		await page.goto('/transition-duration.html');
-		await expectTransitionDuration(page, 400);
+test.describe('animation timing', () => {
+	test('detects animation timing', async ({ page }) => {
+		await page.goto('/animation-duration.html');
+		await expectAnimationDuration(page, 400);
 	});
 
-	test('should detect complex transition timing', async ({ page }) => {
-		await page.goto('/transition-complex.html');
-		await expectTransitionDuration(page, 600);
+	test('detects complex animation timing', async ({ page }) => {
+		await page.goto('/animation-complex.html');
+		await expectAnimationDuration(page, 600);
 	});
 
-	test('should detect keyframe timing', async ({ page }) => {
-		await page.goto('/transition-keyframes.html');
-		await expectTransitionDuration(page, 700);
+	test('detects keyframe timing', async ({ page }) => {
+		await page.goto('/animation-keyframes.html');
+		await expectAnimationDuration(page, 700);
+	});
+});
+
+test.describe('navigation', () => {
+	test.beforeEach(async ({ page }) => {
+		await page.goto('/page-1.html');
+	});
+
+	test('navigates to other pages', async ({ page }) => {
+		await clickOnLink(page, '/page-2.html');
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+		await clickOnLink(page, '/page-3.html');
+		await expectToBeAt(page, '/page-3.html', 'Page 3');
+	});
+
+	test('navigates if no animation selector defined', async ({ page }) => {
+		await page.evaluate(() => {
+			window._swup.options.animationSelector = false;
+		});
+		await clickOnLink(page, '/page-2.html');
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+	});
+
+	test('ignores visit if a new visit has started', async ({ page }) => {
+		await page.evaluate(() => {
+			window._swup.options.animationSelector = false;
+		});
+		delayRequest(page, '/page-2.html', 500);
+		await clickOnLink(page, '/page-2.html');
+		await sleep(50);
+		await clickOnLink(page, '/page-3.html');
+		await expectToBeAt(page, '/page-3.html', 'Page 3');
+		await sleep(700);
+		await expectToBeAt(page, '/page-3.html', 'Page 3');
+	});
+
+	test('ignore visit when meta key pressed', async ({ page }) => {
+		await page.evaluate(() => {
+			window._swup.options.animationSelector = false;
+		});
+		await clickOnLink(page, '/page-2.html', { modifiers: ['Meta'] });
+		sleep(300);
+		await expectToBeAt(page, '/page-1.html', 'Page 1');
 	});
 });

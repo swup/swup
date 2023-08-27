@@ -7,7 +7,7 @@ declare global {
 	interface Window {
 		_swup: Swup;
 		_beforeReload?: boolean;
-		measure: (key: string, val: number) => Promise<void>;
+		measure: (key: string) => Promise<void>;
 	}
 }
 
@@ -15,8 +15,8 @@ export function sleep(timeout = 0): Promise<void> {
   return new Promise((resolve) => setTimeout(() => resolve(undefined), timeout))
 }
 
-export function clickOnLink(page: Page, url: string) {
-	return page.click(`a[href="${url}"]`);
+export function clickOnLink(page: Page, url: string, options?: Parameters<Page['click']>[1]) {
+	return page.click(`a[href="${url}"]`, options);
 }
 
 export function navigateWithSwup(page: Page, url: string, options?: Parameters<Swup['navigate']>[1]) {
@@ -72,8 +72,7 @@ export function expectNotToHaveClasses(locator: Locator, classNames: string) {
 	return expectToHaveClasses(locator, classNames, true);
 }
 
-export async function expectTransitionDuration(page: Page, duration: number) {
-	const url = page.url();
+export async function expectAnimationDuration(page: Page, duration: number) {
 	const tolerance = 0.25; // 25% plus/minus
 	const expectedRange: [number, number] = [
 		duration * (1 - tolerance),
@@ -86,26 +85,40 @@ export async function expectTransitionDuration(page: Page, duration: number) {
 		outStart: 0,
 		outEnd: 0,
 		inStart: 0,
-		inEnd: 0
+		inEnd: 0,
 	};
 
-	await page.exposeBinding('measure', async (_, key, val) => (timing[key] = val));
+	await page.exposeBinding('measure', async (_, key) => timing[key] = performance.now());
 	await page.evaluate(() => {
-		window._swup.hooks.before('visit:start', () => window.measure('start', performance.now()));
-		window._swup.hooks.on('visit:end', () => window.measure('end', performance.now()));
-		window._swup.hooks.on('animation:out:start', () => window.measure('outStart', performance.now()));
-		window._swup.hooks.on('animation:out:end', () => window.measure('outEnd', performance.now()));
-		window._swup.hooks.on('animation:in:start', () => window.measure('inStart', performance.now()));
-		window._swup.hooks.on('animation:in:end', () => window.measure('inEnd', performance.now()));
+		window._swup.hooks.on('visit:start', () => window.measure('start'));
+		window._swup.hooks.on('visit:end', () => window.measure('end'));
+		window._swup.hooks.on('animation:out:start', () => window.measure('outStart'));
+		window._swup.hooks.on('animation:out:start', () => document.body.offsetWidth);
+		window._swup.hooks.on('animation:out:end', () => window.measure('outEnd'));
+		window._swup.hooks.on('animation:in:start', () => window.measure('inStart'));
+		window._swup.hooks.on('animation:in:end', () => window.measure('inEnd'));
 	});
 
-	await navigateWithSwup(page, url);
+	await navigateWithSwup(page, page.url());
+	await expect(async () => expect(timing.end).toBeGreaterThan(0)).toPass();
 
-	await expect(async () => expect(timing.inEnd - timing.inStart).toBeGreaterThan(0)).toPass();
+	// expect(timing).toMatchObject({ test: 1 });
+
 	const outDuration = timing.outEnd - timing.outStart;
-	const inDuration = timing.inEnd - timing.inStart;
 	expect(outDuration).toBeGreaterThanOrEqual(expectedRange[0]);
 	expect(outDuration).toBeLessThanOrEqual(expectedRange[1]);
+	const inDuration = timing.inEnd - timing.inStart;
 	expect(inDuration).toBeGreaterThanOrEqual(expectedRange[0]);
 	expect(inDuration).toBeLessThanOrEqual(expectedRange[1]);
+}
+
+export function delayRequest(page: Page, url: string, timeout: number) {
+	page.route(url, async (route) => {
+		const response = await route.fetch();
+		await sleep(timeout);
+		route.fulfill({
+			status: response.status(),
+			body: await response.text()
+		});
+	})
 }
