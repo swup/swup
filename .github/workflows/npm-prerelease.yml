@@ -1,20 +1,38 @@
-# This workflow publishes a prerelease of the package to NPM
+# This workflow publishes a package to NPM under the `next` tag
 
-name: Publish package prerelease
+name: Prerelease package on npm
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - prerelease
 
 jobs:
-  prerelease-npm:
+  prerelease:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org
-      - run: npm ci
-      - run: npm publish --access public --tag next
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Get package version
+        uses: martinbeentjes/npm-get-version-action@v1.3.1
+        id: version
+
+      - name: Publish if prerelease
+        run: |
+          if [[ "${{ steps.version.outputs.current-version}}" =~ ^(.*-(alpha|beta|next|rc)(\..+)?)$ ]]; then
+            npm publish --access public --tag next
+          else
+            echo "Skipping publish since version is not a prerelease."
+          fi
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}

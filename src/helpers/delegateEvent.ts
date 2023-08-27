@@ -5,19 +5,19 @@ export type DelegateEventUnsubscribe = {
 	destroy: () => void;
 };
 
-export const delegateEvent = <Selector extends string, TEvent extends EventType>(
+/** Register a delegated event listener. */
+export const delegateEvent = <
+	Selector extends string,
+	TElement extends Element = ParseSelector<Selector, HTMLElement>,
+	TEvent extends EventType = EventType
+>(
 	selector: Selector,
 	type: TEvent,
-	callback: DelegateEventHandler<GlobalEventHandlersEventMap[TEvent]>,
+	callback: DelegateEventHandler<GlobalEventHandlersEventMap[TEvent], TElement>,
 	options?: DelegateOptions
 ): DelegateEventUnsubscribe => {
 	const controller = new AbortController();
 	options = { ...options, signal: controller.signal };
-	delegate<string, ParseSelector<Selector, HTMLElement>, TEvent>(
-		selector,
-		type,
-		callback,
-		options
-	);
+	delegate<Selector, TElement, TEvent>(selector, type, callback, options);
 	return { destroy: () => controller.abort() };
 };

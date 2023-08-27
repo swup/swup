@@ -7,98 +7,144 @@ import { DelegateEventUnsubscribe } from './helpers/delegateEvent.js';
 
 import { Cache } from './modules/Cache.js';
 import { Classes } from './modules/Classes.js';
-import { Context, createContext } from './modules/Context.js';
+import { Visit, createVisit } from './modules/Visit.js';
 import { Hooks } from './modules/Hooks.js';
 import { getAnchorElement } from './modules/getAnchorElement.js';
 import { awaitAnimations } from './modules/awaitAnimations.js';
-import { visit, performVisit, HistoryAction } from './modules/visit.js';
+import { navigate, performNavigation, NavigationToSelfAction } from './modules/navigate.js';
 import { fetchPage } from './modules/fetchPage.js';
-import { leavePage } from './modules/leavePage.js';
+import { animatePageOut } from './modules/animatePageOut.js';
 import { replaceContent } from './modules/replaceContent.js';
-import { enterPage } from './modules/enterPage.js';
+import { scrollToContent } from './modules/scrollToContent.js';
+import { animatePageIn } from './modules/animatePageIn.js';
 import { renderPage } from './modules/renderPage.js';
 import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
+import { isSameResolvedUrl, resolveUrl } from './modules/resolveUrl.js';
 import { nextTick } from './utils.js';
+import { HistoryState } from './helpers/createHistoryRecord.js';
 
+/** Options for customizing swup's behavior. */
 export type Options = {
+	/** Whether history visits are animated. Default: `false` */
 	animateHistoryBrowsing: boolean;
+	/** Selector for detecting animation timing. Default: `[class*="transition-"]` */
 	animationSelector: string | false;
+	/** Elements on which to add animation classes. Default: `html` element */
 	animationScope: 'html' | 'containers';
+	/** Enable in-memory page cache. Default: `true` */
 	cache: boolean;
+	/** Content containers to be replaced on page visits. Default: `['#swup']` */
 	containers: string[];
+	/** Callback for ignoring visits. Receives the element and event that triggered the visit. */
 	ignoreVisit: (url: string, { el, event }: { el?: Element; event?: Event }) => boolean;
+	/** Selector for links that trigger visits. Default: `'a[href]'` */
 	linkSelector: string;
+	/** How swup handles links to the same page. Default: `scroll` */
+	linkToSelf: NavigationToSelfAction;
+	/** Plugins to register on startup. */
 	plugins: Plugin[];
+	/** Custom headers sent along with fetch requests. */
 	requestHeaders: Record<string, string>;
+	/** Rewrite URLs before loading them. */
 	resolveUrl: (url: string) => string;
-	skipPopStateHandling: (event: any) => boolean;
+	/** Callback for telling swup to ignore certain popstate events.  */
+	skipPopStateHandling: (event: PopStateEvent) => boolean;
 };
 
+const defaults: Options = {
+	animateHistoryBrowsing: false,
+	animationSelector: '[class*="transition-"]',
+	animationScope: 'html',
+	cache: true,
+	containers: ['#swup'],
+	ignoreVisit: (url, { el } = {}) => !!el?.closest('[data-no-swup]'),
+	linkSelector: 'a[href]',
+	linkToSelf: 'scroll',
+	plugins: [],
+	resolveUrl: (url) => url,
+	requestHeaders: {
+		'X-Requested-With': 'swup',
+		'Accept': 'text/html, application/xhtml+xml'
+	},
+	skipPopStateHandling: (event) => (event.state as HistoryState)?.source !== 'swup'
+};
+
+/** Swup page transition library. */
 export default class Swup {
-	// library version
-	version: string = version;
-	// instance options
+	/** Library version */
+	readonly version: string = version;
+	/** Options passed into the instance */
 	options: Options;
-	// plugin instances
+	/** Default options before merging user options */
+	readonly defaults: Options = defaults;
+	/** Registered plugin instances */
 	plugins: Plugin[] = [];
-	// context data
-	context: Context;
-	// cache instance
-	cache: Cache;
-	// hook registry
-	hooks: Hooks;
-	// classname manager
-	classes: Classes;
-	// current url to allow better comparison inside popstate handler
-	currentPageUrl = getCurrentUrl();
-	// subscription handle for delegated event listener
-	private clickDelegate?: DelegateEventUnsubscribe;
+	/** Data about the current visit */
+	visit: Visit;
+	/** Cache instance */
+	readonly cache: Cache;
+	/** Hook registry */
+	readonly hooks: Hooks;
+	/** Animation class manager */
+	readonly classes: Classes;
+	/** URL of the currently visible page */
+	currentPageUrl: string = getCurrentUrl();
+	/** Index of the current history entry */
+	protected currentHistoryIndex: number;
+	/** Delegated event subscription handle */
+	protected clickDelegate?: DelegateEventUnsubscribe;
 
-	visit = visit;
-	performVisit = performVisit;
-	leavePage = leavePage;
-	renderPage = renderPage;
-	replaceContent = replaceContent;
-	enterPage = enterPage;
-	delegateEvent = delegateEvent;
-	fetchPage = fetchPage;
-	awaitAnimations = awaitAnimations;
-	getAnchorElement = getAnchorElement;
+	/** Install a plugin */
 	use = use;
+	/** Uninstall a plugin */
 	unuse = unuse;
+	/** Find a plugin by name or instance */
 	findPlugin = findPlugin;
-	getCurrentUrl = getCurrentUrl;
-	createContext = createContext;
-	log: (message: string, context?: any) => void = () => {}; // here so it can be used by plugins
 
-	defaults: Options = {
-		animateHistoryBrowsing: false,
-		animationSelector: '[class*="transition-"]',
-		animationScope: 'html',
-		cache: true,
-		containers: ['#swup'],
-		ignoreVisit: (url, { el, event } = {}) => !!el?.closest('[data-no-swup]'),
-		linkSelector: 'a[href]',
-		plugins: [],
-		resolveUrl: (url) => url,
-		requestHeaders: {
-			'X-Requested-With': 'swup',
-			'Accept': 'text/html, application/xhtml+xml'
-		},
-		skipPopStateHandling: (event) => event.state?.source !== 'swup'
-	};
+	/** Log a message. Has no effect unless debug plugin is installed */
+	log: (message: string, context?: unknown) => void = () => {};
+
+	/** Navigate to a new URL */
+	navigate = navigate;
+	/** Actually perform a navigation */
+	protected performNavigation = performNavigation;
+	/** Create a new context for this visit */
+	protected createVisit = createVisit;
+	/** Register a delegated event listener */
+	delegateEvent = delegateEvent;
+	/** Fetch a page from the server */
+	fetchPage = fetchPage;
+	/** Resolve when animations on the page finish */
+	awaitAnimations = awaitAnimations;
+	protected renderPage = renderPage;
+	/** Replace the content after page load */
+	replaceContent = replaceContent;
+	protected animatePageIn = animatePageIn;
+	protected animatePageOut = animatePageOut;
+	protected scrollToContent = scrollToContent;
+	/** Find the anchor element for a given hash */
+	getAnchorElement = getAnchorElement;
+
+	/** Get the current page URL */
+	getCurrentUrl = getCurrentUrl;
+	/** Resolve a URL to its final location */
+	resolveUrl = resolveUrl;
+	/** Check if two URLs resolve to the same location */
+	protected isSameResolvedUrl = isSameResolvedUrl;
 
 	constructor(options: Partial<Options> = {}) {
 		// Merge defaults and options
 		this.options = { ...this.defaults, ...options };
 
-		this.linkClickHandler = this.linkClickHandler.bind(this);
-		this.popStateHandler = this.popStateHandler.bind(this);
+		this.handleLinkClick = this.handleLinkClick.bind(this);
+		this.handlePopState = this.handlePopState.bind(this);
 
 		this.cache = new Cache(this);
 		this.classes = new Classes(this);
 		this.hooks = new Hooks(this);
-		this.context = this.createContext({ to: undefined });
+		this.visit = this.createVisit({ to: '' });
+
+		this.currentHistoryIndex = (history.state as HistoryState)?.index ?? 1;
 
 		if (!this.checkRequirements()) {
 			return;
@@ -107,7 +153,7 @@ export default class Swup {
 		this.enable();
 	}
 
-	checkRequirements() {
+	protected checkRequirements() {
 		if (typeof Promise === 'undefined') {
 			console.warn('Promise is not supported');
 			return false;
@@ -115,12 +161,18 @@ export default class Swup {
 		return true;
 	}
 
+	/** Enable this instance, adding listeners and classnames. */
 	async enable() {
 		// Add event listener
 		const { linkSelector } = this.options;
-		this.clickDelegate = this.delegateEvent(linkSelector, 'click', this.linkClickHandler);
+		this.clickDelegate = this.delegateEvent(linkSelector, 'click', this.handleLinkClick);
 
-		window.addEventListener('popstate', this.popStateHandler);
+		window.addEventListener('popstate', this.handlePopState);
+
+		// Set scroll restoration to manual if animating history visits
+		if (this.options.animateHistoryBrowsing) {
+			window.history.scrollRestoration = 'manual';
+		}
 
 		// Initial save to cache
 		if (this.options.cache) {
@@ -131,27 +183,28 @@ export default class Swup {
 		// Mount plugins
 		this.options.plugins.forEach((plugin) => this.use(plugin));
 
-		// Modify initial history record
-		updateHistoryRecord();
+		// Create initial history record
+		if ((history.state as HistoryState)?.source !== 'swup') {
+			updateHistoryRecord(null, { index: this.currentHistoryIndex });
+		}
+
+		// Give consumers a chance to hook into enable
+		await nextTick();
 
 		// Trigger enable hook
-		await this.hooks.trigger('enable', undefined, () => {
+		await this.hooks.call('enable', undefined, () => {
 			// Add swup-enabled class to html tag
 			document.documentElement.classList.add('swup-enabled');
 		});
-
-		await nextTick();
-
-		// Trigger page view hook
-		await this.hooks.trigger('page:view', { url: this.currentPageUrl, title: document.title });
 	}
 
+	/** Disable this instance, removing listeners and classnames. */
 	async destroy() {
 		// remove delegated listener
 		this.clickDelegate!.destroy();
 
 		// remove popstate listener
-		window.removeEventListener('popstate', this.popStateHandler);
+		window.removeEventListener('popstate', this.handlePopState);
 
 		// empty cache
 		this.cache.clear();
@@ -160,7 +213,7 @@ export default class Swup {
 		this.options.plugins.forEach((plugin) => this.unuse(plugin));
 
 		// trigger disable hook
-		await this.hooks.trigger('disable', undefined, () => {
+		await this.hooks.call('disable', undefined, () => {
 			// remove swup-enabled class from html tag
 			document.documentElement.classList.remove('swup-enabled');
 		});
@@ -169,6 +222,7 @@ export default class Swup {
 		this.hooks.clear();
 	}
 
+	/** Determine if a visit should be ignored by swup, based on URL or trigger element. */
 	shouldIgnoreVisit(href: string, { el, event }: { el?: Element; event?: Event } = {}) {
 		const { origin, url, hash } = Location.fromUrl(href);
 
@@ -191,37 +245,20 @@ export default class Swup {
 		return false;
 	}
 
-	linkClickHandler(event: DelegateEvent<MouseEvent>) {
+	protected handleLinkClick(event: DelegateEvent<MouseEvent>) {
 		const el = event.delegateTarget as HTMLAnchorElement;
 		const { href, url, hash } = Location.fromElement(el);
-
-		// Get the animation name, if specified
-		const animation = el.getAttribute('data-swup-animation') || undefined;
-
-		// Get the history action, if specified
-		let historyAction: HistoryAction | undefined;
-		const historyAttr = el.getAttribute('data-swup-history');
-		if (historyAttr && ['push', 'replace'].includes(historyAttr)) {
-			historyAction = historyAttr as HistoryAction;
-		}
 
 		// Exit early if the link should be ignored
 		if (this.shouldIgnoreVisit(href, { el, event })) {
 			return;
 		}
 
-		this.context = this.createContext({
-			to: url,
-			hash,
-			animation,
-			el,
-			event,
-			action: historyAction
-		});
+		this.visit = this.createVisit({ to: url, hash, el, event });
 
 		// Exit early if control key pressed
 		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
-			this.hooks.trigger('link:newtab', { href });
+			this.hooks.call('link:newtab', { href });
 			return;
 		}
 
@@ -230,29 +267,30 @@ export default class Swup {
 			return;
 		}
 
-		this.hooks.triggerSync('link:click', { el, event }, () => {
-			const from = this.context.from.url ?? '';
+		this.hooks.callSync('link:click', { el, event }, () => {
+			const from = this.visit.from.url ?? '';
 
 			event.preventDefault();
 
-			// Handle links to the same page: with or without hash
+			// Handle links to the same page
 			if (!url || url === from) {
 				if (hash) {
-					updateHistoryRecord(url + hash);
-					this.hooks.triggerSync(
-						'link:anchor',
-						{ hash, options: { behavior: 'auto' } },
-						(context, { hash, options }) => {
-							const target = this.getAnchorElement(hash);
-							if (target) {
-								target.scrollIntoView(options);
-							}
-						}
-					);
+					// With hash: scroll to anchor
+					this.hooks.callSync('link:anchor', { hash }, () => {
+						updateHistoryRecord(url + hash);
+						this.scrollToContent();
+					});
 				} else {
-					this.hooks.triggerSync('link:self', undefined, (context) => {
-						if (!context.scroll.reset) return;
-						window.scroll({ top: 0, left: 0, behavior: 'auto' });
+					// Without hash: scroll to top or load/reload page
+					this.hooks.callSync('link:self', undefined, () => {
+						switch (this.options.linkToSelf) {
+							case 'navigate':
+								return this.performNavigation();
+							case 'scroll':
+							default:
+								updateHistoryRecord(url);
+								return this.scrollToContent();
+						}
 					});
 				}
 				return;
@@ -264,19 +302,12 @@ export default class Swup {
 			}
 
 			// Finally, proceed with loading the page
-			this.performVisit(url);
+			this.performNavigation();
 		});
 	}
 
-	triggerWillOpenNewWindow(triggerEl: Element) {
-		if (triggerEl.matches('[download], [target="_blank"]')) {
-			return true;
-		}
-		return false;
-	}
-
-	popStateHandler(event: PopStateEvent) {
-		const href = event.state?.url ?? location.href;
+	protected handlePopState(event: PopStateEvent) {
+		const href: string = (event.state as HistoryState)?.url ?? location.href;
 
 		// Exit early if this event should be ignored
 		if (this.options.skipPopStateHandling(event)) {
@@ -288,62 +319,47 @@ export default class Swup {
 			return;
 		}
 
-		// Exit early if the link should be ignored
-		if (this.shouldIgnoreVisit(href, { event })) {
-			return;
+		const { url, hash } = Location.fromUrl(href);
+
+		this.visit = this.createVisit({ to: url, hash, event });
+
+		// Mark as history visit
+		this.visit.history.popstate = true;
+
+		// Determine direction of history visit
+		const index = (event.state as HistoryState)?.index ?? 0;
+		if (index && index !== this.currentHistoryIndex) {
+			const direction = index - this.currentHistoryIndex > 0 ? 'forwards' : 'backwards';
+			this.visit.history.direction = direction;
+			this.currentHistoryIndex = index;
 		}
 
-		const { url, hash } = Location.fromUrl(href);
-		const animate = this.options.animateHistoryBrowsing;
-		const resetScroll = this.options.animateHistoryBrowsing;
-		this.context = this.createContext({
-			to: url,
-			hash,
-			event,
-			animate,
-			resetScroll,
-			popstate: true
-		});
+		// Disable animation & scrolling for history visits
+		this.visit.animation.animate = false;
+		this.visit.scroll.reset = false;
+		this.visit.scroll.target = false;
+
+		// Animated history visit: re-enable animation & scroll reset
+		if (this.options.animateHistoryBrowsing) {
+			this.visit.animation.animate = true;
+			this.visit.scroll.reset = true;
+		}
 
 		// Does this even do anything?
 		// if (!hash) {
 		// 	event.preventDefault();
 		// }
 
-		this.hooks.triggerSync('history:popstate', { event }, () => {
-			this.performVisit(url);
+		this.hooks.callSync('history:popstate', { event }, () => {
+			this.performNavigation();
 		});
 	}
 
-	/**
-	 * Utility function to validate and run the global option 'resolveUrl'
-	 * @param {string} url
-	 * @returns {string} the resolved url
-	 */
-	resolveUrl(url: string) {
-		if (typeof this.options.resolveUrl !== 'function') {
-			console.warn(`[swup] options.resolveUrl expects a callback function.`);
-			return url;
+	/** Determine whether an element will open a new tab when clicking/activating. */
+	protected triggerWillOpenNewWindow(triggerEl: Element) {
+		if (triggerEl.matches('[download], [target="_blank"]')) {
+			return true;
 		}
-		const result = this.options.resolveUrl(url);
-		if (!result || typeof result !== 'string') {
-			console.warn(`[swup] options.resolveUrl needs to return a url`);
-			return url;
-		}
-		if (result.startsWith('//') || result.startsWith('http')) {
-			console.warn(`[swup] options.resolveUrl needs to return a relative url`);
-			return url;
-		}
-		return result;
-	}
-
-	/**
-	 * Compares the resolved version of two paths and returns true if they are the same
-	 * @param {string} url1
-	 * @param {string} url2
-	 * @returns {boolean}
-	 */
-	isSameResolvedUrl(url1: string, url2: string) {
-		return this.resolveUrl(url1) === this.resolveUrl(url2);
+		return false;
 	}
 }

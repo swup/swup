@@ -6,7 +6,7 @@
     <title>Body Class Plugin 1</title>
     <link rel="stylesheet" href="/assets/main.css">
     <script src="/dist/Swup.umd.js"></script>
-    <script src="https://unpkg.com/@swup/body-class-plugin@1/dist/SwupBodyClassPlugin.js"></script>
+    <script src="https://unpkg.com/@swup/body-class-plugin@3"></script>
 </head>
 <body class="body-1">
     <header class="header">
@@ -25,21 +25,8 @@
         vel veniam vero voluptate voluptatem.</p>
     </main>
     <script>
-        class CustomBodyClassPlugin {
-            name = 'CustomBodyClassPlugin';
-            isSwupPlugin = true;
-            mount() {
-                this.swup.hooks.on('content:replace', (context, { page: { html } }) => {
-                    const doc = new DOMParser().parseFromString(html, 'text/html');
-                    const body = doc.querySelector('body');
-                    if (body) {
-                        document.body.className = body.className;
-                    }
-                });
-            }
-        }
         window._swup = new Swup({
-            plugins: [new CustomBodyClassPlugin()]
+            plugins: [new SwupBodyClassPlugin()]
         });
     </script>
 </body>

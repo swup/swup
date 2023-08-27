@@ -1,7 +1,7 @@
 {
   "name": "swup",
   "amdName": "Swup",
-  "version": "4.0.0-rc.18",
+  "version": "4.3.4",
   "description": "Versatile and extensible page transition library for server-rendered websites",
   "type": "module",
   "source": "./src/Swup.ts",
@@ -11,9 +11,9 @@
   "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
-      "require": "./dist/Swup.cjs",
+      "types": "./dist/types/index.d.ts",
       "import": "./dist/Swup.modern.js",
-      "types": "./dist/types/index.d.ts"
+      "require": "./dist/Swup.cjs"
     }
   },
   "files": [
@@ -21,13 +21,15 @@
     "dist"
   ],
   "scripts": {
+    "clean": "rm -rf ./dist",
     "build": "npm run build:module && npm run build:bundle",
     "build:module": "BROWSERSLIST_ENV=modern microbundle src/index.ts -f modern,esm,cjs",
     "build:bundle": "BROWSERSLIST_ENV=production microbundle src/Swup.ts -f umd --external none",
-    "dev": "BROWSERSLIST_ENV=development microbundle src/*.ts -w",
-    "lint": "npm run lint:ts && npm run lint:prettier -- --check",
-    "format": "npm run lint:ts && npm run lint:prettier -- --write",
+    "dev": "npm run clean && BROWSERSLIST_ENV=development microbundle src/index.ts -w -f modern",
+    "format": "npx eslint . --fix",
+    "lint": "npm run lint:ts && npm run lint:es",
     "lint:ts": "tsc --noEmit --skipLibCheck",
+    "lint:es": "npx eslint .",
     "lint:prettier": "prettier 'src/**/*.ts'",
     "prepublishOnly": "npm run build",
     "postinstall": "opencollective-postinstall || true",
@@ -70,7 +72,12 @@
     "@swup/browserslist-config": "^1.0.0",
     "@swup/prettier-config": "^1.0.0",
     "@types/jsdom": "^21.1.1",
+    "@typescript-eslint/eslint-plugin": "^6.3.0",
+    "@typescript-eslint/parser": "^6.3.0",
     "cypress": "^12.3.0",
+    "eslint": "^8.46.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^4.2.1",
     "http-server": "^14.1.1",
     "husky": "^8.0.0",
     "istanbul-lib-coverage": "^3.2.0",

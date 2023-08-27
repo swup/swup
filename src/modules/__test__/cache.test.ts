@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import Swup from '../../Swup.js';
 import { Cache, CacheData } from '../Cache.js';
-import { Context } from '../Context.js';
+import { Visit } from '../Visit.js';
 
 interface CacheTtlData {
 	ttl: number;
@@ -15,7 +15,7 @@ interface CacheIndexData {
 interface AugmentedCacheData extends CacheData, CacheTtlData, CacheIndexData {}
 
 const swup = new Swup();
-const ctx = swup.context;
+const visit = swup.visit;
 const cache = new Cache(swup);
 
 const page0 = { url: 'https://localhost/page-1', html: '1' };
@@ -90,7 +90,7 @@ describe('Cache', () => {
 		cache.set(page1.url, page1);
 
 		expect(handler).toBeCalledTimes(1);
-		expect(handler).toBeCalledWith(ctx, { page: page1 }, undefined);
+		expect(handler).toBeCalledWith(visit, { page: page1 }, undefined);
 	});
 
 	it('should allow augmenting cache entries on save', () => {
@@ -98,19 +98,19 @@ describe('Cache', () => {
 
 		swup.hooks.on('cache:set', (_, { page }) => {
 			const ttl: CacheTtlData = { ttl: 1000, created: now };
-			cache.update(page.url, ttl as AugmentedCacheData);
+			cache.update(page.url, ttl);
 		});
 
 		cache.set('/page', { url: '/page', html: '' });
 
-		const page = cache.get('/page') as AugmentedCacheData;
+		const page = cache.get('/page');
 
 		expect(page).toEqual({ url: '/page', html: '', ttl: 1000, created: now });
 	});
 
 	it('should allow manual pruning', () => {
 		swup.hooks.on('cache:set', (_, { page }) => {
-			cache.update(page.url, { index: cache.size } as AugmentedCacheData);
+			cache.update(page.url, { index: cache.size });
 		});
 
 		cache.set(page1.url, page1);
@@ -124,6 +124,23 @@ describe('Cache', () => {
 		expect(cache.has(page2.url)).toBe(true);
 		expect(cache.has(page3.url)).toBe(false);
 	});
+
+	it('should return a copy from cache.get()', () => {
+		cache.set(page1.url, page1);
+		const page = cache.get(page1.url);
+		page!.html = 'new';
+		expect(cache.get(page1.url)?.html).toEqual(page1.html);
+	});
+
+	it('should return a new Map with shallow copies from cache.all', () => {
+		cache.set(page1.url, page1);
+		cache.set(page2.url, page2);
+
+		const all = cache.all;
+		all.get(page1.url)!.html = 'new';
+
+		expect(cache.get(page1.url)?.html).toEqual(page1.html);
+	});
 });
 
 describe('Types', () => {
@@ -132,9 +149,9 @@ describe('Types', () => {
 		const cache = new Cache(swup);
 
 		// @ts-expect-no-error
-		swup.hooks.on('history:popstate', (ctx: Context, { event: PopStateEvent }) => {});
+		swup.hooks.on('history:popstate', (visit: Visit, { event: PopStateEvent }) => {});
 		// @ts-expect-no-error
-		await swup.hooks.trigger('history:popstate', { event: new PopStateEvent('') });
+		await swup.hooks.call('history:popstate', { event: new PopStateEvent('') });
 
 		try {
 			// @ts-expect-error

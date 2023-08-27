@@ -33,7 +33,7 @@ describe('Request', function () {
 	it('should force-load on server error', function () {
 		cy.intercept('/error-500.html', { statusCode: 500, times: 1 });
 		cy.shouldHaveReloadedAfterAction(() => {
-			this.swup.visit('/error-500.html');
+			this.swup.navigate('/error-500.html');
 		});
 		cy.shouldBeAtPage('/error-500.html');
 	});
@@ -41,41 +41,41 @@ describe('Request', function () {
 	it('should force-load on network error', function () {
 		cy.intercept('/error-network.html', { times: 1 }, { forceNetworkError: true });
 		cy.shouldHaveReloadedAfterAction(() => {
-			this.swup.visit('/error-network.html');
+			this.swup.navigate('/error-network.html');
 		});
 		cy.shouldBeAtPage('/error-network.html');
 	});
 });
 
-describe('Fetch', function () {
+describe('Page load', function () {
 	beforeEach(() => {
 		cy.visit('/page-1.html');
 		cy.wrapSwupInstance();
 	});
 
-	it('should allow calling original page:request handler', function () {
-		this.swup.hooks.replace('page:request', (context, args, defaultHandler) => {
-			return defaultHandler(context, args);
+	it('should allow calling original page:load handler', function () {
+		this.swup.hooks.replace('page:load', (visit, args, defaultHandler) => {
+			return defaultHandler(visit, args);
 		});
-		this.swup.visit('/page-2.html');
+		this.swup.navigate('/page-2.html');
 
 		cy.shouldBeAtPage('/page-2.html');
 		cy.shouldHaveH1('Page 2');
 	});
 
-	it('should allow returning a page object to page:request', function () {
+	it('should allow returning a page object to page:load', function () {
 		let requested = false;
 		cy.intercept('/page-2.html', (req) => {
 			requested = true;
 		});
 
-		this.swup.hooks.replace('page:request', () => {
+		this.swup.hooks.replace('page:load', () => {
 			return {
 				url: '/page-3.html',
 				html: '<html><body><div id="swup"><h1>Page 3</h1></div></body></html>'
 			};
 		});
-		this.swup.visit('/page-2.html');
+		this.swup.navigate('/page-2.html');
 
 		cy.shouldBeAtPage('/page-3.html');
 		cy.shouldHaveH1('Page 3');
@@ -84,11 +84,11 @@ describe('Fetch', function () {
 		});
 	});
 
-	it('should allow returning a fetch Promise to page:request', function () {
-		this.swup.hooks.replace('page:request', () => {
+	it('should allow returning a fetch Promise to page:load', function () {
+		this.swup.hooks.replace('page:load', () => {
 			return this.swup.fetchPage('page-3.html');
 		});
-		this.swup.visit('/page-2.html');
+		this.swup.navigate('/page-2.html');
 
 		cy.shouldBeAtPage('/page-3.html');
 		cy.shouldHaveH1('Page 3');
@@ -102,15 +102,111 @@ describe('Cache', function () {
 	});
 
 	it('should cache pages', function () {
-		this.swup.visit('/page-2.html');
-		cy.shouldBeAtPage('/page-2.html');
+		this.swup.navigate('/page-2.html');
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
 		cy.shouldHaveCacheEntry('/page-2.html');
 	});
 
 	it('should cache pages from absolute URLs', function () {
-		this.swup.visit(`${baseUrl}/page-2.html`);
-		cy.shouldBeAtPage('/page-2.html');
+		this.swup.navigate(`${baseUrl}/page-2.html`);
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
 		cy.shouldHaveCacheEntry('/page-2.html');
+	});
+
+	it('should not cache pages for POST requests', function () {
+		this.swup.navigate(`${baseUrl}/page-2.html`, { method: 'POST' });
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
+		cy.shouldNotHaveCacheEntry('/page-2.html');
+	});
+
+	it('should disable cache from swup options', function () {
+		const cacheAccessed = { read: null, write: null };
+		this.swup.options.cache = false;
+		this.swup.hooks.on('page:load', (visit, { cache }) => {
+			cacheAccessed.read = cache;
+			cacheAccessed.write = this.swup.cache.has(visit.to.url);
+		});
+
+		cy.window().then(() => this.swup.navigate('/page-2.html'));
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
+		cy.window().then(() => this.swup.navigate('/page-1.html'));
+		cy.shouldBeAtPage('/page-1.html', 'Page 1');
+		cy.window().then(() => this.swup.navigate('/page-2.html'));
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
+		cy.window().should(() => expect(cacheAccessed.read).to.be.false);
+		cy.window().should(() => expect(cacheAccessed.write).to.be.false);
+	});
+
+	it('should disable cache from navigation options', function () {
+		const cacheAccessed = { read: {}, write: {} };
+		this.swup.hooks.on('page:load', (visit, { cache }) => {
+			cacheAccessed.read[visit.to.url] = cache;
+			cacheAccessed.write[visit.to.url] = this.swup.cache.has(visit.to.url);
+		});
+
+		// Check disabling completely
+		cy.window().then(() => this.swup.navigate('/page-2.html', { cache: false }));
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
+		cy.window().should(() => expect(cacheAccessed.read['/page-2.html']).to.be.false);
+		cy.window().should(() => expect(cacheAccessed.write['/page-2.html']).to.be.false);
+
+		// Check disabling writes
+		cy.window().then(() => this.swup.navigate('/page-1.html', { cache: { write: false } }));
+		cy.shouldBeAtPage('/page-1.html', 'Page 1');
+		cy.window().should(() => expect(cacheAccessed.write['/page-1.html']).to.be.false);
+
+		cy.window().then(() => this.swup.cache.clear());
+
+		// Check disabling reads
+		cy.window().then(() => this.swup.navigate('/page-2.html', { cache: { read: false } }));
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
+		cy.window().should(() => expect(cacheAccessed.read['/page-2.html']).to.be.false);
+		cy.window().should(() => expect(cacheAccessed.write['/page-2.html']).to.be.true);
+	});
+
+	it('should disable cache in visit object', function () {
+		const cacheAccessed = { read: {}, write: {} };
+		this.swup.hooks.on('page:load', (visit, { cache }) => {
+			cacheAccessed.read[visit.to.url] = cache;
+			cacheAccessed.write[visit.to.url] = this.swup.cache.has(visit.to.url);
+		});
+
+		// Check disabling writes
+		cy.window().then(() => {
+			this.swup.hooks.once('visit:start', (visit) => visit.cache.write = false);
+			this.swup.navigate('/page-2.html');
+		});
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
+		cy.window().should(() => expect(cacheAccessed.write['/page-2.html']).to.be.false);
+
+		cy.window().then(() => this.swup.navigate('/page-1.html'));
+		cy.shouldBeAtPage('/page-1.html', 'Page 1');
+		cy.window().then(() => this.swup.navigate('/page-2.html'));
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
+
+		// Check disabling reads
+		cy.window().then(() => {
+			this.swup.hooks.once('visit:start', (visit) => visit.cache.read = false);
+			this.swup.navigate('/page-1.html', 'Page 1');
+		});
+		cy.shouldBeAtPage('/page-1.html');
+		cy.window().should(() => expect(cacheAccessed.read['/page-1.html']).to.be.false);
+	});
+
+	// Passes locally, but not in CI. TODO: investigate
+
+	it('should mark pages as cached in page:load', function () {
+		let cached = null;
+		this.swup.hooks.on('page:load', (visit, { cache }) => cached = cache);
+
+		cy.window().then(() => this.swup.navigate('/page-2.html'));
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
+		cy.window().should(() => expect(cached).to.be.false);
+		cy.window().then(() => this.swup.navigate('/page-1.html'));
+		cy.shouldBeAtPage('/page-1.html', 'Page 1');
+		cy.window().then(() => this.swup.navigate('/page-2.html'));
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
+		cy.window().should(() => expect(cached).to.be.true);
 	});
 });
 
@@ -293,6 +389,31 @@ describe('Navigation', function () {
 		cy.shouldHaveH1('Page 2');
 	});
 
+	it('should ignore visit if a new visit has started', function() {
+		cy.delayRequest('/page-2.html', 1000);
+		cy.triggerClickOnLink('/page-2.html');
+		cy.wait(50);
+		cy.triggerClickOnLink('/page-3.html');
+		cy.shouldBeAtPage('/page-3.html', 'Page 3');
+		cy.wait(1000);
+		cy.shouldBeAtPage('/page-3.html', 'Page 3');
+	});
+
+	it('should ignore visit if a new visit to same URL has started', function() {
+		const titles = [];
+		this.swup.options.linkToSelf = 'navigate';
+		this.swup.hooks.on('visit:start', (visit) => titles.push(visit.id));
+		this.swup.hooks.on('content:replace', () => document.title = titles[titles.length - 1]);
+
+		cy.delayRequest('/page-2.html', 500);
+		cy.triggerClickOnLink('/page-2.html');
+		cy.wait(50);
+		cy.triggerClickOnLink('/page-2.html');
+		cy.shouldBeAtPage('/page-2.html', titles[1]);
+		cy.wait(500);
+		cy.shouldBeAtPage('/page-2.html', titles[1]);
+	});
+
 	// it('should ignore visit when meta key pressed', function() {
 	//     cy.triggerClickOnLink('/page-2.html', { metaKey: true });
 	//     cy.wait(200);
@@ -304,6 +425,7 @@ describe('Navigation', function () {
 describe('Link resolution', function () {
 	beforeEach(() => {
 		cy.visit('/link-resolution.html');
+		cy.wrapSwupInstance();
 	});
 
 	it('should skip links to different origins', function () {
@@ -327,6 +449,36 @@ describe('Link resolution', function () {
 		cy.shouldBeAtPage('/nested/nested-2.html');
 		cy.shouldHaveH1('Nested Page 2');
 	});
+
+	it('should reset scroll when clicking link to same page', function () {
+		let navigated = false;
+		cy.window().then(() => {
+			this.swup.hooks.once('visit:start', () => (navigated = true));
+		});
+		cy.scrollTo(0, 200);
+		cy.window().its('scrollY').should('equal', 200);
+		cy.get('[data-cy=nav-link-self]').click();
+		cy.window().its('scrollY').should('equal', 0);
+		cy.window().should(() => {
+			expect(navigated).to.be.false;
+		});
+	});
+
+	it('should navigate to same page if configured via linkToSelf option', function () {
+		let navigated = false;
+		cy.window().then(() => {
+			this.swup.options.linkToSelf = 'navigate';
+			this.swup.hooks.once('visit:start', () => (navigated = true));
+		});
+		cy.scrollTo(0, 200);
+		cy.window().its('scrollY').should('equal', 200);
+		cy.get('[data-cy=nav-link-self]').click();
+		cy.window().its('scrollY').should('equal', 0);
+		cy.window().should(() => {
+			expect(navigated).to.be.true;
+		});
+	});
+
 });
 
 describe('Redirects', function () {
@@ -379,10 +531,10 @@ describe('Ignoring visits', function () {
 		cy.shouldBeAtPage('/page-2.html#hash');
 	});
 
-	it('should ignore visits in swup.visit', function () {
+	it('should ignore visits in swup.navigate', function () {
 		this.swup.options.ignoreVisit = (url) => true;
 		cy.shouldHaveReloadedAfterAction(() => {
-			this.swup.visit('/page-2.html');
+			this.swup.navigate('/page-2.html');
 		});
 		cy.shouldBeAtPage('/page-2.html');
 	});
@@ -488,11 +640,11 @@ describe('History', function () {
 
 	it('should replace the current history state via API', function () {
 		cy.window().then(() => {
-			this.swup.visit('/page-2.html');
+			this.swup.navigate('/page-2.html');
 		});
 		cy.shouldBeAtPage('/page-2.html');
 		cy.window().then(() => {
-			this.swup.visit('/page-3.html', { history: 'replace' });
+			this.swup.navigate('/page-3.html', { history: 'replace' });
 		});
 		cy.shouldBeAtPage('/page-3.html');
 		cy.window().then((window) => {
@@ -541,6 +693,30 @@ describe('History', function () {
 		});
 	});
 
+	it('should calculate the travel direction of history visits', function () {
+		let direction = null;
+		this.swup.hooks.on('history:popstate', (visit) => {
+			direction = visit.history.direction;
+		});
+
+		cy.triggerClickOnLink('/page-2.html');
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
+
+		cy.window().then((window) => window.history.back());
+		cy.window().should(() => expect(direction).to.equal('backwards'));
+
+		cy.shouldBeAtPage('/page-1.html', 'Page 1');
+
+		cy.window().then((window) => window.history.forward());
+		cy.window().should(() => expect(direction).to.equal('forwards'));
+
+		cy.triggerClickOnLink('/page-3.html');
+		cy.shouldBeAtPage('/page-3.html', 'Page 3');
+
+		cy.window().then((window) => window.history.go(-2));
+		cy.window().should(() => expect(direction).to.equal('backwards'));
+	});
+
 	it('should trigger a custom popstate event', function () {
 		const handlers = { popstate() {} };
 		cy.spy(handlers, 'popstate');
@@ -550,12 +726,8 @@ describe('History', function () {
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
 
-		cy.window().then((window) => {
-			window.history.back();
-		});
-		cy.window().should(() => {
-			expect(handlers.popstate).to.be.called;
-		});
+		cy.window().then((window) => window.history.back());
+		cy.window().should(() => expect(handlers.popstate).to.be.called);
 	});
 
 	it('should skip popstate handling for foreign state entries', function () {
@@ -576,13 +748,13 @@ describe('API', function () {
 	});
 
 	it('should navigate to pages using swup API', function () {
-		this.swup.visit('/page-2.html');
+		this.swup.navigate('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
 		cy.shouldHaveH1('Page 2');
 	});
 });
 
-describe('Context', function () {
+describe('Visit context', function () {
 	beforeEach(() => {
 		cy.visit('/page-1.html');
 		cy.wrapSwupInstance();
@@ -591,9 +763,9 @@ describe('Context', function () {
 	it('has the current and next url', function () {
 		let from = '';
 		let to = '';
-		this.swup.hooks.before('visit:start', (ctx) => {
-			from = ctx.from.url;
-			to = ctx.to.url;
+		this.swup.hooks.before('visit:start', (visit) => {
+			from = visit.from.url;
+			to = visit.to.url;
 		});
 		cy.triggerClickOnLink('/page-2.html');
 		cy.window().should(() => {
@@ -605,9 +777,9 @@ describe('Context', function () {
 	it('has the correct current url on history visits', function () {
 		let from = '';
 		let to = '';
-		this.swup.hooks.before('visit:start', (ctx) => {
-			from = ctx.from.url;
-			to = ctx.to.url;
+		this.swup.hooks.before('visit:start', (visit) => {
+			from = visit.from.url;
+			to = visit.to.url;
 		});
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
@@ -626,9 +798,9 @@ describe('Context', function () {
 	it('passes along the click trigger and event', function () {
 		let el = null;
 		let event = null;
-		this.swup.hooks.before('visit:start', (context) => {
-			el = context.trigger.el;
-			event = context.trigger.event;
+		this.swup.hooks.before('visit:start', (visit) => {
+			el = visit.trigger.el;
+			event = visit.trigger.event;
 		});
 		cy.triggerClickOnLink('/page-2.html');
 		cy.window().should((win) => {
@@ -640,17 +812,15 @@ describe('Context', function () {
 	it('passes along the popstate status and event', function () {
 		let event = null;
 		let historyVisit = null;
-		this.swup.hooks.before('visit:start', (context) => {
-			event = context.trigger.event;
-			historyVisit = context.history.popstate;
+		this.swup.hooks.before('visit:start', (visit) => {
+			event = visit.trigger.event;
+			historyVisit = visit.history.popstate;
 		});
 		cy.window().then(() => {
-			this.swup.visit('/page-2.html');
+			this.swup.navigate('/page-2.html');
 		});
 		cy.shouldBeAtPage('/page-2.html');
-		cy.window().then((window) => {
-			window.history.back();
-		});
+		cy.window().then((window) => window.history.back());
 		cy.shouldBeAtPage('/page-1.html');
 		cy.window().should((win) => {
 			expect(event).to.be.instanceof(win.PopStateEvent);
@@ -661,8 +831,8 @@ describe('Context', function () {
 	it('passes along the custom animation', function () {
 		let name = null;
 		let expectedName = null;
-		this.swup.hooks.before('visit:start', (context) => {
-			name = context.animation.name;
+		this.swup.hooks.before('visit:start', (visit) => {
+			name = visit.animation.name;
 		});
 		cy.get('a[data-swup-animation]').should(($el) => {
 			expect($el.length).to.be.at.least(1);
@@ -676,8 +846,8 @@ describe('Context', function () {
 	});
 
 	it('should allow disabling animations', function () {
-		this.swup.hooks.before('visit:start', (context) => {
-			context.animation.animate = false;
+		this.swup.hooks.before('visit:start', (visit) => {
+			visit.animation.animate = false;
 		});
 		cy.shouldAnimateWithDuration(0, '/page-2.html');
 	});
@@ -690,34 +860,58 @@ describe('Containers', function () {
 	});
 
 	it('should be customizable from context', function () {
-		this.swup.hooks.before('visit:start', (context) => {
-			context.containers = ['#aside'];
+		this.swup.hooks.before('visit:start', (visit) => {
+			visit.containers = ['#aside'];
 		});
-		this.swup.visit('/containers-2.html', { animate: false });
+		this.swup.navigate('/containers-2.html', { animate: false });
 		cy.get('h1').should('contain', 'Containers 1');
 		cy.get('h2').should('contain', 'Heading 2');
 	});
 
 	it('should be customizable from hook context', function () {
-		this.swup.hooks.before('content:replace', (context) => {
-			context.containers = ['#main'];
+		this.swup.hooks.before('content:replace', (visit) => {
+			visit.containers = ['#main'];
 		});
-		this.swup.visit('/containers-2.html', { animate: false });
+		this.swup.navigate('/containers-2.html', { animate: false });
 		cy.get('h1').should('contain', 'Containers 2');
 		cy.get('h2').should('contain', 'Heading 1');
 	});
 
 	it('should force-load on container mismatch', function () {
 		cy.shouldHaveReloadedAfterAction(() => {
-			this.swup.visit('/containers-missing.html');
+			this.swup.navigate('/containers-missing.html');
 		});
 		cy.shouldBeAtPage('/containers-missing.html');
+	});
+});
+
+describe('Persist', function () {
+	beforeEach(() => {
+		cy.visit('/persist-1.html');
+		cy.wrapSwupInstance();
+	});
+
+	it('should persist elements across page loads', function () {
+		let state = Math.random();
+		let newState = Math.random();
+		cy.get('[data-cy="persisted"]').then(($el) => {
+			$el[0].__state = state;
+			this.swup.navigate('/persist-2.html', { animate: false });
+		});
+		cy.shouldBeAtPage('/persist-2.html', 'Persist 2');
+		cy.get('[data-cy="persisted"]').should('contain', 'Persist 1');
+		cy.get('[data-cy="unpersisted"]').should('contain', 'Persist 2');
+		cy.get('[data-cy="persisted"]').then(($el) => {
+			newState = $el[0].__state;
+			expect(state).to.eq(newState);
+		});
 	});
 });
 
 describe('Scrolling', function () {
 	beforeEach(() => {
 		cy.visit('/scrolling-1.html');
+		cy.wrapSwupInstance();
 	});
 
 	it('should scroll to hash element and back to top', function () {
@@ -776,5 +970,25 @@ describe('Scrolling', function () {
 		cy.shouldBeAtPage('/scrolling-2.html#anchor');
 		cy.shouldHaveH1('Scrolling 2');
 		cy.shouldHaveElementInViewport('[data-test-id=anchor]');
+	});
+
+	it('should append the hash if changing visit.to.hash on the fly', function () {
+		cy.window().then(() => {
+			this.swup.hooks.once('visit:start', (visit) => (visit.to.hash = '#anchor'));
+		});
+		cy.get('[data-cy=link-to-page]').click();
+		cy.shouldBeAtPage('/scrolling-2.html#anchor');
+		cy.shouldHaveH1('Scrolling 2');
+		cy.shouldHaveElementInViewport('[data-cy=anchor]');
+	});
+
+	it('should not append the hash if changing visit.scroll.target on the fly', function () {
+		cy.window().then(() => {
+			this.swup.hooks.once('visit:start', (visit) => (visit.scroll.target = '#anchor'));
+		});
+		cy.get('[data-cy=link-to-page]').click();
+		cy.shouldBeAtPage('/scrolling-2.html');
+		cy.shouldHaveH1('Scrolling 2');
+		cy.shouldHaveElementInViewport('[data-cy=anchor]');
 	});
 });

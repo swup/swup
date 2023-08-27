@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
+import { describe, expect, it, vi, afterEach } from 'vitest';
 import Swup from '../../Swup.js';
 import type { PageData } from '../fetchPage.js';
 import { JSDOM } from 'jsdom';
@@ -36,7 +36,6 @@ describe('replaceContent', () => {
 			<div id="container-3" data-from="current"></div>
 		`);
 
-		console.debug(document.documentElement.querySelector('#container-1'));
 		const page = mockPage(/*html*/ `
 			<div id="container-1" data-from="incoming"></div>
 			<div id="container-2" data-from="incoming"></div>`);

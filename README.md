@@ -1,3 +1,9 @@
+<div align="center">
+
+**swup 4 is released  🎉  Check out the [release notes](https://swup.js.org/announcements/swup-4/) and [upgrade guide](https://swup.js.org/getting-started/upgrading/).**
+
+</div>
+
 <br>
 
 <p align="center">
@@ -7,7 +13,7 @@
 <div align="center">
 
 [![npm version](https://img.shields.io/npm/v/swup.svg)](https://www.npmjs.com/package/swup)
-[![Bundle size](https://img.shields.io/bundlephobia/minzip/swup?label=size)](https://bundlephobia.com/package/swup)
+[![Bundle size](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdeno.bundlejs.com%2F%3Fq%3Dswup%26treeshake%3D%257Bdefault%2520as%2520Swup%257D&query=size.compressedSize&label=size)](https://bundlejs.com/?q=swup&treeshake=%5B%7B+default+%7D%5D)
 [![npm downloads](https://img.shields.io/npm/dt/swup.svg)](https://www.npmjs.com/package/swup)
 [![Test status](https://img.shields.io/github/actions/workflow/status/swup/swup/e2e-tests.yml?branch=master&label=tests)](https://github.com/swup/swup/actions/workflows/e2e-tests.yml)
 [![License](https://img.shields.io/github/license/swup/swup.svg)](https://github.com/swup/swup/blob/master/LICENSE)
@@ -84,11 +90,11 @@ Take a look at the [interactive demos](https://swup.js.org/getting-started/demos
 
 ## Having trouble?
 
-If you're having trouble implementing swup, check out the [Common Issues](https://swup.js.org/other/common-issues) section of the docs, look at [closed issues](https://github.com/swup/swup/issues?q=is%3Aissue+is%3Aclosed) or create a [new discussion](https://github.com/swup/swup/discussions/new).
+If you're having trouble implementing swup, check out the [Common Issues](https://swup.js.org/getting-started/common-issues/) section of the docs, look at [closed issues](https://github.com/swup/swup/issues?q=is%3Aissue+is%3Aclosed) or create a [new discussion](https://github.com/swup/swup/discussions/new).
 
 ## Want to Contribute?
 
-<a href="https://github.com/swup/swup/discussions/424">We're looking for maintainers!</a>   👀
+[We're looking for maintainers!](https://github.com/swup/swup/discussions/424)   👀
 
 Become a sponsor on [Open Collective](https://opencollective.com/swup) or support development through
 [GitHub sponsors](https://github.com/sponsors/gmrchk).

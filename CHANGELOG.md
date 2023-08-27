@@ -2,6 +2,82 @@
 
 <!-- ## [Unreleased] -->
 
+## [4.3.4] - 2023-08-24
+
+- Add unique id to visit object
+
+## [4.3.3] - 2023-08-21
+
+- Restore history index on reload
+
+## [4.3.2] - 2023-08-20
+
+- Update history entry on links to the current page
+
+## [4.3.1] - 2023-08-17
+
+- Improve scroll restoration on history visits
+
+## [4.3.0] - 2023-08-16
+
+- Persist elements across page loads using `data-swup-persist`
+- Add `visit.cache` key to control cache behavior
+- Enforce parameter and return types of hook handlers
+
+## [4.2.0] - 2023-08-09
+
+- Add option `linkToSelf` to control behavior for links to the current page
+- Don't create history records for repeated visits to the current page
+- Allow updating `visit.to.hash` and `visit.scroll.target` separately
+
+## [4.1.0] - 2023-07-29
+
+- Prevent unintentional cache mutation
+- Use recommended order for package.json exports
+- Infer element type from delegate selector
+
+## [4.0.1] - 2023-07-28
+
+- Export additional types to allow augmentation from plugins
+
+## [4.0.0] - 2023-07-26
+
+See the [release notes](https://swup.js.org/announcements/swup-4/) and
+[upgrade guide](https://swup.js.org/getting-started/upgrading/) for details.
+
+### Features
+
+- Built-in scroll support
+- New hook system for customizing the page load lifecycle
+- Context object for controlling the transition process
+- Animation scope: add animation classes to html element or to containers
+- Easier customization of official themes
+- Allow pruning cache entries
+
+### Breaking changes
+
+- Hooks replace events: `swup.hooks.on()`
+- Use the `visit` argument in hooks instead of `swup.transition`
+- Container selectors now only match one single element per selector
+- Custom animation attribute renamed to `data-swup-animation`
+- Swup no longer adds `data-swup` attributes to containers
+- Navigation method renamed: `swup.navigate()`
+- Simplified cache API: `cache.set()`
+- Support for custom payload formats was dropped
+
+## [3.1.1] - 2023-06-23
+
+- Accept `#top` as special scroll target
+
+## [3.1.0] - 2023-06-13
+
+- Allow replacing the current history entry instead of pushing to it
+
+## [3.0.8] - 2023-06-04
+
+- Create smaller bundle for modern browsers
+- Make warning about missing transitions less strict
+
 ## [3.0.7] - 2023-05-26
 
 - Update event delegation library
@@ -45,8 +121,7 @@
 
 ### Breaking changes
 
-See [Upgrade instructions for swup 3](https://swup.js.org/getting-started/upgrading)
-for details.
+See [upgrade instructions](https://swup.js.org/getting-started/upgrading-v3/) for details.
 
 - Swup will now wait for the longest transitioned property
 - Swup will no longer add `to-*` classes for the next URL
@@ -92,8 +167,20 @@ for details.
 
 - Fix bug where animateHistoryBrowsing option was ignored for OUT animations
 
-[Unreleased]: https://github.com/swup/swup/compare/3.0.7...HEAD
+[Unreleased]: https://github.com/swup/swup/compare/4.3.4...HEAD
 
+[4.3.4]: https://github.com/swup/swup/releases/tag/4.3.4
+[4.3.3]: https://github.com/swup/swup/releases/tag/4.3.3
+[4.3.2]: https://github.com/swup/swup/releases/tag/4.3.2
+[4.3.1]: https://github.com/swup/swup/releases/tag/4.3.1
+[4.3.0]: https://github.com/swup/swup/releases/tag/4.3.0
+[4.2.0]: https://github.com/swup/swup/releases/tag/4.2.0
+[4.1.0]: https://github.com/swup/swup/releases/tag/4.1.0
+[4.0.1]: https://github.com/swup/swup/releases/tag/4.0.1
+[4.0.0]: https://github.com/swup/swup/releases/tag/4.0.0
+[3.1.1]: https://github.com/swup/swup/releases/tag/3.1.1
+[3.1.0]: https://github.com/swup/swup/releases/tag/3.1.0
+[3.0.8]: https://github.com/swup/swup/releases/tag/3.0.8
 [3.0.7]: https://github.com/swup/swup/releases/tag/3.0.7
 [3.0.6]: https://github.com/swup/swup/releases/tag/3.0.6
 [3.0.5]: https://github.com/swup/swup/releases/tag/3.0.5

@@ -3,7 +3,6 @@
  * or a URL object/string
  *
  */
-
 export class Location extends URL {
 	constructor(url: URL | string, base: string = document.baseURI) {
 		super(url.toString(), base);
@@ -23,7 +22,7 @@ export class Location extends URL {
 	 */
 	static fromElement(el: Element): Location {
 		const href = el.getAttribute('href') || el.getAttribute('xlink:href') || '';
-		return new Location(href!);
+		return new Location(href);
 	}
 
 	/**
