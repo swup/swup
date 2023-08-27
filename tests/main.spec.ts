@@ -408,3 +408,23 @@ test.describe('link resolution', () => {
 		expect(navigated).toBe(true);
 	});
 });
+
+test.describe('redirects', () => {
+	test.beforeEach(async ({ page }) => {
+		await page.route('/redirect-2.html', (route) => {
+			return route.fulfill({ status: 302, headers: { location: '/redirect-3.html' } });
+		});
+		await page.goto('/redirect-1.html');
+	});
+
+	test('follows redirects', async ({ page }) => {
+		await navigateWithSwup(page, '/redirect-2.html');
+		await expectToBeAt(page, '/redirect-3.html', 'Redirect 3');
+	});
+
+	test('does not cache redirects', async ({ page }) => {
+		await navigateWithSwup(page, '/redirect-2.html');
+		await expectToBeAt(page, '/redirect-3.html', 'Redirect 3');
+		await expectToHaveCacheEntries(page, []);
+	});
+});
