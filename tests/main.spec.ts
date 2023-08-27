@@ -19,7 +19,8 @@ import {
 	expectSwupNavigation,
 	pushHistoryState,
 	expectH1,
-	expectH2
+	expectH2,
+	expectToHaveText
 } from './support/commands.js';
 
 declare global {
@@ -681,5 +682,24 @@ test.describe('containers', () => {
 	test('forces reload on container mismatch', async ({ page }) => {
 		await expectFullPageReload(page, () => navigateWithSwup(page, '/containers-missing.html'));
 		await expectToBeAt(page, '/containers-missing.html');
+	});
+});
+
+test.describe('persisting', () => {
+	test.beforeEach(async ({ page }) => {
+		await page.goto('/persist-1.html');
+	});
+
+	test('persists elements across page loads', async ({ page }) => {
+		const persisted = page.locator('[data-testid="persisted"]');
+		const unpersisted = page.locator('[data-testid="unpersisted"]');
+		const state = await persisted.evaluate((el) => el.__state = Math.random());
+		await navigateWithSwup(page, '/persist-2.html');
+		await expectToBeAt(page, '/persist-2.html', 'Persist 2');
+		await expectToHaveText(persisted, 'Persist 1');
+		await expectToHaveText(unpersisted, 'Persist 2');
+		const newState = await persisted.evaluate((el) => el.__state);
+		expect(newState).toBeGreaterThan(0);
+		expect(newState).toBe(state);
 	});
 });

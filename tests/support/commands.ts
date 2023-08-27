@@ -72,6 +72,10 @@ export function expectSwupNavigation(page: Page, action: (page: Page) => Promise
 	return expectFullPageReload(page, action, true);
 }
 
+export function expectToHaveText(locator: Locator, text: string) {
+	return expect(locator).toContainText(text);
+}
+
 export function expectToHaveClass(locator: Locator, className: string, not = false) {
 	const regexp = new RegExp(`\\b${className}\\b`);
 	return not
