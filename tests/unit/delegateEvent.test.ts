@@ -1,7 +1,7 @@
 import { DelegateEvent } from 'delegate-it';
 import { describe, it } from 'vitest';
 
-import { delegateEvent } from '../../helpers/delegateEvent.js';
+import { delegateEvent } from '../../src/helpers/delegateEvent.js';
 
 describe('delegateEvent', () => {
 	it('should return correct types', () => {

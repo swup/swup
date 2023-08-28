@@ -12,8 +12,8 @@ const baseURL = 'http://localhost:8274';
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  testDir: './tests',
-  outputDir: './tests/results',
+  testDir: '../functional',
+  outputDir: '../results',
   /* Timeout individual tests after 5 seconds */
   timeout: 5_000,
   /* Run tests in files in parallel */
@@ -25,7 +25,7 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [['html', { outputFolder: './tests/report' }]],
+  reporter: [['html', { outputFolder: '../report' }]],
 
   expect: {
     /* Timeout async expect matchers after 2 seconds */

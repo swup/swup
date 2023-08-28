@@ -13,7 +13,7 @@ export default defineConfig({
 		environment: 'jsdom',
 		include: [
 			'src/**/__tests__/**/*.?(c|m)[jt]s?(x)',
-			'src/**/?(*.){test,spec}.?(c|m)[jt]s?(x)'
+			'tests/unit/**/?(*.){test,spec}.?(c|m)[jt]s?(x)'
 		],
 		setupFiles: [
 			path.resolve(__dirname, './vitest.setup.ts')

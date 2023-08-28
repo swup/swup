@@ -1,51 +1,9 @@
 import { DelegateEvent } from 'delegate-it';
 import { describe, expect, it, vi } from 'vitest';
 
-import pckg from '../../package.json';
-import Swup, { Options, Plugin } from '../index.js';
-import * as SwupTS from '../Swup.js';
+import Swup from '../../src/index.js';
 
 const baseUrl = window.location.origin;
-
-describe('Exports', () => {
-	it('should export Swup and Options/Plugin types', () => {
-		class SwupPlugin implements Plugin {
-			name = 'SwupPlugin';
-			isSwupPlugin = true as const;
-			mount = () => {};
-			unmount = () => {};
-		}
-
-		const options: Partial<Options> = {
-			animateHistoryBrowsing: false,
-			animationSelector: '[class*="transition-"]',
-			cache: true,
-			containers: ['#swup'],
-			ignoreVisit: (url, { el } = {}) => !!el?.closest('[data-no-swup]'),
-			linkSelector: 'a[href]',
-			plugins: [new SwupPlugin()],
-			resolveUrl: (url) => url,
-			requestHeaders: {
-				'X-Requested-With': 'swup',
-				'Accept': 'text/html, application/xhtml+xml'
-			},
-			skipPopStateHandling: (event) => event.state?.source !== 'swup'
-		};
-
-		const swup = new Swup(options);
-		expect(swup).toBeInstanceOf(Swup);
-	});
-
-	it('should define a version', () => {
-		const swup = new Swup();
-		expect(swup.version).not.toBeUndefined();
-		expect(swup.version).toEqual(pckg.version);
-	});
-
-	it('UMD compatibility: Swup.ts should only have a default export', () => {
-		expect(Object.keys(SwupTS)).toEqual(['default']);
-	});
-});
 
 describe('ignoreVisit', () => {
 	it('should be called with relative URL', () => {

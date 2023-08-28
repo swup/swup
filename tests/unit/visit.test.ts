@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import Swup from '../../Swup.js';
-import { Visit, createVisit } from '../Visit.js';
+import Swup from '../../src/Swup.js';
+import { Visit, createVisit } from '../../src/modules/Visit.js';
 
 class SwupWithPublicVisitMethods extends Swup {
 	public createVisit = createVisit;

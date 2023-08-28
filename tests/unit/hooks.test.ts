@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
-import Swup from '../../Swup.js';
-import { DefaultHandler, Handler, Hooks } from '../Hooks.js';
-import { Visit } from '../Visit.js';
+import Swup from '../../src/Swup.js';
+import { DefaultHandler, Handler, Hooks } from '../../src/modules/Hooks.js';
+import { Visit } from '../../src/modules/Visit.js';
 
 describe('Hook registry', () => {
 	it('should add handlers', () => {

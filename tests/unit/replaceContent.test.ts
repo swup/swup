@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, afterEach } from 'vitest';
-import Swup from '../../Swup.js';
-import type { PageData } from '../fetchPage.js';
+import Swup from '../../src/Swup.js';
+import type { PageData } from '../../src/modules/fetchPage.js';
 import { JSDOM } from 'jsdom';
 
 const getHtml = (body: string): string => {

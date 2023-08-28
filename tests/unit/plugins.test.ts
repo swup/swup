@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import Swup from '../../index.js';
+import Swup from '../../src/Swup.js';
 
 function createPlugin(plugin = {}) {
 	return {
