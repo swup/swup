@@ -1,27 +1,27 @@
 import { test, expect } from '@playwright/test';
 
-import Swup from '../src/Swup.js';
-// const swup = new Swup();
-
+import Swup from '../../src/Swup.js';
 import {
 	clickOnLink,
 	delayRequest,
-	expectAnimationDuration,
-	expectFullPageReload,
 	expectH1,
 	expectH2,
+	expectNoPageReload,
+	expectPageReload,
 	expectRequestHeaders,
 	expectScrollPosition,
-	expectSwupNavigation,
 	expectToBeAt,
-	expectToHaveCacheEntries,
-	expectToHaveCacheEntry,
 	expectToHaveText,
-	navigateWithSwup,
-	pushHistoryState,
 	scrollToPosition,
 	sleep
-} from './support/commands.js';
+} from '../support/commands.js';
+import {
+	expectSwupAnimationDuration,
+	expectSwupToHaveCacheEntries,
+	expectSwupToHaveCacheEntry,
+	navigateWithSwup,
+	pushSwupHistoryState
+} from '../support/swup.js';
 
 declare global {
 	interface Window {
@@ -55,13 +55,13 @@ test.describe('request', () => {
 
 	test('forces reload on server error', async ({ page }) => {
 		await page.route('/error-500.html', route => route.fulfill({ status: 500, body: '<!DOCTYPE html>' }));
-		await expectFullPageReload(page, () => navigateWithSwup(page, '/error-500.html'));
+		await expectPageReload(page, () => navigateWithSwup(page, '/error-500.html'));
 		await expectToBeAt(page, '/error-500.html');
 	});
 
 	test('forces reload on network error', async ({ page }) => {
 		await page.route('/error-network.html', route => route.abort(), { times: 1 });
-		await expectFullPageReload(page, () => navigateWithSwup(page, '/error-network.html'));
+		await expectPageReload(page, () => navigateWithSwup(page, '/error-network.html'));
 		await expectToBeAt(page, '/error-network.html');
 	});
 });
@@ -105,19 +105,19 @@ test.describe('cache', () => {
 	test('caches pages', async ({ page }) => {
 		await navigateWithSwup(page, '/page-2.html');
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
-		await expectToHaveCacheEntry(page, '/page-2.html');
+		await expectSwupToHaveCacheEntry(page, '/page-2.html');
 	});
 
 	test('caches pages from absolute URLs', async ({ page, baseURL }) => {
 		await navigateWithSwup(page, `${baseURL}/page-2.html`);
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
-		await expectToHaveCacheEntry(page, '/page-2.html');
+		await expectSwupToHaveCacheEntry(page, '/page-2.html');
 	});
 
 	test('does not cache pages for POST requests', async ({ page }) => {
 		await navigateWithSwup(page, '/page-2.html', { method: 'POST' });
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
-		await expectToHaveCacheEntries(page, []);
+		await expectSwupToHaveCacheEntries(page, []);
 	});
 
 	test('disables cache from swup options', async ({ page }) => {
@@ -136,7 +136,7 @@ test.describe('cache', () => {
 		await expectToBeAt(page, '/page-1.html', 'Page 1');
 		await navigateWithSwup(page, '/page-2.html');
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
-		await expectToHaveCacheEntries(page, []);
+		await expectSwupToHaveCacheEntries(page, []);
 
 		expect(await page.evaluate(() => window.data.read)).toEqual(false);
 		expect(await page.evaluate(() => window.data.write)).toEqual(false);
@@ -308,17 +308,17 @@ test.describe('events', () => {
 test.describe('animation timing', () => {
 	test('detects animation timing', async ({ page }) => {
 		await page.goto('/animation-duration.html');
-		await expectAnimationDuration(page, 400);
+		await expectSwupAnimationDuration(page, 400);
 	});
 
 	test('detects complex animation timing', async ({ page }) => {
 		await page.goto('/animation-complex.html');
-		await expectAnimationDuration(page, 600);
+		await expectSwupAnimationDuration(page, 600);
 	});
 
 	test('detects keyframe timing', async ({ page }) => {
 		await page.goto('/animation-keyframes.html');
-		await expectAnimationDuration(page, 700);
+		await expectSwupAnimationDuration(page, 700);
 	});
 });
 
@@ -365,7 +365,7 @@ test.describe('link resolution', () => {
 	});
 
 	test('skips links to different origins', async ({ page }) => {
-		await expectFullPageReload(page, () => clickOnLink(page, 'https://example.net'));
+		await expectPageReload(page, () => clickOnLink(page, 'https://example.net'));
 	});
 
 	test('follows relative links', async ({ page }) => {
@@ -415,8 +415,8 @@ test.describe('link resolution', () => {
 
 	test('ignores popstate events for equal resolved urls', async ({ page }) => {
 		await page.evaluate(() => (window._swup.options.resolveUrl = () => '/page-1.html'));
-		await pushHistoryState(page, '/pushed-page-1/');
-		await pushHistoryState(page, '/pushed-page-2/');
+		await pushSwupHistoryState(page, '/pushed-page-1/');
+		await pushSwupHistoryState(page, '/pushed-page-2/');
 		await sleep(100);
 		await page.goBack();
 		await expectToBeAt(page, '/pushed-page-1/', 'Link resolution');
@@ -437,7 +437,7 @@ test.describe('redirects', () => {
 	test('does not cache redirects', async ({ page }) => {
 		await navigateWithSwup(page, '/redirect-2.html');
 		await expectToBeAt(page, '/redirect-3.html', 'Redirect 3');
-		await expectToHaveCacheEntries(page, []);
+		await expectSwupToHaveCacheEntries(page, []);
 	});
 });
 
@@ -447,24 +447,24 @@ test.describe('ignoring visits', () => {
 	});
 
 	test('ignores links with data-no-swup attr', async ({ page }) => {
-		await expectFullPageReload(page, () => page.getByTestId('ignore-element').click());
+		await expectPageReload(page, () => page.getByTestId('ignore-element').click());
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
 	});
 
 	test('ignores links with data-no-swup parent', async ({ page }) => {
-		await expectFullPageReload(page, () =>  page.getByTestId('ignore-parent').click());
+		await expectPageReload(page, () =>  page.getByTestId('ignore-parent').click());
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
 	});
 
 	test('ignores visits in ignoreVisit', async ({ page }) => {
 		await page.evaluate(() => window._swup.options.ignoreVisit = () => true);
-		await expectFullPageReload(page, () => navigateWithSwup(page, '/page-2.html'));
+		await expectPageReload(page, () => navigateWithSwup(page, '/page-2.html'));
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
 	});
 
 	test('ignores links via custom ignored path', async ({ page }) => {
 		await page.evaluate(() => window._swup.options.ignoreVisit = (url) => url.endsWith('#hash'));
-		await expectFullPageReload(page, () => page.getByTestId('ignore-path-end').click());
+		await expectPageReload(page, () => page.getByTestId('ignore-path-end').click());
 		await expectToBeAt(page, '/page-2.html#hash', 'Page 2');
 	});
 });
@@ -475,13 +475,13 @@ test.describe('link selector', () => {
 	});
 
 	test('ignores SVG links by default', async ({ page }) => {
-		await expectFullPageReload(page, () => page.locator('svg a').click());
+		await expectPageReload(page, () => page.locator('svg a').click());
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
 	});
 
 	test('follow SVG links when added to selector', async ({ page }) => {
 		await page.evaluate(() => window._swup.options.linkSelector = 'a[href], svg a[*|href]');
-		await expectSwupNavigation(page, () => page.locator('svg a').click());
+		await expectNoPageReload(page, () => page.locator('svg a').click());
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
 	});
 });
@@ -584,8 +584,8 @@ test.describe('history', () => {
 	});
 
 	test('ignores foreign popstate entries', async ({ page }) => {
-		await pushHistoryState(page, '/page-2.html', { source: 'not-swup' });
-		await pushHistoryState(page, '/page-3.html', { source: 'not-swup' });
+		await pushSwupHistoryState(page, '/page-2.html', { source: 'not-swup' });
+		await pushSwupHistoryState(page, '/page-3.html', { source: 'not-swup' });
 		await page.goBack();
 		await expectToBeAt(page, '/page-2.html', 'History');
 	});
@@ -665,7 +665,7 @@ test.describe('visit object', () => {
 		await page.evaluate(() => {
 			window._swup.hooks.on('visit:start', (visit) => visit.animation.animate = false);
 		});
-		await expectAnimationDuration(page, 0);
+		await expectSwupAnimationDuration(page, 0);
 	});
 });
 
@@ -684,7 +684,7 @@ test.describe('containers', () => {
 	});
 
 	test('forces reload on container mismatch', async ({ page }) => {
-		await expectFullPageReload(page, () => navigateWithSwup(page, '/containers-missing.html'));
+		await expectPageReload(page, () => navigateWithSwup(page, '/containers-missing.html'));
 		await expectToBeAt(page, '/containers-missing.html');
 	});
 });
