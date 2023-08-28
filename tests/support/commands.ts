@@ -99,7 +99,11 @@ export async function expectAnimationDuration(page: Page, duration: number) {
 	];
 	let timing = { start: 0, end: 0, outStart: 0, outEnd: 0, inStart: 0, inEnd: 0 };
 
-	// await page.exposeBinding('measure', async (_, key) => timing[key] = performance.now());
+	// Make sure we're ready to animate
+	await page.waitForSelector('html.swup-enabled');
+	// Make sure we're not disabling animations
+	await page.emulateMedia({ reducedMotion: null });
+
 	await page.evaluate(() => {
 		window.data = {};
 		const measure = (key, value?: number) => window.data[key] = value ?? performance.now();
@@ -116,16 +120,13 @@ export async function expectAnimationDuration(page: Page, duration: number) {
 	});
 
 	await navigateWithSwup(page, page.url());
-	// await page.waitForFunction(() => window.data.end > 0);
-	await expect(async () => expect(await page.evaluate(() => window.data.end || 0)).toBeGreaterThan(0)).toPass();
-	// await expect(async () => expect(timing.end).toBeGreaterThan(0)).toPass();
-	// await sleep(100);
-
+	await page.waitForFunction(() => window.data.end > 0);
 	timing = await page.evaluate(() => window.data);
+
 	const outDuration = timing.outEnd - timing.outStart;
+	const inDuration = timing.inEnd - timing.inStart;
 	expect(outDuration).toBeGreaterThanOrEqual(expectedRange[0]);
 	expect(outDuration).toBeLessThanOrEqual(expectedRange[1]);
-	const inDuration = timing.inEnd - timing.inStart;
 	expect(inDuration).toBeGreaterThanOrEqual(expectedRange[0]);
 	expect(inDuration).toBeLessThanOrEqual(expectedRange[1]);
 }

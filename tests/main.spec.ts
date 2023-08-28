@@ -5,22 +5,22 @@ import Swup from '../src/Swup.js';
 
 import {
 	clickOnLink,
-	expectRequestHeaders,
-	expectToBeAt,
-	expectToHaveCacheEntry,
-	expectFullPageReload,
-	navigateWithSwup,
-	expectAnimationDuration,
-	sleep,
-	expectToHaveCacheEntries,
 	delayRequest,
-	scrollToPosition,
-	expectScrollPosition,
-	expectSwupNavigation,
-	pushHistoryState,
+	expectAnimationDuration,
+	expectFullPageReload,
 	expectH1,
 	expectH2,
-	expectToHaveText
+	expectRequestHeaders,
+	expectScrollPosition,
+	expectSwupNavigation,
+	expectToBeAt,
+	expectToHaveCacheEntries,
+	expectToHaveCacheEntry,
+	expectToHaveText,
+	navigateWithSwup,
+	pushHistoryState,
+	scrollToPosition,
+	sleep
 } from './support/commands.js';
 
 declare global {
