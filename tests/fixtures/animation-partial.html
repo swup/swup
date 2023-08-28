@@ -7,11 +7,11 @@
     <link rel="stylesheet" href="/assets/main.css">
     <script src="/dist/Swup.umd.js"></script>
     <style>
-        html.is-changing .transition-default {
+        html.is-changing .transition-custom {
             transition: 0.4s opacity;
             opacity: 1;
         }
-        html.is-animating .transition-default {
+        html.is-animating .transition-custom {
             opacity: 0;
         }
     </style>
@@ -19,12 +19,14 @@
 <body>
     <header class="header">
         <ul>
-            <li><a href="/page-1.html">Page 1</a></li>
-            <li><a href="/page-2.html">Page 2</a></li>
-            <li><a href="/page-3.html">Page 3</a></li>
+            <li><a href="/animation-duration.html">Duration</a></li>
+            <li><a href="/animation-complex.html">Complex</a></li>
+            <li><a href="/animation-keyframes.html">Keyframes</a></li>
+            <li><a href="/animation-partial.html">Partial</a></li>
+            <li><a href="/animation-none.html">None</a></li>
         </ul>
     </header>
-    <main id="swup" class="wrapper transition-default">
+    <main id="swup" class="wrapper transition-custom">
         <h1>Animation duration: partial</h1>
     </main>
     <aside class="transition-none"></aside>

@@ -8,15 +8,14 @@
     <script src="/dist/Swup.umd.js"></script>
     <style>
         html.is-changing .transition-custom {
-            animation: test-animation 400ms 300ms;
+            animation: page-animation 400ms 300ms;
             animation-fill-mode: both;
             transition: none;
-            opacity: initial
         }
         html.is-rendering .transition-custom {
             animation-direction: reverse;
         }
-        @keyframes test-animation {
+        @keyframes page-animation {
             from {
                 transform: translateY(0);
                 opacity: 1;
@@ -31,9 +30,11 @@
 <body>
     <header class="header">
         <ul>
-            <li><a href="/page-1.html">Page 1</a></li>
-            <li><a href="/page-2.html">Page 2</a></li>
-            <li><a href="/page-3.html">Page 3</a></li>
+            <li><a href="/animation-duration.html">Duration</a></li>
+            <li><a href="/animation-complex.html">Complex</a></li>
+            <li><a href="/animation-keyframes.html">Keyframes</a></li>
+            <li><a href="/animation-partial.html">Partial</a></li>
+            <li><a href="/animation-none.html">None</a></li>
         </ul>
     </header>
     <main id="swup" class="wrapper transition-custom">

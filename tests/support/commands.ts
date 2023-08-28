@@ -121,8 +121,7 @@ export async function expectAnimationDuration(page: Page, duration: number) {
 
 	await navigateWithSwup(page, page.url());
 	await expect(async () => expect(timing.end).toBeGreaterThan(0)).toPass();
-
-	// expect(timing).toMatchObject({ test: 1 });
+	await sleep(100);
 
 	const outDuration = timing.outEnd - timing.outStart;
 	expect(outDuration).toBeGreaterThanOrEqual(expectedRange[0]);

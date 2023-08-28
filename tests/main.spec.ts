@@ -286,23 +286,19 @@ test.describe('events', () => {
 	});
 
 	test('triggers custom dom events', async ({ page }) => {
-		let triggered = false;
-		await page.exposeBinding('triggered', async (_, data) => (triggered = data));
 		await page.evaluate(() => {
-			document.addEventListener('swup:link:click', (event) => window.triggered(event.detail.hook));
+			document.addEventListener('swup:link:click', (event) => window.data = event.detail.hook);
 		});
 		await clickOnLink(page, '/page-2.html');
-		expect(triggered).toStrictEqual('link:click');
+		expect(await page.evaluate(() => window.data)).toStrictEqual('link:click');
 	});
 
 	test('prevents the default click event', async ({ page }) => {
-		let prevented = null;
-		await page.exposeBinding('prevented', async (_, data) => (prevented = data));
 		await page.evaluate(() => {
-			document.documentElement.addEventListener('click', (event) => window.prevented(event.defaultPrevented));
+			document.documentElement.addEventListener('click', (event) => window.data = event.defaultPrevented);
 		});
 		await clickOnLink(page, '/page-2.html');
-		expect(prevented).toStrictEqual(true);
+		expect(await page.evaluate(() => window.data)).toStrictEqual(true);
 	});
 });
 
@@ -426,8 +422,10 @@ test.describe('link resolution', () => {
 
 test.describe('redirects', () => {
 	test.beforeEach(async ({ page }) => {
-		await page.route('/redirect-2.html', (route) => {
-			return route.fulfill({ status: 302, headers: { location: '/redirect-3.html' } });
+		await page.route('/redirect-2.html', (route, request) => {
+			const url = request.url().replace('/redirect-2.html', '/redirect-3.html');
+			const headers = { ...request.headers(), Location: url };
+			route.continue({ url, headers });
 		});
 		await page.goto('/redirect-1.html');
 	});
