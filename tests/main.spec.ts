@@ -236,6 +236,8 @@ test.describe('markup', () => {
 	});
 
 	test('sets animation classes on html element', async ({ page }) => {
+		await page.waitForSelector('html.swup-enabled');
+
 		await page.evaluate(() => {
 			const el = document.documentElement;
 			window.data = {};
@@ -246,8 +248,8 @@ test.describe('markup', () => {
 		});
 
 		await navigateWithSwup(page, '/page-2.html');
-		await page.waitForFunction(() => window.data.after !== undefined);
 
+		await page.waitForFunction(() => window.data.after !== undefined);
 		expect(await page.evaluate(() => window.data)).toMatchObject({
 			before: 'swup-enabled',
 			leave: 'swup-enabled is-changing is-leaving is-animating',
@@ -257,6 +259,8 @@ test.describe('markup', () => {
 	});
 
 	test('sets animation classes on container element', async ({ page }) => {
+		await page.waitForSelector('html.swup-enabled');
+
 		await page.evaluate(() => window._swup.options.animationScope = 'containers');
 		await page.evaluate(() => {
 			const el = () => document.querySelector('[data-testid="container"]');
