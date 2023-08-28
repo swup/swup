@@ -39,6 +39,10 @@ export function expectToHaveClass(locator: Locator, className: string, not = fal
 		: expect(locator).toHaveClass(regexp);
 }
 
+export function expectNotToHaveClass(locator: Locator, className: string) {
+	return expectToHaveClass(locator, className, true);
+}
+
 export function expectToHaveClasses(locator: Locator, classNames: string, not = false) {
 	const classes = classNames.split(' ');
 	return Promise.all(classes.map(className => expectToHaveClass(locator, className, not)));
