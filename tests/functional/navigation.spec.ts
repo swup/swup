@@ -1,6 +1,6 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 
-import { clickOnLink, delayRequest, expectToBeAt, sleep } from '../support/commands.js';
+import { clickOnLink, delayRequest, expectToBeAt } from '../support/commands.js';
 import { navigateWithSwup } from '../support/swup.js';
 
 test.describe('navigation', () => {
