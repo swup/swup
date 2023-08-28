@@ -696,21 +696,26 @@ test.describe('containers', () => {
 test.describe('persisting', () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/persist-1.html');
+		await page.waitForSelector('html.swup-enabled');
 	});
 
 	test('persists elements across page loads', async ({ page }) => {
-		const rand = Math.random();
-		const persisted = page.getByTestId('persisted');
-		const unpersisted = page.getByTestId('unpersisted');
-		const state = await persisted.evaluate((el, rand) => el.__state = rand, rand);
+		const identifier = String(Math.random());
+		const persistedEl = page.getByTestId('persisted');
+		const unpersistedEl = page.getByTestId('unpersisted');
+
+		const state = await persistedEl.evaluate((el, id) => el.dataset.id = id, identifier);
+
 		await navigateWithSwup(page, '/persist-2.html');
+
 		await expectToBeAt(page, '/persist-2.html', 'Persist 2');
-		await expectToHaveText(persisted, 'Persist 1');
-		await expectToHaveText(unpersisted, 'Persist 2');
-		const newState = await persisted.evaluate((el) => el.__state);
-		expect(newState).toBeGreaterThan(0);
-		expect(newState).toBe(state);
-		expect(newState).toBe(rand);
+		await expectToHaveText(persistedEl, 'Persist 1');
+		await expectToHaveText(unpersistedEl, 'Persist 2');
+
+		const persistedState = await persistedEl.evaluate((el) => el.dataset.id);
+		expect(persistedState).not.toBeFalsy();
+		expect(persistedState).toBe(state);
+		expect(persistedState).toBe(identifier);
 	});
 });
 
