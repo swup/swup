@@ -39,6 +39,7 @@
     "test:unit:watch": "vitest --config ./tests/config/vitest.config.ts",
     "test:e2e": "npx playwright test --config ./tests/config/playwright.config.ts",
     "test:e2e:dev": "npx playwright test --ui",
+    "test:e2e:install": "npx playwright install --with-deps",
     "test:e2e:instrument": "nyc instrument --compact=false dist tests/fixtures/dist",
     "test:e2e:serve": "npx serve -n -S -L -p 8274 --config ./tests/config/serve.json",
     "test:e2e:start": "npm run test:e2e:instrument && npm run test:e2e:serve",
