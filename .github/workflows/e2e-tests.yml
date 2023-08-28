@@ -22,7 +22,7 @@ jobs:
     - name: Install browsers
       run: npm run test:e2e:install
     - name: Run tests
-      run: npm run test:e2e
+      run: npm run test
     - uses: actions/upload-artifact@v3
       if: always()
       with:
