@@ -26,7 +26,6 @@ import {
 declare global {
 	interface Window {
 		_swup: Swup;
-		_beforeReload?: boolean;
 		data: any;
 	}
 }

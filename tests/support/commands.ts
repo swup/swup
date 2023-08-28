@@ -61,12 +61,10 @@ export async function expectToHaveCacheEntries(page: Page, urls: string[]) {
 }
 
 export async function expectFullPageReload(page: Page, action: (page: Page) => Promise<void> | void, not: boolean = false) {
-	let fetchedInBackground: boolean;
-	page.on('request', (request) => fetchedInBackground = ['xhr', 'fetch'].includes(request.resourceType()));
+	const origin = () => page.evaluate(() => window.performance.timeOrigin);
+	const before = await origin();
 	await action(page);
-	await page.waitForLoadState('load');
-	await expect(async () => expect(fetchedInBackground).toBeDefined()).toPass();
-	await expect(async () => expect(fetchedInBackground).toEqual(not ? false : true)).toPass();
+	await expect(async () => expect(await origin()).not.toBe(before)).toPass();
 }
 
 export function expectSwupNavigation(page: Page, action: (page: Page) => Promise<void> | void) {
@@ -94,7 +92,7 @@ export function expectNotToHaveClasses(locator: Locator, classNames: string) {
 }
 
 export async function expectAnimationDuration(page: Page, duration: number) {
-	const tolerance = 0.25; // 25% plus/minus
+	const tolerance = duration ? 0.25 : 0; // 25% plus/minus
 	const expectedRange: [number, number] = [
 		duration * (1 - tolerance),
 		duration * (1 + tolerance)
