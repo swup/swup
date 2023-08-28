@@ -425,11 +425,7 @@ test.describe('link resolution', () => {
 
 test.describe('redirects', () => {
 	test.beforeEach(async ({ page }) => {
-		await page.route('/redirect-2.html', (route, request) => {
-			const url = request.url().replace('/redirect-2.html', '/redirect-3.html');
-			const headers = { ...request.headers(), Location: url };
-			route.continue({ url, headers });
-		});
+		// The redirects are handled by the server in /serve.json
 		await page.goto('/redirect-1.html');
 	});
 
