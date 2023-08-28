@@ -55,7 +55,7 @@ test.describe('request', () => {
 	});
 
 	test('forces reload on server error', async ({ page }) => {
-		await page.route('/error-500.html', route => route.fulfill({ status: 500 }));
+		await page.route('/error-500.html', route => route.fulfill({ status: 500, body: '<!DOCTYPE html>' }));
 		await expectFullPageReload(page, () => navigateWithSwup(page, '/error-500.html'));
 		await expectToBeAt(page, '/error-500.html');
 	});
@@ -699,7 +699,7 @@ test.describe('persisting', () => {
 		const rand = Math.random();
 		const persisted = page.getByTestId('persisted');
 		const unpersisted = page.getByTestId('unpersisted');
-		const state = await persisted.evaluate((el) => el.__state = rand);
+		const state = await persisted.evaluate((el, rand) => el.__state = rand, rand);
 		await navigateWithSwup(page, '/persist-2.html');
 		await expectToBeAt(page, '/persist-2.html', 'Persist 2');
 		await expectToHaveText(persisted, 'Persist 1');

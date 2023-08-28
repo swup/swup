@@ -65,7 +65,8 @@ export async function expectFullPageReload(page: Page, action: (page: Page) => P
 	page.on('request', (request) => fetchedInBackground = ['xhr', 'fetch'].includes(request.resourceType()));
 	await action(page);
 	await page.waitForLoadState('load');
-	expect(async () => expect(fetchedInBackground).toBe(not ? true : false)).toPass();
+	await expect(async () => expect(fetchedInBackground).toBeDefined()).toPass();
+	await expect(async () => expect(fetchedInBackground).toEqual(not ? false : true)).toPass();
 }
 
 export function expectSwupNavigation(page: Page, action: (page: Page) => Promise<void> | void) {
@@ -98,31 +99,31 @@ export async function expectAnimationDuration(page: Page, duration: number) {
 		duration * (1 - tolerance),
 		duration * (1 + tolerance)
 	];
+	let timing = { start: 0, end: 0, outStart: 0, outEnd: 0, inStart: 0, inEnd: 0 };
 
-	const timing = {
-		start: 0,
-		end: 0,
-		outStart: 0,
-		outEnd: 0,
-		inStart: 0,
-		inEnd: 0,
-	};
-
-	await page.exposeBinding('measure', async (_, key) => timing[key] = performance.now());
+	// await page.exposeBinding('measure', async (_, key) => timing[key] = performance.now());
 	await page.evaluate(() => {
-		window._swup.hooks.on('visit:start', () => window.measure('start'));
-		window._swup.hooks.on('visit:end', () => window.measure('end'));
-		window._swup.hooks.on('animation:out:start', () => window.measure('outStart'));
-		window._swup.hooks.on('animation:out:start', () => document.body.offsetWidth);
-		window._swup.hooks.on('animation:out:end', () => window.measure('outEnd'));
-		window._swup.hooks.on('animation:in:start', () => window.measure('inStart'));
-		window._swup.hooks.on('animation:in:end', () => window.measure('inEnd'));
+		window.data = {};
+		const measure = (key, value?: number) => window.data[key] = value ?? performance.now();
+		window._swup.hooks.on('visit:start', () => measure('start'));
+		window._swup.hooks.on('visit:end', () => measure('end'));
+		window._swup.hooks.on('animation:out:start', () => measure('outStart'));
+		window._swup.hooks.on('animation:out:end', () => measure('outEnd'));
+		window._swup.hooks.on('animation:in:start', () => measure('inStart'));
+		window._swup.hooks.on('animation:in:end', () => measure('inEnd'));
+		window._swup.hooks.on('animation:skip', () => measure('inStart', 0));
+		window._swup.hooks.on('animation:skip', () => measure('inEnd', 0));
+		window._swup.hooks.on('animation:skip', () => measure('outStart', 0));
+		window._swup.hooks.on('animation:skip', () => measure('outEnd', 0));
 	});
 
 	await navigateWithSwup(page, page.url());
-	await expect(async () => expect(timing.end).toBeGreaterThan(0)).toPass();
-	await sleep(100);
+	// await page.waitForFunction(() => window.data.end > 0);
+	await expect(async () => expect(await page.evaluate(() => window.data.end || 0)).toBeGreaterThan(0)).toPass();
+	// await expect(async () => expect(timing.end).toBeGreaterThan(0)).toPass();
+	// await sleep(100);
 
+	timing = await page.evaluate(() => window.data);
 	const outDuration = timing.outEnd - timing.outStart;
 	expect(outDuration).toBeGreaterThanOrEqual(expectedRange[0]);
 	expect(outDuration).toBeLessThanOrEqual(expectedRange[1]);
