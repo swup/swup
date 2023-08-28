@@ -12,7 +12,9 @@ const baseURL = 'http://localhost:8274';
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
+  /* Directory containing the test files */
   testDir: '../functional',
+  /* Folder for test artifacts: screenshots, videos, ... */
   outputDir: '../results',
   /* Timeout individual tests after 5 seconds */
   timeout: 5_000,
@@ -27,7 +29,16 @@ export default defineConfig({
   // Limit the number of failures on CI to save resources
   maxFailures: process.env.CI ? 10 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [['html', { outputFolder: '../report' }]],
+  reporter: process.env.CI ? [
+    ['github'],
+    ['dot'],
+    ['json', { outputFile: '../report/results.json' }],
+    ['html', { outputFolder: '../report', open: 'never' }]
+  ] : [
+    ['list'],
+    ['json', { outputFile: '../report/results.json' }],
+    ['html', { outputFolder: '../report', open: 'on-failure' }]
+  ],
 
   expect: {
     /* Timeout async expect matchers after 2 seconds */
