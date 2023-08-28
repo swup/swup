@@ -240,10 +240,10 @@ test.describe('markup', () => {
 		await page.evaluate(() => {
 			const el = document.documentElement;
 			window.data = {};
-			window._swup.hooks.on('visit:start', () => window.data.before = el?.className);
-			window._swup.hooks.on('visit:end', () => window.data.after = el?.className);
-			window._swup.hooks.on('animation:out:start', () => window.data.leave = el?.className);
-			window._swup.hooks.on('animation:in:start', () => window.data.enter = el?.className);
+			window._swup.hooks.on('visit:start', () => window.data.before = el.className);
+			window._swup.hooks.on('visit:end', () => window.data.after = el.className);
+			window._swup.hooks.on('animation:out:start', () => window.data.leave = el.className);
+			window._swup.hooks.on('animation:in:start', () => window.data.enter = el.className);
 		});
 
 		await navigateWithSwup(page, '/page-2.html');
@@ -260,7 +260,7 @@ test.describe('markup', () => {
 	test('sets animation classes on container element', async ({ page }) => {
 		await page.evaluate(() => window._swup.options.animationScope = 'containers');
 		await page.evaluate(() => {
-			const el = () => document.querySelector('#swup');
+			const el = () => document.querySelector('[data-testid="container"]');
 			window.data = {};
 			window._swup.hooks.on('visit:start', () => window.data.before = el()?.className);
 			window._swup.hooks.on('visit:end', () => window.data.after = el()?.className);
@@ -652,7 +652,7 @@ test.describe('visit object', () => {
 		expect(await page.evaluate(() => window.data)).toMatchObject({ popstate: true, event: true });
 	});
 
-	test('passes along the custom animation', async ({ page }) => {
+	test('passes along custom animation', async ({ page }) => {
 		const link = page.locator('a[data-swup-animation]');
 		const animation = await link.getAttribute('data-swup-animation');
 		await page.evaluate(() => {
@@ -660,6 +660,13 @@ test.describe('visit object', () => {
 		});
 		await link.click();
 		expect(await page.evaluate(() => window.data)).toEqual(animation);
+	});
+
+	test('allows disabling animations', async ({ page }) => {
+		await page.evaluate(() => {
+			window._swup.hooks.on('visit:start', (visit) => visit.animation.animate = false);
+		});
+		expectAnimationDuration(page, 0);
 	});
 });
 
@@ -689,9 +696,10 @@ test.describe('persisting', () => {
 	});
 
 	test('persists elements across page loads', async ({ page }) => {
+		const rand = Math.random();
 		const persisted = page.getByTestId('persisted');
 		const unpersisted = page.getByTestId('unpersisted');
-		const state = await persisted.evaluate((el) => el.__state = Math.random());
+		const state = await persisted.evaluate((el) => el.__state = rand);
 		await navigateWithSwup(page, '/persist-2.html');
 		await expectToBeAt(page, '/persist-2.html', 'Persist 2');
 		await expectToHaveText(persisted, 'Persist 1');
@@ -699,6 +707,7 @@ test.describe('persisting', () => {
 		const newState = await persisted.evaluate((el) => el.__state);
 		expect(newState).toBeGreaterThan(0);
 		expect(newState).toBe(state);
+		expect(newState).toBe(rand);
 	});
 });
 
