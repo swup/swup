@@ -2,26 +2,30 @@ name: E2E tests
 
 on:
   push:
-    branches: [master, next]
+    branches: [ main, master, next ]
   pull_request:
   workflow_dispatch:
 
 jobs:
-  checkout-and-test:
-    name: Run tests
+  test:
+    timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
-        uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - name: Run cypress tests
-        uses: cypress-io/github-action@v5
-        with:
-          build: npm run build
-          command: npm run test:ci
-          record: true
-        env:
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 18
+    - name: Install dependencies
+      run: npm ci
+    - name: Bundle library
+      run: npm run build
+    - name: Install browsers
+      run: npx playwright install --with-deps
+    - name: Run tests
+      run: npx playwright test
+    - uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
