@@ -1,10 +1,11 @@
 import { test, expect } from '@playwright/test';
 
-import { navigateWithSwup } from '../support/swup.js';
+import { navigateWithSwup, waitForSwup } from '../support/swup.js';
 
 test.describe('markup', () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/page-1.html');
+		await waitForSwup(page);
 	});
 
 	test('adds swup class to html element', async ({ page }) => {
