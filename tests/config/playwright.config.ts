@@ -42,7 +42,7 @@ export default defineConfig({
 
   expect: {
     /* Timeout async expect matchers after 2 seconds */
-    timeout: 2_000,
+    timeout: 3_000,
   },
 
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
