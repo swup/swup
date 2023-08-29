@@ -31,13 +31,13 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: process.env.CI ? [
     ['dot'],
-    ['blob'],
     ['github'],
-    ['html', { outputFolder: '../report', open: 'never' }],
-    ['json', { outputFile: '../report/report.json' }],
+    ['html', { outputFolder: '../reports/html', open: 'never' }],
+    ['json', { outputFile: '../reports/json/report.json' }],
+    ['blob', { outputDir: '../reports/blobs' }],
   ] : [
     ['list'],
-    ['html', { outputFolder: '../report', open: 'on-failure' }],
+    ['html', { outputFolder: '../reports/html', open: 'on-failure' }],
   ],
 
   expect: {
