@@ -1,12 +1,12 @@
 import { test, expect } from '@playwright/test';
 
 import { expectToBeAt, expectToHaveText } from '../support/commands.js';
-import { navigateWithSwup } from '../support/swup.js';
+import { navigateWithSwup, waitForSwup } from '../support/swup.js';
 
 test.describe('persisting', () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/persist-1.html');
-		await page.waitForSelector('html.swup-enabled');
+		await waitForSwup(page);
 	});
 
 	test('persists elements across page loads', async ({ page }) => {

@@ -3,6 +3,10 @@ import type { Page } from '@playwright/test';
 
 import type Swup from '../../src/Swup.js';
 
+export async function waitForSwup(page: Page) {
+	await page.waitForSelector('html.swup-enabled');
+}
+
 export function navigateWithSwup(page: Page, url: string, options?: Parameters<Swup['navigate']>[1]) {
 	return page.evaluate(({ url, options }) => window._swup.navigate(url, options), { url, options });
 }
@@ -32,7 +36,7 @@ export async function expectSwupAnimationDuration(page: Page, duration: number) 
 	let timing = { start: 0, end: 0, outStart: 0, outEnd: 0, inStart: 0, inEnd: 0 };
 
 	// Make sure we're ready to animate
-	await page.waitForSelector('html.swup-enabled');
+	await waitForSwup(page);
 	// Make sure we're not disabling animations
 	await page.emulateMedia({ reducedMotion: null });
 

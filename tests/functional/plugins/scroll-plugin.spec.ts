@@ -1,10 +1,12 @@
 import { test, expect } from '@playwright/test';
 
 import { expectScrollPosition, expectToBeAt } from '../../support/commands.js';
+import { waitForSwup } from '../../support/swup.js';
 
 test.describe('scroll-plugin', () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/plugins/scroll-plugin-1.html');
+		await waitForSwup(page);
 	});
 
 	test('scrolls to anchor and back to top', async ({ page }) => {
