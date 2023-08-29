@@ -24,20 +24,22 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 1 : 0,
-  /* Disable parallel workers on CI, use default locally. */
-  workers: process.env.CI ? 1 : undefined,
+  /* Limit parallel workers on CI, use default locally. */
+  workers: process.env.CI ? 4 : undefined,
   // Limit the number of failures on CI to save resources
   maxFailures: process.env.CI ? 10 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: process.env.CI ? [
-    ['github'],
     ['dot'],
+    ['github'],
+    ['html', { outputFolder: '../report', open: 'never' }],
     ['json', { outputFile: '../report/results.json' }],
-    ['html', { outputFolder: '../report', open: 'never' }]
+    ['blob'],
   ] : [
     ['list'],
+    ['html', { outputFolder: '../report', open: 'on-failure' }],
     ['json', { outputFile: '../report/results.json' }],
-    ['html', { outputFolder: '../report', open: 'on-failure' }]
+    ['blob'],
   ],
 
   expect: {
@@ -48,11 +50,13 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: baseURL,
+    baseURL,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
     /* Capture screenshot after each test failure. */
     screenshot: 'only-on-failure',
+    /* Capture video if failed tests. */
+    video: 'retain-on-failure',
   },
 
   /* Configure projects for major browsers */
