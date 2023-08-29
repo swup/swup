@@ -81,10 +81,9 @@ export function scrollToPosition(page: Page,y: number) {
 	return page.evaluate((y) => window.scrollTo(0, y), y);
 }
 
-export async function expectScrollPosition(page: Page, y: number) {
+export async function expectScrollPosition(page: Page, expected: number) {
+	const pos = () => page.evaluate(() => window.scrollY);
 	await expect(
-		async () => expect(
-			await page.evaluate(() => window.scrollY)
-		).toEqual(y)
+		async () => expect(await pos()).toEqual(expected)
 	).toPass();
 }

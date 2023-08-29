@@ -13,7 +13,7 @@ test.describe('scrolling', () => {
 		await page.getByTestId('link-to-anchor').click();
 		await expect(page.getByTestId('anchor')).toBeInViewport();
 		await page.getByTestId('link-to-page').click();
-		expectScrollPosition(page, 0);
+		await expectScrollPosition(page, 0);
 	});
 
 	test('scrolls to anchor with path', async ({ page }) => {
@@ -25,7 +25,7 @@ test.describe('scrolling', () => {
 		await page.getByTestId('link-to-self-anchor').click();
 		await expect(page.getByTestId('anchor')).toBeInViewport();
 		await page.getByTestId('link-to-top').click();
-		expectScrollPosition(page, 0);
+		await expectScrollPosition(page, 0);
 	});
 
 	test('scrolls to id-based anchor', async ({ page }) => {
@@ -57,7 +57,7 @@ test.describe('scrolling', () => {
 
 	test('scrolls to requested hash after navigation', async ({ page }) => {
 		await page.getByTestId('link-to-page-anchor').click();
-		expectToBeAt(page, '/scrolling-2.html#anchor', 'Scrolling 2');
+		await expectToBeAt(page, '/scrolling-2.html#anchor', 'Scrolling 2');
 		await expect(page.getByTestId('anchor')).toBeInViewport();
 	});
 
@@ -66,7 +66,7 @@ test.describe('scrolling', () => {
 			window._swup.hooks.once('visit:start', (visit) => (visit.to.hash = '#anchor'));
 		});
 		await page.getByTestId('link-to-page').click();
-		expectToBeAt(page, '/scrolling-2.html#anchor', 'Scrolling 2');
+		await expectToBeAt(page, '/scrolling-2.html#anchor', 'Scrolling 2');
 		await expect(page.getByTestId('anchor')).toBeInViewport();
 	});
 
@@ -75,7 +75,7 @@ test.describe('scrolling', () => {
 			window._swup.hooks.once('visit:start', (visit) => (visit.scroll.target = '#anchor'));
 		});
 		await page.getByTestId('link-to-page').click();
-		expectToBeAt(page, '/scrolling-2.html', 'Scrolling 2');
+		await expectToBeAt(page, '/scrolling-2.html', 'Scrolling 2');
 		await expect(page.getByTestId('anchor')).toBeInViewport();
 	});
 });
