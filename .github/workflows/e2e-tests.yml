@@ -7,72 +7,137 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  install:
+    name: Install dependencies
+    runs-on: ubuntu-latest
     timeout-minutes: 60
+    outputs:
+      npm-cache-dir: ${{ steps.npm-cache-dir.outputs.dir }}
+      playwright-version: ${{ steps.playwright-version.outputs.version }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Get npm cache directory
+        id: npm-cache-dir
+        run: echo "dir=$(npm config get cache)" >> $GITHUB_OUTPUT
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v3
+        id: npm-cache
+        with:
+          path: ${{ steps.npm-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Save node_modules folder
+        uses: actions/cache/save@v3
+        id: node-modules-cache
+        with:
+          path: './node_modules'
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Get playwright version
+        id: playwright-version
+        run: echo "version=$(node -e "console.log(require('./package-lock.json').packages['node_modules/@playwright/test'].version)")" >> $GITHUB_OUTPUT
+
+      - name: Cache playwright binaries
+        uses: actions/cache@v3
+        id: playwright-cache
+        with:
+          path: '~/.cache/ms-playwright'
+          key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
+
+      - name: Install playwright binaries
+        run: npx playwright install --with-deps
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+
+      - name: Bundle library
+        run: npm run build
+
+  test:
+    name: Run playwright tests (${{ matrix.shard }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs: install
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1/4, 2/4, 3/4, 4/4]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Restore node_modules folder
+        uses: actions/cache/restore@v3
+        id: node-modules-restore
+        with:
+          path: './node_modules'
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Restore playwright binaries
+        uses: actions/cache/restore@v3
+        id: playwright-restore
+        with:
+          path: '~/.cache/ms-playwright'
+          key: ${{ runner.os }}-playwright-${{ needs.install.outputs.playwright-version }}
+
+      - name: Run tests
+        run: npx playwright test --config ./tests/config/playwright.config.ts --shard ${{ matrix.shard }} --workers 1
+
+      - name: Upload blob report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-blob-reports
+          path: tests/reports/blobs
+          retention-days: 1
+
+  merge-reports:
+    name: Create report
+    if: always()
+    needs: [test]
     runs-on: ubuntu-latest
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
 
-    - name: Check out repository
-      uses: actions/checkout@v3
+      - name: Set up node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
-    - name: Set up node
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18
+      - name: Restore node_modules folder
+        uses: actions/cache/restore@v3
+        id: node-modules-restore
+        with:
+          path: './node_modules'
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
 
-    - name: Get npm cache directory
-      id: npm-cache-dir
-      shell: bash
-      run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
+      - name: Download blob reports
+        uses: actions/download-artifact@v3
+        with:
+          name: playwright-blob-reports
+          path: playwright-blob-reports
 
-    - name: Cache npm dependencies
-      uses: actions/cache@v3
-      id: npm-cache
-      with:
-        path: ${{ steps.npm-cache-dir.outputs.dir }}
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
+      - name: Merge into HTML Report
+        run: npx playwright merge-reports --reporter html ./playwright-blob-reports
 
-    - name: Get Playwright version
-      id: playwright-version
-      shell: bash
-      run: echo "version=$(node -e "console.log(require('./package-lock.json').packages['node_modules/@playwright/test'].version)")" >> ${GITHUB_OUTPUT}
-
-    - name: Cache playwright binaries
-      uses: actions/cache@v3
-      id: playwright-cache
-      with:
-        path: |
-          ~/.cache/ms-playwright
-        key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
-
-    - name: Install dependencies
-      run: npm ci
-      # if: steps.npm-cache.outputs.cache-hit != 'true'
-
-    - name: Install Playwright binaries
-      run: npx playwright install --with-deps
-      if: steps.playwright-cache.outputs.cache-hit != 'true'
-
-    - name: Bundle library
-      run: npm run build
-
-    - name: Run tests
-      run: npm run test
-
-    - name: Upload test report
-      uses: actions/upload-artifact@v3
-      if: always()
-      with:
-        name: playwright-report
-        path: tests/reports/
-        retention-days: 14
-
-    - name: Upload test resulsts
-      uses: actions/upload-artifact@v3
-      if: always()
-      with:
-        name: playwright-results
-        path: tests/results/
-        retention-days: 14
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v3
+        with:
+          name: html-report--attempt-${{ github.run_attempt }}
+          path: playwright-report
+          retention-days: 14
