@@ -101,6 +101,9 @@ jobs:
           path: '~/.cache/ms-playwright'
           key: ${{ runner.os }}-playwright-${{ needs.install.outputs.playwright-version }}
 
+      - name: Install OS dependencies # required for Webkit
+        run: npx playwright install-deps
+
       - name: Restore dist folder
         uses: actions/cache/restore@v3
         id: dist-restore
