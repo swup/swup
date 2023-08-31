@@ -62,6 +62,13 @@ jobs:
       - name: Bundle library
         run: npm run build
 
+      - name: Save dist folder
+        uses: actions/cache/save@v3
+        id: dist-cache
+        with:
+          path: './dist'
+          key: ${{ runner.os }}-dist-${{ github.run_id }}
+
   test:
     name: Run playwright tests (${{ matrix.shard }})
     runs-on: ubuntu-latest
@@ -93,6 +100,13 @@ jobs:
         with:
           path: '~/.cache/ms-playwright'
           key: ${{ runner.os }}-playwright-${{ needs.install.outputs.playwright-version }}
+
+      - name: Restore dist folder
+        uses: actions/cache/restore@v3
+        id: dist-restore
+        with:
+          path: './dist'
+          key: ${{ runner.os }}-dist-${{ github.run_id }}
 
       - name: Run tests
         run: npx playwright test --config ./tests/config/playwright.config.ts --shard ${{ matrix.shard }} --workers 1
