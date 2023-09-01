@@ -152,7 +152,7 @@ jobs:
           path: playwright-blob-reports
 
       - name: Merge blob reports
-        run: npx playwright merge-reports --config ./tests/config/playwright.merge.config.ts ./playwright-blob-reports
+        run: npx playwright merge-reports --reporter html,./tests/reporters/markdown-reporter.js ./playwright-blob-reports
 
       - name: Upload HTML report
         uses: actions/upload-artifact@v3

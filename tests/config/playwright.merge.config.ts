@@ -8,6 +8,5 @@ export default defineConfig({
   reporter: [
     ['html', { open: 'never' }],
     ['../reporters/markdown-reporter.ts'],
-    // ['../reporters/markdown-reporter.ts'],
   ]
 });
