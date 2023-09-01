@@ -10,7 +10,7 @@ jobs:
   install:
     name: Install dependencies
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 5
     outputs:
       npm-cache-dir: ${{ steps.npm-cache-dir.outputs.dir }}
       playwright-version: ${{ steps.playwright-version.outputs.version }}
@@ -73,7 +73,7 @@ jobs:
   test:
     name: Run playwright tests (${{ matrix.shard }})
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 20
     needs: install
     strategy:
       fail-fast: false
@@ -126,8 +126,9 @@ jobs:
   report:
     name: Create report
     if: always()
-    needs: [test]
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [test]
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
