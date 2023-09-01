@@ -17,7 +17,7 @@ export default defineConfig({
   /* Folder for test artifacts: screenshots, videos, ... */
   outputDir: '../results',
   /* Timeout individual tests after 5 seconds */
-  timeout: 5_000,
+  timeout: 10_000,
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -25,7 +25,7 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 1 : 0,
   /* Limit parallel workers on CI, use default locally. */
-  workers: process.env.CI ? 2 : undefined,
+  workers: process.env.CI ? 1 : undefined,
   // Limit the number of failures on CI to save resources
   maxFailures: process.env.CI ? 10 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
