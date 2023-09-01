@@ -34,7 +34,7 @@ class GitHubCommentReporter implements Reporter, Report {
   onTestEnd(test: TestCase, result: TestResult) {
     const status = result.status;
     const outcome = test.outcome();
-    const title = test.titlePath().join(' > ');
+    const title = test.titlePath().filter(s => s.trim()).join(' > ');
     this[status].push(title);
     if (outcome === 'flaky') {
       this[outcome].push(title);
@@ -54,7 +54,7 @@ class GitHubCommentReporter implements Reporter, Report {
 
     const comment = new GitHubReportComment(this);
 
-    fs.writeFileSync('./report.md', comment.generate());
+    fs.writeFileSync('./playwright-report.md', comment.generate());
   }
 }
 
@@ -64,29 +64,42 @@ class GitHubReportComment {
     this.report = report;
   }
   header() {
-    return `
-      :performing_arts:  **Playwright test run: ${this.report.status}**
-    `;
+    return `## :performing_arts:  Playwright test run ${this.report.status}`;
   }
   summary() {
     const { passed, failed, skipped, flaky, duration } = this.report;
-    return `
-      ${failed.length ? `:red_circle:  ${failed.length} failed` : ``}
-      ${passed.length ? `:green_circle:  ${passed.length} passed` : ``}
-      ${flaky.length ? `:orange_circle:  ${flaky.length} flaky` : ``}
-      ${skipped.length ? `:yellow_circle:  ${skipped.length} skipped` : ``}
-      :hourglass:  ${formatDuration(duration)}
-    `;
+    const stats = [
+      failed.length ? `:red_circle:  ${failed.length} failed` : ``,
+      passed.length ? `:green_circle:  ${passed.length} passed` : ``,
+      flaky.length ? `:orange_circle:  ${flaky.length} flaky` : ``,
+      skipped.length ? `:yellow_circle:  ${skipped.length} skipped` : ``,
+      `:hourglass:  ${formatDuration(duration)}`
+    ];
+    return stats.filter(Boolean).join('  \n');
   }
   details() {
-    return ``;
+    const details: string[] = [];
+    ['failed', 'skipped', 'flaky'].forEach((status) => {
+      const tests: string[] = this.report[status];
+      if (!tests.length) return;
+      details.push(`
+        <details>
+          <summary>${upperCaseFirst(status)} tests</summary>
+          <ul>${tests.map((title) => `<li>${title}</li>`).join('\n')}</ul>
+        </details>
+      `.trim());
+    });
+
+    return details.join('\n');
   }
   generate() {
-    return [
+    const output = [
       this.header().trim(),
       this.summary().trim(),
       this.details().trim()
-    ].join('\n\n').trim().replace(/(\n)(\s+)/g, '$1');
+    ].join('\n\n');
+
+    return stripLeadingWhitespace(output);
   }
 }
 
@@ -115,6 +128,14 @@ function formatDuration(milliseconds: number): string {
     minutes && `${minutes} minute${minutes !== 1 ? 's' : ''}`,
     seconds && `${seconds} second${seconds !== 1 ? 's' : ''}`,
   ].filter(Boolean).join(', ');
+}
+
+function stripLeadingWhitespace(str: string): string {
+  return str.trim().replace(/(\n)([^\S\r\n]+)(\S)/g, '$1$3');
+}
+
+function upperCaseFirst(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 export default GitHubCommentReporter;
