@@ -62,12 +62,13 @@ jobs:
       - name: Bundle library
         run: npm run build
 
-      - name: Save dist folder
-        uses: actions/cache/save@v3
-        id: dist-cache
+      - name: Upload dist folder
+        uses: actions/upload-artifact@v3
+        if: always()
         with:
-          path: './dist'
-          key: ${{ runner.os }}-dist-${{ github.run_id }}
+          name: swup-dist-folder
+          path: dist
+          retention-days: 1
 
   test:
     name: Run playwright tests (${{ matrix.shard }})
@@ -105,12 +106,11 @@ jobs:
       - name: Install OS dependencies # required for Webkit
         run: npx playwright install-deps
 
-      - name: Restore dist folder
-        uses: actions/cache/restore@v3
-        id: dist-restore
+      - name: Download dist folder
+        uses: actions/download-artifact@v3
         with:
-          path: './dist'
-          key: ${{ runner.os }}-dist-${{ github.run_id }}
+          name: swup-dist-folder
+          path: dist
 
       - name: Run tests
         run: npx playwright test --config ./tests/config/playwright.config.ts --shard ${{ matrix.shard }} # --workers 1
@@ -150,35 +150,37 @@ jobs:
           name: playwright-blob-reports
           path: playwright-blob-reports
 
-      - name: Merge blob reports
-        run: npx playwright merge-reports --config ./tests/config/playwright.merge.config.ts ./playwright-blob-reports
+      # - name: Merge blob reports
+      #   run: npx playwright merge-reports --config ./tests/config/playwright.merge.config.ts ./playwright-blob-reports
 
-      - name: Upload HTML report
-        uses: actions/upload-artifact@v3
-        with:
-          name: html-report # --attempt-${{ github.run_attempt }}
-          path: playwright-report
-          retention-days: 14
+      # - name: Upload HTML report
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: html-report # --attempt-${{ github.run_attempt }}
+      #     path: playwright-report
+      #     retention-days: 14
 
-      - name: Read markdown report
-        id: markdown-report
-        run: echo "::set-output content=version::$(cat playwright-report.md)"
+      # - name: Read markdown report
+      #   uses: andstor/file-reader-action@v1
+      #   id: markdown-report
+      #   with:
+      #     path: playwright-report.md
 
-      - name: Find report comment
-        uses: peter-evans/find-comment@v2
-        id: find-comment
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-author: 'github-actions[bot]'
-          body-includes: playwright-github-reporter
+      # - name: Find report comment
+      #   uses: peter-evans/find-comment@v2
+      #   id: find-comment
+      #   with:
+      #     issue-number: ${{ github.event.pull_request.number }}
+      #     comment-author: 'github-actions[bot]'
+      #     body-includes: playwright-github-reporter
 
-      - name: Create or update report comment
-        uses: peter-evans/create-or-update-comment@v3
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-id: ${{ steps.find-comment.outputs.comment-id }}
-          edit-mode: replace
-          body: |
-            ${{ steps.markdown-report.outputs.content }}
+      # - name: Create or update report comment
+      #   uses: peter-evans/create-or-update-comment@v3
+      #   with:
+      #     issue-number: ${{ github.event.pull_request.number }}
+      #     comment-id: ${{ steps.find-comment.outputs.comment-id }}
+      #     edit-mode: replace
+      #     body: |
+      #       ${{ steps.markdown-report.outputs.contents }}
 
-            <sub>playwright-github-reporter</sub>
+      #       <sub>playwright-github-reporter</sub>

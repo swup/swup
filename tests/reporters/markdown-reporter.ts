@@ -50,6 +50,7 @@ class GitHubCommentReporter implements Reporter, Report {
 
     // remove flaky or duplicate tests from the failed array
     this.failed = this.failed.filter((element) => !this.passed.includes(element));
+    this.failed = this.failed.filter((element) => !this.flaky.includes(element));
     this.failed = this.failed.filter((element, index) => this.failed.indexOf(element) === index);
 
     const comment = new GitHubReportComment(this);
