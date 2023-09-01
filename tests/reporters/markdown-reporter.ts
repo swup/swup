@@ -1,11 +1,5 @@
 import * as fs from 'fs';
-
-import {
-  TestCase,
-  TestResult,
-  Reporter,
-  FullResult,
-} from '@playwright/test/reporter';
+import { TestCase, TestResult, Reporter, FullResult } from '@playwright/test/reporter';
 
 export interface Report {
   duration: number;
