@@ -123,7 +123,7 @@ jobs:
           path: tests/reports/blobs
           retention-days: 1
 
-  merge-reports:
+  report:
     name: Create report
     if: always()
     needs: [test]
@@ -150,8 +150,8 @@ jobs:
           name: playwright-blob-reports
           path: playwright-blob-reports
 
-      - name: Merge into HTML Report
-        run: npx playwright merge-reports --reporter html ./playwright-blob-reports
+      - name: Merge blob reports
+        run: npx playwright merge-reports --config ./tests/config/playwright.merge.config.ts ./playwright-blob-reports
 
       - name: Upload HTML report
         uses: actions/upload-artifact@v3
@@ -159,3 +159,26 @@ jobs:
           name: html-report # --attempt-${{ github.run_attempt }}
           path: playwright-report
           retention-days: 14
+
+      - name: Read markdown report
+        id: markdown-report
+        run: echo "::set-output content=version::$(cat playwright-report.md)"
+
+      - name: Find report comment
+        uses: peter-evans/find-comment@v2
+        id: find-comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: playwright-github-reporter
+
+      - name: Create or update report comment
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          edit-mode: replace
+          body: |
+            ${{ steps.markdown-report.outputs.content }}
+
+            <sub>playwright-github-reporter</sub>
