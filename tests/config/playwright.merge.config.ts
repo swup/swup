@@ -7,6 +7,6 @@ import { defineConfig } from '@playwright/test';
 export default defineConfig({
   reporter: [
     ['html'],
-    ['../reporters/markdown-reporter.ts'],
+    // ['../reporters/markdown-reporter.ts'],
   ]
 });
