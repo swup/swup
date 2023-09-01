@@ -43,11 +43,11 @@ export async function expectSwupAnimationDuration(page: Page, duration: number) 
 	await page.evaluate(() => {
 		window.data = {};
 		const measure = (key: string, value?: number) => window.data[key] = value ?? performance.now();
-		window._swup.hooks.before('visit:start', () => measure('start'));
+		window._swup.hooks.on('visit:start', () => measure('start'));
 		window._swup.hooks.on('visit:end', () => measure('end'));
-		window._swup.hooks.before('animation:out:start', () => measure('outStart'));
+		window._swup.hooks.on('animation:out:start', () => measure('outStart'));
 		window._swup.hooks.on('animation:out:end', () => measure('outEnd'));
-		window._swup.hooks.before('animation:in:start', () => measure('inStart'));
+		window._swup.hooks.on('animation:in:start', () => measure('inStart'));
 		window._swup.hooks.on('animation:in:end', () => measure('inEnd'));
 		window._swup.hooks.on('animation:skip', () => measure('inStart', 0));
 		window._swup.hooks.on('animation:skip', () => measure('inEnd', 0));
