@@ -78,6 +78,7 @@ jobs:
       fail-fast: false
       matrix:
         shard: [1/4, 2/4, 3/4, 4/4]
+        # project: [chromium, firefox, webkit]
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -112,7 +113,7 @@ jobs:
           key: ${{ runner.os }}-dist-${{ github.run_id }}
 
       - name: Run tests
-        run: npx playwright test --config ./tests/config/playwright.config.ts --shard ${{ matrix.shard }} --workers 1
+        run: npx playwright test --config ./tests/config/playwright.config.ts --shard ${{ matrix.shard }} # --workers 1
 
       - name: Upload blob report
         uses: actions/upload-artifact@v3
@@ -155,6 +156,6 @@ jobs:
       - name: Upload HTML report
         uses: actions/upload-artifact@v3
         with:
-          name: html-report--attempt-${{ github.run_attempt }}
+          name: html-report # --attempt-${{ github.run_attempt }}
           path: playwright-report
           retention-days: 14
