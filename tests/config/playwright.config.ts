@@ -38,6 +38,9 @@ export default defineConfig({
   ] : [
     ['list'],
     ['html', { outputFolder: '../reports/html', open: 'on-failure' }],
+    ['json', { outputFile: '../reports/json/report.json' }],
+    ['blob', { outputDir: '../reports/blobs' }],
+    ['../reporters/markdown-reporter.ts'],
   ],
 
   expect: {

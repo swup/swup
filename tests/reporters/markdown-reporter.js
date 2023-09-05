@@ -1,7 +1,7 @@
 import * as fs from 'fs';
-class GitHubCommentReporter {
+export default class MarkdownReporter {
     constructor() {
-        this.startedAt = 0;
+        this.startTime = new Date();
         this.duration = -1;
         this.status = 'unknown';
         this.passed = [];
@@ -11,19 +11,22 @@ class GitHubCommentReporter {
         this.timedOut = [];
     }
     onBegin() {
-        this.startedAt = Date.now();
+        this.startTime = new Date();
     }
     onTestEnd(test, result) {
         const status = result.status;
         const outcome = test.outcome();
-        const title = test.titlePath().filter(s => s.trim()).join(' > ');
+        const path = test.titlePath().filter(s => s.trim());
+        const title = path.filter(s => !s.match(/\.(spec|test)\.(m|c)?(j|t)s$/i)).join(' → ');
         this[status].push(title);
         if (outcome === 'flaky') {
             this[outcome].push(title);
         }
     }
-    onEnd(result) {
-        this.duration = Date.now() - this.startedAt;
+    // @ts-ignore: startTime and duration only available in Playwright >= 1.38/1.39
+    onEnd(result, startTime, duration) {
+        this.startTime = startTime !== null && startTime !== void 0 ? startTime : this.startTime;
+        this.duration = duration !== null && duration !== void 0 ? duration : (Date.now() - this.startTime.getTime());
         this.status = result.status;
         // remove duplicate tests from passed array
         this.passed = this.passed.filter((element, index) => this.passed.indexOf(element) === index);
@@ -31,37 +34,37 @@ class GitHubCommentReporter {
         this.failed = this.failed.filter((element) => !this.passed.includes(element));
         this.failed = this.failed.filter((element) => !this.flaky.includes(element));
         this.failed = this.failed.filter((element, index) => this.failed.indexOf(element) === index);
-        const comment = new GitHubReportComment(this);
-        fs.writeFileSync('./playwright-report.md', comment.generate());
+        const summary = new MarkdownReportSummary(this);
+        fs.writeFileSync('./playwright-report/report.md', summary.generate());
     }
 }
-class GitHubReportComment {
+class MarkdownReportSummary {
     constructor(report) {
         this.report = report;
     }
     header() {
-        return `## :performing_arts:  Playwright test run ${this.report.status}`;
+        return `## Playwright test results`;
     }
     summary() {
         const { passed, failed, skipped, flaky, duration } = this.report;
         const stats = [
-            failed.length ? `:red_circle:  ${failed.length} failed` : ``,
-            passed.length ? `:green_circle:  ${passed.length} passed` : ``,
-            flaky.length ? `:orange_circle:  ${flaky.length} flaky` : ``,
-            skipped.length ? `:yellow_circle:  ${skipped.length} skipped` : ``,
-            `:hourglass:  ${formatDuration(duration)}`
+            failed.length ? `![failed](https://icongr.am/octicons/stop.svg?size=14&color=da3633)  **${failed.length} failed**` : ``,
+            passed.length ? `![passed](https://icongr.am/octicons/check-circle.svg?size=14&color=3fb950)  **${passed.length} passed**  ` : ``,
+            flaky.length ? `![flaky](https://icongr.am/octicons/alert.svg?size=14&color=d29922)  **${flaky.length} flaky**  ` : ``,
+            skipped.length ? `![skipped](https://icongr.am/octicons/skip.svg?size=14&color=abb4bf)  **${skipped.length} skipped**` : ``,
+            `![duration](https://icongr.am/octicons/clock.svg?size=14&color=abb4bf)  ${formatDuration(duration)}`
         ];
         return stats.filter(Boolean).join('  \n');
     }
     details() {
         const details = [];
-        ['failed', 'skipped', 'flaky'].forEach((status) => {
+        ['failed', 'flaky', 'skipped'].forEach((status) => {
             const tests = this.report[status];
             if (!tests.length)
                 return;
             details.push(`
         <details>
-          <summary>${upperCaseFirst(status)} tests</summary>
+          <summary><strong>${upperCaseFirst(status)} tests</strong></summary>
           <ul>${tests.map((title) => `<li>${title}</li>`).join('\n')}</ul>
         </details>
       `.trim());
@@ -103,4 +106,3 @@ function stripLeadingWhitespace(str) {
 function upperCaseFirst(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
-export default GitHubCommentReporter;

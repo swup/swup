@@ -11,8 +11,8 @@ export interface Report {
   timedOut: string[];
 }
 
-class GitHubCommentReporter implements Reporter, Report {
-  startedAt = 0;
+export default class MarkdownReporter implements Reporter, Report {
+  startTime?: Date = new Date();
   duration = -1;
   status: Report['status'] = 'unknown';
   passed: string[] = [];
@@ -22,21 +22,24 @@ class GitHubCommentReporter implements Reporter, Report {
   timedOut: string[] = [];
 
   onBegin() {
-    this.startedAt = Date.now();
+    this.startTime = new Date();
   }
 
   onTestEnd(test: TestCase, result: TestResult) {
     const status = result.status;
     const outcome = test.outcome();
-    const title = test.titlePath().filter(s => s.trim()).join(' > ');
+    const path = test.titlePath().filter(s => s.trim());
+    const title = path.filter(s => !s.match(/\.(spec|test)\.(m|c)?(j|t)s$/i)).join(' → ');
     this[status].push(title);
     if (outcome === 'flaky') {
       this[outcome].push(title);
     }
   }
 
-  onEnd(result: FullResult) {
-    this.duration = Date.now() - this.startedAt;
+  // @ts-ignore: startTime and duration only available in Playwright >= 1.38/1.39
+  onEnd(result: FullResult, startTime: Date, duration: number) {
+    this.startTime = startTime ?? this.startTime;
+    this.duration = duration ?? (Date.now() - this.startTime.getTime());
     this.status = result.status;
 
     // remove duplicate tests from passed array
@@ -47,39 +50,39 @@ class GitHubCommentReporter implements Reporter, Report {
     this.failed = this.failed.filter((element) => !this.flaky.includes(element));
     this.failed = this.failed.filter((element, index) => this.failed.indexOf(element) === index);
 
-    const comment = new GitHubReportComment(this);
+    const summary = new MarkdownReportSummary(this);
 
-    fs.writeFileSync('./playwright-report.md', comment.generate());
+    fs.writeFileSync('./playwright-report/report.md', summary.generate());
   }
 }
 
-class GitHubReportComment {
+class MarkdownReportSummary {
   report: Report;
   constructor(report: Report) {
     this.report = report;
   }
   header() {
-    return `## :performing_arts:  Playwright test run ${this.report.status}`;
+    return `## Playwright test results`;
   }
   summary() {
     const { passed, failed, skipped, flaky, duration } = this.report;
     const stats = [
-      failed.length ? `:red_circle:  ${failed.length} failed` : ``,
-      passed.length ? `:green_circle:  ${passed.length} passed` : ``,
-      flaky.length ? `:orange_circle:  ${flaky.length} flaky` : ``,
-      skipped.length ? `:yellow_circle:  ${skipped.length} skipped` : ``,
-      `:hourglass:  ${formatDuration(duration)}`
+      failed.length ? `![failed](https://icongr.am/octicons/stop.svg?size=14&color=da3633)  **${failed.length} failed**` : ``,
+      passed.length ? `![passed](https://icongr.am/octicons/check-circle.svg?size=14&color=3fb950)  **${passed.length} passed**  ` : ``,
+      flaky.length ? `![flaky](https://icongr.am/octicons/alert.svg?size=14&color=d29922)  **${flaky.length} flaky**  ` : ``,
+      skipped.length ? `![skipped](https://icongr.am/octicons/skip.svg?size=14&color=abb4bf)  **${skipped.length} skipped**` : ``,
+      `![duration](https://icongr.am/octicons/clock.svg?size=14&color=abb4bf)  ${formatDuration(duration)}`
     ];
     return stats.filter(Boolean).join('  \n');
   }
   details() {
     const details: string[] = [];
-    ['failed', 'skipped', 'flaky'].forEach((status) => {
+    ['failed', 'flaky', 'skipped'].forEach((status) => {
       const tests: string[] = this.report[status];
       if (!tests.length) return;
       details.push(`
         <details>
-          <summary>${upperCaseFirst(status)} tests</summary>
+          <summary><strong>${upperCaseFirst(status)} tests</strong></summary>
           <ul>${tests.map((title) => `<li>${title}</li>`).join('\n')}</ul>
         </details>
       `.trim());
@@ -132,5 +135,3 @@ function stripLeadingWhitespace(str: string): string {
 function upperCaseFirst(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
-
-export default GitHubCommentReporter;
