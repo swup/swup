@@ -3,6 +3,8 @@ import { HistoryAction, HistoryDirection } from './navigate.js';
 
 /** An object holding details about the current visit. */
 export interface Visit {
+	/** A unique ID to identify this visit */
+	id: number;
 	/** The previous page, about to leave */
 	from: VisitFrom;
 	/** The next page, about to enter */
@@ -92,6 +94,7 @@ export function createVisit(
 	{ to, from = this.currentPageUrl, hash, el, event }: VisitInitOptions
 ): Visit {
 	return {
+		id: Math.random(),
 		from: { url: from },
 		to: { url: to, hash },
 		containers: this.options.containers,

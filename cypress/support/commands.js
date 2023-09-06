@@ -162,3 +162,10 @@ Cypress.Commands.add('pushHistoryState', (url, data = {}) => {
 		window.history.pushState(state, '', url);
 	});
 });
+
+Cypress.Commands.add('delayRequest', (url, delay) => {
+	cy.intercept({ pathname: url, times: 1 }, (req) => {
+		const { pathname: fixture } = new URL(req.url);
+		req.reply({ fixture, delay });
+	});
+});

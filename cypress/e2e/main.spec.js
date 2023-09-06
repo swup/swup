@@ -401,6 +401,31 @@ describe('Navigation', function () {
 		cy.shouldHaveH1('Page 2');
 	});
 
+	it('should ignore visit if a new visit has started', function() {
+		cy.delayRequest('/page-2.html', 1000);
+		cy.triggerClickOnLink('/page-2.html');
+		cy.wait(50);
+		cy.triggerClickOnLink('/page-3.html');
+		cy.shouldBeAtPage('/page-3.html', 'Page 3');
+		cy.wait(1000);
+		cy.shouldBeAtPage('/page-3.html', 'Page 3');
+	});
+
+	it('should ignore visit if a new visit to same URL has started', function() {
+		const titles = [];
+		this.swup.options.linkToSelf = 'navigate';
+		this.swup.hooks.on('visit:start', (visit) => titles.push(visit.id));
+		this.swup.hooks.on('content:replace', () => document.title = titles[titles.length - 1]);
+
+		cy.delayRequest('/page-2.html', 500);
+		cy.triggerClickOnLink('/page-2.html');
+		cy.wait(50);
+		cy.triggerClickOnLink('/page-2.html');
+		cy.shouldBeAtPage('/page-2.html', titles[1]);
+		cy.wait(500);
+		cy.shouldBeAtPage('/page-2.html', titles[1]);
+	});
+
 	// it('should ignore visit when meta key pressed', function() {
 	//     cy.triggerClickOnLink('/page-2.html', { metaKey: true });
 	//     cy.wait(200);
@@ -687,33 +712,21 @@ describe('History', function () {
 		});
 
 		cy.triggerClickOnLink('/page-2.html');
-		cy.shouldBeAtPage('/page-2.html');
+		cy.shouldBeAtPage('/page-2.html', 'Page 2');
 
-		cy.window().then((window) => {
-			window.history.back();
-			cy.window().should(() => {
-				expect(direction).to.equal('backwards');
-			});
-		});
+		cy.window().then((window) => window.history.back());
+		cy.window().should(() => expect(direction).to.equal('backwards'));
 
-		cy.shouldBeAtPage('/page-1.html');
+		cy.shouldBeAtPage('/page-1.html', 'Page 1');
 
-		cy.window().then((window) => {
-			window.history.forward();
-			cy.window().should(() => {
-				expect(direction).to.equal('forwards');
-			});
-		});
+		cy.window().then((window) => window.history.forward());
+		cy.window().should(() => expect(direction).to.equal('forwards'));
 
 		cy.triggerClickOnLink('/page-3.html');
-		cy.shouldBeAtPage('/page-3.html');
+		cy.shouldBeAtPage('/page-3.html', 'Page 3');
 
-		cy.window().then((window) => {
-			window.history.go(-2);
-			cy.window().should(() => {
-				expect(direction).to.equal('backwards');
-			});
-		});
+		cy.window().then((window) => window.history.go(-2));
+		cy.window().should(() => expect(direction).to.equal('backwards'));
 	});
 
 	it('should trigger a custom popstate event', function () {
@@ -725,12 +738,8 @@ describe('History', function () {
 		cy.triggerClickOnLink('/page-2.html');
 		cy.shouldBeAtPage('/page-2.html');
 
-		cy.window().then((window) => {
-			window.history.back();
-		});
-		cy.window().should(() => {
-			expect(handlers.popstate).to.be.called;
-		});
+		cy.window().then((window) => window.history.back());
+		cy.window().should(() => expect(handlers.popstate).to.be.called);
 	});
 
 	it('should skip popstate handling for foreign state entries', function () {
@@ -823,9 +832,7 @@ describe('Visit context', function () {
 			this.swup.navigate('/page-2.html');
 		});
 		cy.shouldBeAtPage('/page-2.html');
-		cy.window().then((window) => {
-			window.history.back();
-		});
+		cy.window().then((window) => window.history.back());
 		cy.shouldBeAtPage('/page-1.html');
 		cy.window().should((win) => {
 			expect(event).to.be.instanceof(win.PopStateEvent);

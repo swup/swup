@@ -4,17 +4,11 @@ import { PageData } from './fetchPage.js';
 
 /**
  * Render the next page: replace the content and update scroll position.
- * @returns Promise<void>
  */
-export const renderPage = async function (this: Swup, requestedUrl: string, page: PageData) {
+export const renderPage = async function (this: Swup, page: PageData): Promise<void> {
 	const { url, html } = page;
 
 	this.classes.remove('is-leaving');
-
-	// do nothing if another page was requested in the meantime
-	if (!this.isSameResolvedUrl(getCurrentUrl(), requestedUrl)) {
-		return;
-	}
 
 	// update state if the url was redirected
 	if (!this.isSameResolvedUrl(getCurrentUrl(), url)) {
