@@ -43,7 +43,7 @@ class MarkdownReportSummary {
         this.report = report;
     }
     header() {
-        return `## Playwright test results`;
+        return `### Playwright test results`;
     }
     summary() {
         const { passed, failed, skipped, flaky, duration } = this.report;
