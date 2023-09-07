@@ -152,7 +152,7 @@ jobs:
           path: playwright-blob-reports
 
       - name: Merge blob reports
-        run: npx playwright merge-reports --reporter html,./tests/reporters/markdown-reporter.js ./playwright-blob-reports
+        run: PLAYWRIGHT_JSON_OUTPUT_NAME=results.json npx playwright merge-reports --reporter html,json ./playwright-blob-reports
 
       - name: Upload HTML report
         uses: actions/upload-artifact@v3
@@ -161,26 +161,7 @@ jobs:
           path: playwright-report
           retention-days: 14
 
-      - name: Read markdown report
-        uses: andstor/file-reader-action@v1
-        id: markdown-report
+      - name: Comment on pull request
+        uses: daun/playwright-report-comment@v1
         with:
-          path: playwright-report/report.md
-
-      - name: Find report comment
-        uses: peter-evans/find-comment@v2
-        id: find-comment
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-author: 'github-actions[bot]'
-          body-includes: playwright-report-github-action
-
-      - name: Create or update report comment
-        uses: peter-evans/create-or-update-comment@v3
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-id: ${{ steps.find-comment.outputs.comment-id }}
-          edit-mode: replace
-          body: |
-            <!-- playwright-report-github-action -->
-            ${{ steps.markdown-report.outputs.contents }}
+          report-file: results.json
