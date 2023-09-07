@@ -53,7 +53,7 @@ export function expectNotToHaveClasses(locator: Locator, classNames: string) {
 }
 
 export async function expectPageReload(page: Page, action: (page: Page) => Promise<void> | void, not: boolean = false) {
-	const origin = () => page.evaluate(() => window.performance.timeOrigin);
+	const origin = () => page.evaluate(() => Math.floor(window.performance.timeOrigin));
 	const before = await origin();
 	await action(page);
 	await expect(async () => expect(await origin()).not.toBe(before)).toPass();

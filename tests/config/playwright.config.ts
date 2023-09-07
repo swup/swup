@@ -32,12 +32,11 @@ export default defineConfig({
   reporter: process.env.CI ? [
     ['dot'],
     ['github'],
-    ['html', { outputFolder: '../reports/html', open: 'never' }],
-    ['json', { outputFile: '../reports/json/report.json' }],
     ['blob', { outputDir: '../reports/blobs' }],
   ] : [
     ['list'],
     ['html', { outputFolder: '../reports/html', open: 'on-failure' }],
+    ['json', { outputFile: '../reports/json/report.json' }],
   ],
 
   expect: {
