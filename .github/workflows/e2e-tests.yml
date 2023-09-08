@@ -162,6 +162,6 @@ jobs:
           retention-days: 14
 
       - name: Comment on pull request
-        uses: daun/playwright-report-comment@v1
+        uses: daun/playwright-report-comment@v1.1.0
         with:
           report-file: results.json
