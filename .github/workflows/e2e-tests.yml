@@ -130,7 +130,7 @@ jobs:
           name=$(date +"%Y-%m-%d-%H-%M-%S")
           echo "name=$name" >> $GITHUB_OUTPUT
           echo "path=reports/$name" >> $GITHUB_OUTPUT
-          echo "url=https://swup.github.io/swup/$path/" >> $GITHUB_OUTPUT
+          echo "url=https://swup.github.io/swup/reports/$name/" >> $GITHUB_OUTPUT
 
       - name: Copy html report and push reports branch
         run: |
