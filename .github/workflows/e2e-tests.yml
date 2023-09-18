@@ -42,7 +42,7 @@ jobs:
     timeout-minutes: 20
     needs: install
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         shard: [1/4, 2/4, 3/4, 4/4]
         # project: [chromium, firefox, webkit]
