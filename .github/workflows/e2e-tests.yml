@@ -120,8 +120,8 @@ jobs:
       - name: Check out reports branch
         uses: actions/checkout@v4
         with:
-          ref: reports
-          path: reports-branch
+          ref: test-reports
+          path: test-reports-branch
           fetch-depth: 0
 
       - name: Generate report name and URL
@@ -134,8 +134,8 @@ jobs:
 
       - name: Copy html report and push reports branch
         run: |
-          cp -r playwright-report reports-branch/${{ steps.report-id.outputs.path }}
-          cd reports-branch
+          cp -r playwright-report test-reports-branch/${{ steps.report-id.outputs.path }}
+          cd test-reports-branch
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add reports
