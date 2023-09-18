@@ -8,56 +8,20 @@ on:
 
 jobs:
   install:
-    name: Install dependencies
+    name: Install
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    outputs:
-      npm-cache-dir: ${{ steps.npm-cache-dir.outputs.dir }}
-      playwright-version: ${{ steps.playwright-version.outputs.version }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up node
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      - name: Get npm cache directory
-        id: npm-cache-dir
-        run: echo "dir=$(npm config get cache)" >> $GITHUB_OUTPUT
-
-      - name: Cache npm dependencies
-        uses: actions/cache@v3
-        id: npm-cache
-        with:
-          path: ${{ steps.npm-cache-dir.outputs.dir }}
-          key: ${{ runner.os }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
-
-      - name: Install npm dependencies
+      - name: Install dependencies
         run: npm ci
-
-      - name: Save node_modules folder
-        uses: actions/cache/save@v3
-        id: node-modules-cache
-        with:
-          path: './node_modules'
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
-
-      - name: Get playwright version
-        id: playwright-version
-        run: echo "version=$(cat ./package-lock.json | jq -re '.packages["node_modules/@playwright/test"].version')" >> $GITHUB_OUTPUT
-
-      - name: Cache playwright binaries
-        uses: actions/cache@v3
-        id: playwright-cache
-        with:
-          path: '~/.cache/ms-playwright'
-          key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
-
-      - name: Install playwright binaries
-        run: npx playwright install --with-deps
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
 
       - name: Bundle library
         run: npm run build
@@ -73,6 +37,8 @@ jobs:
   test:
     name: Run playwright tests (${{ matrix.shard }})
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.38.0
     timeout-minutes: 20
     needs: install
     strategy:
@@ -82,29 +48,19 @@ jobs:
         # project: [chromium, firefox, webkit]
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up node
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      - name: Restore node_modules folder
-        uses: actions/cache/restore@v3
-        id: node-modules-restore
-        with:
-          path: './node_modules'
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Restore playwright binaries
-        uses: actions/cache/restore@v3
-        id: playwright-restore
-        with:
-          path: '~/.cache/ms-playwright'
-          key: ${{ runner.os }}-playwright-${{ needs.install.outputs.playwright-version }}
-
-      - name: Install OS dependencies # required for Webkit
-        run: npx playwright install-deps
+      - name: Get playwright version
+        id: playwright-version
+        run: echo "version=$(cat ./package-lock.json | jq -re '.packages["node_modules/@playwright/test"].version')" >> $GITHUB_OUTPUT
 
       - name: Download dist folder
         uses: actions/download-artifact@v3
@@ -128,7 +84,10 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [test]
+    needs: test
+    permissions:
+      pull-requests: write
+      contents: write
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -138,12 +97,8 @@ jobs:
         with:
           node-version: 18
 
-      - name: Restore node_modules folder
-        uses: actions/cache/restore@v3
-        id: node-modules-restore
-        with:
-          path: './node_modules'
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        run: npm ci
 
       - name: Download blob reports
         uses: actions/download-artifact@v3
