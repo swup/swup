@@ -69,7 +69,7 @@ jobs:
           path: dist
 
       - name: Run tests
-        run: npx playwright test --config ./tests/config/playwright.config.ts --shard ${{ matrix.shard }} # --workers 1
+        run: HOME=/root npx playwright test --config ./tests/config/playwright.config.ts --shard ${{ matrix.shard }} # --workers 1
 
       - name: Upload blob report
         uses: actions/upload-artifact@v3
