@@ -116,7 +116,10 @@ jobs:
           path: playwright-report
           retention-days: 14
 
-      - name: Comment on pull request
-        uses: daun/playwright-report-comment@v1.1.1
+      - name: Create report comment
+        id: report-summary
+        uses: daun/playwright-report-summary@v2.1.0
         with:
           report-file: results.json
+          report-url: ${{ steps.report-id.outputs.url }}
+          job-summary: true
