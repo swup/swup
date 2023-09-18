@@ -134,6 +134,7 @@ jobs:
 
       - name: Copy html report and push reports branch
         run: |
+          mkdir -p test-reports-branch/${{ steps.report-id.outputs.path }}
           cp -r playwright-report test-reports-branch/${{ steps.report-id.outputs.path }}
           cd test-reports-branch
           git config user.name github-actions
