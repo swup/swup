@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Animation duration: complex</title>
+    <link rel="stylesheet" href="/assets/main.css">
+    <script src="/dist/Swup.umd.js"></script>
+    <style>
+        html.is-changing .transition-custom {
+            transition: opacity 100ms 200ms, transform 400ms 200ms;
+            opacity: 1;
+        }
+        html.is-animating .transition-custom {
+            transform: translateY(10px);
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <ul>
+            <li><a href="/animation-duration.html">Duration</a></li>
+            <li><a href="/animation-complex.html">Complex</a></li>
+            <li><a href="/animation-keyframes.html">Keyframes</a></li>
+            <li><a href="/animation-partial.html">Partial</a></li>
+            <li><a href="/animation-none.html">None</a></li>
+        </ul>
+    </header>
+    <main id="swup" class="wrapper transition-custom">
+        <h1>Animation duration: complex</h1>
+    </main>
+    <script>
+        window._swup = new Swup();
+    </script>
+</body>
+</html>
