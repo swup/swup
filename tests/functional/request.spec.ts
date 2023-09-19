@@ -1,6 +1,6 @@
 import { test } from '@playwright/test';
 
-import { clickOnLink, expectPageReload, expectRequestHeaders, expectToBeAt } from '../support/commands.js';
+import { clickOnLink, delayRequest, expectPageReload, expectRequestHeaders, expectToBeAt } from '../support/commands.js';
 import { navigateWithSwup } from '../support/swup.js';
 
 test.describe('request', () => {
@@ -36,5 +36,12 @@ test.describe('request', () => {
 		await page.route('/error-network.html', route => route.abort(), { times: 1 });
 		await expectPageReload(page, () => navigateWithSwup(page, '/error-network.html'));
 		await expectToBeAt(page, '/error-network.html');
+	});
+
+	test('forces reload on fetch timeout', async ({ page }) => {
+		await delayRequest(page, '/page-2.html', 2000);
+		await page.evaluate(() => window._swup.options.timeout = 500);
+		await expectPageReload(page, () => navigateWithSwup(page, '/page-2.html'));
+		await expectToBeAt(page, '/page-2.html');
 	});
 });
