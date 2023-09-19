@@ -49,6 +49,8 @@ export type Options = {
 	resolveUrl: (url: string) => string;
 	/** Callback for telling swup to ignore certain popstate events.  */
 	skipPopStateHandling: (event: PopStateEvent) => boolean;
+	/** Request timeout in milliseconds. */
+	timeout: number;
 };
 
 const defaults: Options = {
@@ -66,7 +68,8 @@ const defaults: Options = {
 		'X-Requested-With': 'swup',
 		'Accept': 'text/html, application/xhtml+xml'
 	},
-	skipPopStateHandling: (event) => (event.state as HistoryState)?.source !== 'swup'
+	skipPopStateHandling: (event) => (event.state as HistoryState)?.source !== 'swup',
+	timeout: 0
 };
 
 /** Swup page transition library. */

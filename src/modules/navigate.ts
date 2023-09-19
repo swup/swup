@@ -1,6 +1,6 @@
 import Swup from '../Swup.js';
 import { createHistoryRecord, updateHistoryRecord, getCurrentUrl, Location } from '../helpers.js';
-import { FetchOptions, PageData } from './fetchPage.js';
+import { FetchError, FetchOptions, PageData } from './fetchPage.js';
 import { VisitInitOptions } from './Visit.js';
 
 export type HistoryAction = 'push' | 'replace';
@@ -166,9 +166,9 @@ export async function performNavigation(
 		// if (visit.to && this.isSameResolvedUrl(visit.to.url, requestedUrl)) {
 		// 	this.visit = this.createVisit({ to: undefined });
 		// }
-	} catch (error: unknown) {
-		// Return early if error is undefined (probably aborted preload request)
-		if (!error) {
+	} catch (error) {
+		// Return early if error is undefined or signals an aborted request
+		if (!error || (error as FetchError)?.aborted) {
 			return;
 		}
 

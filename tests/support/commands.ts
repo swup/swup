@@ -70,11 +70,11 @@ export async function expectRequestHeaders(request: Request, headers: Record<str
 	expect(request.headers()).toMatchObject(expected);
 }
 
-export async function delayRequest(page: Page, url: string, timeout: number) {
+export async function delayRequest(page: Page, url: string, timeout: number, times: number = 1) {
 	await page.route(url, async (route) => {
 		await sleep(timeout);
 		route.continue();
-	})
+	}, { times });
 }
 
 export function scrollToPosition(page: Page,y: number) {
