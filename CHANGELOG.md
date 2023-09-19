@@ -2,6 +2,12 @@
 
 <!-- ## [Unreleased] -->
 
+## [4.4.0] - 2023-09-19
+
+- Enable experimental `ViewTransition` support
+- Extend test coverage to all major browsers
+- Add request timeout option
+
 ## [4.3.4] - 2023-08-24
 
 - Add unique id to visit object
@@ -167,8 +173,9 @@ See [upgrade instructions](https://swup.js.org/getting-started/upgrading-v3/) fo
 
 - Fix bug where animateHistoryBrowsing option was ignored for OUT animations
 
-[Unreleased]: https://github.com/swup/swup/compare/4.3.4...HEAD
+[Unreleased]: https://github.com/swup/swup/compare/4.4.0...HEAD
 
+[4.4.0]: https://github.com/swup/swup/releases/tag/4.4.0
 [4.3.4]: https://github.com/swup/swup/releases/tag/4.3.4
 [4.3.3]: https://github.com/swup/swup/releases/tag/4.3.3
 [4.3.2]: https://github.com/swup/swup/releases/tag/4.3.2
