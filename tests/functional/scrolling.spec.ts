@@ -2,7 +2,6 @@ import { test, expect } from '@playwright/test';
 
 import { expectScrollPosition, expectToBeAt } from '../support/commands.js';
 import { waitForSwup } from '../support/swup.js';
-import { Visit } from '../../src/index.js';
 
 test.describe('scrolling', () => {
 	test.beforeEach(async ({ page }) => {
