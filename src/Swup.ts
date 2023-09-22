@@ -283,6 +283,7 @@ export default class Swup {
 
 			// Handle links to the same page
 			if (!url || url === from) {
+				this.visit.settled = true;
 				if (hash) {
 					// With hash: scroll to anchor
 					this.hooks.callSync('link:anchor', { hash }, () => {
@@ -307,6 +308,7 @@ export default class Swup {
 
 			// Exit early if the resolved path hasn't changed
 			if (this.isSameResolvedUrl(url, from)) {
+				this.visit.settled = true;
 				return;
 			}
 
