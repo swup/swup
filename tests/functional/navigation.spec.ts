@@ -42,11 +42,11 @@ test.describe('navigation', () => {
 
 	test('ignores link clicks if already navigating towards the link\'s URL', async ({ page }) => {
 		await page.evaluate(() => {
-			window._swup.hooks.on('link:self', () => window.data.linkToSelfFired = true);
+			window._swup.hooks.on('link:self', () => window.linkToSelfFired = true);
 		});
 		await clickOnLink(page, '/page-2.html');
 		await clickOnLink(page, '/page-2.html');
-		expect(await page.evaluate(() => window.data.linkToSelfFired)).toEqual(undefined);
+		expect(await page.evaluate(() => window.linkToSelfFired)).toEqual(undefined);
 	});
 
 	test('immediately settles the visit for links to current page', async ({ page }) => {
