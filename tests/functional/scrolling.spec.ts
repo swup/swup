@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 
 import { expectScrollPosition, expectToBeAt } from '../support/commands.js';
 import { waitForSwup } from '../support/swup.js';
+import { Visit } from '../../src/index.js';
 
 test.describe('scrolling', () => {
 	test.beforeEach(async ({ page }) => {
@@ -70,12 +71,19 @@ test.describe('scrolling', () => {
 		await expect(page.getByTestId('anchor')).toBeInViewport();
 	});
 
-	test('does not append the hash if changing visit.scroll.target on the fly', async ({ page }) => {
+	test('does not append the hash if changing visit.scroll.target on the fly', async ({
+		page
+	}) => {
 		await page.evaluate(() => {
 			window._swup.hooks.once('visit:start', (visit) => (visit.scroll.target = '#anchor'));
 		});
 		await page.getByTestId('link-to-page').click();
 		await expectToBeAt(page, '/scrolling-2.html', 'Scrolling 2');
 		await expect(page.getByTestId('anchor')).toBeInViewport();
+	});
+
+	test.only('sets visit.settled to true for anchor links', async ({ page }) => {
+		await page.getByTestId('link-to-anchor').click();
+		expect(await page.evaluate(() => window._swup.visit.settled)).toEqual(true);
 	});
 });
