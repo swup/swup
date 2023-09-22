@@ -268,11 +268,13 @@ export default class Swup {
 		// Exit early if control key pressed
 		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
 			this.hooks.call('link:newtab', { href });
+			this.visit.settled = true;
 			return;
 		}
 
 		// Exit early if other than left mouse button
 		if (event.button !== 0) {
+			this.visit.settled = true;
 			return;
 		}
 
