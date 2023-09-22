@@ -40,7 +40,7 @@ test.describe('navigation', () => {
 		await expectToBeAt(page, '/page-3.html', 'Page 3');
 	});
 
-	test('immediately settles visit for links to current page', async ({ page }) => {
+	test('immediately settles the visit for links to current page', async ({ page }) => {
 		await clickOnLink(page, '/page-1.html');
 		expect(await page.evaluate(() => window._swup.visit.settled)).toEqual(true);
 	});

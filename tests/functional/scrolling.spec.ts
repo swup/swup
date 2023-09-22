@@ -81,7 +81,7 @@ test.describe('scrolling', () => {
 		await expect(page.getByTestId('anchor')).toBeInViewport();
 	});
 
-	test('sets visit.settled to true for anchor links', async ({ page }) => {
+	test('immediately settles the visit for anchor links', async ({ page }) => {
 		await page.getByTestId('link-to-anchor').click();
 		expect(await page.evaluate(() => window._swup.visit.settled)).toEqual(true);
 	});
