@@ -21,6 +21,8 @@ export interface Visit {
 	history: VisitHistory;
 	/** Scroll behavior on this visit */
 	scroll: VisitScroll;
+	/** Has the visit settled? */
+	settled: boolean
 }
 
 export interface VisitFrom {
@@ -121,6 +123,7 @@ export function createVisit(
 		scroll: {
 			reset: true,
 			target: undefined
-		}
+		},
+		settled: false
 	};
 }

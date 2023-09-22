@@ -257,6 +257,12 @@ export default class Swup {
 			return;
 		}
 
+		// Ignore if swup is currently navigating towards the link's URL
+		if (!this.visit.settled && url === this.visit.to.url) {
+			event.preventDefault();
+			return;
+		}
+
 		this.visit = this.createVisit({ to: url, hash, el, event });
 
 		// Exit early if control key pressed
