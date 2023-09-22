@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
 import { clickOnLink, delayRequest, expectToBeAt } from '../support/commands.js';
 import { navigateWithSwup } from '../support/swup.js';
@@ -38,5 +38,10 @@ test.describe('navigation', () => {
 		await expectToBeAt(page, '/page-3.html', 'Page 3');
 		await page.waitForTimeout(700);
 		await expectToBeAt(page, '/page-3.html', 'Page 3');
+	});
+
+	test('immediately settles visit for links to current page', async ({ page }) => {
+		await clickOnLink(page, '/page-1.html');
+		expect(await page.evaluate(() => window._swup.visit.settled)).toEqual(true);
 	});
 });
