@@ -43,11 +43,14 @@ test.describe('navigation', () => {
 	test("ignores link clicks if already navigating towards the link's URL", async ({ page }) => {
 		await page.evaluate(() => {
 			window.data = { fired: false };
+			window._swup.hooks.on('visit:start', (visit) => {
+				// Immediately click the trigger again. This should be ignored.
+				visit.trigger.el.click();
+			});
 			window._swup.hooks.on('link:self', () => {
 				window.data.fired = true;
 			});
 		});
-		await clickOnLink(page, '/page-2.html');
 		await clickOnLink(page, '/page-2.html');
 		expect(await page.evaluate(() => window.data.fired)).toBe(false);
 	});
