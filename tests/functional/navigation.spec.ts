@@ -45,7 +45,7 @@ test.describe('navigation', () => {
 			window.data = { fired: false };
 			window._swup.hooks.on('visit:start', (visit) => {
 				// Immediately click the trigger again. This should be ignored.
-				visit.trigger.el.click();
+				(visit.trigger.el as HTMLAnchorElement).click();
 			});
 			window._swup.hooks.on('link:self', () => {
 				window.data.fired = true;
