@@ -21,8 +21,6 @@ export interface Visit {
 	history: VisitHistory;
 	/** Scroll behavior on this visit */
 	scroll: VisitScroll;
-	/** Has the visit settled? */
-	settled: boolean;
 }
 
 export interface VisitFrom {
@@ -88,13 +86,12 @@ export interface VisitInitOptions {
 	hash?: string;
 	el?: Element;
 	event?: Event;
-	settled?: boolean;
 }
 
 /** Create a new visit object. */
 export function createVisit(
 	this: Swup,
-	{ to, from = this.currentPageUrl, hash, el, event, settled = false }: VisitInitOptions
+	{ to, from = this.currentPageUrl, hash, el, event }: VisitInitOptions
 ): Visit {
 	return {
 		id: Math.random(),
@@ -124,7 +121,6 @@ export function createVisit(
 		scroll: {
 			reset: true,
 			target: undefined
-		},
-		settled
+		}
 	};
 }

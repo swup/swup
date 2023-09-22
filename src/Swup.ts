@@ -96,6 +96,8 @@ export default class Swup {
 	protected currentHistoryIndex: number;
 	/** Delegated event subscription handle */
 	protected clickDelegate?: DelegateEventUnsubscribe;
+	/** Navigation status */
+	navigating: boolean = false;
 
 	/** Install a plugin */
 	use = use;
@@ -145,7 +147,7 @@ export default class Swup {
 		this.cache = new Cache(this);
 		this.classes = new Classes(this);
 		this.hooks = new Hooks(this);
-		this.visit = this.createVisit({ to: '', settled: true });
+		this.visit = this.createVisit({ to: '' });
 
 		this.currentHistoryIndex = (history.state as HistoryState)?.index ?? 1;
 
@@ -258,7 +260,7 @@ export default class Swup {
 		}
 
 		// Ignore if swup is currently navigating towards the link's URL
-		if (!this.visit.settled && url === this.visit.to.url) {
+		if (this.navigating && url === this.visit.to.url) {
 			event.preventDefault();
 			return;
 		}
@@ -268,13 +270,11 @@ export default class Swup {
 		// Exit early if control key pressed
 		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
 			this.hooks.call('link:newtab', { href });
-			this.visit.settled = true;
 			return;
 		}
 
 		// Exit early if other than left mouse button
 		if (event.button !== 0) {
-			this.visit.settled = true;
 			return;
 		}
 
@@ -285,7 +285,6 @@ export default class Swup {
 
 			// Handle links to the same page
 			if (!url || url === from) {
-				this.visit.settled = true;
 				if (hash) {
 					// With hash: scroll to anchor
 					this.hooks.callSync('link:anchor', { hash }, () => {
@@ -310,7 +309,6 @@ export default class Swup {
 
 			// Exit early if the resolved path hasn't changed
 			if (this.isSameResolvedUrl(url, from)) {
-				this.visit.settled = true;
 				return;
 			}
 
