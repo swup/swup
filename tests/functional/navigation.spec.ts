@@ -40,18 +40,29 @@ test.describe('navigation', () => {
 		await expectToBeAt(page, '/page-3.html', 'Page 3');
 	});
 
+	// test("ignores link clicks if already navigating towards the link's URL", async ({ page }) => {
+	// 	await page.evaluate(() => {
+	// 		window.data = { fired: false };
+	// 		window._swup.hooks.on('visit:start', (visit) => {
+	// 			// Immediately click the trigger again. This should be ignored.
+	// 			(visit.trigger.el as HTMLAnchorElement).click();
+	// 		});
+	// 		window._swup.hooks.on('link:self', () => {
+	// 			window.data.fired = true;
+	// 		});
+	// 	});
+	// 	await clickOnLink(page, '/page-2.html');
+	// 	expect(await page.evaluate(() => window.data.fired)).toBe(false);
+	// });
+
 	test("ignores link clicks if already navigating towards the link's URL", async ({ page }) => {
+		let ignoredSecondClick: boolean | undefined;
+		await page.exposeBinding('updateTestVar', (_source, value) => (ignoredSecondClick = value));
 		await page.evaluate(() => {
-			window.data = { fired: false };
-			window._swup.hooks.on('visit:start', (visit) => {
-				// Immediately click the trigger again. This should be ignored.
-				(visit.trigger.el as HTMLAnchorElement).click();
-			});
-			window._swup.hooks.on('link:self', () => {
-				window.data.fired = true;
-			});
+			window.updateTestVar(true);
+			window._swup.hooks.on('link:self', () => window.updateTestVar(false));
 		});
-		await clickOnLink(page, '/page-2.html');
-		expect(await page.evaluate(() => window.data.fired)).toBe(false);
+		await clickOnLink(page, '/page-2.html', { clickCount: 2 });
+		expect(ignoredSecondClick).toBe(true);
 	});
 });
