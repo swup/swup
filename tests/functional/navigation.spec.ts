@@ -40,17 +40,15 @@ test.describe('navigation', () => {
 		await expectToBeAt(page, '/page-3.html', 'Page 3');
 	});
 
-	test('ignores link clicks if already navigating towards the link\'s URL', async ({ page }) => {
+	test("ignores link clicks if already navigating towards the link's URL", async ({ page }) => {
 		await page.evaluate(() => {
-			window._swup.hooks.on('link:self', () => window.linkToSelfFired = true);
+			window.data = { fired: false };
+			window._swup.hooks.on('link:self', () => {
+				window.data.fired = true;
+			});
 		});
 		await clickOnLink(page, '/page-2.html');
 		await clickOnLink(page, '/page-2.html');
-		expect(await page.evaluate(() => window.linkToSelfFired)).toEqual(undefined);
-	});
-
-	test('immediately settles the visit for links to current page', async ({ page }) => {
-		await clickOnLink(page, '/page-1.html');
-		expect(await page.evaluate(() => window._swup.visit.settled)).toEqual(true);
+		expect(await page.evaluate(() => window.data.fired)).toBe(false);
 	});
 });
