@@ -145,7 +145,7 @@ export default class Swup {
 		this.cache = new Cache(this);
 		this.classes = new Classes(this);
 		this.hooks = new Hooks(this);
-		this.visit = this.createVisit({ to: '' });
+		this.visit = this.createVisit({ to: '', settled: true });
 
 		this.currentHistoryIndex = (history.state as HistoryState)?.index ?? 1;
 
