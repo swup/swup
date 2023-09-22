@@ -22,7 +22,7 @@ export interface Visit {
 	/** Scroll behavior on this visit */
 	scroll: VisitScroll;
 	/** Has the visit settled? */
-	settled: boolean
+	settled: boolean;
 }
 
 export interface VisitFrom {
