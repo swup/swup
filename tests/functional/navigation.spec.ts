@@ -55,14 +55,14 @@ test.describe('navigation', () => {
 	// 	expect(await page.evaluate(() => window.data.fired)).toBe(false);
 	// });
 
-	test("ignores link clicks if already navigating towards the link's URL", async ({ page }) => {
-		let ignoredSecondClick: boolean | undefined;
-		await page.exposeBinding('updateTestVar', (_source, value) => (ignoredSecondClick = value));
+	test("ignore double-clicks on links", async ({ page }) => {
+		let triggerCount: number | undefined;
+		await page.exposeBinding('updateTestVar', (_source, value) => (triggerCount = value));
 		await page.evaluate(() => {
-			window.updateTestVar(true);
-			window._swup.hooks.on('link:self', () => window.updateTestVar(false));
+			let count = 0;
+			window._swup.hooks.on('link:click', () => (window.updateTestVar(++count)));
 		});
-		await clickOnLink(page, '/page-2.html', { clickCount: 2 });
-		expect(ignoredSecondClick).toBe(true);
+		await clickOnLink(page, '/page-2.html', { clickCount: 3 });
+		expect(triggerCount).toBe(1);
 	});
 });
