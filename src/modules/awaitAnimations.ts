@@ -1,5 +1,6 @@
 import { queryAll, toMs } from '../utils.js';
-import Swup, { Options } from '../Swup.js';
+import type Swup from '../Swup.js';
+import type { Options } from '../Swup.js';
 
 const TRANSITION = 'transition';
 const ANIMATION = 'animation';

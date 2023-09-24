@@ -1,4 +1,4 @@
-import Swup from '../Swup.js';
+import type Swup from '../Swup.js';
 
 /**
  * Utility function to validate and run the global option 'resolveUrl'

@@ -1,4 +1,4 @@
-import Swup from '../Swup.js';
+import type Swup from '../Swup.js';
 
 /**
  * Update the scroll position after page render.

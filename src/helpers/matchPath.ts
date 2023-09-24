@@ -8,7 +8,7 @@ import type {
 	MatchFunction
 } from 'path-to-regexp';
 
-export { Path };
+export { type Path };
 
 /** Create a match function from a path pattern that checks if a URLs matches it. */
 export const matchPath = <P extends object = object>(
