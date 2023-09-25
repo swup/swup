@@ -1,6 +1,7 @@
-import Swup, { Options } from '../Swup.js';
+import type Swup from '../Swup.js';
+import type { Options } from '../Swup.js';
 import { query, queryAll } from '../utils.js';
-import { PageData } from './fetchPage.js';
+import type { PageData } from './fetchPage.js';
 
 /**
  * Perform the replacement of content after loading a page.

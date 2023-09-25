@@ -1,4 +1,4 @@
-import Swup from '../../src/Swup.js';
+import type Swup from '../../src/Swup.js';
 
 declare global {
 	interface Window {

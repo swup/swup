@@ -1,7 +1,7 @@
-import Swup from '../Swup.js';
+import type Swup from '../Swup.js';
 import { createHistoryRecord, updateHistoryRecord, getCurrentUrl, Location } from '../helpers.js';
-import { FetchError, FetchOptions, PageData } from './fetchPage.js';
-import { VisitInitOptions } from './Visit.js';
+import { FetchError, type FetchOptions, type PageData } from './fetchPage.js';
+import type { VisitInitOptions } from './Visit.js';
 
 export type HistoryAction = 'push' | 'replace';
 export type HistoryDirection = 'forwards' | 'backwards';
