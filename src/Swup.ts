@@ -97,7 +97,7 @@ export default class Swup {
 	/** Delegated event subscription handle */
 	protected clickDelegate?: DelegateEventUnsubscribe;
 	/** Navigation status */
-	navigating: boolean = false;
+	protected navigating: boolean = false;
 
 	/** Install a plugin */
 	use = use;
