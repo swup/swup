@@ -1,4 +1,4 @@
-import Swup from '../Swup.js';
+import type Swup from '../Swup.js';
 import { Location } from '../helpers.js';
 
 /** A page object as used by swup and its cache. */

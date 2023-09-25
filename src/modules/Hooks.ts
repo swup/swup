@@ -1,9 +1,9 @@
-import { DelegateEvent } from 'delegate-it';
+import type { DelegateEvent } from 'delegate-it';
 
-import Swup from '../Swup.js';
+import type Swup from '../Swup.js';
 import { isPromise, runAsPromise } from '../utils.js';
-import { Visit } from './Visit.js';
-import { FetchOptions, PageData } from './fetchPage.js';
+import type { Visit } from './Visit.js';
+import type { FetchOptions, PageData } from './fetchPage.js';
 
 export interface HookDefinitions {
 	'animation:out:start': undefined;

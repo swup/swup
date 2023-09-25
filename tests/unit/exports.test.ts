@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
 import pckg from '../../package.json';
-import Swup, { Options, Plugin } from '../../src/index.js';
+import Swup from '../../src/index.js';
+import type { Options, Plugin } from '../../src/index.js';
 import * as SwupTS from '../../src/Swup.js';
 
 describe('Exports', () => {

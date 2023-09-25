@@ -1,5 +1,9 @@
-import delegate, { DelegateEventHandler, DelegateOptions, EventType } from 'delegate-it';
-import { ParseSelector } from 'typed-query-selector/parser.js';
+import delegate, {
+	type DelegateEventHandler,
+	type DelegateOptions,
+	type EventType
+} from 'delegate-it';
+import type { ParseSelector } from 'typed-query-selector/parser.js';
 
 export type DelegateEventUnsubscribe = {
 	destroy: () => void;

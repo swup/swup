@@ -1,4 +1,4 @@
-import Swup from '../Swup.js';
+import type Swup from '../Swup.js';
 import { queryAll } from '../utils.js';
 
 export class Classes {
