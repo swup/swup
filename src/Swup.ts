@@ -96,6 +96,8 @@ export default class Swup {
 	protected currentHistoryIndex: number;
 	/** Delegated event subscription handle */
 	protected clickDelegate?: DelegateEventUnsubscribe;
+	/** Navigation status */
+	protected navigating: boolean = false;
 
 	/** Install a plugin */
 	use = use;
@@ -254,6 +256,12 @@ export default class Swup {
 
 		// Exit early if the link should be ignored
 		if (this.shouldIgnoreVisit(href, { el, event })) {
+			return;
+		}
+
+		// Ignore if swup is currently navigating towards the link's URL
+		if (this.navigating && url === this.visit.to.url) {
+			event.preventDefault();
 			return;
 		}
 

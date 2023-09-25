@@ -70,7 +70,9 @@ test.describe('scrolling', () => {
 		await expect(page.getByTestId('anchor')).toBeInViewport();
 	});
 
-	test('does not append the hash if changing visit.scroll.target on the fly', async ({ page }) => {
+	test('does not append the hash if changing visit.scroll.target on the fly', async ({
+		page
+	}) => {
 		await page.evaluate(() => {
 			window._swup.hooks.once('visit:start', (visit) => (visit.scroll.target = '#anchor'));
 		});
