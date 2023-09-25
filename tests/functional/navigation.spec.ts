@@ -40,14 +40,12 @@ test.describe('navigation', () => {
 		await expectToBeAt(page, '/page-3.html', 'Page 3');
 	});
 
-	test("ignore double-clicks on links", async ({ page }) => {
-		let triggerCount: number | undefined;
-		await page.exposeBinding('updateTestVar', (_source, value) => (triggerCount = value));
+	test("ignore multiple rapid clicks on the same link", async ({ page }) => {
 		await page.evaluate(() => {
-			let count = 0;
-			window._swup.hooks.on('link:click', () => (window.updateTestVar(++count)));
+			window.data = { clickCount: 0 }
+			window._swup.hooks.on('link:click', () => (window.data.clickCount += 1));
 		});
 		await clickOnLink(page, '/page-2.html', { clickCount: 3 });
-		expect(triggerCount).toBe(1);
+		expect(await page.evaluate(() => window.data.clickCount)).toBe(1);
 	});
 });

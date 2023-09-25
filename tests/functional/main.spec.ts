@@ -5,6 +5,5 @@ declare global {
 		_swup: Swup;
 		data: any;
 		navigated: () => void;
-		updateTestVar: (value: any) => void;
 	}
 }
