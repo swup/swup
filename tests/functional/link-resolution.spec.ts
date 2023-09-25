@@ -24,16 +24,15 @@ test.describe('link resolution', () => {
 	});
 
 	test('resets scroll when resolving to same page', async ({ page }) => {
-		let navigated = false;
-		await page.exposeBinding('navigated', () => (navigated = true));
 		await page.evaluate(() => {
-			window._swup.hooks.on('visit:start', () => window.navigated());
+			window.data = { navigated: false }
+			window._swup.hooks.on('visit:start', () => window.data.navigated = true);
 		});
 		scrollToPosition(page, 200);
 		await expectScrollPosition(page, 200);
 		await page.getByTestId('nav-link-self').click();
 		await expectScrollPosition(page, 0);
-		expect(navigated).toBe(false);
+		expect(await page.evaluate(() => window.data.navigated)).toBe(false);
 	});
 
 	test('navigates to same page if configured via linkToSelf option', async ({ page }) => {

@@ -6,7 +6,6 @@ declare global {
 	interface Window {
 		_swup: Swup;
 		data: any;
-		navigated: () => boolean;
 	}
 }
 
