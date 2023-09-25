@@ -1,7 +1,7 @@
 {
   "name": "swup",
   "amdName": "Swup",
-  "version": "4.4.0",
+  "version": "4.4.1",
   "description": "Versatile and extensible page transition library for server-rendered websites",
   "type": "module",
   "source": "./src/Swup.ts",
@@ -80,6 +80,7 @@
     "nyc": "^15.1.0",
     "prettier": "^2.8.2",
     "serve": "^14.2.1",
+    "typed-query-selector": "^2.11.0",
     "vitest": "^0.34.3"
   },
   "collective": {

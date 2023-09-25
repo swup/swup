@@ -1,7 +1,7 @@
-import Swup from '../Swup.js';
+import type Swup from '../Swup.js';
 import { createHistoryRecord, updateHistoryRecord, getCurrentUrl, Location } from '../helpers.js';
-import { FetchError, FetchOptions, PageData } from './fetchPage.js';
-import { VisitInitOptions } from './Visit.js';
+import { FetchError, type FetchOptions, type PageData } from './fetchPage.js';
+import type { VisitInitOptions } from './Visit.js';
 
 export type HistoryAction = 'push' | 'replace';
 export type HistoryDirection = 'forwards' | 'backwards';
@@ -62,6 +62,7 @@ export async function performNavigation(
 	this: Swup,
 	options: NavigationOptions & FetchOptions = {}
 ): Promise<void> {
+	this.navigating = true;
 	// Save this localy to a) allow ignoring the visit if a new one was started in the meantime
 	// and b) avoid unintended modifications to any newer visits
 	const visit = this.visit;
@@ -166,6 +167,7 @@ export async function performNavigation(
 		// if (visit.to && this.isSameResolvedUrl(visit.to.url, requestedUrl)) {
 		// 	this.visit = this.createVisit({ to: undefined });
 		// }
+		this.navigating = false;
 	} catch (error) {
 		// Return early if error is undefined or signals an aborted request
 		if (!error || (error as FetchError)?.aborted) {

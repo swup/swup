@@ -1,6 +1,5 @@
 import { expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
-
 import type Swup from '../../src/Swup.js';
 
 declare global {

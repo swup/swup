@@ -1,5 +1,6 @@
-import Swup, { Options } from '../Swup.js';
-import { HistoryAction, HistoryDirection } from './navigate.js';
+import type Swup from '../Swup.js';
+import type { Options } from '../Swup.js';
+import type { HistoryAction, HistoryDirection } from './navigate.js';
 
 /** An object holding details about the current visit. */
 export interface Visit {

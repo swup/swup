@@ -1,4 +1,4 @@
-import { HistoryState } from './createHistoryRecord.js';
+import type { HistoryState } from './createHistoryRecord.js';
 import { getCurrentUrl } from './getCurrentUrl.js';
 
 /** Update the current history record with a custom swup identifier. */

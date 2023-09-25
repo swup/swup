@@ -1,6 +1,6 @@
 import { updateHistoryRecord, getCurrentUrl, classify } from '../helpers.js';
-import Swup from '../Swup.js';
-import { PageData } from './fetchPage.js';
+import type Swup from '../Swup.js';
+import type { PageData } from './fetchPage.js';
 
 /**
  * Render the next page: replace the content and update scroll position.

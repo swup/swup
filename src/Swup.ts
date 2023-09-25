@@ -1,27 +1,27 @@
-import { DelegateEvent } from 'delegate-it';
+import { type DelegateEvent } from 'delegate-it';
 
 import version from './config/version.js';
 
 import { delegateEvent, getCurrentUrl, Location, updateHistoryRecord } from './helpers.js';
-import { DelegateEventUnsubscribe } from './helpers/delegateEvent.js';
+import { type DelegateEventUnsubscribe } from './helpers/delegateEvent.js';
 
 import { Cache } from './modules/Cache.js';
 import { Classes } from './modules/Classes.js';
-import { Visit, createVisit } from './modules/Visit.js';
+import { type Visit, createVisit } from './modules/Visit.js';
 import { Hooks } from './modules/Hooks.js';
 import { getAnchorElement } from './modules/getAnchorElement.js';
 import { awaitAnimations } from './modules/awaitAnimations.js';
-import { navigate, performNavigation, NavigationToSelfAction } from './modules/navigate.js';
+import { navigate, performNavigation, type NavigationToSelfAction } from './modules/navigate.js';
 import { fetchPage } from './modules/fetchPage.js';
 import { animatePageOut } from './modules/animatePageOut.js';
 import { replaceContent } from './modules/replaceContent.js';
 import { scrollToContent } from './modules/scrollToContent.js';
 import { animatePageIn } from './modules/animatePageIn.js';
 import { renderPage } from './modules/renderPage.js';
-import { use, unuse, findPlugin, Plugin } from './modules/plugins.js';
+import { use, unuse, findPlugin, type Plugin } from './modules/plugins.js';
 import { isSameResolvedUrl, resolveUrl } from './modules/resolveUrl.js';
 import { nextTick } from './utils.js';
-import { HistoryState } from './helpers/createHistoryRecord.js';
+import { type HistoryState } from './helpers/createHistoryRecord.js';
 
 /** Options for customizing swup's behavior. */
 export type Options = {
@@ -96,6 +96,8 @@ export default class Swup {
 	protected currentHistoryIndex: number;
 	/** Delegated event subscription handle */
 	protected clickDelegate?: DelegateEventUnsubscribe;
+	/** Navigation status */
+	protected navigating: boolean = false;
 
 	/** Install a plugin */
 	use = use;
@@ -254,6 +256,12 @@ export default class Swup {
 
 		// Exit early if the link should be ignored
 		if (this.shouldIgnoreVisit(href, { el, event })) {
+			return;
+		}
+
+		// Ignore if swup is currently navigating towards the link's URL
+		if (this.navigating && url === this.visit.to.url) {
+			event.preventDefault();
 			return;
 		}
 
