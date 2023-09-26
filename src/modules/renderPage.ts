@@ -11,7 +11,7 @@ export const renderPage = async function (this: Swup, page: PageData): Promise<v
 	this.classes.remove('is-leaving');
 
 	// update state if the url was redirected
-	if (!this.isSameResolvedUrl(getCurrentUrl(), url)) {
+	if (!this._isSameResolvedUrl(getCurrentUrl(), url)) {
 		updateHistoryRecord(url);
 		this.currentPageUrl = getCurrentUrl();
 		this.visit.to.url = this.currentPageUrl;
@@ -43,7 +43,7 @@ export const renderPage = async function (this: Swup, page: PageData): Promise<v
 	// scroll into view: either anchor or top of page
 	// @ts-ignore: not returning a promise is intentional to allow users to pause in handler
 	await this.hooks.call('content:scroll', undefined, () => {
-		return this.scrollToContent();
+		return this._scrollToContent();
 	});
 
 	await this.hooks.call('page:view', { url: this.currentPageUrl, title: document.title });

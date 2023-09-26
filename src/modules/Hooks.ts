@@ -111,14 +111,14 @@ interface HookRegistry extends Map<HookName, HookLedger<HookName>> {
  */
 export class Hooks {
 	/** Swup instance this registry belongs to */
-	protected swup: Swup;
+	protected _swup: Swup;
 
 	/** Map of all registered hook handlers. */
-	protected registry: HookRegistry = new Map();
+	protected _registry: HookRegistry = new Map();
 
 	// Can we deduplicate this somehow? Or make it error when not in sync with HookDefinitions?
 	// https://stackoverflow.com/questions/53387838/how-to-ensure-an-arrays-values-the-keys-of-a-typescript-interface/53395649
-	protected readonly hooks: HookName[] = [
+	protected readonly _hooks: HookName[] = [
 		'animation:out:start',
 		'animation:out:await',
 		'animation:out:end',
@@ -150,23 +150,23 @@ export class Hooks {
 	];
 
 	constructor(swup: Swup) {
-		this.swup = swup;
-		this.init();
+		this._swup = swup;
+		this._init();
 	}
 
 	/**
 	 * Create ledgers for all core hooks.
 	 */
-	protected init() {
-		this.hooks.forEach((hook) => this.create(hook));
+	protected _init() {
+		this._hooks.forEach((hook) => this.create(hook));
 	}
 
 	/**
 	 * Create a new hook type.
 	 */
 	create(hook: string) {
-		if (!this.registry.has(hook as HookName)) {
-			this.registry.set(hook as HookName, new Map());
+		if (!this._registry.has(hook as HookName)) {
+			this._registry.set(hook as HookName, new Map());
 		}
 	}
 
@@ -174,14 +174,14 @@ export class Hooks {
 	 * Check if a hook type exists.
 	 */
 	exists(hook: HookName): boolean {
-		return this.registry.has(hook);
+		return this._registry.has(hook);
 	}
 
 	/**
 	 * Get the ledger with all registrations for a hook.
 	 */
-	protected get<T extends HookName>(hook: T): HookLedger<T> | undefined {
-		const ledger = this.registry.get(hook);
+	protected _get<T extends HookName>(hook: T): HookLedger<T> | undefined {
+		const ledger = this._registry.get(hook);
 		if (ledger) {
 			return ledger;
 		}
@@ -192,7 +192,7 @@ export class Hooks {
 	 * Remove all handlers of all hooks.
 	 */
 	clear() {
-		this.registry.forEach((ledger) => ledger.clear());
+		this._registry.forEach((ledger) => ledger.clear());
 	}
 
 	/**
@@ -220,7 +220,7 @@ export class Hooks {
 		handler: O['replace'] extends true ? DefaultHandler<T> : Handler<T>,
 		options: Partial<O> = {}
 	): HookUnregister {
-		const ledger = this.get(hook);
+		const ledger = this._get(hook);
 		if (!ledger) {
 			console.warn(`Hook '${hook}' not found.`);
 			return () => {};
@@ -310,7 +310,7 @@ export class Hooks {
 	off<T extends HookName>(hook: T): void;
 	// Implementation
 	off<T extends HookName>(hook: T, handler?: Handler<T> | DefaultHandler<T>): void {
-		const ledger = this.get(hook);
+		const ledger = this._get(hook);
 		if (ledger && handler) {
 			const deleted = ledger.delete(handler);
 			if (!deleted) {
@@ -334,11 +334,11 @@ export class Hooks {
 		args: HookArguments<T>,
 		defaultHandler?: DefaultHandler<T>
 	): Promise<Awaited<ReturnType<DefaultHandler<T>>>> {
-		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
-		await this.run(before, args);
-		const [result] = await this.run(handler, args);
-		await this.run(after, args);
-		this.dispatchDomEvent(hook, args);
+		const { before, handler, after } = this._getHandlers(hook, defaultHandler);
+		await this._run(before, args);
+		const [result] = await this._run(handler, args);
+		await this._run(after, args);
+		this._dispatchDomEvent(hook, args);
 		return result;
 	}
 
@@ -355,11 +355,11 @@ export class Hooks {
 		args: HookArguments<T>,
 		defaultHandler?: DefaultHandler<T>
 	): ReturnType<DefaultHandler<T>> {
-		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
-		this.runSync(before, args);
-		const [result] = this.runSync(handler, args);
-		this.runSync(after, args);
-		this.dispatchDomEvent(hook, args);
+		const { before, handler, after } = this._getHandlers(hook, defaultHandler);
+		this._runSync(before, args);
+		const [result] = this._runSync(handler, args);
+		this._runSync(after, args);
+		this._dispatchDomEvent(hook, args);
 		return result;
 	}
 
@@ -370,17 +370,17 @@ export class Hooks {
 	 */
 
 	// Overload: running DefaultHandler: expect DefaultHandler return type
-	protected async run<T extends HookName>(registrations: HookRegistration<T, DefaultHandler<T>>[], args: HookArguments<T>): Promise<Awaited<ReturnType<DefaultHandler<T>>>[]>; // prettier-ignore
+	protected async _run<T extends HookName>(registrations: HookRegistration<T, DefaultHandler<T>>[], args: HookArguments<T>): Promise<Awaited<ReturnType<DefaultHandler<T>>>[]>; // prettier-ignore
 	// Overload:  running user handler: expect no specific type
-	protected async run<T extends HookName>(registrations: HookRegistration<T>[], args: HookArguments<T>): Promise<unknown[]>; // prettier-ignore
+	protected async _run<T extends HookName>(registrations: HookRegistration<T>[], args: HookArguments<T>): Promise<unknown[]>; // prettier-ignore
 	// Implementation
-	protected async run<T extends HookName, R extends HookRegistration<T>[]>(
+	protected async _run<T extends HookName, R extends HookRegistration<T>[]>(
 		registrations: R,
 		args: HookArguments<T>
 	): Promise<Awaited<ReturnType<DefaultHandler<T>>> | unknown[]> {
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
-			const result = await runAsPromise(handler, [this.swup.visit, args, defaultHandler]);
+			const result = await runAsPromise(handler, [this._swup.visit, args, defaultHandler]);
 			results.push(result);
 			if (once) {
 				this.off(hook, handler);
@@ -396,17 +396,17 @@ export class Hooks {
 	 */
 
 	// Overload: running DefaultHandler: expect DefaultHandler return type
-	protected runSync<T extends HookName>(registrations: HookRegistration<T, DefaultHandler<T>>[], args: HookArguments<T> ): ReturnType<DefaultHandler<T>>[]; // prettier-ignore
+	protected _runSync<T extends HookName>(registrations: HookRegistration<T, DefaultHandler<T>>[], args: HookArguments<T> ): ReturnType<DefaultHandler<T>>[]; // prettier-ignore
 	// Overload: running user handler: expect no specific type
-	protected runSync<T extends HookName>(registrations: HookRegistration<T>[], args: HookArguments<T>): unknown[]; // prettier-ignore
+	protected _runSync<T extends HookName>(registrations: HookRegistration<T>[], args: HookArguments<T>): unknown[]; // prettier-ignore
 	// Implementation
-	protected runSync<T extends HookName, R extends HookRegistration<T>[]>(
+	protected _runSync<T extends HookName, R extends HookRegistration<T>[]>(
 		registrations: R,
 		args: HookArguments<T>
 	): (ReturnType<DefaultHandler<T>> | unknown)[] {
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
-			const result = (handler as DefaultHandler<T>)(this.swup.visit, args, defaultHandler);
+			const result = (handler as DefaultHandler<T>)(this._swup.visit, args, defaultHandler);
 			results.push(result);
 			if (isPromise(result)) {
 				console.warn(
@@ -428,8 +428,8 @@ export class Hooks {
 	 * @returns An object with the handlers sorted into `before` and `after` arrays,
 	 *          as well as a flag indicating if the original handler was replaced
 	 */
-	protected getHandlers<T extends HookName>(hook: T, defaultHandler?: DefaultHandler<T>) {
-		const ledger = this.get(hook);
+	protected _getHandlers<T extends HookName>(hook: T, defaultHandler?: DefaultHandler<T>) {
+		const ledger = this._get(hook);
 		if (!ledger) {
 			return { found: false, before: [], handler: [], after: [], replaced: false };
 		}
@@ -438,7 +438,7 @@ export class Hooks {
 
 		// Let TypeScript know that replaced handlers are default handlers by filtering to true
 		const def = (T: HookRegistration<T>): T is HookRegistration<T, DefaultHandler<T>> => true;
-		const sort = this.sortRegistrations;
+		const sort = this._sortRegistrations;
 
 		// Filter into before, after, and replace handlers
 		const before = registrations.filter(({ before, replace }) => before && !replace).sort(sort);
@@ -479,7 +479,7 @@ export class Hooks {
 	 * @param b The other registration object to compare with
 	 * @returns The sort direction
 	 */
-	protected sortRegistrations<T extends HookName>(
+	protected _sortRegistrations<T extends HookName>(
 		a: HookRegistration<T>,
 		b: HookRegistration<T>
 	): number {
@@ -492,8 +492,8 @@ export class Hooks {
 	 * Dispatch a custom event on the `document` for a hook. Prefixed with `swup:`
 	 * @param hook Name of the hook.
 	 */
-	protected dispatchDomEvent<T extends HookName>(hook: T, args?: HookArguments<T>): void {
-		const detail = { hook, args, visit: this.swup.visit };
+	protected _dispatchDomEvent<T extends HookName>(hook: T, args?: HookArguments<T>): void {
+		const detail = { hook, args, visit: this._swup.visit };
 		document.dispatchEvent(new CustomEvent(`swup:${hook}`, { detail }));
 	}
 }

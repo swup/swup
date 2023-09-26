@@ -43,8 +43,8 @@ export function navigate(
 	}
 
 	const { url: to, hash } = Location.fromUrl(url);
-	this.visit = this.createVisit({ ...init, to, hash });
-	this.performNavigation(options);
+	this.visit = this._createVisit({ ...init, to, hash });
+	this._performNavigation(options);
 }
 
 /**
@@ -62,7 +62,7 @@ export async function performNavigation(
 	this: Swup,
 	options: NavigationOptions & FetchOptions = {}
 ): Promise<void> {
-	this.navigating = true;
+	this._navigating = true;
 	// Save this localy to a) allow ignoring the visit if a new one was started in the meantime
 	// and b) avoid unintended modifications to any newer visits
 	const visit = this.visit;
@@ -125,8 +125,8 @@ export async function performNavigation(
 			if (visit.history.action === 'replace' || visit.to.url === this.currentPageUrl) {
 				updateHistoryRecord(newUrl);
 			} else {
-				this.currentHistoryIndex++;
-				createHistoryRecord(newUrl, { index: this.currentHistoryIndex });
+				this._currentHistoryIndex++;
+				createHistoryRecord(newUrl, { index: this._currentHistoryIndex });
 			}
 		}
 
@@ -141,7 +141,7 @@ export async function performNavigation(
 		// perform the actual transition: animate and replace content
 		await this.hooks.call('visit:transition', undefined, async (visit) => {
 			// Start leave animation
-			const animationPromise = this.animatePageOut();
+			const animationPromise = this._animatePageOut();
 
 			// Wait for page to load and leave animation to finish
 			const [page] = await Promise.all([pagePromise, animationPromise]);
@@ -152,10 +152,10 @@ export async function performNavigation(
 			}
 
 			// Render page: replace content and scroll to top/fragment
-			await this.renderPage(page);
+			await this._renderPage(page);
 
 			// Wait for enter animation
-			await this.animatePageIn();
+			await this._animatePageIn();
 
 			return true;
 		});
@@ -167,7 +167,7 @@ export async function performNavigation(
 		// if (visit.to && this.isSameResolvedUrl(visit.to.url, requestedUrl)) {
 		// 	this.visit = this.createVisit({ to: undefined });
 		// }
-		this.navigating = false;
+		this._navigating = false;
 	} catch (error) {
 		// Return early if error is undefined or signals an aborted request
 		if (!error || (error as FetchError)?.aborted) {

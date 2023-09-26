@@ -9,24 +9,24 @@ export interface CacheData extends PageData {}
  */
 export class Cache {
 	/** Swup instance this cache belongs to */
-	protected swup: Swup;
+	protected _swup: Swup;
 
 	/** Cached pages, indexed by URL */
-	protected pages: Map<string, CacheData> = new Map();
+	protected _pages: Map<string, CacheData> = new Map();
 
 	constructor(swup: Swup) {
-		this.swup = swup;
+		this._swup = swup;
 	}
 
 	/** Number of cached pages in memory. */
 	get size(): number {
-		return this.pages.size;
+		return this._pages.size;
 	}
 
 	/** All cached pages. */
 	get all() {
 		const copy = new Map();
-		this.pages.forEach((page, key) => {
+		this._pages.forEach((page, key) => {
 			copy.set(key, { ...page });
 		});
 		return copy;
@@ -34,45 +34,45 @@ export class Cache {
 
 	/** Check if the given URL has been cached. */
 	has(url: string): boolean {
-		return this.pages.has(this.resolve(url));
+		return this._pages.has(this._resolve(url));
 	}
 
 	/** Return a shallow copy of the cached page object if available. */
 	get(url: string): CacheData | undefined {
-		const result = this.pages.get(this.resolve(url));
+		const result = this._pages.get(this._resolve(url));
 		if (!result) return result;
 		return { ...result };
 	}
 
 	/** Create a cache record for the specified URL. */
 	set(url: string, page: CacheData) {
-		url = this.resolve(url);
+		url = this._resolve(url);
 		page = { ...page, url };
-		this.pages.set(url, page);
-		this.swup.hooks.callSync('cache:set', { page });
+		this._pages.set(url, page);
+		this._swup.hooks.callSync('cache:set', { page });
 	}
 
 	/** Update a cache record, overwriting or adding custom data. */
 	update(url: string, payload: object) {
-		url = this.resolve(url);
+		url = this._resolve(url);
 		const page = { ...this.get(url), ...payload, url } as CacheData;
-		this.pages.set(url, page);
+		this._pages.set(url, page);
 	}
 
 	/** Delete a cache record. */
 	delete(url: string): void {
-		this.pages.delete(this.resolve(url));
+		this._pages.delete(this._resolve(url));
 	}
 
 	/** Empty the cache. */
 	clear(): void {
-		this.pages.clear();
-		this.swup.hooks.callSync('cache:clear', undefined);
+		this._pages.clear();
+		this._swup.hooks.callSync('cache:clear', undefined);
 	}
 
 	/** Remove all cache entries that return true for a given predicate function.  */
 	prune(predicate: (url: string, page: CacheData) => boolean): void {
-		this.pages.forEach((page, url) => {
+		this._pages.forEach((page, url) => {
 			if (predicate(url, page)) {
 				this.delete(url);
 			}
@@ -80,8 +80,8 @@ export class Cache {
 	}
 
 	/** Resolve URLs by making them local and letting swup resolve them. */
-	protected resolve(urlToResolve: string): string {
+	protected _resolve(urlToResolve: string): string {
 		const { url } = Location.fromUrl(urlToResolve);
-		return this.swup.resolveUrl(url);
+		return this._swup.resolveUrl(url);
 	}
 }

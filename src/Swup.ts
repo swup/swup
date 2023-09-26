@@ -93,11 +93,11 @@ export default class Swup {
 	/** URL of the currently visible page */
 	currentPageUrl: string = getCurrentUrl();
 	/** Index of the current history entry */
-	protected currentHistoryIndex: number;
+	protected _currentHistoryIndex: number;
 	/** Delegated event subscription handle */
-	protected clickDelegate?: DelegateEventUnsubscribe;
+	protected _clickDelegate?: DelegateEventUnsubscribe;
 	/** Navigation status */
-	protected navigating: boolean = false;
+	protected _navigating: boolean = false;
 
 	/** Install a plugin */
 	use = use;
@@ -112,21 +112,21 @@ export default class Swup {
 	/** Navigate to a new URL */
 	navigate = navigate;
 	/** Actually perform a navigation */
-	protected performNavigation = performNavigation;
+	protected _performNavigation = performNavigation;
 	/** Create a new context for this visit */
-	protected createVisit = createVisit;
+	protected _createVisit = createVisit;
 	/** Register a delegated event listener */
 	delegateEvent = delegateEvent;
 	/** Fetch a page from the server */
 	fetchPage = fetchPage;
 	/** Resolve when animations on the page finish */
 	awaitAnimations = awaitAnimations;
-	protected renderPage = renderPage;
+	protected _renderPage = renderPage;
 	/** Replace the content after page load */
 	replaceContent = replaceContent;
-	protected animatePageIn = animatePageIn;
-	protected animatePageOut = animatePageOut;
-	protected scrollToContent = scrollToContent;
+	protected _animatePageIn = animatePageIn;
+	protected _animatePageOut = animatePageOut;
+	protected _scrollToContent = scrollToContent;
 	/** Find the anchor element for a given hash */
 	getAnchorElement = getAnchorElement;
 
@@ -135,30 +135,30 @@ export default class Swup {
 	/** Resolve a URL to its final location */
 	resolveUrl = resolveUrl;
 	/** Check if two URLs resolve to the same location */
-	protected isSameResolvedUrl = isSameResolvedUrl;
+	protected _isSameResolvedUrl = isSameResolvedUrl;
 
 	constructor(options: Partial<Options> = {}) {
 		// Merge defaults and options
 		this.options = { ...this.defaults, ...options };
 
-		this.handleLinkClick = this.handleLinkClick.bind(this);
-		this.handlePopState = this.handlePopState.bind(this);
+		this._handleLinkClick = this._handleLinkClick.bind(this);
+		this._handlePopState = this._handlePopState.bind(this);
 
 		this.cache = new Cache(this);
 		this.classes = new Classes(this);
 		this.hooks = new Hooks(this);
-		this.visit = this.createVisit({ to: '' });
+		this.visit = this._createVisit({ to: '' });
 
-		this.currentHistoryIndex = (history.state as HistoryState)?.index ?? 1;
+		this._currentHistoryIndex = (history.state as HistoryState)?.index ?? 1;
 
-		if (!this.checkRequirements()) {
+		if (!this._checkRequirements()) {
 			return;
 		}
 
 		this.enable();
 	}
 
-	protected checkRequirements() {
+	protected _checkRequirements() {
 		if (typeof Promise === 'undefined') {
 			console.warn('Promise is not supported');
 			return false;
@@ -170,9 +170,9 @@ export default class Swup {
 	async enable() {
 		// Add event listener
 		const { linkSelector } = this.options;
-		this.clickDelegate = this.delegateEvent(linkSelector, 'click', this.handleLinkClick);
+		this._clickDelegate = this.delegateEvent(linkSelector, 'click', this._handleLinkClick);
 
-		window.addEventListener('popstate', this.handlePopState);
+		window.addEventListener('popstate', this._handlePopState);
 
 		// Set scroll restoration to manual if animating history visits
 		if (this.options.animateHistoryBrowsing) {
@@ -190,7 +190,7 @@ export default class Swup {
 
 		// Create initial history record
 		if ((history.state as HistoryState)?.source !== 'swup') {
-			updateHistoryRecord(null, { index: this.currentHistoryIndex });
+			updateHistoryRecord(null, { index: this._currentHistoryIndex });
 		}
 
 		// Give consumers a chance to hook into enable
@@ -206,10 +206,10 @@ export default class Swup {
 	/** Disable this instance, removing listeners and classnames. */
 	async destroy() {
 		// remove delegated listener
-		this.clickDelegate!.destroy();
+		this._clickDelegate!.destroy();
 
 		// remove popstate listener
-		window.removeEventListener('popstate', this.handlePopState);
+		window.removeEventListener('popstate', this._handlePopState);
 
 		// empty cache
 		this.cache.clear();
@@ -237,7 +237,7 @@ export default class Swup {
 		}
 
 		// Ignore if the link/form would open a new window (or none at all)
-		if (el && this.triggerWillOpenNewWindow(el)) {
+		if (el && this._triggerWillOpenNewWindow(el)) {
 			return true;
 		}
 
@@ -250,7 +250,7 @@ export default class Swup {
 		return false;
 	}
 
-	protected handleLinkClick(event: DelegateEvent<MouseEvent>) {
+	protected _handleLinkClick(event: DelegateEvent<MouseEvent>) {
 		const el = event.delegateTarget as HTMLAnchorElement;
 		const { href, url, hash } = Location.fromElement(el);
 
@@ -260,12 +260,12 @@ export default class Swup {
 		}
 
 		// Ignore if swup is currently navigating towards the link's URL
-		if (this.navigating && url === this.visit.to.url) {
+		if (this._navigating && url === this.visit.to.url) {
 			event.preventDefault();
 			return;
 		}
 
-		this.visit = this.createVisit({ to: url, hash, el, event });
+		this.visit = this._createVisit({ to: url, hash, el, event });
 
 		// Exit early if control key pressed
 		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
@@ -289,18 +289,18 @@ export default class Swup {
 					// With hash: scroll to anchor
 					this.hooks.callSync('link:anchor', { hash }, () => {
 						updateHistoryRecord(url + hash);
-						this.scrollToContent();
+						this._scrollToContent();
 					});
 				} else {
 					// Without hash: scroll to top or load/reload page
 					this.hooks.callSync('link:self', undefined, () => {
 						switch (this.options.linkToSelf) {
 							case 'navigate':
-								return this.performNavigation();
+								return this._performNavigation();
 							case 'scroll':
 							default:
 								updateHistoryRecord(url);
-								return this.scrollToContent();
+								return this._scrollToContent();
 						}
 					});
 				}
@@ -308,16 +308,16 @@ export default class Swup {
 			}
 
 			// Exit early if the resolved path hasn't changed
-			if (this.isSameResolvedUrl(url, from)) {
+			if (this._isSameResolvedUrl(url, from)) {
 				return;
 			}
 
 			// Finally, proceed with loading the page
-			this.performNavigation();
+			this._performNavigation();
 		});
 	}
 
-	protected handlePopState(event: PopStateEvent) {
+	protected _handlePopState(event: PopStateEvent) {
 		const href: string = (event.state as HistoryState)?.url ?? location.href;
 
 		// Exit early if this event should be ignored
@@ -326,23 +326,23 @@ export default class Swup {
 		}
 
 		// Exit early if the resolved path hasn't changed
-		if (this.isSameResolvedUrl(getCurrentUrl(), this.currentPageUrl)) {
+		if (this._isSameResolvedUrl(getCurrentUrl(), this.currentPageUrl)) {
 			return;
 		}
 
 		const { url, hash } = Location.fromUrl(href);
 
-		this.visit = this.createVisit({ to: url, hash, event });
+		this.visit = this._createVisit({ to: url, hash, event });
 
 		// Mark as history visit
 		this.visit.history.popstate = true;
 
 		// Determine direction of history visit
 		const index = (event.state as HistoryState)?.index ?? 0;
-		if (index && index !== this.currentHistoryIndex) {
-			const direction = index - this.currentHistoryIndex > 0 ? 'forwards' : 'backwards';
+		if (index && index !== this._currentHistoryIndex) {
+			const direction = index - this._currentHistoryIndex > 0 ? 'forwards' : 'backwards';
 			this.visit.history.direction = direction;
-			this.currentHistoryIndex = index;
+			this._currentHistoryIndex = index;
 		}
 
 		// Disable animation & scrolling for history visits
@@ -362,12 +362,12 @@ export default class Swup {
 		// }
 
 		this.hooks.callSync('history:popstate', { event }, () => {
-			this.performNavigation();
+			this._performNavigation();
 		});
 	}
 
 	/** Determine whether an element will open a new tab when clicking/activating. */
-	protected triggerWillOpenNewWindow(triggerEl: Element) {
+	protected _triggerWillOpenNewWindow(triggerEl: Element) {
 		if (triggerEl.matches('[download], [target="_blank"]')) {
 			return true;
 		}
