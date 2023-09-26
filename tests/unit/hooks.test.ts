@@ -11,7 +11,7 @@ describe('Hook registry', () => {
 		// Make private fields public for this test
 		const HooksWithAccess = class extends Hooks {
 			getRegistry() {
-				return this.registry;
+				return this._registry;
 			}
 		};
 		const hooks = new HooksWithAccess(swup);
