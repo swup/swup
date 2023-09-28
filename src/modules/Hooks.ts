@@ -314,7 +314,7 @@ export class Hooks {
 		if (ledger && handler) {
 			const deleted = ledger.delete(handler);
 			if (!deleted) {
-				console.warn(`HookHandler for hook '${hook}' not found.`);
+				console.warn(`Handler for hook '${hook}' not found.`);
 			}
 		} else if (ledger) {
 			ledger.clear();
