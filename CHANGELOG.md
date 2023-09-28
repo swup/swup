@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.4.2] - 2023-09-28
+
+- Export types for hook handlers and return values
+
 ## [4.4.1] - 2023-09-25
 
 - Fix multiple rapid clicks on links
