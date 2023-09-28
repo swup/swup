@@ -14,12 +14,14 @@ import type {
 	VisitHistory
 } from './modules/Visit.js';
 import type {
-	HookArguments,
-	HookDefinitions,
 	HookName,
+	HookDefinitions,
+	HookArguments,
+	HookReturnValues,
+	HookHandler,
+	HookDefaultHandler,
 	HookOptions,
-	HookUnregister,
-	Handler
+	HookUnregister
 } from './modules/Hooks.js';
 import type { Plugin } from './modules/plugins.js';
 
@@ -32,19 +34,22 @@ export type {
 	Plugin,
 	CacheData,
 	PageData,
+	Path,
 	Visit,
 	VisitFrom,
 	VisitTo,
 	VisitAnimation,
 	VisitScroll,
 	VisitHistory,
-	HookArguments,
-	HookDefinitions,
 	HookName,
+	HookDefinitions,
+	HookArguments,
+	HookReturnValues,
+	HookHandler,
+	HookHandler as Handler, // backwards compatibility
+	HookDefaultHandler,
 	HookOptions,
 	HookUnregister,
-	Handler,
-	Path,
 	DelegateEvent,
 	DelegateEventHandler,
 	DelegateEventUnsubscribe
