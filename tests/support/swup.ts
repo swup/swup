@@ -1,7 +1,13 @@
 import { expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
-
 import type Swup from '../../src/Swup.js';
+
+declare global {
+	interface Window {
+		_swup: Swup;
+		data: any;
+	}
+}
 
 export async function waitForSwup(page: Page) {
 	await page.waitForSelector('html.swup-enabled');

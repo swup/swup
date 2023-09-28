@@ -1,7 +1,11 @@
 import { expect, test } from '@playwright/test';
 
 import { expectToBeAt } from '../support/commands.js';
-import { expectSwupToHaveCacheEntries, expectSwupToHaveCacheEntry, navigateWithSwup } from '../support/swup.js';
+import {
+	expectSwupToHaveCacheEntries,
+	expectSwupToHaveCacheEntry,
+	navigateWithSwup
+} from '../support/swup.js';
 
 test.describe('cache', () => {
 	test.beforeEach(async ({ page }) => {
@@ -58,7 +62,7 @@ test.describe('cache', () => {
 		});
 
 		// Check disabling completely
-		await navigateWithSwup(page, '/page-2.html', { cache: false });
+		await navigateWithSwup(page, '/page-2.html', { cache: { read: false, write: false } });
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
 		expect(await page.evaluate(() => window.data.read['/page-2.html'])).toEqual(false);
 		expect(await page.evaluate(() => window.data.write['/page-2.html'])).toEqual(false);
@@ -89,7 +93,7 @@ test.describe('cache', () => {
 
 		// Check disabling writes
 		await page.evaluate(() => {
-			window._swup.hooks.on('visit:start', (visit) => visit.cache.write = false);
+			window._swup.hooks.on('visit:start', (visit) => (visit.cache.write = false));
 		});
 		await navigateWithSwup(page, '/page-2.html');
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
@@ -103,7 +107,7 @@ test.describe('cache', () => {
 
 		// Check disabling reads
 		await page.evaluate(() => {
-			window._swup.hooks.on('visit:start', (visit) => visit.cache.read = false);
+			window._swup.hooks.on('visit:start', (visit) => (visit.cache.read = false));
 		});
 		await navigateWithSwup(page, '/page-1.html');
 		await expectToBeAt(page, '/page-1.html', 'Page 1');
@@ -112,7 +116,7 @@ test.describe('cache', () => {
 
 	test('marks cached pages in page:load', async ({ page }) => {
 		await page.evaluate(() => {
-			window._swup.hooks.on('page:load', (visit, { cache }) => window.data = cache);
+			window._swup.hooks.on('page:load', (visit, { cache }) => (window.data = cache));
 		});
 		await navigateWithSwup(page, '/page-2.html');
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
