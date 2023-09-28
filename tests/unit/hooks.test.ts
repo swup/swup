@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import Swup from '../../src/Swup.js';
-import { DefaultHandler, Handler, Hooks } from '../../src/modules/Hooks.js';
-import { Visit } from '../../src/modules/Visit.js';
+import { Hooks, type HookHandler, type HookDefaultHandler } from '../../src/modules/Hooks.js';
+import { type Visit } from '../../src/modules/Visit.js';
 
 describe('Hook registry', () => {
 	it('should add handlers', () => {
@@ -286,7 +286,7 @@ describe('Hook registry', () => {
 
 	it('should trigger event handler with visit and args', async () => {
 		const swup = new Swup();
-		const handler: Handler<'history:popstate'> = vi.fn();
+		const handler: HookHandler<'history:popstate'> = vi.fn();
 		const visit = swup.visit;
 		const args = { event: new PopStateEvent('') };
 
@@ -314,6 +314,6 @@ describe('Types', () => {
 		// @ts-expect-error: event arg must be PopStateEvent
 		await swup.hooks.call('history:popstate', { event: new MouseEvent('') });
 		// @ts-expect-error: handler arg must be optional: handler?
-		swup.hooks.replace('enable', (visit: Visit, args: undefined, handler: DefaultHandler<'enable'>) => {});
+		swup.hooks.replace('enable', (visit: Visit, args: undefined, handler: HookDefaultHandler<'enable'>) => {});
 	});
 });
