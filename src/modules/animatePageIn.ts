@@ -6,14 +6,10 @@ import { nextTick } from '../utils.js';
  * @returns Promise<void>
  */
 export const animatePageIn = async function (this: Swup) {
-	const animation = this.hooks.call(
-		'animation:in:await',
-		{ skip: false },
-		async (visit, { skip }) => {
-			if (skip) return;
-			await this.awaitAnimations({ selector: visit.animation.selector });
-		}
-	);
+	const animation = this.hooks.call('animation:in:await', { skip: false }, (visit, { skip }) => {
+		if (skip) return;
+		return this.awaitAnimations({ selector: visit.animation.selector });
+	});
 
 	await nextTick();
 

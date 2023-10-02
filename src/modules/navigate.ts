@@ -1,5 +1,11 @@
 import type Swup from '../Swup.js';
-import { createHistoryRecord, updateHistoryRecord, getCurrentUrl, Location } from '../helpers.js';
+import {
+	classify,
+	createHistoryRecord,
+	updateHistoryRecord,
+	getCurrentUrl,
+	Location
+} from '../helpers.js';
 import { FetchError, type FetchOptions, type PageData } from './fetchPage.js';
 import type { VisitInitOptions } from './Visit.js';
 
@@ -131,6 +137,14 @@ export async function performNavigation(
 		}
 
 		this.currentPageUrl = getCurrentUrl();
+
+		// Mark visit type with classes on html element
+		if (visit.history.popstate) {
+			this.classes.add('is-popstate');
+		}
+		if (visit.animation.name) {
+			this.classes.add(`to-${classify(visit.animation.name)}`);
+		}
 
 		// Wait for page before starting to animate out?
 		if (visit.animation.wait) {
