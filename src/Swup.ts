@@ -167,7 +167,7 @@ export default class Swup {
 			return false;
 		}
 		if (this.options.native && !('startViewTransition' in document)) {
-			console.warn('Native View Transitions are not supported');
+			this.log('Native View Transitions are not supported');
 			this.options.native = false;
 		}
 		return true;
