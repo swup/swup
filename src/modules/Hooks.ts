@@ -42,7 +42,6 @@ export interface HookReturnValues {
 	'page:load': Promise<PageData>;
 	'scroll:top': boolean;
 	'scroll:anchor': boolean;
-	'visit:transition': Promise<boolean>;
 }
 
 export type HookArguments<T extends HookName> = HookDefinitions[T];

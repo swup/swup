@@ -138,26 +138,21 @@ export async function performNavigation(
 			visit.to.html = html;
 		}
 
-		// perform the actual transition: animate and replace content
+		// Perform the actual transition: animate and replace content
 		await this.hooks.call('visit:transition', undefined, async (visit) => {
-			// Start leave animation
-			const animationPromise = this.animatePageOut();
-
-			// Wait for page to load and leave animation to finish
-			const [page] = await Promise.all([pagePromise, animationPromise]);
-
-			// Abort if another visit was started in the meantime
-			if (visit.id !== this.visit.id) {
-				return false;
+			if (this.options.native) {
+				const page = await pagePromise;
+				if (visit.id === this.visit.id) {
+					await document.startViewTransition(() => this.renderPage(page)).finished;
+				}
+			} else {
+				const animationPromise = this.animatePageOut();
+				const [page] = await Promise.all([pagePromise, animationPromise]);
+				if (visit.id === this.visit.id) {
+					await this.renderPage(page);
+					await this.animatePageIn();
+				}
 			}
-
-			// Render page: replace content and scroll to top/fragment
-			await this.renderPage(page);
-
-			// Wait for enter animation
-			await this.animatePageIn();
-
-			return true;
 		});
 
 		// Finalize visit
