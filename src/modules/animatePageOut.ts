@@ -6,11 +6,6 @@ import { classify } from '../helpers.js';
  * @returns Promise<void>
  */
 export const animatePageOut = async function (this: Swup) {
-	if (!this.visit.animation.animate) {
-		await this.hooks.call('animation:skip', undefined);
-		return;
-	}
-
 	await this.hooks.call('animation:out:start', undefined, (visit) => {
 		this.classes.add('is-changing', 'is-leaving', 'is-animating');
 		if (visit.history.popstate) {

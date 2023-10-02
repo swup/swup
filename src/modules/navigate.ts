@@ -140,17 +140,23 @@ export async function performNavigation(
 
 		// Perform the actual transition: animate and replace content
 		await this.hooks.call('visit:transition', undefined, async (visit) => {
-			if (this.options.native) {
+			if (visit.animation.animate && this.options.native) {
 				const page = await pagePromise;
 				if (visit.id === this.visit.id) {
 					await document.startViewTransition(() => this.renderPage(page)).finished;
 				}
-			} else {
+			} else if (visit.animation.animate) {
 				const animationPromise = this.animatePageOut();
 				const [page] = await Promise.all([pagePromise, animationPromise]);
 				if (visit.id === this.visit.id) {
 					await this.renderPage(page);
 					await this.animatePageIn();
+				}
+			} else {
+				await this.hooks.call('animation:skip', undefined);
+				const page = await pagePromise;
+				if (visit.id === this.visit.id) {
+					await this.renderPage(page);
 				}
 			}
 		});
