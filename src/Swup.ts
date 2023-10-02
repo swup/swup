@@ -41,6 +41,8 @@ export type Options = {
 	linkSelector: string;
 	/** How swup handles links to the same page. Default: `scroll` */
 	linkToSelf: NavigationToSelfAction;
+	/** Enable native animations using the View Transitions API. */
+	native: boolean;
 	/** Plugins to register on startup. */
 	plugins: Plugin[];
 	/** Custom headers sent along with fetch requests. */
@@ -62,6 +64,7 @@ const defaults: Options = {
 	ignoreVisit: (url, { el } = {}) => !!el?.closest('[data-no-swup]'),
 	linkSelector: 'a[href]',
 	linkToSelf: 'scroll',
+	native: false,
 	plugins: [],
 	resolveUrl: (url) => url,
 	requestHeaders: {
@@ -162,6 +165,10 @@ export default class Swup {
 		if (typeof Promise === 'undefined') {
 			console.warn('Promise is not supported');
 			return false;
+		}
+		if (this.options.native && !('startViewTransition' in document)) {
+			console.warn('Native View Transitions are not supported');
+			this.options.native = false;
 		}
 		return true;
 	}
