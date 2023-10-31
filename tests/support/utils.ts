@@ -1,12 +1,8 @@
 /**
  * Trim slashes from a string
- * @see https://stackoverflow.com/a/68874571/586823
+ * @see https://stackoverflow.com/a/3840645/586823
  */
-const trimSlashes = (str: string) =>
-	str
-		.split('/')
-		.filter((v) => v !== '')
-		.join('/');
+const trimSlashes = (str: string) => str.replace(/^\/|\/$/g, '');
 
 /**
  * Create a function to prefix a path
