@@ -1,94 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Scroll Plugin 1</title>
-    <link rel="stylesheet" href="/assets/main.css">
-    <script src="/dist/Swup.umd.js"></script>
-    <script src="https://unpkg.com/@swup/scroll-plugin@3"></script>
-    <style>
-        .scroll-anchors > * {
-            display: block;
-            margin: 1000px 0;
-        }
-    </style>
-</head>
-<body>
-    <header class="header">
-        <ul>
-            <li><a href="/page-1.html">Page 1</a></li>
-            <li><a href="/page-2.html">Page 2</a></li>
-            <li><a href="/page-3.html">Page 3</a></li>
-        </ul>
-    </header>
-    <main id="swup" class="wrapper transition-default">
-        <h1>Scroll Plugin 1</h1>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Scroll Plugin 1</title>
+		<link rel="stylesheet" href="/assets/main.css" />
+		<script src="/dist/Swup.umd.js"></script>
+		<script src="https://unpkg.com/@swup/scroll-plugin@3"></script>
+		<style>
+			.scroll-anchors > * {
+				display: block;
+				margin: 1000px 0;
+			}
+		</style>
+	</head>
+	<body>
+		<main id="swup" class="wrapper transition-default">
+			<h1>Scroll Plugin 1</h1>
 
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-        Alias assumenda consectetur consequatur enim esse incidunt iusto, magnam
-        maxime molestias nisi perferendis perspiciatis quibusdam quos repellat,
-        vel veniam vero voluptate voluptatem.</p>
+			<p>
+				Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias assumenda
+				consectetur consequatur enim esse incidunt iusto, magnam maxime molestias nisi
+				perferendis perspiciatis quibusdam quos repellat, vel veniam vero voluptate
+				voluptatem.
+			</p>
 
-        <h2>Anchors</h2>
+			<h2>Anchors</h2>
 
-        <div class="scroll-anchors">
-            <div id="anchor" data-testid="anchor">Anchor</div>
-            <div id="anchor-by-id" data-testid="anchor-by-id">Anchor by id</div>
-            <a name="anchor-by-name" data-testid="anchor-by-name">Anchor by name</a>
-            <div id="anchor-%21" data-testid="anchor-encoded">Anchor with encoded ID</div>
-            <div id="anchor-!" data-testid="anchor-unencoded">Anchor with unencoded ID</div>
-            <div id="anchor:with:colon" data-testid="anchor-with-colon">Anchor with colon</div>
-            <div id="anchor-with-unicode-テスト" data-testid="anchor-with-unicode">Anchor with unicode</div>
-        </div>
+			<div class="scroll-anchors">
+				<div id="anchor" data-testid="anchor">Anchor</div>
+				<div id="anchor-by-id" data-testid="anchor-by-id">Anchor by id</div>
+				<a name="anchor-by-name" data-testid="anchor-by-name">Anchor by name</a>
+				<div id="anchor-%21" data-testid="anchor-encoded">Anchor with encoded ID</div>
+				<div id="anchor-!" data-testid="anchor-unencoded">Anchor with unencoded ID</div>
+				<div id="anchor:with:colon" data-testid="anchor-with-colon">Anchor with colon</div>
+				<div id="anchor-with-unicode-テスト" data-testid="anchor-with-unicode">
+					Anchor with unicode
+				</div>
+			</div>
 
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias
-        assumenda consectetur consequatur enim esse incidunt iusto, magnam
-        maxime molestias nisi perferendis perspiciatis quibusdam quos repellat,
-        vel veniam vero voluptate voluptatem.
+			<p>
+			    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias assumenda consectetur
+    			consequatur enim esse incidunt iusto, magnam maxime molestias nisi perferendis
+    			perspiciatis quibusdam quos repellat, vel veniam vero voluptate voluptatem.
+			</p>
 
-        <h2>Links</h2>
+			<h2>Links</h2>
 
-        <ul>
-            <li>
-                <a href="/plugins/scroll-plugin/page-2.html" data-testid="link-to-page">Link to page</a>
-            </li>
-            <li>
-                <a href="#anchor" data-testid="link-to-anchor">Link to anchor</a>
-            </li>
-            <li>
-                <a href="#top" data-testid="link-to-top">Link to top</a>
-            </li>
-            <li>
-                <a href="/plugins/scroll-plugin/page-1.html#anchor" data-testid="link-to-self-anchor">Link to self with anchor</a>
-            </li>
-            <li>
-                <a href="/plugins/scroll-plugin/page-2.html#anchor" data-testid="link-to-page-anchor">Link to page with anchor</a>
-            </li>
-            <li>
-                <a href="#anchor-by-id" data-testid="link-to-anchor-by-id">Link to anchor by id</a>
-            </li>
-            <li>
-                <a href="#anchor-by-name" data-testid="link-to-anchor-by-name">Link to anchor by name</a>
-            </li>
-            <li>
-                <a href="#anchor-%21" data-testid="link-to-anchor-encoded">Link to anchor with url-encoding</a>
-            </li>
-            <li>
-                <a href="#anchor-!" data-testid="link-to-anchor-unencoded">Link to anchor without url-encoding</a>
-            </li>
-            <li>
-                <a href="#anchor:with:colon" data-testid="link-to-anchor-with-colon">Link to anchor with colon</a>
-            </li>
-            <li>
-                <a href="#anchor-with-unicode-テスト" data-testid="link-to-anchor-with-unicode">Link to anchor with unicode</a>
-            </li>
-        </ul>
-    </main>
-    <script>
-        window._swup = new Swup({
-            plugins: [new SwupScrollPlugin({ scrollFriction: 0.1, scrollAcceleration: 0.2 })]
-        });
-    </script>
-</body>
+			<ul>
+				<li>
+					<a href="/plugins/scroll-plugin/page-2.html" data-testid="link-to-page"
+						>Link to page</a
+					>
+				</li>
+				<li>
+					<a href="#anchor" data-testid="link-to-anchor">Link to anchor</a>
+				</li>
+				<li>
+					<a href="#top" data-testid="link-to-top">Link to top</a>
+				</li>
+				<li>
+					<a
+						href="/plugins/scroll-plugin/page-1.html#anchor"
+						data-testid="link-to-self-anchor"
+						>Link to self with anchor</a
+					>
+				</li>
+				<li>
+					<a
+						href="/plugins/scroll-plugin/page-2.html#anchor"
+						data-testid="link-to-page-anchor"
+						>Link to page with anchor</a
+					>
+				</li>
+				<li>
+					<a href="#anchor-by-id" data-testid="link-to-anchor-by-id"
+						>Link to anchor by id</a
+					>
+				</li>
+				<li>
+					<a href="#anchor-by-name" data-testid="link-to-anchor-by-name"
+						>Link to anchor by name</a
+					>
+				</li>
+				<li>
+					<a href="#anchor-%21" data-testid="link-to-anchor-encoded"
+						>Link to anchor with url-encoding</a
+					>
+				</li>
+				<li>
+					<a href="#anchor-!" data-testid="link-to-anchor-unencoded"
+						>Link to anchor without url-encoding</a
+					>
+				</li>
+				<li>
+					<a href="#anchor:with:colon" data-testid="link-to-anchor-with-colon"
+						>Link to anchor with colon</a
+					>
+				</li>
+				<li>
+					<a href="#anchor-with-unicode-テスト" data-testid="link-to-anchor-with-unicode"
+						>Link to anchor with unicode</a
+					>
+				</li>
+			</ul>
+		</main>
+		<script>
+			window._swup = new Swup({
+				plugins: [new SwupScrollPlugin({ scrollFriction: 0.1, scrollAcceleration: 0.2 })]
+			});
+		</script>
+	</body>
 </html>
