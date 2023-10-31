@@ -2,9 +2,9 @@ import { test } from '@playwright/test';
 
 import { expectNotToHaveClass, expectToHaveClass } from '../../support/commands.js';
 import { navigateWithSwup } from '../../support/swup.js';
-import { prefixPath } from '../../support/utils.js';
+import { prefixed } from '../../support/utils.js';
 
-const url = prefixPath('/plugins/body-class-plugin/');
+const url = prefixed('/plugins/body-class-plugin/');
 
 test.describe('body-class plugin', () => {
 	test.beforeEach(async ({ page }) => {

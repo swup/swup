@@ -2,9 +2,9 @@ import { test, expect } from '@playwright/test';
 
 import { expectScrollPosition, expectToBeAt } from '../../support/commands.js';
 import { waitForSwup } from '../../support/swup.js';
-import { prefixPath } from '../../support/utils.js';
+import { prefixed } from '../../support/utils.js';
 
-const url = prefixPath('/plugins/scroll-plugin/');
+const url = prefixed('/plugins/scroll-plugin/');
 
 test.describe('scroll-plugin', () => {
 	test.beforeEach(async ({ page }) => {

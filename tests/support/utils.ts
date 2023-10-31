@@ -11,6 +11,6 @@ const trimSlashes = (str: string) =>
 /**
  * Create a function to prefix a path
  */
-export const prefixPath = (base: string) => {
-	return (path: string) => `/${trimSlashes(base)}/${trimSlashes(path)}`;
+export const prefixed = (prefix: string) => {
+	return (path: string) => `/${trimSlashes(prefix)}/${trimSlashes(path)}`;
 };
