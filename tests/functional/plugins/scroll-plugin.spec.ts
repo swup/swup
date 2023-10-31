@@ -2,10 +2,13 @@ import { test, expect } from '@playwright/test';
 
 import { expectScrollPosition, expectToBeAt } from '../../support/commands.js';
 import { waitForSwup } from '../../support/swup.js';
+import { prefixPath } from '../../support/utils.js';
+
+const url = prefixPath('/plugins/scroll-plugin/');
 
 test.describe('scroll-plugin', () => {
 	test.beforeEach(async ({ page }) => {
-		await page.goto('/plugins/scroll-plugin-1.html');
+		await page.goto(url('page-1.html'));
 		await waitForSwup(page);
 	});
 
@@ -57,7 +60,7 @@ test.describe('scroll-plugin', () => {
 
 	test('scrolls to requested hash after navigation', async ({ page }) => {
 		await page.getByTestId('link-to-page-anchor').click();
-		await expectToBeAt(page, '/plugins/scroll-plugin-2.html#anchor', 'Scroll Plugin 2');
+		await expectToBeAt(page, url('page-2.html#anchor'), 'Scroll Plugin 2');
 		await expect(page.getByTestId('anchor')).toBeInViewport();
 	});
 
@@ -66,7 +69,7 @@ test.describe('scroll-plugin', () => {
 			window._swup.hooks.once('visit:start', (visit) => (visit.to.hash = '#anchor'));
 		});
 		await page.getByTestId('link-to-page').click();
-		await expectToBeAt(page, '/plugins/scroll-plugin-2.html#anchor', 'Scroll Plugin 2');
+		await expectToBeAt(page, url('page-2.html#anchor'), 'Scroll Plugin 2');
 		await expect(page.getByTestId('anchor')).toBeInViewport();
 	});
 
@@ -75,7 +78,7 @@ test.describe('scroll-plugin', () => {
 			window._swup.hooks.once('visit:start', (visit) => (visit.scroll.target = '#anchor'));
 		});
 		await page.getByTestId('link-to-page').click();
-		await expectToBeAt(page, '/plugins/scroll-plugin-2.html', 'Scroll Plugin 2');
+		await expectToBeAt(page, url('page-2.html'), 'Scroll Plugin 2');
 		await expect(page.getByTestId('anchor')).toBeInViewport();
 	});
 });
