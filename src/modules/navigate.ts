@@ -66,6 +66,7 @@ export async function performNavigation(
 	// Save this localy to a) allow ignoring the visit if a new one was started in the meantime
 	// and b) avoid unintended modifications to any newer visits
 	const visit = this.visit;
+	const { id: visitId } = this.visit;
 
 	const { el } = visit.trigger;
 	options.referrer = options.referrer || this.currentPageUrl;
@@ -104,6 +105,8 @@ export async function performNavigation(
 	try {
 		await this.hooks.call('visit:start', undefined);
 
+		if (visitId !== this.visit.id) return;
+
 		// Begin loading page
 		const pagePromise = this.hooks.call('page:load', { options }, async (visit, args) => {
 			// Read from cache
@@ -132,14 +135,18 @@ export async function performNavigation(
 
 		this.currentPageUrl = getCurrentUrl();
 
+		if (visitId !== this.visit.id) return;
+
 		// Wait for page before starting to animate out?
 		if (visit.animation.wait) {
 			const { html } = await pagePromise;
 			visit.to.html = html;
 		}
 
+		if (visitId !== this.visit.id) return;
+
 		// perform the actual transition: animate and replace content
-		await this.hooks.call('visit:transition', undefined, async (visit) => {
+		await this.hooks.call('visit:transition', undefined, async () => {
 			// Start leave animation
 			const animationPromise = this.animatePageOut();
 
@@ -147,18 +154,22 @@ export async function performNavigation(
 			const [page] = await Promise.all([pagePromise, animationPromise]);
 
 			// Abort if another visit was started in the meantime
-			if (visit.id !== this.visit.id) {
-				return false;
-			}
+			if (visitId !== this.visit.id) return false;
 
 			// Render page: replace content and scroll to top/fragment
 			await this.renderPage(page);
 
+			if (visitId !== this.visit.id) return false;
+
 			// Wait for enter animation
 			await this.animatePageIn();
 
+			if (visitId !== this.visit.id) return false;
+
 			return true;
 		});
+
+		if (visitId !== this.visit.id) return;
 
 		// Finalize visit
 		await this.hooks.call('visit:end', undefined, () => this.classes.clear());

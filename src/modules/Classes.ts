@@ -44,7 +44,6 @@ export class Classes {
 	clear(): void {
 		this.targets.forEach((target) => {
 			const remove = target.className.split(' ').filter((c) => this.isSwupClass(c));
-			console.log(...remove);
 			target.classList.remove(...remove);
 		});
 	}
