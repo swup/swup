@@ -3,7 +3,14 @@ import { queryAll } from '../utils.js';
 
 export class Classes {
 	protected swup: Swup;
-	protected swupClasses = ['to-', 'is-changing', 'is-rendering', 'is-popstate', 'is-animating'];
+	protected swupClasses = [
+		'to-',
+		'is-changing',
+		'is-rendering',
+		'is-popstate',
+		'is-animating',
+		'is-leaving'
+	];
 
 	constructor(swup: Swup) {
 		this.swup = swup;
@@ -37,6 +44,7 @@ export class Classes {
 	clear(): void {
 		this.targets.forEach((target) => {
 			const remove = target.className.split(' ').filter((c) => this.isSwupClass(c));
+			console.log(...remove);
 			target.classList.remove(...remove);
 		});
 	}
