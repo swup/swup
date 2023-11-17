@@ -102,7 +102,7 @@ type HookEventDetail = {
 	visit: Visit;
 };
 
-export type HookDOMEvent = CustomEvent<HookEventDetail>;
+export type HookEvent = CustomEvent<HookEventDetail>;
 
 type HookLedger<T extends HookName> = Map<HookHandler<T>, HookRegistration<T>>;
 
