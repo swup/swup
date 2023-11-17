@@ -15,6 +15,6 @@ test.describe('alpinejs compatibility', () => {
 	test('should listen to dom events', async ({ page }) => {
 		await clickOnLink(page, url('/page-2.html'));
 		await page.waitForSelector('.alpine-component.click-fired');
-		await page.waitForSelector('.alpine-component.all-fired');
+		await page.waitForSelector('.alpine-component.any-fired');
 	});
 });

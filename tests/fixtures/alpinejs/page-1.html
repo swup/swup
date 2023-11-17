@@ -12,10 +12,10 @@
 		<header class="header">
 			<div
 				class="alpine-component"
-				x-data="{ clickFired: false, allFired: false }"
-				:class="{'click-fired': clickFired, 'all-fired': allFired}"
+				x-data="{ clickFired: false, anyFired: false }"
+				:class="{'click-fired': clickFired, 'any-fired': anyFired}"
 				x-on:swup:link:click.window="clickFired = true"
-				x-on:swup:any.window="allFired = true"
+				x-on:swup:any.window="anyFired = true"
 			>
 				Alpine Component
 			</div>
