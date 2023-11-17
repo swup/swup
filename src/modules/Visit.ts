@@ -22,7 +22,10 @@ export interface Visit {
 	history: VisitHistory;
 	/** Scroll behavior on this visit */
 	scroll: VisitScroll;
-	/** Was the visit cancelled? */
+	/**
+	 * Was the visit cancelled?
+	 * @internal
+	 */
 	cancelled?: true;
 }
 
