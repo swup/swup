@@ -21,7 +21,8 @@ import type {
 	HookHandler,
 	HookDefaultHandler,
 	HookOptions,
-	HookUnregister
+	HookUnregister,
+	HookDOMEvent
 } from './modules/Hooks.js';
 import type { Plugin } from './modules/plugins.js';
 
@@ -50,6 +51,7 @@ export type {
 	HookDefaultHandler,
 	HookOptions,
 	HookUnregister,
+	HookDOMEvent,
 	DelegateEvent,
 	DelegateEventHandler,
 	DelegateEventUnsubscribe
