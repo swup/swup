@@ -494,6 +494,7 @@ export class Hooks {
 	 */
 	protected dispatchDomEvent<T extends HookName>(hook: T, args?: HookArguments<T>): void {
 		const detail = { hook, args, visit: this.swup.visit };
-		document.dispatchEvent(new CustomEvent(`swup:${hook}`, { detail }));
+		document.dispatchEvent(new CustomEvent(`swup:*`, { detail, bubbles: true }));
+		document.dispatchEvent(new CustomEvent(`swup:${hook}`, { detail, bubbles: true }));
 	}
 }

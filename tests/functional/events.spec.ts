@@ -7,9 +7,27 @@ test.describe('events', () => {
 		await page.goto('/page-1.html');
 	});
 
-	test('triggers custom dom events', async ({ page }) => {
+	test('triggers custom dom events on document', async ({ page }) => {
 		await page.evaluate(() => {
-			document.addEventListener('swup:link:click', (event) => window.data = event.detail.hook);
+			document.addEventListener('swup:link:click', (event: any) => window.data = event.detail.hook);
+		});
+		await clickOnLink(page, '/page-2.html');
+		expect(await page.evaluate(() => window.data)).toStrictEqual('link:click');
+	});
+
+	test('custom dom events bubble to window', async ({ page }) => {
+		await page.evaluate(() => {
+			window.addEventListener('swup:link:click', (event: any) => window.data = event.detail.hook);
+		});
+		await clickOnLink(page, '/page-2.html');
+		expect(await page.evaluate(() => window.data)).toStrictEqual('link:click');
+	});
+
+	test('triggers wildcard dom events', async ({ page }) => {
+		await page.evaluate(() => {
+			document.addEventListener('swup:*', (event: any) => {
+				if (event.detail.hook === 'link:click') window.data = event.detail.hook
+			});
 		});
 		await clickOnLink(page, '/page-2.html');
 		expect(await page.evaluate(() => window.data)).toStrictEqual('link:click');
