@@ -12,7 +12,7 @@ test.describe('gracefully handle rapid navigation', () => {
 		await waitForSwup(page);
 	});
 
-	test('ignore gracefully handle rapid navigation', async ({ page }) => {
+	test('should gracefully handle rapid navigation', async ({ page }) => {
 		const expected = [
 			'visit:start',
 			'animation:out:start',
@@ -39,7 +39,7 @@ test.describe('gracefully handle rapid navigation', () => {
 		expect(received).toEqual(expected);
 	});
 
-	test('respect expired visits', async ({ page }) => {
+	test('should respect expired visits', async ({ page }) => {
 		await page.evaluate(() =>
 			window._swup.hooks.on('animation:out:end', (visit) => {
 				visit.expired = true;
