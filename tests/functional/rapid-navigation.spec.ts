@@ -6,13 +6,13 @@ import { prefixed } from '../support/utils.js';
 
 const url = prefixed('/rapid-navigation/');
 
-test.describe('gracefully rapid navigation', () => {
+test.describe('gracefully handle rapid navigation', () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto(url('/page-1.html'));
 		await waitForSwup(page);
 	});
 
-	test('should ignore hooks from foreign visits', async ({ page }) => {
+	test('ignore hook events from expired visits', async ({ page }) => {
 		const expected = [
 			'visit:start',
 			'animation:out:start',
@@ -36,7 +36,6 @@ test.describe('gracefully rapid navigation', () => {
 
 		await page.waitForSelector('html:not([aria-busy=true])');
 		const received = await page.evaluate(() => window.data.received);
-		// console.log(received.join(', '));
 		expect(received).toEqual(expected);
 	});
 });
