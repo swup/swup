@@ -343,12 +343,19 @@ export class Hooks {
 		defaultHandler?: HookDefaultHandler<T>
 	): Promise<Awaited<ReturnType<HookDefaultHandler<T>>>> {
 		const visitId = this.swup.visit.id;
-		// @TODO: how can we return early here?
 
 		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
-		await this.run(before, args);
+
+		if (visitId === this.swup.visit.id) {
+			await this.run(before, args);
+		}
+
+		// @TODO: how can we return early here without executing the hook if the visit has expired?
 		const [result] = await this.run(handler, args);
-		await this.run(after, args);
+
+		if (visitId === this.swup.visit.id) {
+			await this.run(after, args);
+		}
 
 		if (visitId === this.swup.visit.id) {
 			this.dispatchDomEvent(hook, args);
