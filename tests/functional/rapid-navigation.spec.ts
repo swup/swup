@@ -14,9 +14,9 @@ test.describe('gracefully rapid navigation', () => {
 
 	test('should ignore hooks from foreign visits', async ({ page }) => {
 		const expected = [
+			'visit:start',
 			'animation:out:start',
 			'fetch:request',
-			'cache:set',
 			'page:load',
 			'animation:out:await',
 			'animation:out:end',
@@ -35,8 +35,8 @@ test.describe('gracefully rapid navigation', () => {
 		await clickOnLink(page, url('/page-3.html'));
 
 		await page.waitForSelector('html:not([aria-busy=true])');
-		const called = await page.evaluate(() => window.data.calledHooks);
-		console.log(called.join(', '));
-		expect(called).toEqual(expected);
+		const received = await page.evaluate(() => window.data.received);
+		console.log(received.join(', '));
+		expect(received).toEqual(expected);
 	});
 });

@@ -6,19 +6,6 @@
 		<title>Page 3</title>
 		<link rel="stylesheet" href="/assets/main.css" />
 		<script src="/dist/Swup.umd.js"></script>
-		<style>
-			html.is-changing .transition-default {
-				transition-property: opacity, transform;
-				transition-duration: 600ms;
-			}
-			html.is-animating .transition-default {
-				opacity: 0;
-				transform: translateY(-50px);
-			}
-			html.is-leaving .transition-default {
-				transform: translateY(50px);
-			}
-		</style>
 	</head>
 	<body>
 		<header class="header">
@@ -39,9 +26,5 @@
 				</p>
 			</div>
 		</main>
-		<script>
-			const swup = new Swup();
-			window._swup = swup;
-		</script>
 	</body>
 </html>

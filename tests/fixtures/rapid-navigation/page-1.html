@@ -47,24 +47,24 @@
 		</main>
 		<script>
 			window.data = {
-				calledHooks: []
+				received: []
 			};
 
-			const swup = new Swup();
+			const swup = new Swup({ cache: false });
 			window._swup = swup;
 
 			window.addEventListener('swup:any', (event) => {
 				const { hook } = event.detail;
 
-				window.data.calledHooks.push(hook);
-
 				if (hook === 'visit:start') {
 					document.documentElement.setAttribute('aria-busy', 'true');
-					window.data.calledHooks = [];
+					window.data.received = [];
 				}
 
+				window.data.received.push(hook);
+
 				if (hook === 'visit:end') {
-					// console.log(window.data.calledHooks);
+					// console.log(window.data.received);
 					document.documentElement.removeAttribute('aria-busy');
 				}
 			});
