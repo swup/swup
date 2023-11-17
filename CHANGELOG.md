@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.4.3] - 2023-11-16
+
+- Improve compatibility with older Safari versions
+
 ## [4.4.2] - 2023-09-28
 
 - Export types for hook handlers and return values
@@ -179,8 +183,8 @@ See [upgrade instructions](https://swup.js.org/getting-started/upgrading-v3/) fo
 
 - Fix bug where animateHistoryBrowsing option was ignored for OUT animations
 
-[Unreleased]: https://github.com/swup/swup/compare/4.4.1...HEAD
-
+[4.4.3]: https://github.com/swup/swup/releases/tag/4.4.3
+[4.4.2]: https://github.com/swup/swup/releases/tag/4.4.3
 [4.4.1]: https://github.com/swup/swup/releases/tag/4.4.1
 [4.4.0]: https://github.com/swup/swup/releases/tag/4.4.0
 [4.3.4]: https://github.com/swup/swup/releases/tag/4.3.4
