@@ -29,9 +29,9 @@ test.describe('events', () => {
 		expect(await page.evaluate(() => window.data)).toStrictEqual('link:click');
 	});
 
-	test('triggers dom events for "swup:all"', async ({ page }) => {
+	test('triggers dom events for "swup:any"', async ({ page }) => {
 		await page.evaluate(() => {
-			document.addEventListener('swup:all', (event: any) => {
+			document.addEventListener('swup:any', (event: any) => {
 				if (event.detail.hook === 'link:click') window.data = event.detail.hook;
 			});
 		});

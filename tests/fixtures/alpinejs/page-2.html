@@ -15,7 +15,7 @@
 				x-data="{ clickFired: false, allFired: false }"
 				:class="{'click-fired': clickFired, 'all-fired': allFired}"
 				x-on:swup:link:click.window="clickFired = true"
-				x-on:swup:all.window="allFired = true"
+				x-on:swup:any.window="allFired = true"
 			>
 				Alpine Component
 			</div>
