@@ -42,7 +42,7 @@ test.describe('gracefully handle rapid navigation', () => {
 	test('should respect expired visits', async ({ page }) => {
 		await page.evaluate(() => {
 			window._swup.hooks.on('content:replace', (visit) => {
-				visit.expired = true;
+				visit.cancelled = true;
 			});
 		});
 		const expected = [

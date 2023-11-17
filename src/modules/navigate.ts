@@ -104,7 +104,7 @@ export async function performNavigation(
 	try {
 		await this.hooks.call('visit:start', undefined);
 
-		if (visit.expired) return;
+		if (visit.cancelled) return;
 
 		// Begin loading page
 		const pagePromise = this.hooks.call('page:load', { options }, async (visit, args) => {
@@ -134,7 +134,7 @@ export async function performNavigation(
 
 		this.currentPageUrl = getCurrentUrl();
 
-		if (visit.expired) return;
+		if (visit.cancelled) return;
 
 		// Wait for page before starting to animate out?
 		if (visit.animation.wait) {
@@ -142,32 +142,32 @@ export async function performNavigation(
 			visit.to.html = html;
 		}
 
-		if (visit.expired) return;
+		if (visit.cancelled) return;
 
 		// perform the actual transition: animate and replace content
 		await this.hooks.call('visit:transition', undefined, async () => {
-			if (visit.expired) return false;
+			if (visit.cancelled) return false;
 
 			// Start leave animation
 			const animationPromise = this.animatePageOut();
-			if (visit.expired) return false;
+			if (visit.cancelled) return false;
 
 			// Wait for page to load and leave animation to finish
 			const [page] = await Promise.all([pagePromise, animationPromise]);
-			if (visit.expired) return false;
+			if (visit.cancelled) return false;
 
 			// Render page: replace content and scroll to top/fragment
 			await this.renderPage(page);
-			if (visit.expired) return false;
+			if (visit.cancelled) return false;
 
 			// Wait for enter animation
 			await this.animatePageIn();
-			if (visit.expired) return false;
+			if (visit.cancelled) return false;
 
 			return true;
 		});
 
-		if (visit.expired) return;
+		if (visit.cancelled) return;
 
 		// Finalize visit
 		await this.hooks.call('visit:end', undefined, () => this.classes.clear());

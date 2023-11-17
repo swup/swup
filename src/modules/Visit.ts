@@ -22,8 +22,8 @@ export interface Visit {
 	history: VisitHistory;
 	/** Scroll behavior on this visit */
 	scroll: VisitScroll;
-	/** Has the visit expired? */
-	expired?: true;
+	/** Was the visit cancelled? */
+	cancelled?: true;
 }
 
 export interface VisitFrom {
@@ -96,7 +96,7 @@ export function createVisit(
 	this: Swup,
 	{ to, from = this.currentPageUrl, hash, el, event }: VisitInitOptions
 ): Visit {
-	if (this.visit) this.visit.expired = true;
+	if (this.visit) this.visit.cancelled = true;
 	return {
 		id: Math.random(),
 		from: { url: from },

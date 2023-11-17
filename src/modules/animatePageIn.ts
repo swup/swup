@@ -16,22 +16,22 @@ export const animatePageIn = async function (this: Swup) {
 		{ skip: false },
 		async (visit, { skip }) => {
 			if (skip) return;
-			if (visit.expired) return;
+			if (visit.cancelled) return;
 			await this.awaitAnimations({ selector: visit.animation.selector });
 		}
 	);
 
-	if (visit.expired) return;
+	if (visit.cancelled) return;
 	await nextTick();
 
 	await this.hooks.call('animation:in:start', undefined, () => {
-		if (visit.expired) return;
+		if (visit.cancelled) return;
 		this.classes.remove('is-animating');
 	});
 
-	if (visit.expired) return;
+	if (visit.cancelled) return;
 	await animation;
 
-	if (visit.expired) return;
+	if (visit.cancelled) return;
 	await this.hooks.call('animation:in:end', undefined);
 };

@@ -13,9 +13,9 @@ export const animatePageOut = async function (this: Swup) {
 		return;
 	}
 
-	if (visit.expired) return false;
+	if (visit.cancelled) return false;
 	await this.hooks.call('animation:out:start', undefined, (visit) => {
-		if (visit.expired) return false;
+		if (visit.cancelled) return false;
 
 		this.classes.add('is-changing', 'is-leaving', 'is-animating');
 		if (visit.history.popstate) {
@@ -26,14 +26,14 @@ export const animatePageOut = async function (this: Swup) {
 		}
 	});
 
-	if (visit.expired) return false;
+	if (visit.cancelled) return false;
 
 	await this.hooks.call('animation:out:await', { skip: false }, async (visit, { skip }) => {
 		if (skip) return;
-		if (visit.expired) return false;
+		if (visit.cancelled) return false;
 		await this.awaitAnimations({ selector: visit.animation.selector });
 	});
 
-	if (visit.expired) return false;
+	if (visit.cancelled) return false;
 	await this.hooks.call('animation:out:end', undefined);
 };

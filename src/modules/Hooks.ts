@@ -350,7 +350,7 @@ export class Hooks {
 		const [result] = await this.run(visit, handler, args);
 		await this.run(visit, after, args);
 
-		if (!visit.expired) {
+		if (!visit.cancelled) {
 			this.dispatchDomEvent(hook, args);
 		}
 
@@ -376,7 +376,7 @@ export class Hooks {
 		const [result] = this.runSync(handler, args);
 		this.runSync(after, args);
 
-		if (!this.swup.visit.expired) {
+		if (!this.swup.visit.cancelled) {
 			this.dispatchDomEvent(hook, args);
 		}
 
@@ -401,7 +401,7 @@ export class Hooks {
 	): Promise<Awaited<ReturnType<HookDefaultHandler<T>>> | unknown[]> {
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
-			if (visit.expired) return results;
+			if (visit.cancelled) return results;
 			const result = await runAsPromise(handler, [visit, args, defaultHandler]);
 			results.push(result);
 			if (once) {

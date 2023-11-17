@@ -28,7 +28,7 @@ export const renderPage = async function (this: Swup, page: PageData): Promise<v
 
 	// replace content: allow handlers and plugins to overwrite paga data and containers
 	await this.hooks.call('content:replace', { page }, (visit, { page }) => {
-		if (visit.expired) return false;
+		if (visit.cancelled) return false;
 		const success = this.replaceContent(page, { containers: visit.containers });
 		if (!success) {
 			throw new Error('[swup] Container mismatch, aborting');
@@ -42,16 +42,16 @@ export const renderPage = async function (this: Swup, page: PageData): Promise<v
 		}
 	});
 
-	if (visit.expired) return;
+	if (visit.cancelled) return;
 
 	// scroll into view: either anchor or top of page
 	// @ts-ignore: not returning a promise is intentional to allow users to pause in handler
 	await this.hooks.call('content:scroll', undefined, () => {
-		if (visit.expired) return false;
+		if (visit.cancelled) return false;
 		return this.scrollToContent();
 	});
 
-	if (visit.expired) return;
+	if (visit.cancelled) return;
 
 	await this.hooks.call('page:view', { url: this.currentPageUrl, title: document.title });
 };
