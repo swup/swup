@@ -342,11 +342,18 @@ export class Hooks {
 		args: HookArguments<T>,
 		defaultHandler?: HookDefaultHandler<T>
 	): Promise<Awaited<ReturnType<HookDefaultHandler<T>>>> {
+		const visitId = this.swup.visit.id;
+		// @TODO: how can we return early here?
+
 		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
 		await this.run(before, args);
 		const [result] = await this.run(handler, args);
 		await this.run(after, args);
-		this.dispatchDomEvent(hook, args);
+
+		if (visitId === this.swup.visit.id) {
+			this.dispatchDomEvent(hook, args);
+		}
+
 		return result;
 	}
 

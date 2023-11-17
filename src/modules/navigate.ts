@@ -147,23 +147,23 @@ export async function performNavigation(
 
 		// perform the actual transition: animate and replace content
 		await this.hooks.call('visit:transition', undefined, async () => {
+			// Abort if another visit was started in the meantime
+			if (visitId !== this.visit.id) return false;
+
 			// Start leave animation
 			const animationPromise = this.animatePageOut();
+			if (visitId !== this.visit.id) return false;
 
 			// Wait for page to load and leave animation to finish
 			const [page] = await Promise.all([pagePromise, animationPromise]);
-
-			// Abort if another visit was started in the meantime
 			if (visitId !== this.visit.id) return false;
 
 			// Render page: replace content and scroll to top/fragment
 			await this.renderPage(page);
-
 			if (visitId !== this.visit.id) return false;
 
 			// Wait for enter animation
 			await this.animatePageIn();
-
 			if (visitId !== this.visit.id) return false;
 
 			return true;
