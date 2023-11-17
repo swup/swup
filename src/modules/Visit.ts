@@ -23,7 +23,7 @@ export interface Visit {
 	/** Scroll behavior on this visit */
 	scroll: VisitScroll;
 	/** Has the visit expired? */
-	expired?: boolean;
+	expired?: true;
 }
 
 export interface VisitFrom {
