@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.4.4] - 2023-11-17
+
+- Dispatch DOM event `swup:any` every time a hook is run
+- Allow listening to DOM events from the `window`
+- Improve working with DOM events in TypeScript
+
 ## [4.4.3] - 2023-11-16
 
 - Improve compatibility with older Safari versions
@@ -183,6 +189,7 @@ See [upgrade instructions](https://swup.js.org/getting-started/upgrading-v3/) fo
 
 - Fix bug where animateHistoryBrowsing option was ignored for OUT animations
 
+[4.4.4]: https://github.com/swup/swup/releases/tag/4.4.4
 [4.4.3]: https://github.com/swup/swup/releases/tag/4.4.3
 [4.4.2]: https://github.com/swup/swup/releases/tag/4.4.3
 [4.4.1]: https://github.com/swup/swup/releases/tag/4.4.1
