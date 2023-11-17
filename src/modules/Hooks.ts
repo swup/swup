@@ -350,7 +350,7 @@ export class Hooks {
 			await this.run(before, args);
 		}
 
-		const [result] = await this.run(visitId === this.swup.visit.id ? handler : [], args);
+		const [result] = await this.run(handler, args);
 
 		if (visitId === this.swup.visit.id) {
 			await this.run(after, args);
