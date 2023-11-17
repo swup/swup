@@ -2,7 +2,7 @@ import { test } from '@playwright/test';
 
 import { waitForSwup } from '../support/swup.js';
 import { clickOnLink } from '../support/commands.js';
-import { prefixed } from '../support/utils.js'
+import { prefixed } from '../support/utils.js';
 
 const url = prefixed('/alpinejs/');
 
