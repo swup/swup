@@ -36,7 +36,7 @@ test.describe('gracefully rapid navigation', () => {
 
 		await page.waitForSelector('html:not([aria-busy=true])');
 		const received = await page.evaluate(() => window.data.received);
-		console.log(received.join(', '));
+		// console.log(received.join(', '));
 		expect(received).toEqual(expected);
 	});
 });
