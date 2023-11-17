@@ -12,7 +12,7 @@ test.describe('gracefully handle rapid navigation', () => {
 		await waitForSwup(page);
 	});
 
-	test('ignore hook events from expired visits', async ({ page }) => {
+	test('ignore gracefully handle rapid navigation', async ({ page }) => {
 		const expected = [
 			'visit:start',
 			'animation:out:start',
@@ -35,6 +35,23 @@ test.describe('gracefully handle rapid navigation', () => {
 		await clickOnLink(page, url('/page-3.html'));
 
 		await page.waitForSelector('html:not([aria-busy=true])');
+		const received = await page.evaluate(() => window.data.received);
+		expect(received).toEqual(expected);
+	});
+
+	test('respect expired visits', async ({ page }) => {
+		await page.evaluate(() =>
+			window._swup.hooks.on('animation:out:end', (visit) => {
+				visit.expired = true;
+			})
+		);
+		const expected = [
+			'visit:start',
+			'animation:out:start',
+			'fetch:request',
+			'page:load',
+		];
+		await clickOnLink(page, url('/page-2.html'));
 		const received = await page.evaluate(() => window.data.received);
 		expect(received).toEqual(expected);
 	});
