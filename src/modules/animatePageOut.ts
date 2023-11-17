@@ -6,16 +6,16 @@ import { classify } from '../helpers.js';
  * @returns Promise<void>
  */
 export const animatePageOut = async function (this: Swup) {
-	const visitId = this.visit.id;
+	const visit = this.visit;
 
 	if (!this.visit.animation.animate) {
 		await this.hooks.call('animation:skip', undefined);
 		return;
 	}
 
-	if (visitId !== this.visit.id) return false;
+	if (visit.expired) return false;
 	await this.hooks.call('animation:out:start', undefined, (visit) => {
-		if (visitId !== this.visit.id) return false;
+		if (visit.expired) return false;
 
 		this.classes.add('is-changing', 'is-leaving', 'is-animating');
 		if (visit.history.popstate) {
@@ -26,13 +26,14 @@ export const animatePageOut = async function (this: Swup) {
 		}
 	});
 
-	if (visitId !== this.visit.id) return false;
+	if (visit.expired) return false;
+
 	await this.hooks.call('animation:out:await', { skip: false }, async (visit, { skip }) => {
 		if (skip) return;
-		if (visitId !== this.visit.id) return false;
+		if (visit.expired) return false;
 		await this.awaitAnimations({ selector: visit.animation.selector });
 	});
 
-	if (visitId !== this.visit.id) return false;
+	if (visit.expired) return false;
 	await this.hooks.call('animation:out:end', undefined);
 };

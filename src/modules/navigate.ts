@@ -66,7 +66,6 @@ export async function performNavigation(
 	// Save this localy to a) allow ignoring the visit if a new one was started in the meantime
 	// and b) avoid unintended modifications to any newer visits
 	const visit = this.visit;
-	const { id: visitId } = this.visit;
 
 	const { el } = visit.trigger;
 	options.referrer = options.referrer || this.currentPageUrl;
@@ -105,7 +104,7 @@ export async function performNavigation(
 	try {
 		await this.hooks.call('visit:start', undefined);
 
-		if (visitId !== this.visit.id) return;
+		if (visit.expired) return;
 
 		// Begin loading page
 		const pagePromise = this.hooks.call('page:load', { options }, async (visit, args) => {
@@ -135,7 +134,7 @@ export async function performNavigation(
 
 		this.currentPageUrl = getCurrentUrl();
 
-		if (visitId !== this.visit.id) return;
+		if (visit.expired) return;
 
 		// Wait for page before starting to animate out?
 		if (visit.animation.wait) {
@@ -143,33 +142,32 @@ export async function performNavigation(
 			visit.to.html = html;
 		}
 
-		if (visitId !== this.visit.id) return;
+		if (visit.expired) return;
 
 		// perform the actual transition: animate and replace content
 		await this.hooks.call('visit:transition', undefined, async () => {
-			// Abort if another visit was started in the meantime
-			if (visitId !== this.visit.id) return false;
+			if (visit.expired) return false;
 
 			// Start leave animation
 			const animationPromise = this.animatePageOut();
-			if (visitId !== this.visit.id) return false;
+			if (visit.expired) return false;
 
 			// Wait for page to load and leave animation to finish
 			const [page] = await Promise.all([pagePromise, animationPromise]);
-			if (visitId !== this.visit.id) return false;
+			if (visit.expired) return false;
 
 			// Render page: replace content and scroll to top/fragment
 			await this.renderPage(page);
-			if (visitId !== this.visit.id) return false;
+			if (visit.expired) return false;
 
 			// Wait for enter animation
 			await this.animatePageIn();
-			if (visitId !== this.visit.id) return false;
+			if (visit.expired) return false;
 
 			return true;
 		});
 
-		if (visitId !== this.visit.id) return;
+		if (visit.expired) return;
 
 		// Finalize visit
 		await this.hooks.call('visit:end', undefined, () => this.classes.clear());

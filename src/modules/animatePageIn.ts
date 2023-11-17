@@ -6,7 +6,7 @@ import { nextTick } from '../utils.js';
  * @returns Promise<void>
  */
 export const animatePageIn = async function (this: Swup) {
-	const { id: visitId } = this.visit;
+	const visit = this.visit;
 	if (!this.visit.animation.animate) {
 		return;
 	}
@@ -16,22 +16,22 @@ export const animatePageIn = async function (this: Swup) {
 		{ skip: false },
 		async (visit, { skip }) => {
 			if (skip) return;
-			if (visitId !== this.visit.id) return;
+			if (visit.expired) return;
 			await this.awaitAnimations({ selector: visit.animation.selector });
 		}
 	);
 
-	if (visitId !== this.visit.id) return;
+	if (visit.expired) return;
 	await nextTick();
 
 	await this.hooks.call('animation:in:start', undefined, () => {
-		if (visitId !== this.visit.id) return;
+		if (visit.expired) return;
 		this.classes.remove('is-animating');
 	});
 
-	if (visitId !== this.visit.id) return;
+	if (visit.expired) return;
 	await animation;
 
-	if (visitId !== this.visit.id) return;
+	if (visit.expired) return;
 	await this.hooks.call('animation:in:end', undefined);
 };

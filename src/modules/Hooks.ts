@@ -342,21 +342,15 @@ export class Hooks {
 		args: HookArguments<T>,
 		defaultHandler?: HookDefaultHandler<T>
 	): Promise<Awaited<ReturnType<HookDefaultHandler<T>>>> {
-		const visitId = this.swup.visit.id;
+		/** Keep a reference to the current visit in case it's being expired */
+		const visit = this.swup.visit;
 
 		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
+		await this.run(visit, before, args);
+		const [result] = await this.run(visit, handler, args);
+		await this.run(visit, after, args);
 
-		if (visitId === this.swup.visit.id) {
-			await this.run(before, args);
-		}
-
-		const [result] = await this.run(handler, args);
-
-		if (visitId === this.swup.visit.id) {
-			await this.run(after, args);
-		}
-
-		if (visitId === this.swup.visit.id) {
+		if (!visit.expired) {
 			this.dispatchDomEvent(hook, args);
 		}
 
@@ -377,10 +371,15 @@ export class Hooks {
 		defaultHandler?: HookDefaultHandler<T>
 	): ReturnType<HookDefaultHandler<T>> {
 		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
+
 		this.runSync(before, args);
 		const [result] = this.runSync(handler, args);
 		this.runSync(after, args);
-		this.dispatchDomEvent(hook, args);
+
+		if (!this.swup.visit.expired) {
+			this.dispatchDomEvent(hook, args);
+		}
+
 		return result;
 	}
 
@@ -391,17 +390,19 @@ export class Hooks {
 	 */
 
 	// Overload: running HookDefaultHandler: expect HookDefaultHandler return type
-	protected async run<T extends HookName>(registrations: HookRegistration<T, HookDefaultHandler<T>>[], args: HookArguments<T>): Promise<Awaited<ReturnType<HookDefaultHandler<T>>>[]>; // prettier-ignore
+	protected async run<T extends HookName>(visit: Visit, registrations: HookRegistration<T, HookDefaultHandler<T>>[], args: HookArguments<T>): Promise<Awaited<ReturnType<HookDefaultHandler<T>>>[]>; // prettier-ignore
 	// Overload:  running user handler: expect no specific type
-	protected async run<T extends HookName>(registrations: HookRegistration<T>[], args: HookArguments<T>): Promise<unknown[]>; // prettier-ignore
+	protected async run<T extends HookName>(visit: Visit, registrations: HookRegistration<T>[], args: HookArguments<T>): Promise<unknown[]>; // prettier-ignore
 	// Implementation
 	protected async run<T extends HookName, R extends HookRegistration<T>[]>(
+		visit: Visit,
 		registrations: R,
 		args: HookArguments<T>
 	): Promise<Awaited<ReturnType<HookDefaultHandler<T>>> | unknown[]> {
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
-			const result = await runAsPromise(handler, [this.swup.visit, args, defaultHandler]);
+			if (visit.expired) return results;
+			const result = await runAsPromise(handler, [visit, args, defaultHandler]);
 			results.push(result);
 			if (once) {
 				this.off(hook, handler);
