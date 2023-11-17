@@ -350,8 +350,7 @@ export class Hooks {
 			await this.run(before, args);
 		}
 
-		// @TODO: how can we return early here without executing the hook if the visit has expired?
-		const [result] = await this.run(handler, args);
+		const [result] = await this.run(visitId === this.swup.visit.id ? handler : [], args);
 
 		if (visitId === this.swup.visit.id) {
 			await this.run(after, args);
