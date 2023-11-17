@@ -9,7 +9,17 @@ test.describe('events', () => {
 
 	test('triggers custom dom events', async ({ page }) => {
 		await page.evaluate(() => {
-			document.addEventListener('swup:link:click', (event) => window.data = event.detail.hook);
+			document.addEventListener('swup:link:click', (event: any) => window.data = event.detail.hook);
+		});
+		await clickOnLink(page, '/page-2.html');
+		expect(await page.evaluate(() => window.data)).toStrictEqual('link:click');
+	});
+
+	test('triggers wildcard dom events', async ({ page }) => {
+		await page.evaluate(() => {
+			document.addEventListener('swup:*', (event: any) => {
+				if (event.detail.hook === 'link:click') window.data = event.detail.hook
+			});
 		});
 		await clickOnLink(page, '/page-2.html');
 		expect(await page.evaluate(() => window.data)).toStrictEqual('link:click');
