@@ -96,6 +96,14 @@ export type HookRegistration<
 	defaultHandler?: HookDefaultHandler<T>;
 } & HookOptions;
 
+type HookEventDetail = {
+	hook: HookName;
+	args: unknown;
+	visit: Visit;
+};
+
+export type HookEvent = CustomEvent<HookEventDetail>;
+
 type HookLedger<T extends HookName> = Map<HookHandler<T>, HookRegistration<T>>;
 
 interface HookRegistry extends Map<HookName, HookLedger<HookName>> {
@@ -493,8 +501,12 @@ export class Hooks {
 	 * @param hook Name of the hook.
 	 */
 	protected dispatchDomEvent<T extends HookName>(hook: T, args?: HookArguments<T>): void {
-		const detail = { hook, args, visit: this.swup.visit };
-		document.dispatchEvent(new CustomEvent(`swup:any`, { detail, bubbles: true }));
-		document.dispatchEvent(new CustomEvent(`swup:${hook}`, { detail, bubbles: true }));
+		const detail: HookEventDetail = { hook, args, visit: this.swup.visit };
+		document.dispatchEvent(
+			new CustomEvent<HookEventDetail>(`swup:any`, { detail, bubbles: true })
+		);
+		document.dispatchEvent(
+			new CustomEvent<HookEventDetail>(`swup:${hook}`, { detail, bubbles: true })
+		);
 	}
 }
