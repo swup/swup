@@ -40,18 +40,21 @@ test.describe('gracefully handle rapid navigation', () => {
 	});
 
 	test('should respect expired visits', async ({ page }) => {
-		await page.evaluate(() =>
-			window._swup.hooks.on('animation:out:end', (visit) => {
+		await page.evaluate(() => {
+			window._swup.hooks.on('content:replace', (visit) => {
 				visit.expired = true;
-			})
-		);
+			});
+		});
 		const expected = [
 			'visit:start',
 			'animation:out:start',
 			'fetch:request',
 			'page:load',
+			'animation:out:await',
+			'animation:out:end'
 		];
 		await clickOnLink(page, url('/page-2.html'));
+		await sleep(1000); // we have to wait here, since we cannot rely on anything from swup (the visit is being exited)
 		const received = await page.evaluate(() => window.data.received);
 		expect(received).toEqual(expected);
 	});
