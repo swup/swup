@@ -37,7 +37,7 @@ export interface HookDefinitions {
 }
 
 export interface HookReturnValues {
-	'content:scroll': Promise<boolean>;
+	'content:scroll': Promise<boolean> | boolean;
 	'fetch:request': Promise<Response>;
 	'page:load': Promise<PageData>;
 	'scroll:top': boolean;

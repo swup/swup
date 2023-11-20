@@ -149,7 +149,7 @@ export async function performNavigation(
 		}
 
 		// perform the actual transition: animate and replace content
-		await this.hooks.call('visit:transition', visit, undefined, async (visit) => {
+		await this.hooks.call('visit:transition', visit, undefined, async () => {
 			// Start leave animation
 			const animationPromise = this.animatePageOut(visit);
 
