@@ -93,7 +93,6 @@ export class Visit {
 
 	constructor(swup: Swup, options: VisitInitOptions) {
 		const { to, from = swup.currentPageUrl, hash, el, event } = options;
-		Object.assign(this, createVisit.call(swup, options));
 
 		this.id = Math.random();
 		this.from = { url: from };
