@@ -18,6 +18,10 @@ describe('Visit', () => {
 		expect(visit).to.be.an('object');
 	});
 
+	it('is a Visit instance', () => {
+		expect(visit).to.be.instanceof(Visit);
+	});
+
 	it('has an id', () => {
 		expect(visit.id).to.be.a('number');
 	});
