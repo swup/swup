@@ -18,10 +18,7 @@ export interface FetchOptions extends Omit<RequestInit, 'cache'> {
 	body?: string | FormData | URLSearchParams;
 	/** The request timeout in milliseconds. */
 	timeout?: number;
-	/**
-	 * Optional visit object
-	 * @internal
-	 */
+	/** Optional visit object with additional context. @internal */
 	visit?: Visit;
 }
 
@@ -53,7 +50,7 @@ export async function fetchPage(
 ): Promise<PageData> {
 	url = Location.fromUrl(url).url;
 
-	const { visit } = options;
+	const { visit = this.visit } = options;
 	const headers = { ...this.options.requestHeaders, ...options.headers };
 	const timeout = options.timeout ?? this.options.timeout;
 	const controller = new AbortController();
@@ -87,10 +84,7 @@ export async function fetchPage(
 			throw new FetchError(`Request timed out: ${url}`, { url, timedOut });
 		}
 		if ((error as Error)?.name === 'AbortError' || signal.aborted) {
-			throw new FetchError(`Request aborted: ${url}`, {
-				url: url,
-				aborted: true
-			});
+			throw new FetchError(`Request aborted: ${url}`, { url, aborted: true });
 		}
 		throw error;
 	}
