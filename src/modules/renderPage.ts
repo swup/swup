@@ -15,16 +15,16 @@ export const renderPage = async function (this: Swup, visit: Visit, page: PageDa
 	if (!this.isSameResolvedUrl(getCurrentUrl(), url)) {
 		updateHistoryRecord(url);
 		this.currentPageUrl = getCurrentUrl();
-		this.visit.to.url = this.currentPageUrl;
+		visit.to.url = this.currentPageUrl;
 	}
 
 	// only add for animated page loads
-	if (this.visit.animation.animate) {
+	if (visit.animation.animate) {
 		this.classes.add('is-rendering');
 	}
 
 	// save html into visit context for easier retrieval
-	this.visit.to.html = html;
+	visit.to.html = html;
 
 	// replace content: allow handlers and plugins to overwrite paga data and containers
 	await this.hooks.call('content:replace', visit, { page }, (visit, { page }) => {

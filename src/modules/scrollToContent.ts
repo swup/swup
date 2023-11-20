@@ -7,8 +7,8 @@ import type { Visit } from './Visit.js';
  */
 export const scrollToContent = function (this: Swup, visit: Visit): boolean {
 	const options: ScrollIntoViewOptions = { behavior: 'auto' };
-	const { target, reset } = this.visit.scroll;
-	const scrollTarget = target ?? this.visit.to.hash;
+	const { target, reset } = visit.scroll;
+	const scrollTarget = target ?? visit.to.hash;
 
 	let scrolled = false;
 

@@ -53,6 +53,7 @@ export async function fetchPage(
 ): Promise<PageData> {
 	url = Location.fromUrl(url).url;
 
+	const { visit } = options;
 	const headers = { ...this.options.requestHeaders, ...options.headers };
 	const timeout = options.timeout ?? this.options.timeout;
 	const controller = new AbortController();
@@ -73,7 +74,7 @@ export async function fetchPage(
 	try {
 		response = await this.hooks.call(
 			'fetch:request',
-			options.visit,
+			visit,
 			{ url, options },
 			(visit, { url, options }) => fetch(url, options)
 		);
@@ -82,7 +83,7 @@ export async function fetchPage(
 		}
 	} catch (error) {
 		if (timedOut) {
-			this.hooks.call('fetch:timeout', options.visit, { url });
+			this.hooks.call('fetch:timeout', visit, { url });
 			throw new FetchError(`Request timed out: ${url}`, { url, timedOut });
 		}
 		if ((error as Error)?.name === 'AbortError' || signal.aborted) {
@@ -98,7 +99,7 @@ export async function fetchPage(
 	const html = await response.text();
 
 	if (status === 500) {
-		this.hooks.call('fetch:error', options.visit, { status, response, url: responseUrl });
+		this.hooks.call('fetch:error', visit, { status, response, url: responseUrl });
 		throw new FetchError(`Server error: ${responseUrl}`, { status, url: responseUrl });
 	}
 
@@ -111,11 +112,7 @@ export async function fetchPage(
 	const page = { url: finalUrl, html };
 
 	// Write to cache for safe methods and non-redirects
-	if (
-		this.visit.cache.write &&
-		(!options.method || options.method === 'GET') &&
-		url === finalUrl
-	) {
+	if (visit?.cache.write && (!options.method || options.method === 'GET') && url === finalUrl) {
 		this.cache.set(page.url, page);
 	}
 

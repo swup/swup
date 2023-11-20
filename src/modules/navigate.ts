@@ -68,6 +68,7 @@ export async function performNavigation(
 		this.onVisitEnd = () => this.performNavigation(visit, options);
 		return;
 	}
+
 	this.navigating = true;
 	this.visit = visit;
 
