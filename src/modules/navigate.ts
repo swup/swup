@@ -65,9 +65,7 @@ export async function performNavigation(
 	options: NavigationOptions & FetchOptions = {}
 ): Promise<void> {
 	if (this.navigating) {
-		this.onVisitEnd = () => {
-			this.performNavigation(visit, options);
-		};
+		this.onVisitEnd = () => this.performNavigation(visit, options);
 		return;
 	}
 	this.navigating = true;

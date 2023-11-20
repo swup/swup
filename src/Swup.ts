@@ -98,11 +98,8 @@ export default class Swup {
 	protected clickDelegate?: DelegateEventUnsubscribe;
 	/** Navigation status */
 	protected navigating: boolean = false;
-	/**
-	 * Run anytime a visit ends
-	 * @private
-	 */
-	protected onVisitEnd?: () => void;
+	/** Run anytime a visit ends */
+	protected onVisitEnd?: () => Promise<unknown>;
 
 	/** Install a plugin */
 	use = use;
