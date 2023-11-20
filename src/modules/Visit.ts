@@ -70,10 +70,24 @@ export interface VisitInitOptions {
 	event?: Event;
 }
 
+export enum VisitState {
+	created = 1,
+	queued,
+	started,
+	leaving,
+	loaded,
+	entering,
+	completed,
+	aborted,
+	failed
+}
+
 /** An object holding details about the current visit. */
 export class Visit {
 	/** A unique ID to identify this visit */
 	id: number;
+	/** The current state of this visit */
+	state: VisitState;
 	/** The previous page, about to leave */
 	from: VisitFrom;
 	/** The next page, about to enter */
@@ -95,6 +109,7 @@ export class Visit {
 		const { to, from = swup.currentPageUrl, hash, el, event } = options;
 
 		this.id = Math.random();
+		this.state = VisitState.created;
 		this.from = { url: from };
 		this.to = { url: to, hash };
 		this.containers = swup.options.containers;
@@ -119,6 +134,16 @@ export class Visit {
 			reset: true,
 			target: undefined
 		};
+	}
+
+	get aborted(): boolean {
+		return this.state === VisitState.aborted;
+	}
+
+	advance(state: VisitState) {
+		if (this.state <= state) {
+			this.state = state;
+		}
 	}
 }
 
