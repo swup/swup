@@ -7,7 +7,8 @@ import { type DelegateEventUnsubscribe } from './helpers/delegateEvent.js';
 
 import { Cache } from './modules/Cache.js';
 import { Classes } from './modules/Classes.js';
-import { type Visit, createVisit } from './modules/Visit.js';
+import { createVisit } from './modules/Visit.js';
+import type { Visit } from './modules/Visit.js';
 import { Hooks } from './modules/Hooks.js';
 import { getAnchorElement } from './modules/getAnchorElement.js';
 import { awaitAnimations } from './modules/awaitAnimations.js';
@@ -202,7 +203,7 @@ export default class Swup {
 		await nextTick();
 
 		// Trigger enable hook
-		await this.hooks.call('enable', undefined, () => {
+		await this.hooks.call('enable', undefined, undefined, () => {
 			// Add swup-enabled class to html tag
 			document.documentElement.classList.add('swup-enabled');
 		});
@@ -223,7 +224,7 @@ export default class Swup {
 		this.options.plugins.forEach((plugin) => this.unuse(plugin));
 
 		// trigger disable hook
-		await this.hooks.call('disable', undefined, () => {
+		await this.hooks.call('disable', undefined, undefined, () => {
 			// remove swup-enabled class from html tag
 			document.documentElement.classList.remove('swup-enabled');
 		});
@@ -265,16 +266,16 @@ export default class Swup {
 		}
 
 		// Ignore if swup is currently navigating towards the link's URL
-		if (this.navigating && url === this.visit.to.url) {
+		if (this.visit?.to.url === url) {
 			event.preventDefault();
 			return;
 		}
 
-		this.visit = this.createVisit({ to: url, hash, el, event });
+		const visit = this.createVisit({ to: url, hash, el, event });
 
 		// Exit early if control key pressed
 		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
-			this.hooks.call('link:newtab', { href });
+			this.hooks.callSync('link:newtab', visit, { href });
 			return;
 		}
 
@@ -283,8 +284,8 @@ export default class Swup {
 			return;
 		}
 
-		this.hooks.callSync('link:click', { el, event }, () => {
-			const from = this.visit.from.url ?? '';
+		this.hooks.callSync('link:click', visit, { el, event }, () => {
+			const from = visit.from.url ?? '';
 
 			event.preventDefault();
 
@@ -292,20 +293,21 @@ export default class Swup {
 			if (!url || url === from) {
 				if (hash) {
 					// With hash: scroll to anchor
-					this.hooks.callSync('link:anchor', { hash }, () => {
+					this.hooks.callSync('link:anchor', visit, { hash }, () => {
 						updateHistoryRecord(url + hash);
-						this.scrollToContent();
+						this.scrollToContent(visit);
 					});
 				} else {
 					// Without hash: scroll to top or load/reload page
-					this.hooks.callSync('link:self', undefined, () => {
+					this.hooks.callSync('link:self', visit, undefined, () => {
 						switch (this.options.linkToSelf) {
 							case 'navigate':
-								return this.performNavigation();
+								this.performNavigation(visit);
+								return;
 							case 'scroll':
 							default:
 								updateHistoryRecord(url);
-								return this.scrollToContent();
+								return this.scrollToContent(visit);
 						}
 					});
 				}
@@ -318,7 +320,7 @@ export default class Swup {
 			}
 
 			// Finally, proceed with loading the page
-			this.performNavigation();
+			this.performNavigation(visit);
 		});
 	}
 
@@ -337,28 +339,28 @@ export default class Swup {
 
 		const { url, hash } = Location.fromUrl(href);
 
-		this.visit = this.createVisit({ to: url, hash, event });
+		const visit = this.createVisit({ to: url, hash, event });
 
 		// Mark as history visit
-		this.visit.history.popstate = true;
+		visit.history.popstate = true;
 
 		// Determine direction of history visit
 		const index = (event.state as HistoryState)?.index ?? 0;
 		if (index && index !== this.currentHistoryIndex) {
 			const direction = index - this.currentHistoryIndex > 0 ? 'forwards' : 'backwards';
-			this.visit.history.direction = direction;
+			visit.history.direction = direction;
 			this.currentHistoryIndex = index;
 		}
 
 		// Disable animation & scrolling for history visits
-		this.visit.animation.animate = false;
-		this.visit.scroll.reset = false;
-		this.visit.scroll.target = false;
+		visit.animation.animate = false;
+		visit.scroll.reset = false;
+		visit.scroll.target = false;
 
 		// Animated history visit: re-enable animation & scroll reset
 		if (this.options.animateHistoryBrowsing) {
-			this.visit.animation.animate = true;
-			this.visit.scroll.reset = true;
+			visit.animation.animate = true;
+			visit.scroll.reset = true;
 		}
 
 		// Does this even do anything?
@@ -366,8 +368,8 @@ export default class Swup {
 		// 	event.preventDefault();
 		// }
 
-		this.hooks.callSync('history:popstate', { event }, () => {
-			this.performNavigation();
+		this.hooks.callSync('history:popstate', visit, { event }, () => {
+			this.performNavigation(visit);
 		});
 	}
 
@@ -377,19 +379,5 @@ export default class Swup {
 			return true;
 		}
 		return false;
-	}
-
-	/**
-	 * Queues a function to be called either
-	 *
-	 * - right now, if currently not navigating
-	 * - the next time the current visit ends
-	 */
-	protected queue(fn: () => void): void {
-		if (this.navigating) {
-			this.onVisitEnd = fn;
-			return;
-		}
-		fn();
 	}
 }

@@ -1,5 +1,6 @@
 import type Swup from '../Swup.js';
 import { Location } from '../helpers.js';
+import type { Visit } from './Visit.js';
 
 /** A page object as used by swup and its cache. */
 export interface PageData {
@@ -17,6 +18,11 @@ export interface FetchOptions extends Omit<RequestInit, 'cache'> {
 	body?: string | FormData | URLSearchParams;
 	/** The request timeout in milliseconds. */
 	timeout?: number;
+	/**
+	 * Optional visit object
+	 * @internal
+	 */
+	visit?: Visit;
 }
 
 export class FetchError extends Error {
@@ -67,6 +73,7 @@ export async function fetchPage(
 	try {
 		response = await this.hooks.call(
 			'fetch:request',
+			options.visit,
 			{ url, options },
 			(visit, { url, options }) => fetch(url, options)
 		);
@@ -75,7 +82,7 @@ export async function fetchPage(
 		}
 	} catch (error) {
 		if (timedOut) {
-			this.hooks.call('fetch:timeout', { url });
+			this.hooks.call('fetch:timeout', options.visit, { url });
 			throw new FetchError(`Request timed out: ${url}`, { url, timedOut });
 		}
 		if ((error as Error)?.name === 'AbortError' || signal.aborted) {
@@ -91,7 +98,7 @@ export async function fetchPage(
 	const html = await response.text();
 
 	if (status === 500) {
-		this.hooks.call('fetch:error', { status, response, url: responseUrl });
+		this.hooks.call('fetch:error', options.visit, { status, response, url: responseUrl });
 		throw new FetchError(`Server error: ${responseUrl}`, { status, url: responseUrl });
 	}
 

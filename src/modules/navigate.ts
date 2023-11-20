@@ -1,7 +1,7 @@
 import type Swup from '../Swup.js';
 import { createHistoryRecord, updateHistoryRecord, getCurrentUrl, Location } from '../helpers.js';
 import { FetchError, type FetchOptions, type PageData } from './fetchPage.js';
-import type { VisitInitOptions } from './Visit.js';
+import type { VisitInitOptions, Visit } from './Visit.js';
 
 export type HistoryAction = 'push' | 'replace';
 export type HistoryDirection = 'forwards' | 'backwards';
@@ -44,10 +44,8 @@ export function navigate(
 
 	const { url: to, hash } = Location.fromUrl(url);
 
-	this.queue(() => {
-		this.visit = this.createVisit({ ...init, to, hash });
-		this.performNavigation(options);
-	});
+	const visit = this.createVisit({ ...init, to, hash });
+	this.performNavigation(visit, options);
 }
 
 /**
@@ -63,12 +61,17 @@ export function navigate(
  */
 export async function performNavigation(
 	this: Swup,
+	visit: Visit,
 	options: NavigationOptions & FetchOptions = {}
 ): Promise<void> {
+	if (this.navigating) {
+		this.onVisitEnd = () => {
+			this.performNavigation(visit, options);
+		};
+		return;
+	}
 	this.navigating = true;
-	// Save this localy to a) allow ignoring the visit if a new one was started in the meantime
-	// and b) avoid unintended modifications to any newer visits
-	const visit = this.visit;
+	this.visit = visit;
 
 	const { el } = visit.trigger;
 	options.referrer = options.referrer || this.currentPageUrl;
@@ -105,21 +108,26 @@ export async function performNavigation(
 	delete options.cache;
 
 	try {
-		await this.hooks.call('visit:start', undefined);
+		await this.hooks.call('visit:start', visit, undefined);
 
 		// Begin loading page
-		const pagePromise = this.hooks.call('page:load', { options }, async (visit, args) => {
-			// Read from cache
-			let cachedPage: PageData | undefined;
-			if (visit.cache.read) {
-				cachedPage = this.cache.get(visit.to.url);
+		const pagePromise = this.hooks.call(
+			'page:load',
+			visit,
+			{ options },
+			async (visit, args) => {
+				// Read from cache
+				let cachedPage: PageData | undefined;
+				if (visit.cache.read) {
+					cachedPage = this.cache.get(visit.to.url);
+				}
+
+				args.page = cachedPage || (await this.fetchPage(visit.to.url, args.options));
+				args.cache = !!cachedPage;
+
+				return args.page;
 			}
-
-			args.page = cachedPage || (await this.fetchPage(visit.to.url, args.options));
-			args.cache = !!cachedPage;
-
-			return args.page;
-		});
+		);
 
 		// Create/update history record if this is not a popstate call or leads to the same URL
 		if (!visit.history.popstate) {
@@ -142,9 +150,9 @@ export async function performNavigation(
 		}
 
 		// perform the actual transition: animate and replace content
-		await this.hooks.call('visit:transition', undefined, async (visit) => {
+		await this.hooks.call('visit:transition', visit, undefined, async (visit) => {
 			// Start leave animation
-			const animationPromise = this.animatePageOut();
+			const animationPromise = this.animatePageOut(visit);
 
 			// Wait for page to load and leave animation to finish
 			const [page] = await Promise.all([pagePromise, animationPromise]);
@@ -155,25 +163,23 @@ export async function performNavigation(
 			}
 
 			// Render page: replace content and scroll to top/fragment
-			await this.renderPage(page);
+			await this.renderPage(visit, page);
 
 			// Wait for enter animation
-			await this.animatePageIn();
+			await this.animatePageIn(visit);
 
 			return true;
 		});
 
 		// Finalize visit
-		await this.hooks.call('visit:end', undefined, () => this.classes.clear());
+		await this.hooks.call('visit:end', visit, undefined, () => this.classes.clear());
 
 		// Reset visit info after finish?
 		// if (visit.to && this.isSameResolvedUrl(visit.to.url, requestedUrl)) {
 		// 	this.visit = this.createVisit({ to: undefined });
 		// }
 		this.navigating = false;
-		/**
-		 * Run eventually queued function
-		 */
+		/** Run eventually queued function */
 		this.onVisitEnd?.();
 		this.onVisitEnd = undefined;
 	} catch (error) {
