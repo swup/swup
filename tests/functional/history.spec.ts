@@ -18,6 +18,7 @@ test.describe('history', () => {
 		await navigateWithSwup(page, '/page-2.html');
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
 		await page.goBack();
+		await expectToBeAt(page, '/history.html', 'History');
 		const state = await page.evaluate(() => window.history.state);
 		await navigateWithSwup(page, '/page-2.html');
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
@@ -31,6 +32,7 @@ test.describe('history', () => {
 		await navigateWithSwup(page, '/page-2.html');
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
 		await page.goBack();
+		await expectToBeAt(page, '/history.html', 'History');
 		const state = await page.evaluate(() => window.history.state);
 		await navigateWithSwup(page, '/page-2.html');
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
