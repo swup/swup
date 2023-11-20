@@ -262,7 +262,7 @@ export default class Swup {
 		}
 
 		// Ignore if swup is currently navigating towards the link's URL
-		if (this.visit?.to.url === url) {
+		if (this.navigating && url === this.visit.to.url) {
 			event.preventDefault();
 			return;
 		}
