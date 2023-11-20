@@ -2,7 +2,7 @@ import type { DelegateEvent } from 'delegate-it';
 
 import type Swup from '../Swup.js';
 import { isPromise, runAsPromise } from '../utils.js';
-import type { Visit } from './Visit.js';
+import { Visit } from './Visit.js';
 import type { FetchOptions, PageData } from './fetchPage.js';
 
 export interface HookDefinitions {
@@ -333,16 +333,24 @@ export class Hooks {
 	 * Trigger a hook asynchronously, executing its default handler and all registered handlers.
 	 * Will execute all handlers in order and `await` any `Promise`s they return.
 	 * @param hook Name of the hook to trigger
+	 * @param visit The visit object this hook belongs to
 	 * @param args Arguments to pass to the handler
 	 * @param defaultHandler A default implementation of this hook to execute
 	 * @returns The resolved return value of the executed default handler
 	 */
+	// Overload: default order of arguments
+	async call<T extends HookName>(hook: T, visit: Visit | undefined, args: HookArguments<T>, defaultHandler?: HookDefaultHandler<T>): Promise<Awaited<ReturnType<HookDefaultHandler<T>>>>; // prettier-ignore
+	// Overload: legacy order of arguments, with visit missing
+	async call<T extends HookName>(hook: T, args: HookArguments<T>, defaultHandler?: HookDefaultHandler<T>): Promise<Awaited<ReturnType<HookDefaultHandler<T>>>>; // prettier-ignore
+	// Implementation
 	async call<T extends HookName>(
 		hook: T,
-		visit: Visit | undefined,
-		args: HookArguments<T>,
-		defaultHandler?: HookDefaultHandler<T>
+		arg1: Visit | HookArguments<T>,
+		arg2: HookArguments<T> | HookDefaultHandler<T>,
+		arg3?: HookDefaultHandler<T>
 	): Promise<Awaited<ReturnType<HookDefaultHandler<T>>>> {
+		const [visit, args, defaultHandler] = this.parseCallArgs(hook, arg1, arg2, arg3);
+
 		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
 		await this.run(before, visit, args);
 		const [result] = await this.run(handler, visit, args);
@@ -355,22 +363,49 @@ export class Hooks {
 	 * Trigger a hook synchronously, executing its default handler and all registered handlers.
 	 * Will execute all handlers in order, but will **not** `await` any `Promise`s they return.
 	 * @param hook Name of the hook to trigger
+	 * @param visit The visit object this hook belongs to
 	 * @param args Arguments to pass to the handler
 	 * @param defaultHandler A default implementation of this hook to execute
 	 * @returns The (possibly unresolved) return value of the executed default handler
 	 */
+	// Overload: default order of arguments
+	callSync<T extends HookName>(hook: T, visit: Visit | undefined, args: HookArguments<T>, defaultHandler?: HookDefaultHandler<T>): ReturnType<HookDefaultHandler<T>>; // prettier-ignore
+	// Overload: legacy order of arguments, with visit missing
+	callSync<T extends HookName>(hook: T, args: HookArguments<T>, defaultHandler?: HookDefaultHandler<T>): ReturnType<HookDefaultHandler<T>>; // prettier-ignore
+	// Implementation
 	callSync<T extends HookName>(
 		hook: T,
-		visit: Visit | undefined,
-		args: HookArguments<T>,
-		defaultHandler?: HookDefaultHandler<T>
+		arg1: Visit | HookArguments<T>,
+		arg2: HookArguments<T> | HookDefaultHandler<T>,
+		arg3?: HookDefaultHandler<T>
 	): ReturnType<HookDefaultHandler<T>> {
+		const [visit, args, defaultHandler] = this.parseCallArgs(hook, arg1, arg2, arg3);
 		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
 		this.runSync(before, visit, args);
 		const [result] = this.runSync(handler, visit, args);
 		this.runSync(after, visit, args);
 		this.dispatchDomEvent(hook, visit, args);
 		return result;
+	}
+
+	/**
+	 * Parse the call arguments for call() and callSync() to allow legacy argument order.
+	 */
+	protected parseCallArgs<T extends HookName>(
+		hook: T,
+		arg1: Visit | HookArguments<T> | undefined,
+		arg2: HookArguments<T> | HookDefaultHandler<T>,
+		arg3?: HookDefaultHandler<T>
+	): [Visit | undefined, HookArguments<T>, HookDefaultHandler<T> | undefined] {
+		const legacyOrder =
+			!(arg1 instanceof Visit) && (typeof arg1 === 'object' || typeof arg2 === 'function');
+		if (legacyOrder) {
+			// Legacy positioning: arguments in second or handler passed in third place
+			return [undefined, arg1 as HookArguments<T>, arg2 as HookDefaultHandler<T>];
+		} else {
+			// Default positioning: visit passed in as first argument
+			return [arg1, arg2 as HookArguments<T>, arg3];
+		}
 	}
 
 	/**

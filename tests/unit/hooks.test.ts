@@ -1,7 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
 import Swup from '../../src/Swup.js';
 import { Hooks, type HookHandler, type HookDefaultHandler } from '../../src/modules/Hooks.js';
-import { type Visit } from '../../src/modules/Visit.js';
+import { type Visit, createVisit } from '../../src/modules/Visit.js';
+
+class SwupWithPublicVisitMethods extends Swup {
+	public createVisit = createVisit;
+}
+
+const swup = new SwupWithPublicVisitMethods();
 
 describe('Hook registry', () => {
 	it('should add handlers', () => {
@@ -284,17 +290,46 @@ describe('Hook registry', () => {
 		expect(listener).toBeCalledWith(visit, undefined, undefined);
 	});
 
-	it('should trigger event handler with visit and args', async () => {
-		const swup = new Swup();
+	it('should trigger hook handler with visit and args', async () => {
+		const swup = new SwupWithPublicVisitMethods();
 		const handler: HookHandler<'history:popstate'> = vi.fn();
+		const visit = swup.visit;
+		const customVisit = swup.createVisit({ to: '' });
+		const args = { event: new PopStateEvent('') };
+
+		swup.hooks.on('history:popstate', handler);
+
+		// Trigger with specific visit
+		await swup.hooks.call('history:popstate', visit, args);
+		await swup.hooks.call('history:popstate', customVisit, args);
+		// Trigger without specific visit, i.e. with fallback visit
+		await swup.hooks.call('history:popstate', undefined, args);
+
+		expect(handler).toBeCalledTimes(3);
+		expect(handler).toHaveBeenNthCalledWith(1, visit, args, undefined);
+		expect(handler).toHaveBeenNthCalledWith(2, customVisit, args, undefined);
+		expect(handler).toHaveBeenNthCalledWith(3, visit, args, undefined);
+	});
+
+	it('should accept legacy argument position', async () => {
+		const swup = new SwupWithPublicVisitMethods();
+		const handler: HookHandler<'history:popstate'> = vi.fn();
+		const defaultHandler: HookDefaultHandler<'history:popstate'> = vi.fn();
 		const visit = swup.visit;
 		const args = { event: new PopStateEvent('') };
 
 		swup.hooks.on('history:popstate', handler);
-		await swup.hooks.call('history:popstate', undefined, args);
 
-		expect(handler).toBeCalledTimes(1);
-		expect(handler).toBeCalledWith(visit, args, undefined);
+		// Trigger with legacy argument position
+		await swup.hooks.call('history:popstate', args, defaultHandler);
+		await swup.hooks.call('history:popstate', args);
+
+		expect(handler).toBeCalledTimes(2);
+		expect(handler).toHaveBeenNthCalledWith(1, visit, args, undefined);
+		expect(handler).toHaveBeenNthCalledWith(2, visit, args, undefined);
+
+		expect(defaultHandler).toBeCalledTimes(1);
+		expect(defaultHandler).toHaveBeenNthCalledWith(1, visit, args, undefined);
 	});
 });
 
