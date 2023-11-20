@@ -7,6 +7,8 @@ import type { Visit } from './Visit.js';
  * Render the next page: replace the content and update scroll position.
  */
 export const renderPage = async function (this: Swup, visit: Visit, page: PageData): Promise<void> {
+	if (visit.aborted) return;
+
 	const { url, html } = page;
 
 	this.classes.remove('is-leaving');
