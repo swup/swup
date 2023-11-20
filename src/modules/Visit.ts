@@ -2,27 +2,8 @@ import type Swup from '../Swup.js';
 import type { Options } from '../Swup.js';
 import type { HistoryAction, HistoryDirection } from './navigate.js';
 
-/** An object holding details about the current visit. */
-export interface Visit {
-	/** A unique ID to identify this visit */
-	id: number;
-	/** The previous page, about to leave */
-	from: VisitFrom;
-	/** The next page, about to enter */
-	to: VisitTo;
-	/** The content containers, about to be replaced */
-	containers: Options['containers'];
-	/** Information about animated page transitions */
-	animation: VisitAnimation;
-	/** What triggered this visit */
-	trigger: VisitTrigger;
-	/** Cache behavior for this visit */
-	cache: VisitCache;
-	/** Browser history behavior on this visit */
-	history: VisitHistory;
-	/** Scroll behavior on this visit */
-	scroll: VisitScroll;
-}
+/** See below for the class Visit {} definition */
+// export interface Visit {}
 
 export interface VisitFrom {
 	/** The URL of the previous page */
@@ -89,39 +70,60 @@ export interface VisitInitOptions {
 	event?: Event;
 }
 
-/** Create a new visit object. */
-export function createVisit(
-	this: Swup,
-	{ to, from = this.currentPageUrl, hash, el, event }: VisitInitOptions
-): Visit {
-	return {
-		id: Math.random(),
-		from: { url: from },
-		to: { url: to, hash },
-		containers: this.options.containers,
-		animation: {
+/** An object holding details about the current visit. */
+export class Visit {
+	/** A unique ID to identify this visit */
+	id: number;
+	/** The previous page, about to leave */
+	from: VisitFrom;
+	/** The next page, about to enter */
+	to: VisitTo;
+	/** The content containers, about to be replaced */
+	containers: Options['containers'];
+	/** Information about animated page transitions */
+	animation: VisitAnimation;
+	/** What triggered this visit */
+	trigger: VisitTrigger;
+	/** Cache behavior for this visit */
+	cache: VisitCache;
+	/** Browser history behavior on this visit */
+	history: VisitHistory;
+	/** Scroll behavior on this visit */
+	scroll: VisitScroll;
+
+	constructor(swup: Swup, options: VisitInitOptions) {
+		const { to, from = swup.currentPageUrl, hash, el, event } = options;
+		Object.assign(this, createVisit.call(swup, options));
+
+		this.id = Math.random();
+		this.from = { url: from };
+		this.to = { url: to, hash };
+		this.containers = swup.options.containers;
+		this.animation = {
 			animate: true,
 			wait: false,
 			name: undefined,
-			scope: this.options.animationScope,
-			selector: this.options.animationSelector
-		},
-		trigger: {
-			el,
-			event
-		},
-		cache: {
-			read: this.options.cache,
-			write: this.options.cache
-		},
-		history: {
+			scope: swup.options.animationScope,
+			selector: swup.options.animationSelector
+		};
+		this.trigger = { el, event };
+		this.cache = {
+			read: swup.options.cache,
+			write: swup.options.cache
+		};
+		this.history = {
 			action: 'push',
 			popstate: false,
 			direction: undefined
-		},
-		scroll: {
+		};
+		this.scroll = {
 			reset: true,
 			target: undefined
-		}
-	};
+		};
+	}
+}
+
+/** Create a new visit object. */
+export function createVisit(this: Swup, options: VisitInitOptions): Visit {
+	return new Visit(this, options);
 }
