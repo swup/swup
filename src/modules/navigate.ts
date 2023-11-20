@@ -43,8 +43,11 @@ export function navigate(
 	}
 
 	const { url: to, hash } = Location.fromUrl(url);
-	this.visit = this.createVisit({ ...init, to, hash });
-	this.performNavigation(options);
+
+	this.queue(() => {
+		this.visit = this.createVisit({ ...init, to, hash });
+		this.performNavigation(options);
+	});
 }
 
 /**
@@ -168,6 +171,11 @@ export async function performNavigation(
 		// 	this.visit = this.createVisit({ to: undefined });
 		// }
 		this.navigating = false;
+		/**
+		 * Run eventually queued function
+		 */
+		this.onVisitEnd?.();
+		this.onVisitEnd = undefined;
 	} catch (error) {
 		// Return early if error is undefined or signals an aborted request
 		if (!error || (error as FetchError)?.aborted) {

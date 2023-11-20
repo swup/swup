@@ -98,6 +98,11 @@ export default class Swup {
 	protected clickDelegate?: DelegateEventUnsubscribe;
 	/** Navigation status */
 	protected navigating: boolean = false;
+	/**
+	 * Run anytime a visit ends
+	 * @private
+	 */
+	protected onVisitEnd?: () => void;
 
 	/** Install a plugin */
 	use = use;
@@ -372,5 +377,19 @@ export default class Swup {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Queues a function to be called either
+	 *
+	 * - right now, if currently not navigating
+	 * - the next time the current visit ends
+	 */
+	protected queue(fn: () => void): void {
+		if (this.navigating) {
+			this.onVisitEnd = fn;
+			return;
+		}
+		fn();
 	}
 }
