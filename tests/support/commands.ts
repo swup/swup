@@ -52,14 +52,14 @@ export function expectNotToHaveClasses(locator: Locator, classNames: string) {
 	return expectToHaveClasses(locator, classNames, true);
 }
 
-export async function expectPageReload(page: Page, action: (page: Page) => Promise<void> | void, not: boolean = false) {
+export async function expectPageReload(page: Page, action: (page: Page) => Promise<unknown> | unknown, not: boolean = false) {
 	const origin = () => page.evaluate(() => Math.floor(window.performance.timeOrigin));
 	const before = await origin();
 	await action(page);
 	await expect(async () => expect(await origin()).not.toBe(before)).toPass();
 }
 
-export function expectNoPageReload(page: Page, action: (page: Page) => Promise<void> | void) {
+export function expectNoPageReload(page: Page, action: (page: Page) => Promise<unknown> | unknown) {
 	return expectPageReload(page, action, true);
 }
 
