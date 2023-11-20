@@ -296,14 +296,11 @@ export default class Swup {
 				} else {
 					// Without hash: scroll to top or load/reload page
 					this.hooks.callSync('link:self', visit, undefined, () => {
-						switch (this.options.linkToSelf) {
-							case 'navigate':
-								this.performNavigation(visit);
-								return;
-							case 'scroll':
-							default:
-								updateHistoryRecord(url);
-								return this.scrollToContent(visit);
+						if (this.options.linkToSelf === 'navigate') {
+							this.performNavigation(visit);
+						} else {
+							updateHistoryRecord(url);
+							this.scrollToContent(visit);
 						}
 					});
 				}
