@@ -5,7 +5,6 @@ import Swup from './Swup.js';
 import type { Options } from './Swup.js';
 import type { CacheData } from './modules/Cache.js';
 import type { PageData } from './modules/fetchPage.js';
-import { VisitState } from './modules/Visit.js';
 import type {
 	Visit,
 	VisitFrom,
@@ -30,7 +29,6 @@ import type { Plugin } from './modules/plugins.js';
 export default Swup;
 export * from './helpers.js';
 export * from './utils.js';
-export { VisitState };
 export type {
 	Swup,
 	Options,

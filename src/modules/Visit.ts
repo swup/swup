@@ -70,6 +70,7 @@ export interface VisitInitOptions {
 	event?: Event;
 }
 
+/** @internal */
 export enum VisitState {
 	CREATED = 1,
 	QUEUED,
@@ -86,7 +87,7 @@ export enum VisitState {
 export class Visit {
 	/** A unique ID to identify this visit */
 	id: number;
-	/** The current state of this visit */
+	/** The current state of this visit @internal */
 	state: VisitState;
 	/** The previous page, about to leave */
 	from: VisitFrom;
@@ -135,17 +136,19 @@ export class Visit {
 			target: undefined
 		};
 	}
-
+	/** @internal */
 	advance(state: VisitState) {
 		if (this.state <= state) {
 			this.state = state;
 		}
 	}
 
+	/** @internal */
 	abort() {
 		this.state = VisitState.ABORTED;
 	}
 
+	/** Was the visit aborted? */
 	get aborted(): boolean {
 		return this.state === VisitState.ABORTED;
 	}
