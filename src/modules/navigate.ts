@@ -65,15 +65,15 @@ export async function performNavigation(
 	options: NavigationOptions & FetchOptions = {}
 ): Promise<void> {
 	if (this.navigating) {
-		if (this.visit.state >= VisitState.loaded) {
+		if (this.visit.state >= VisitState.LOADED) {
 			// Currently navigating and content already loaded? Finish and queue
-			visit.state = VisitState.queued;
+			visit.state = VisitState.QUEUED;
 			this.onVisitEnd = () => this.performNavigation(visit, options);
 			return;
 		} else {
 			// Currently navigating and content not loaded? Abort running visit
 			await this.hooks.call('visit:abort', this.visit, undefined);
-			this.visit.state = VisitState.aborted;
+			this.visit.state = VisitState.ABORTED;
 		}
 	}
 
@@ -116,7 +116,7 @@ export async function performNavigation(
 
 	try {
 		await this.hooks.call('visit:start', visit, undefined);
-		visit.state = VisitState.started;
+		visit.state = VisitState.STARTED;
 
 		// Begin loading page
 		const pagePromise = this.hooks.call(
@@ -138,7 +138,7 @@ export async function performNavigation(
 		);
 
 		// Mark as loaded when finished
-		pagePromise.then(() => visit.advance(VisitState.loaded));
+		pagePromise.then(() => visit.advance(VisitState.LOADED));
 
 		// Create/update history record if this is not a popstate call or leads to the same URL
 		if (!visit.history.popstate) {
@@ -166,7 +166,7 @@ export async function performNavigation(
 		// perform the actual transition: animate and replace content
 		await this.hooks.call('visit:transition', visit, undefined, async () => {
 			// Start leave animation
-			visit.advance(VisitState.leaving);
+			visit.advance(VisitState.LEAVING);
 			const animationPromise = this.animatePageOut(visit);
 
 			// Wait for page to load and leave animation to finish
@@ -176,7 +176,7 @@ export async function performNavigation(
 			await this.renderPage(visit, page);
 
 			// Wait for enter animation
-			visit.advance(VisitState.entering);
+			visit.advance(VisitState.ENTERING);
 			await this.animatePageIn(visit);
 
 			return true;
@@ -184,7 +184,7 @@ export async function performNavigation(
 
 		// Finalize visit
 		await this.hooks.call('visit:end', visit, undefined, () => this.classes.clear());
-		visit.state = VisitState.completed;
+		visit.state = VisitState.COMPLETED;
 		this.navigating = false;
 
 		// Reset visit info after finish?
@@ -200,11 +200,11 @@ export async function performNavigation(
 	} catch (error) {
 		// Return early if error is undefined or signals an aborted request
 		if (!error || (error as FetchError)?.aborted) {
-			visit.state = VisitState.aborted;
+			visit.state = VisitState.ABORTED;
 			return;
 		}
 
-		visit.state = VisitState.failed;
+		visit.state = VisitState.FAILED;
 
 		// Log to console as we swallow almost all hook errors
 		console.error(error);
