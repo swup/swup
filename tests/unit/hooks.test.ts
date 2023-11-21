@@ -314,19 +314,23 @@ describe('Hook registry', () => {
 	it('should accept legacy argument position', async () => {
 		const swup = new SwupWithPublicVisitMethods();
 		const handler: HookHandler<'history:popstate'> = vi.fn();
+		const enableHandler: HookHandler<'enable'> = vi.fn();
 		const defaultHandler: HookDefaultHandler<'history:popstate'> = vi.fn();
 		const visit = swup.visit;
 		const args = { event: new PopStateEvent('') };
 
 		swup.hooks.on('history:popstate', handler);
+		swup.hooks.on('enable', enableHandler);
 
 		// Trigger with legacy argument position
 		await swup.hooks.call('history:popstate', args, defaultHandler);
 		await swup.hooks.call('history:popstate', args);
+		await swup.hooks.call('enable', undefined, undefined);
 
 		expect(handler).toBeCalledTimes(2);
 		expect(handler).toHaveBeenNthCalledWith(1, visit, args, undefined);
 		expect(handler).toHaveBeenNthCalledWith(2, visit, args, undefined);
+		expect(enableHandler).toHaveBeenNthCalledWith(1, visit, undefined, undefined);
 
 		expect(defaultHandler).toBeCalledTimes(1);
 		expect(defaultHandler).toHaveBeenNthCalledWith(1, visit, args, undefined);
@@ -338,7 +342,10 @@ describe('Types', () => {
 		const swup = new Swup();
 
 		// @ts-expect-no-error
-		swup.hooks.on('history:popstate', (visit: Visit, { event }: { event: PopStateEvent }) => {});
+		swup.hooks.on(
+			'history:popstate',
+			(visit: Visit, { event }: { event: PopStateEvent }) => {}
+		);
 		// @ts-expect-no-error
 		await swup.hooks.call('history:popstate', undefined, { event: new PopStateEvent('') });
 
@@ -349,6 +356,9 @@ describe('Types', () => {
 		// @ts-expect-error: event arg must be PopStateEvent
 		await swup.hooks.call('history:popstate', undefined, { event: new MouseEvent('') });
 		// @ts-expect-error: handler arg must be optional: handler?
-		swup.hooks.replace('enable', (visit: Visit, args: undefined, handler: HookDefaultHandler<'enable'>) => {});
+		swup.hooks.replace(
+			'enable',
+			(visit: Visit, args: undefined, handler: HookDefaultHandler<'enable'>) => {}
+		);
 	});
 });
