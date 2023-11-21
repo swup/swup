@@ -10,15 +10,10 @@ export const animatePageOut = async function (this: Swup, visit: Visit) {
 		this.classes.add('is-changing', 'is-leaving', 'is-animating');
 	});
 
-	await this.hooks.call(
-		'animation:out:await',
-		visit,
-		{ skip: false },
-		async (visit, { skip }) => {
-			if (skip) return;
-			await this.awaitAnimations({ selector: visit.animation.selector });
-		}
-	);
+	await this.hooks.call('animation:out:await', visit, { skip: false }, (visit, { skip }) => {
+		if (skip) return;
+		return this.awaitAnimations({ selector: visit.animation.selector });
+	});
 
 	await this.hooks.call('animation:out:end', visit, undefined);
 };

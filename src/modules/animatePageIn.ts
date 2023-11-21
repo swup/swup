@@ -14,9 +14,9 @@ export const animatePageIn = async function (this: Swup, visit: Visit) {
 		'animation:in:await',
 		visit,
 		{ skip: false },
-		async (visit, { skip }) => {
+		(visit, { skip }) => {
 			if (skip) return;
-			await this.awaitAnimations({ selector: visit.animation.selector });
+			return this.awaitAnimations({ selector: visit.animation.selector });
 		}
 	);
 
