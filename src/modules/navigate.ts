@@ -1,7 +1,13 @@
 import type Swup from '../Swup.js';
-import { createHistoryRecord, updateHistoryRecord, getCurrentUrl, Location } from '../helpers.js';
 import { FetchError, type FetchOptions, type PageData } from './fetchPage.js';
 import { type VisitInitOptions, type Visit, VisitState } from './Visit.js';
+import {
+	createHistoryRecord,
+	updateHistoryRecord,
+	getCurrentUrl,
+	Location,
+	classify
+} from '../helpers.js';
 
 export type HistoryAction = 'push' | 'replace';
 export type HistoryDirection = 'forwards' | 'backwards';
@@ -154,6 +160,14 @@ export async function performNavigation(
 
 		this.currentPageUrl = getCurrentUrl();
 
+		// Mark visit type with classes on html element
+		if (visit.history.popstate) {
+			this.classes.add('is-popstate');
+		}
+		if (visit.animation.name) {
+			this.classes.add(`to-${classify(visit.animation.name)}`);
+		}
+
 		// Wait for page before starting to animate out?
 		if (visit.animation.wait) {
 			const { html } = await pagePromise;
@@ -163,8 +177,31 @@ export async function performNavigation(
 		// Check if failed/aborted in the meantime
 		if (visit.done) return;
 
-		// perform the actual transition: animate and replace content
+		// Perform the actual transition: animate and replace content
 		await this.hooks.call('visit:transition', visit, undefined, async () => {
+			visit.advance(VisitState.LEAVING);
+			if (this.options.native && visit.animation.animate) {
+				const page = await pagePromise;
+				if (!visit.done) {
+					visit.advance(VisitState.ENTERING);
+					await document.startViewTransition(() => this.renderPage(visit, page)).finished;
+				}
+			} else if (visit.animation.animate) {
+				const animationPromise = this.animatePageOut(visit);
+				const [page] = await Promise.all([pagePromise, animationPromise]);
+				if (!visit.done) {
+					await this.renderPage(visit, page);
+					visit.advance(VisitState.ENTERING);
+					await this.animatePageIn(visit);
+				}
+			} else {
+				await this.hooks.call('animation:skip', undefined);
+				const page = await pagePromise;
+				if (!visit.done) {
+					await this.renderPage(visit, page);
+				}
+			}
+
 			// Start leave animation
 			visit.advance(VisitState.LEAVING);
 			const animationPromise = this.animatePageOut(visit);

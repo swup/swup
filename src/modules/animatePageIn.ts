@@ -7,8 +7,6 @@ import type { Visit } from './Visit.js';
  * @returns Promise<void>
  */
 export const animatePageIn = async function (this: Swup, visit: Visit) {
-	if (!visit.animation.animate) return;
-
 	// Check if failed/aborted in the meantime
 	if (visit.done) return;
 

@@ -1,5 +1,4 @@
 import type Swup from '../Swup.js';
-import { classify } from '../helpers.js';
 import type { Visit } from './Visit.js';
 
 /**
@@ -7,19 +6,8 @@ import type { Visit } from './Visit.js';
  * @returns Promise<void>
  */
 export const animatePageOut = async function (this: Swup, visit: Visit) {
-	if (!visit.animation.animate) {
-		await this.hooks.call('animation:skip', visit, undefined);
-		return;
-	}
-
-	await this.hooks.call('animation:out:start', visit, undefined, (visit) => {
+	await this.hooks.call('animation:out:start', visit, undefined, () => {
 		this.classes.add('is-changing', 'is-leaving', 'is-animating');
-		if (visit.history.popstate) {
-			this.classes.add('is-popstate');
-		}
-		if (visit.animation.name) {
-			this.classes.add(`to-${classify(visit.animation.name)}`);
-		}
 	});
 
 	await this.hooks.call(
