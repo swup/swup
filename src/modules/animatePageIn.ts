@@ -9,6 +9,8 @@ import type { Visit } from './Visit.js';
 export const animatePageIn = async function (this: Swup, visit: Visit) {
 	if (!visit.animation.animate) return;
 
+	if (visit.aborted) return;
+
 	const animation = this.hooks.call(
 		'animation:in:await',
 		visit,

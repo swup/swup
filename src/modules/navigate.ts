@@ -182,6 +182,9 @@ export async function performNavigation(
 			return true;
 		});
 
+		// Check if aborted in the meantime
+		if (visit.aborted) return;
+
 		// Finalize visit
 		await this.hooks.call('visit:end', visit, undefined, () => this.classes.clear());
 		visit.state = VisitState.COMPLETED;

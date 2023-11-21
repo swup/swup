@@ -12,8 +12,6 @@ export const animatePageOut = async function (this: Swup, visit: Visit) {
 		return;
 	}
 
-	if (visit.aborted) return;
-
 	await this.hooks.call('animation:out:start', visit, undefined, (visit) => {
 		this.classes.add('is-changing', 'is-leaving', 'is-animating');
 		if (visit.history.popstate) {
