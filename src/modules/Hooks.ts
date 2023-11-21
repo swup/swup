@@ -429,7 +429,7 @@ export class Hooks {
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
 			if (once) this.off(hook, handler);
-			if (visit?.aborted) continue;
+			if (visit?.done) continue;
 			const result = await runAsPromise(handler, [
 				visit || this.swup.visit,
 				args,
@@ -456,7 +456,7 @@ export class Hooks {
 		visit: Visit | undefined,
 		args: HookArguments<T>
 	): (ReturnType<HookDefaultHandler<T>> | unknown)[] {
-		if (visit?.aborted) return [];
+		if (visit?.done) return [];
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
 			if (once) this.off(hook, handler);
@@ -548,7 +548,7 @@ export class Hooks {
 		visit: Visit | undefined,
 		args?: HookArguments<T>
 	): void {
-		if (visit?.aborted) return;
+		if (visit?.done) return;
 
 		const detail: HookEventDetail = { hook, args, visit: visit || this.swup.visit };
 		document.dispatchEvent(

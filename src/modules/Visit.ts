@@ -148,6 +148,11 @@ export class Visit {
 		this.state = VisitState.ABORTED;
 	}
 
+	/** Is this visit done, i.e. completed, failed, or aborted? */
+	get done(): boolean {
+		return this.state >= VisitState.COMPLETED;
+	}
+
 	/** Was the visit aborted? */
 	get aborted(): boolean {
 		return this.state === VisitState.ABORTED;

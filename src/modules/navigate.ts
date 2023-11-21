@@ -160,8 +160,8 @@ export async function performNavigation(
 			visit.to.html = html;
 		}
 
-		// Check if aborted in the meantime
-		if (visit.aborted) return;
+		// Check if failed/aborted in the meantime
+		if (visit.done) return;
 
 		// perform the actual transition: animate and replace content
 		await this.hooks.call('visit:transition', visit, undefined, async () => {
@@ -182,8 +182,8 @@ export async function performNavigation(
 			return true;
 		});
 
-		// Check if aborted in the meantime
-		if (visit.aborted) return;
+		// Check if failed/aborted in the meantime
+		if (visit.done) return;
 
 		// Finalize visit
 		await this.hooks.call('visit:end', visit, undefined, () => this.classes.clear());
