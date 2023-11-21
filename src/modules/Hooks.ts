@@ -428,8 +428,8 @@ export class Hooks {
 	): Promise<Awaited<ReturnType<HookDefaultHandler<T>>> | unknown[]> {
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
-			if (once) this.off(hook, handler);
 			if (visit?.done) continue;
+			if (once) this.off(hook, handler);
 			const result = await runAsPromise(handler, [
 				visit || this.swup.visit,
 				args,
@@ -458,8 +458,8 @@ export class Hooks {
 	): (ReturnType<HookDefaultHandler<T>> | unknown)[] {
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
-			if (once) this.off(hook, handler);
 			if (visit?.done) continue;
+			if (once) this.off(hook, handler);
 			const result = (handler as HookDefaultHandler<T>)(visit || this.swup.visit, args, defaultHandler); // prettier-ignore
 			results.push(result);
 			if (isPromise(result)) {
