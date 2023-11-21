@@ -72,6 +72,7 @@ export async function performNavigation(
 			return;
 		} else {
 			// Currently navigating and content not loaded? Abort running visit
+			await this.hooks.call('visit:abort', this.visit, undefined);
 			this.visit.state = VisitState.aborted;
 		}
 	}
