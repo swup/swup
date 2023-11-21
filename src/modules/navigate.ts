@@ -187,11 +187,6 @@ export async function performNavigation(
 		visit.state = VisitState.COMPLETED;
 		this.navigating = false;
 
-		// Reset visit info after finish?
-		// if (visit.to && this.isSameResolvedUrl(visit.to.url, requestedUrl)) {
-		// 	this.visit = this.createVisit({ to: undefined });
-		// }
-
 		/** Run eventually queued function */
 		if (this.onVisitEnd) {
 			this.onVisitEnd();

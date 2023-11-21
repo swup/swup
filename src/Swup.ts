@@ -356,11 +356,6 @@ export default class Swup {
 			visit.scroll.reset = true;
 		}
 
-		// Does this even do anything?
-		// if (!hash) {
-		// 	event.preventDefault();
-		// }
-
 		this.hooks.callSync('history:popstate', visit, { event }, () => {
 			this.performNavigation(visit);
 		});
