@@ -201,22 +201,6 @@ export async function performNavigation(
 					await this.renderPage(visit, page);
 				}
 			}
-
-			// Start leave animation
-			visit.advance(VisitState.LEAVING);
-			const animationPromise = this.animatePageOut(visit);
-
-			// Wait for page to load and leave animation to finish
-			const [page] = await Promise.all([pagePromise, animationPromise]);
-
-			// Render page: replace content and scroll to top/fragment
-			await this.renderPage(visit, page);
-
-			// Wait for enter animation
-			visit.advance(VisitState.ENTERING);
-			await this.animatePageIn(visit);
-
-			return true;
 		});
 
 		// Check if failed/aborted in the meantime
