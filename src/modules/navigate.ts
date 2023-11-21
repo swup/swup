@@ -65,7 +65,7 @@ export async function performNavigation(
 	options: NavigationOptions & FetchOptions = {}
 ): Promise<void> {
 	if (this.navigating) {
-		if (this.visit.state >= VisitState.LOADED) {
+		if (this.visit.state >= VisitState.ENTERING) {
 			// Currently navigating and content already loaded? Finish and queue
 			visit.state = VisitState.QUEUED;
 			this.onVisitEnd = () => this.performNavigation(visit, options);
