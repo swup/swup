@@ -399,9 +399,9 @@ export class Hooks {
 		arg2: HookArguments<T> | HookDefaultHandler<T>,
 		arg3?: HookDefaultHandler<T>
 	): [Visit | undefined, HookArguments<T>, HookDefaultHandler<T> | undefined] {
-		const legacyOrder =
+		const isLegacyOrder =
 			!(arg1 instanceof Visit) && (typeof arg1 === 'object' || typeof arg2 === 'function');
-		if (legacyOrder) {
+		if (isLegacyOrder) {
 			// Legacy positioning: arguments in second or handler passed in third place
 			return [undefined, arg1 as HookArguments<T>, arg2 as HookDefaultHandler<T>];
 		} else {
