@@ -428,15 +428,14 @@ export class Hooks {
 	): Promise<Awaited<ReturnType<HookDefaultHandler<T>>> | unknown[]> {
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
+			if (once) this.off(hook, handler);
+			if (visit?.aborted) continue;
 			const result = await runAsPromise(handler, [
 				visit || this.swup.visit,
 				args,
 				defaultHandler
 			]);
 			results.push(result);
-			if (once) {
-				this.off(hook, handler);
-			}
 		}
 		return results;
 	}
@@ -457,8 +456,10 @@ export class Hooks {
 		visit: Visit | undefined,
 		args: HookArguments<T>
 	): (ReturnType<HookDefaultHandler<T>> | unknown)[] {
+		if (visit?.aborted) return [];
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
+			if (once) this.off(hook, handler);
 			const result = (handler as HookDefaultHandler<T>)(visit || this.swup.visit, args, defaultHandler); // prettier-ignore
 			results.push(result);
 			if (isPromise(result)) {
@@ -466,9 +467,6 @@ export class Hooks {
 					`Promise returned from handler for synchronous hook '${hook}'.` +
 						`Swup will not wait for it to resolve.`
 				);
-			}
-			if (once) {
-				this.off(hook, handler);
 			}
 		}
 		return results;
@@ -550,6 +548,8 @@ export class Hooks {
 		visit: Visit | undefined,
 		args?: HookArguments<T>
 	): void {
+		if (visit?.aborted) return;
+
 		const detail: HookEventDetail = { hook, args, visit: visit || this.swup.visit };
 		document.dispatchEvent(
 			new CustomEvent<HookEventDetail>(`swup:any`, { detail, bubbles: true })
