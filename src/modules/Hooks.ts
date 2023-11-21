@@ -456,10 +456,10 @@ export class Hooks {
 		visit: Visit | undefined,
 		args: HookArguments<T>
 	): (ReturnType<HookDefaultHandler<T>> | unknown)[] {
-		if (visit?.done) return [];
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
 			if (once) this.off(hook, handler);
+			if (visit?.done) continue;
 			const result = (handler as HookDefaultHandler<T>)(visit || this.swup.visit, args, defaultHandler); // prettier-ignore
 			results.push(result);
 			if (isPromise(result)) {
