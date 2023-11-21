@@ -136,14 +136,18 @@ export class Visit {
 		};
 	}
 
-	get aborted(): boolean {
-		return this.state === VisitState.aborted;
-	}
-
 	advance(state: VisitState) {
 		if (this.state <= state) {
 			this.state = state;
 		}
+	}
+
+	abort() {
+		this.state = VisitState.aborted;
+	}
+
+	get aborted(): boolean {
+		return this.state === VisitState.aborted;
 	}
 }
 
