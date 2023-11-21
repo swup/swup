@@ -106,7 +106,7 @@ export async function fetchPage(
 	const page = { url: finalUrl, html };
 
 	// Write to cache for safe methods and non-redirects
-	if (visit?.cache.write && (!options.method || options.method === 'GET') && url === finalUrl) {
+	if (visit.cache.write && (!options.method || options.method === 'GET') && url === finalUrl) {
 		this.cache.set(page.url, page);
 	}
 
