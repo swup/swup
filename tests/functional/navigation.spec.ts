@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-import { clickOnLink, delayRequest, expectToBeAt } from '../support/commands.js';
-import { navigateWithSwup } from '../support/swup.js';
+import { clickOnLink, delayRequest, expectToBeAt, sleep } from '../support/commands.js';
+import { navigateWithSwup, waitForSwup } from '../support/swup.js';
 
 test.describe('navigation', () => {
 	test.beforeEach(async ({ page }) => {
@@ -40,12 +40,41 @@ test.describe('navigation', () => {
 		await expectToBeAt(page, '/page-3.html', 'Page 3');
 	});
 
-	test("ignore multiple rapid clicks on the same link", async ({ page }) => {
+	test('ignores consecutive clicks on the same link', async ({ page }) => {
 		await page.evaluate(() => {
 			window.data = { clickCount: 0 }
 			window._swup.hooks.on('link:click', () => (window.data.clickCount += 1));
 		});
 		await clickOnLink(page, '/page-2.html', { clickCount: 3 });
 		expect(await page.evaluate(() => window.data.clickCount)).toBe(1);
+	});
+
+	test('handles rapid consecutive navigations', async ({ page }) => {
+		await page.goto('/rapid-navigation/page-1.html');
+		await waitForSwup(page);
+		const expected = [
+			'visit:start',
+			'animation:out:start',
+			'fetch:request',
+			'page:load',
+			'animation:out:await',
+			'animation:out:end',
+			'content:replace',
+			'scroll:top',
+			'content:scroll',
+			'page:view',
+			'animation:in:start',
+			'animation:in:await',
+			'animation:in:end',
+			'visit:transition',
+			'visit:end'
+		];
+		await clickOnLink(page, '/rapid-navigation/page-2.html');
+		await sleep(300);
+		await clickOnLink(page, '/rapid-navigation/page-2.html');
+
+		await page.waitForSelector('html:not([aria-busy=true])');
+		const received = await page.evaluate(() => window.data.received);
+		expect(received).toEqual(expected);
 	});
 });
