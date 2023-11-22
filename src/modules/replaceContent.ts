@@ -53,5 +53,6 @@ export const replaceContent = function (
 		}
 	});
 
+	// Return true if all containers were replaced
 	return replaced.length === containers.length;
 };
