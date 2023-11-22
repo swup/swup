@@ -125,26 +125,21 @@ export async function performNavigation(
 		visit.state = VisitState.STARTED;
 
 		// Begin loading page
-		const pagePromise = this.hooks.call(
-			'page:load',
-			visit,
-			{ options },
-			async (visit, args) => {
-				// Read from cache
-				let cachedPage: PageData | undefined;
-				if (visit.cache.read) {
-					cachedPage = this.cache.get(visit.to.url);
-				}
-
-				args.page = cachedPage || (await this.fetchPage(visit.to.url, args.options));
-				args.cache = !!cachedPage;
-
-				return args.page;
+		const page = this.hooks.call('page:load', visit, { options }, async (visit, args) => {
+			// Read from cache
+			let cachedPage: PageData | undefined;
+			if (visit.cache.read) {
+				cachedPage = this.cache.get(visit.to.url);
 			}
-		);
+
+			args.page = cachedPage || (await this.fetchPage(visit.to.url, args.options));
+			args.cache = !!cachedPage;
+
+			return args.page;
+		});
 
 		// Mark as loaded when finished
-		pagePromise.then(() => visit.advance(VisitState.LOADED));
+		page.then(() => visit.advance(VisitState.LOADED));
 
 		// Create/update history record if this is not a popstate call or leads to the same URL
 		if (!visit.history.popstate) {
@@ -169,8 +164,8 @@ export async function performNavigation(
 		}
 
 		// Wait for page before starting to animate out?
-		if (visit.animation.wait) {
-			const { html } = await pagePromise;
+		if (visit.animation.wait || this.options.native) {
+			const { html } = await page;
 			visit.to.html = html;
 		}
 
@@ -179,28 +174,26 @@ export async function performNavigation(
 
 		// Perform the actual transition: animate and replace content
 		await this.hooks.call('visit:transition', visit, undefined, async () => {
-			visit.advance(VisitState.LEAVING);
-			if (this.options.native && visit.animation.animate) {
-				const page = await pagePromise;
-				if (!visit.done) {
-					visit.advance(VisitState.ENTERING);
-					await document.startViewTransition(() => this.renderPage(visit, page)).finished;
-				}
-			} else if (visit.animation.animate) {
-				const animationPromise = this.animatePageOut(visit);
-				const [page] = await Promise.all([pagePromise, animationPromise]);
-				if (!visit.done) {
-					await this.renderPage(visit, page);
-					visit.advance(VisitState.ENTERING);
-					await this.animatePageIn(visit);
-				}
-			} else {
+			// Simplest case: no animation, just await page and render
+			if (!visit.animation.animate) {
 				await this.hooks.call('animation:skip', undefined);
-				const page = await pagePromise;
-				if (!visit.done) {
-					await this.renderPage(visit, page);
-				}
+				await this.renderPage(visit, await page);
+				return;
 			}
+
+			// Native mode: use ViewTransition API
+			if (this.options.native) {
+				await document.startViewTransition(
+					async () => await this.renderPage(visit, await page)
+				).finished;
+				return;
+			}
+
+			// Default: CSS animations
+			visit.advance(VisitState.LEAVING);
+			await this.animatePageOut(visit);
+			await this.renderPage(visit, await page);
+			await this.animatePageIn(visit);
 		});
 
 		// Check if failed/aborted in the meantime

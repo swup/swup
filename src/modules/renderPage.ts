@@ -1,7 +1,7 @@
 import { updateHistoryRecord, getCurrentUrl, classify } from '../helpers.js';
 import type Swup from '../Swup.js';
 import type { PageData } from './fetchPage.js';
-import type { Visit } from './Visit.js';
+import { VisitState, type Visit } from './Visit.js';
 
 /**
  * Render the next page: replace the content and update scroll position.
@@ -9,6 +9,8 @@ import type { Visit } from './Visit.js';
 export const renderPage = async function (this: Swup, visit: Visit, page: PageData): Promise<void> {
 	// Check if failed/aborted in the meantime
 	if (visit.done) return;
+
+	visit.advance(VisitState.ENTERING);
 
 	const { url, html } = page;
 
