@@ -168,8 +168,8 @@ export default class Swup {
 			console.warn('Promise is not supported');
 			return false;
 		}
-		if (this.options.native && !('startViewTransition' in document)) {
-			this.log('Native View Transitions are not supported');
+		if (this.options.native && !document.startViewTransition) {
+			this.log('Native ViewTransitions are not supported');
 			this.options.native = false;
 		}
 		return true;
