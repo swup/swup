@@ -7,7 +7,7 @@ import type { Visit } from './Visit.js';
  */
 export const animatePageOut = async function (this: Swup, visit: Visit) {
 	await this.hooks.call('animation:out:start', visit, undefined, () => {
-		this.classes.add('is-changing', 'is-leaving', 'is-animating');
+		this.classes.add('is-changing', 'is-animating', 'is-leaving');
 	});
 
 	await this.hooks.call('animation:out:await', visit, { skip: false }, (visit, { skip }) => {

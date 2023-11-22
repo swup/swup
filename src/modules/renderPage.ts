@@ -39,7 +39,7 @@ export const renderPage = async function (this: Swup, visit: Visit, page: PageDa
 		}
 		if (visit.animation.animate) {
 			// Make sure to add these classes to new containers as well
-			this.classes.add('is-animating', 'is-changing', 'is-rendering');
+			this.classes.add('is-changing', 'is-animating', 'is-rendering');
 			if (visit.animation.name) {
 				this.classes.add(`to-${classify(visit.animation.name)}`);
 			}

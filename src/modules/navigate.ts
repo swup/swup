@@ -155,7 +155,7 @@ export async function performNavigation(
 
 		this.currentPageUrl = getCurrentUrl();
 
-		// Mark visit type with classes on html element
+		// Mark visit type with classes
 		if (visit.history.popstate) {
 			this.classes.add('is-popstate');
 		}
