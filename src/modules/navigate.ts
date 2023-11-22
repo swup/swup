@@ -183,9 +183,10 @@ export async function performNavigation(
 
 			// Native mode: use ViewTransition API
 			if (this.options.native) {
-				await document.startViewTransition(
+				const transition = document.startViewTransition(
 					async () => await this.renderPage(visit, await page)
-				).finished;
+				);
+				await transition.finished;
 				return;
 			}
 
