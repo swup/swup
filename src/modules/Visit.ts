@@ -71,17 +71,20 @@ export interface VisitInitOptions {
 }
 
 /** @internal */
-export enum VisitState {
-	CREATED = 1,
-	QUEUED,
-	STARTED,
-	LEAVING,
-	LOADED,
-	ENTERING,
-	COMPLETED,
-	ABORTED,
-	FAILED
-}
+export const VisitState = {
+	CREATED: 1,
+	QUEUED: 2,
+	STARTED: 3,
+	LEAVING: 4,
+	LOADED: 5,
+	ENTERING: 6,
+	COMPLETED: 7,
+	ABORTED: 8,
+	FAILED: 9
+} as const;
+
+/** @internal */
+export type VisitState = (typeof VisitState)[keyof typeof VisitState];
 
 /** An object holding details about the current visit. */
 export class Visit {
