@@ -21,7 +21,7 @@ import { renderPage } from './modules/renderPage.js';
 import { use, unuse, findPlugin, type Plugin } from './modules/plugins.js';
 import { isSameResolvedUrl, resolveUrl } from './modules/resolveUrl.js';
 import { nextTick } from './utils.js';
-import { type HistoryState } from './helpers/createHistoryRecord.js';
+import { type HistoryState } from './helpers/history.js';
 
 /** Options for customizing swup's behavior. */
 export type Options = {
