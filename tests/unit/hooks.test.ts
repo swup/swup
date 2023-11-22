@@ -1,7 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
 import Swup from '../../src/Swup.js';
 import { Hooks, type HookHandler, type HookDefaultHandler } from '../../src/modules/Hooks.js';
-import { type Visit } from '../../src/modules/Visit.js';
+import { type Visit, createVisit } from '../../src/modules/Visit.js';
+
+class SwupWithPublicVisitMethods extends Swup {
+	public createVisit = createVisit;
+}
+
+const swup = new SwupWithPublicVisitMethods();
 
 describe('Hook registry', () => {
 	it('should add handlers', () => {
@@ -37,14 +43,14 @@ describe('Hook registry', () => {
 		swup.hooks.on('enable', handler1);
 		swup.hooks.on('enable', handler2);
 
-		await swup.hooks.call('enable', undefined);
+		await swup.hooks.call('enable', undefined, undefined);
 
 		expect(handler1).toBeCalledTimes(1);
 		expect(handler2).toBeCalledTimes(1);
 
 		swup.hooks.off('enable', handler2);
 
-		await swup.hooks.call('enable', undefined);
+		await swup.hooks.call('enable', undefined, undefined);
 
 		expect(handler1).toBeCalledTimes(2);
 		expect(handler2).toBeCalledTimes(1);
@@ -60,14 +66,14 @@ describe('Hook registry', () => {
 
 		expect(unregister1).toBeTypeOf('function');
 
-		await swup.hooks.call('enable', undefined);
+		await swup.hooks.call('enable', undefined, undefined);
 
 		expect(handler1).toBeCalledTimes(1);
 		expect(handler2).toBeCalledTimes(1);
 
 		unregister2();
 
-		await swup.hooks.call('enable', undefined);
+		await swup.hooks.call('enable', undefined, undefined);
 
 		expect(handler1).toBeCalledTimes(2);
 		expect(handler2).toBeCalledTimes(1);
@@ -79,7 +85,7 @@ describe('Hook registry', () => {
 
 		swup.hooks.on('enable', handler);
 
-		await swup.hooks.call('enable', undefined);
+		await swup.hooks.call('enable', undefined, undefined);
 
 		expect(handler).toBeCalledTimes(1);
 	});
@@ -90,8 +96,8 @@ describe('Hook registry', () => {
 
 		swup.hooks.on('enable', handler, { once: true });
 
-		await swup.hooks.call('enable', undefined, () => {});
-		await swup.hooks.call('enable', undefined, () => {});
+		await swup.hooks.call('enable', undefined, undefined, () => {});
+		await swup.hooks.call('enable', undefined, undefined, () => {});
 
 		expect(handler).toBeCalledTimes(1);
 	});
@@ -102,8 +108,8 @@ describe('Hook registry', () => {
 
 		swup.hooks.once('enable', handler);
 
-		await swup.hooks.call('enable', undefined, () => {});
-		await swup.hooks.call('enable', undefined, () => {});
+		await swup.hooks.call('enable', undefined, undefined, () => {});
+		await swup.hooks.call('enable', undefined, undefined, () => {});
 
 		expect(handler).toBeCalledTimes(1);
 	});
@@ -112,7 +118,7 @@ describe('Hook registry', () => {
 		const swup = new Swup();
 		const handler = vi.fn();
 
-		await swup.hooks.call('enable', undefined, handler);
+		await swup.hooks.call('enable', undefined, undefined, handler);
 
 		expect(handler).toBeCalledTimes(1);
 	});
@@ -140,7 +146,7 @@ describe('Hook registry', () => {
 		swup.hooks.on('disable', handlers.normal, {});
 		swup.hooks.on('disable', handlers.after, {});
 
-		await swup.hooks.call('disable', undefined, handlers.original);
+		await swup.hooks.call('disable', undefined, undefined, handlers.original);
 
 		expect(called).toEqual(['before', 'original', 'normal', 'after']);
 	});
@@ -187,7 +193,7 @@ describe('Hook registry', () => {
 		swup.hooks.on('disable', handlers['8'], { priority: 4 });
 		swup.hooks.on('disable', handlers['7'], { priority: 4 });
 
-		await swup.hooks.call('disable', undefined, handlers['5']);
+		await swup.hooks.call('disable', undefined, undefined, handlers['5']);
 
 		expect(called).toEqual([2, 1, 5, 9, 4, 3, 8, 7]);
 	});
@@ -199,7 +205,7 @@ describe('Hook registry', () => {
 
 		swup.hooks.on('enable', customHandler, { replace: true });
 
-		await swup.hooks.call('enable', undefined, defaultHandler);
+		await swup.hooks.call('enable', undefined, undefined, defaultHandler);
 
 		expect(defaultHandler).toBeCalledTimes(0);
 		expect(customHandler).toBeCalledTimes(1);
@@ -214,7 +220,7 @@ describe('Hook registry', () => {
 		swup.hooks.on('enable', firstHandler, { replace: true });
 		swup.hooks.on('enable', secondHandler, { replace: true });
 
-		await swup.hooks.call('enable', undefined, defaultHandler);
+		await swup.hooks.call('enable', undefined, undefined, defaultHandler);
 
 		expect(defaultHandler).toBeCalledTimes(0);
 		expect(firstHandler).toBeCalledTimes(0);
@@ -230,7 +236,7 @@ describe('Hook registry', () => {
 
 		swup.hooks.on('enable', customHandler, { replace: true });
 
-		await swup.hooks.call('enable', undefined, defaultHandler);
+		await swup.hooks.call('enable', undefined, undefined, defaultHandler);
 
 		expect(customHandler).toBeCalledWith(visit, undefined, defaultHandler);
 		expect(defaultHandler).toBeCalledWith(visit, args);
@@ -243,7 +249,7 @@ describe('Hook registry', () => {
 
 		swup.hooks.on('enable', customHandler, { replace: true });
 
-		const result = await swup.hooks.call('enable', undefined, defaultHandler);
+		const result = await swup.hooks.call('enable', undefined, undefined, defaultHandler);
 
 		expect(result).toEqual('foo');
 	});
@@ -263,7 +269,7 @@ describe('Hook registry', () => {
 		swup.hooks.on('enable', secondHandler, { replace: true });
 		swup.hooks.on('enable', thirdHandler, { replace: true });
 
-		await swup.hooks.call('enable', undefined, defaultHandler);
+		await swup.hooks.call('enable', undefined, undefined, defaultHandler);
 
 		expect(defaultHandler).toBeCalledWith(visit, args1);
 		expect(thirdHandler).toBeCalledWith(visit, undefined, expect.any(Function));
@@ -279,22 +285,55 @@ describe('Hook registry', () => {
 
 		swup.hooks.on('enable', listener);
 
-		await swup.hooks.call('enable', undefined, handler);
+		await swup.hooks.call('enable', undefined, undefined, handler);
 
 		expect(listener).toBeCalledWith(visit, undefined, undefined);
 	});
 
-	it('should trigger event handler with visit and args', async () => {
-		const swup = new Swup();
+	it('should trigger hook handler with visit and args', async () => {
+		const swup = new SwupWithPublicVisitMethods();
 		const handler: HookHandler<'history:popstate'> = vi.fn();
+		const visit = swup.visit;
+		const customVisit = swup.createVisit({ to: '' });
+		const args = { event: new PopStateEvent('') };
+
+		swup.hooks.on('history:popstate', handler);
+
+		// Trigger with specific visit
+		await swup.hooks.call('history:popstate', visit, args);
+		await swup.hooks.call('history:popstate', customVisit, args);
+		// Trigger without specific visit, i.e. with fallback visit
+		await swup.hooks.call('history:popstate', undefined, args);
+
+		expect(handler).toBeCalledTimes(3);
+		expect(handler).toHaveBeenNthCalledWith(1, visit, args, undefined);
+		expect(handler).toHaveBeenNthCalledWith(2, customVisit, args, undefined);
+		expect(handler).toHaveBeenNthCalledWith(3, visit, args, undefined);
+	});
+
+	it('should accept legacy argument position', async () => {
+		const swup = new SwupWithPublicVisitMethods();
+		const handler: HookHandler<'history:popstate'> = vi.fn();
+		const enableHandler: HookHandler<'enable'> = vi.fn();
+		const defaultHandler: HookDefaultHandler<'history:popstate'> = vi.fn();
 		const visit = swup.visit;
 		const args = { event: new PopStateEvent('') };
 
 		swup.hooks.on('history:popstate', handler);
-		await swup.hooks.call('history:popstate', args);
+		swup.hooks.on('enable', enableHandler);
 
-		expect(handler).toBeCalledTimes(1);
-		expect(handler).toBeCalledWith(visit, args, undefined);
+		// Trigger with legacy argument position
+		await swup.hooks.call('history:popstate', args, defaultHandler);
+		await swup.hooks.call('history:popstate', args);
+		await swup.hooks.call('enable', undefined, undefined);
+
+		expect(handler).toBeCalledTimes(2);
+		expect(handler).toHaveBeenNthCalledWith(1, visit, args, undefined);
+		expect(handler).toHaveBeenNthCalledWith(2, visit, args, undefined);
+		expect(enableHandler).toHaveBeenNthCalledWith(1, visit, undefined, undefined);
+
+		expect(defaultHandler).toBeCalledTimes(1);
+		expect(defaultHandler).toHaveBeenNthCalledWith(1, visit, args, undefined);
 	});
 });
 
@@ -303,17 +342,23 @@ describe('Types', () => {
 		const swup = new Swup();
 
 		// @ts-expect-no-error
-		swup.hooks.on('history:popstate', (visit: Visit, { event }: { event: PopStateEvent }) => {});
+		swup.hooks.on(
+			'history:popstate',
+			(visit: Visit, { event }: { event: PopStateEvent }) => {}
+		);
 		// @ts-expect-no-error
-		await swup.hooks.call('history:popstate', { event: new PopStateEvent('') });
+		await swup.hooks.call('history:popstate', undefined, { event: new PopStateEvent('') });
 
 		// @ts-expect-error: first arg must be Visit object
 		swup.hooks.on('history:popstate', ({ event: MouseEvent }) => {});
 		// @ts-expect-error: event arg must be PopStateEvent
 		swup.hooks.on('history:popstate', (visit: Visit, { event }: { event: MouseEvent }) => {});
 		// @ts-expect-error: event arg must be PopStateEvent
-		await swup.hooks.call('history:popstate', { event: new MouseEvent('') });
+		await swup.hooks.call('history:popstate', undefined, { event: new MouseEvent('') });
 		// @ts-expect-error: handler arg must be optional: handler?
-		swup.hooks.replace('enable', (visit: Visit, args: undefined, handler: HookDefaultHandler<'enable'>) => {});
+		swup.hooks.replace(
+			'enable',
+			(visit: Visit, args: undefined, handler: HookDefaultHandler<'enable'>) => {}
+		);
 	});
 });

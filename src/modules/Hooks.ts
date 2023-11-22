@@ -2,7 +2,7 @@ import type { DelegateEvent } from 'delegate-it';
 
 import type Swup from '../Swup.js';
 import { isPromise, runAsPromise } from '../utils.js';
-import type { Visit } from './Visit.js';
+import { Visit } from './Visit.js';
 import type { FetchOptions, PageData } from './fetchPage.js';
 
 export interface HookDefinitions {
@@ -33,11 +33,12 @@ export interface HookDefinitions {
 	'scroll:anchor': { hash: string; options: ScrollIntoViewOptions };
 	'visit:start': undefined;
 	'visit:transition': undefined;
+	'visit:abort': undefined;
 	'visit:end': undefined;
 }
 
 export interface HookReturnValues {
-	'content:scroll': Promise<boolean>;
+	'content:scroll': Promise<boolean> | boolean;
 	'fetch:request': Promise<Response>;
 	'page:load': Promise<PageData>;
 	'scroll:top': boolean;
@@ -154,6 +155,7 @@ export class Hooks {
 		'scroll:anchor',
 		'visit:start',
 		'visit:transition',
+		'visit:abort',
 		'visit:end'
 	];
 
@@ -333,20 +335,29 @@ export class Hooks {
 	 * Trigger a hook asynchronously, executing its default handler and all registered handlers.
 	 * Will execute all handlers in order and `await` any `Promise`s they return.
 	 * @param hook Name of the hook to trigger
+	 * @param visit The visit object this hook belongs to
 	 * @param args Arguments to pass to the handler
 	 * @param defaultHandler A default implementation of this hook to execute
 	 * @returns The resolved return value of the executed default handler
 	 */
+	// Overload: default order of arguments
+	async call<T extends HookName>(hook: T, visit: Visit | undefined, args: HookArguments<T>, defaultHandler?: HookDefaultHandler<T>): Promise<Awaited<ReturnType<HookDefaultHandler<T>>>>; // prettier-ignore
+	// Overload: legacy order of arguments, with visit missing
+	async call<T extends HookName>(hook: T, args: HookArguments<T>, defaultHandler?: HookDefaultHandler<T>): Promise<Awaited<ReturnType<HookDefaultHandler<T>>>>; // prettier-ignore
+	// Implementation
 	async call<T extends HookName>(
 		hook: T,
-		args: HookArguments<T>,
-		defaultHandler?: HookDefaultHandler<T>
+		arg1: Visit | HookArguments<T>,
+		arg2: HookArguments<T> | HookDefaultHandler<T>,
+		arg3?: HookDefaultHandler<T>
 	): Promise<Awaited<ReturnType<HookDefaultHandler<T>>>> {
+		const [visit, args, defaultHandler] = this.parseCallArgs(hook, arg1, arg2, arg3);
+
 		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
-		await this.run(before, args);
-		const [result] = await this.run(handler, args);
-		await this.run(after, args);
-		this.dispatchDomEvent(hook, args);
+		await this.run(before, visit, args);
+		const [result] = await this.run(handler, visit, args);
+		await this.run(after, visit, args);
+		this.dispatchDomEvent(hook, visit, args);
 		return result;
 	}
 
@@ -354,21 +365,49 @@ export class Hooks {
 	 * Trigger a hook synchronously, executing its default handler and all registered handlers.
 	 * Will execute all handlers in order, but will **not** `await` any `Promise`s they return.
 	 * @param hook Name of the hook to trigger
+	 * @param visit The visit object this hook belongs to
 	 * @param args Arguments to pass to the handler
 	 * @param defaultHandler A default implementation of this hook to execute
 	 * @returns The (possibly unresolved) return value of the executed default handler
 	 */
+	// Overload: default order of arguments
+	callSync<T extends HookName>(hook: T, visit: Visit | undefined, args: HookArguments<T>, defaultHandler?: HookDefaultHandler<T>): ReturnType<HookDefaultHandler<T>>; // prettier-ignore
+	// Overload: legacy order of arguments, with visit missing
+	callSync<T extends HookName>(hook: T, args: HookArguments<T>, defaultHandler?: HookDefaultHandler<T>): ReturnType<HookDefaultHandler<T>>; // prettier-ignore
+	// Implementation
 	callSync<T extends HookName>(
 		hook: T,
-		args: HookArguments<T>,
-		defaultHandler?: HookDefaultHandler<T>
+		arg1: Visit | HookArguments<T>,
+		arg2: HookArguments<T> | HookDefaultHandler<T>,
+		arg3?: HookDefaultHandler<T>
 	): ReturnType<HookDefaultHandler<T>> {
+		const [visit, args, defaultHandler] = this.parseCallArgs(hook, arg1, arg2, arg3);
 		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
-		this.runSync(before, args);
-		const [result] = this.runSync(handler, args);
-		this.runSync(after, args);
-		this.dispatchDomEvent(hook, args);
+		this.runSync(before, visit, args);
+		const [result] = this.runSync(handler, visit, args);
+		this.runSync(after, visit, args);
+		this.dispatchDomEvent(hook, visit, args);
 		return result;
+	}
+
+	/**
+	 * Parse the call arguments for call() and callSync() to allow legacy argument order.
+	 */
+	protected parseCallArgs<T extends HookName>(
+		hook: T,
+		arg1: Visit | HookArguments<T> | undefined,
+		arg2: HookArguments<T> | HookDefaultHandler<T>,
+		arg3?: HookDefaultHandler<T>
+	): [Visit | undefined, HookArguments<T>, HookDefaultHandler<T> | undefined] {
+		const isLegacyOrder =
+			!(arg1 instanceof Visit) && (typeof arg1 === 'object' || typeof arg2 === 'function');
+		if (isLegacyOrder) {
+			// Legacy positioning: arguments in second or handler passed in third place
+			return [undefined, arg1 as HookArguments<T>, arg2 as HookDefaultHandler<T>];
+		} else {
+			// Default positioning: visit passed in as first argument
+			return [arg1, arg2 as HookArguments<T>, arg3];
+		}
 	}
 
 	/**
@@ -378,21 +417,25 @@ export class Hooks {
 	 */
 
 	// Overload: running HookDefaultHandler: expect HookDefaultHandler return type
-	protected async run<T extends HookName>(registrations: HookRegistration<T, HookDefaultHandler<T>>[], args: HookArguments<T>): Promise<Awaited<ReturnType<HookDefaultHandler<T>>>[]>; // prettier-ignore
+	protected async run<T extends HookName>(registrations: HookRegistration<T, HookDefaultHandler<T>>[], visit: Visit | undefined, args: HookArguments<T>): Promise<Awaited<ReturnType<HookDefaultHandler<T>>>[]>; // prettier-ignore
 	// Overload:  running user handler: expect no specific type
-	protected async run<T extends HookName>(registrations: HookRegistration<T>[], args: HookArguments<T>): Promise<unknown[]>; // prettier-ignore
+	protected async run<T extends HookName>(registrations: HookRegistration<T>[], visit: Visit | undefined, args: HookArguments<T>): Promise<unknown[]>; // prettier-ignore
 	// Implementation
 	protected async run<T extends HookName, R extends HookRegistration<T>[]>(
 		registrations: R,
+		visit: Visit | undefined,
 		args: HookArguments<T>
 	): Promise<Awaited<ReturnType<HookDefaultHandler<T>>> | unknown[]> {
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
-			const result = await runAsPromise(handler, [this.swup.visit, args, defaultHandler]);
+			if (visit?.done) continue;
+			if (once) this.off(hook, handler);
+			const result = await runAsPromise(handler, [
+				visit || this.swup.visit,
+				args,
+				defaultHandler
+			]);
 			results.push(result);
-			if (once) {
-				this.off(hook, handler);
-			}
 		}
 		return results;
 	}
@@ -404,26 +447,26 @@ export class Hooks {
 	 */
 
 	// Overload: running HookDefaultHandler: expect HookDefaultHandler return type
-	protected runSync<T extends HookName>(registrations: HookRegistration<T, HookDefaultHandler<T>>[], args: HookArguments<T> ): ReturnType<HookDefaultHandler<T>>[]; // prettier-ignore
+	protected runSync<T extends HookName>(registrations: HookRegistration<T, HookDefaultHandler<T>>[], visit: Visit | undefined, args: HookArguments<T> ): ReturnType<HookDefaultHandler<T>>[]; // prettier-ignore
 	// Overload: running user handler: expect no specific type
-	protected runSync<T extends HookName>(registrations: HookRegistration<T>[], args: HookArguments<T>): unknown[]; // prettier-ignore
+	protected runSync<T extends HookName>(registrations: HookRegistration<T>[], visit: Visit | undefined, args: HookArguments<T>): unknown[]; // prettier-ignore
 	// Implementation
 	protected runSync<T extends HookName, R extends HookRegistration<T>[]>(
 		registrations: R,
+		visit: Visit | undefined,
 		args: HookArguments<T>
 	): (ReturnType<HookDefaultHandler<T>> | unknown)[] {
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
-			const result = (handler as HookDefaultHandler<T>)(this.swup.visit, args, defaultHandler); // prettier-ignore
+			if (visit?.done) continue;
+			if (once) this.off(hook, handler);
+			const result = (handler as HookDefaultHandler<T>)(visit || this.swup.visit, args, defaultHandler); // prettier-ignore
 			results.push(result);
 			if (isPromise(result)) {
 				console.warn(
 					`Promise returned from handler for synchronous hook '${hook}'.` +
 						`Swup will not wait for it to resolve.`
 				);
-			}
-			if (once) {
-				this.off(hook, handler);
 			}
 		}
 		return results;
@@ -500,8 +543,14 @@ export class Hooks {
 	 * Dispatch a custom event on the `document` for a hook. Prefixed with `swup:`
 	 * @param hook Name of the hook.
 	 */
-	protected dispatchDomEvent<T extends HookName>(hook: T, args?: HookArguments<T>): void {
-		const detail: HookEventDetail = { hook, args, visit: this.swup.visit };
+	protected dispatchDomEvent<T extends HookName>(
+		hook: T,
+		visit: Visit | undefined,
+		args?: HookArguments<T>
+	): void {
+		if (visit?.done) return;
+
+		const detail: HookEventDetail = { hook, args, visit: visit || this.swup.visit };
 		document.dispatchEvent(
 			new CustomEvent<HookEventDetail>(`swup:any`, { detail, bubbles: true })
 		);

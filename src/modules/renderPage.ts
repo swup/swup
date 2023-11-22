@@ -1,11 +1,15 @@
 import { updateHistoryRecord, getCurrentUrl, classify } from '../helpers.js';
 import type Swup from '../Swup.js';
 import type { PageData } from './fetchPage.js';
+import type { Visit } from './Visit.js';
 
 /**
  * Render the next page: replace the content and update scroll position.
  */
-export const renderPage = async function (this: Swup, page: PageData): Promise<void> {
+export const renderPage = async function (this: Swup, visit: Visit, page: PageData): Promise<void> {
+	// Check if failed/aborted in the meantime
+	if (visit.done) return;
+
 	const { url, html } = page;
 
 	this.classes.remove('is-leaving');
@@ -14,19 +18,19 @@ export const renderPage = async function (this: Swup, page: PageData): Promise<v
 	if (!this.isSameResolvedUrl(getCurrentUrl(), url)) {
 		updateHistoryRecord(url);
 		this.currentPageUrl = getCurrentUrl();
-		this.visit.to.url = this.currentPageUrl;
+		visit.to.url = this.currentPageUrl;
 	}
 
 	// only add for animated page loads
-	if (this.visit.animation.animate) {
+	if (visit.animation.animate) {
 		this.classes.add('is-rendering');
 	}
 
 	// save html into visit context for easier retrieval
-	this.visit.to.html = html;
+	visit.to.html = html;
 
 	// replace content: allow handlers and plugins to overwrite paga data and containers
-	await this.hooks.call('content:replace', { page }, (visit, { page }) => {
+	await this.hooks.call('content:replace', visit, { page }, (visit, { page }) => {
 		const success = this.replaceContent(page, { containers: visit.containers });
 		if (!success) {
 			throw new Error('[swup] Container mismatch, aborting');
@@ -41,10 +45,9 @@ export const renderPage = async function (this: Swup, page: PageData): Promise<v
 	});
 
 	// scroll into view: either anchor or top of page
-	// @ts-ignore: not returning a promise is intentional to allow users to pause in handler
-	await this.hooks.call('content:scroll', undefined, () => {
-		return this.scrollToContent();
+	await this.hooks.call('content:scroll', visit, undefined, () => {
+		return this.scrollToContent(visit);
 	});
 
-	await this.hooks.call('page:view', { url: this.currentPageUrl, title: document.title });
+	await this.hooks.call('page:view', visit, { url: this.currentPageUrl, title: document.title });
 };

@@ -149,9 +149,9 @@ describe('Types', () => {
 		const cache = new Cache(swup);
 
 		// @ts-expect-no-error
-		swup.hooks.on('history:popstate', (visit: Visit, { event: PopStateEvent }) => {});
+		swup.hooks.on('history:popstate', (visit: Visit, { event }: { event: PopStateEvent }) => {});
 		// @ts-expect-no-error
-		await swup.hooks.call('history:popstate', { event: new PopStateEvent('') });
+		await swup.hooks.call('history:popstate', swup.visit, { event: new PopStateEvent('') });
 
 		try {
 			// @ts-expect-error

@@ -24,6 +24,7 @@ export async function pushSwupHistoryState(page: Page, url: string, data: Record
 
 export async function expectSwupToHaveCacheEntry(page: Page, url: string) {
 	const entry = await page.evaluate((url) => window._swup.cache.get(url), url);
+	expect(entry).toBeTruthy();
 	expect(entry).toHaveProperty('url', url);
 }
 

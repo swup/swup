@@ -1,7 +1,7 @@
 import type Swup from '../Swup.js';
 import { createHistoryRecord, updateHistoryRecord, getCurrentUrl, Location } from '../helpers.js';
 import { FetchError, type FetchOptions, type PageData } from './fetchPage.js';
-import type { VisitInitOptions } from './Visit.js';
+import { type VisitInitOptions, type Visit, VisitState } from './Visit.js';
 
 export type HistoryAction = 'push' | 'replace';
 export type HistoryDirection = 'forwards' | 'backwards';
@@ -43,8 +43,9 @@ export function navigate(
 	}
 
 	const { url: to, hash } = Location.fromUrl(url);
-	this.visit = this.createVisit({ ...init, to, hash });
-	this.performNavigation(options);
+
+	const visit = this.createVisit({ ...init, to, hash });
+	this.performNavigation(visit, options);
 }
 
 /**
@@ -60,12 +61,24 @@ export function navigate(
  */
 export async function performNavigation(
 	this: Swup,
+	visit: Visit,
 	options: NavigationOptions & FetchOptions = {}
 ): Promise<void> {
+	if (this.navigating) {
+		if (this.visit.state >= VisitState.ENTERING) {
+			// Currently navigating and content already loaded? Finish and queue
+			visit.state = VisitState.QUEUED;
+			this.onVisitEnd = () => this.performNavigation(visit, options);
+			return;
+		} else {
+			// Currently navigating and content not loaded? Abort running visit
+			await this.hooks.call('visit:abort', this.visit, undefined);
+			this.visit.state = VisitState.ABORTED;
+		}
+	}
+
 	this.navigating = true;
-	// Save this localy to a) allow ignoring the visit if a new one was started in the meantime
-	// and b) avoid unintended modifications to any newer visits
-	const visit = this.visit;
+	this.visit = visit;
 
 	const { el } = visit.trigger;
 	options.referrer = options.referrer || this.currentPageUrl;
@@ -102,21 +115,30 @@ export async function performNavigation(
 	delete options.cache;
 
 	try {
-		await this.hooks.call('visit:start', undefined);
+		await this.hooks.call('visit:start', visit, undefined);
+		visit.state = VisitState.STARTED;
 
 		// Begin loading page
-		const pagePromise = this.hooks.call('page:load', { options }, async (visit, args) => {
-			// Read from cache
-			let cachedPage: PageData | undefined;
-			if (visit.cache.read) {
-				cachedPage = this.cache.get(visit.to.url);
+		const pagePromise = this.hooks.call(
+			'page:load',
+			visit,
+			{ options },
+			async (visit, args) => {
+				// Read from cache
+				let cachedPage: PageData | undefined;
+				if (visit.cache.read) {
+					cachedPage = this.cache.get(visit.to.url);
+				}
+
+				args.page = cachedPage || (await this.fetchPage(visit.to.url, args.options));
+				args.cache = !!cachedPage;
+
+				return args.page;
 			}
+		);
 
-			args.page = cachedPage || (await this.fetchPage(visit.to.url, args.options));
-			args.cache = !!cachedPage;
-
-			return args.page;
-		});
+		// Mark as loaded when finished
+		pagePromise.then(() => visit.advance(VisitState.LOADED));
 
 		// Create/update history record if this is not a popstate call or leads to the same URL
 		if (!visit.history.popstate) {
@@ -138,41 +160,49 @@ export async function performNavigation(
 			visit.to.html = html;
 		}
 
+		// Check if failed/aborted in the meantime
+		if (visit.done) return;
+
 		// perform the actual transition: animate and replace content
-		await this.hooks.call('visit:transition', undefined, async (visit) => {
+		await this.hooks.call('visit:transition', visit, undefined, async () => {
 			// Start leave animation
-			const animationPromise = this.animatePageOut();
+			visit.advance(VisitState.LEAVING);
+			const animationPromise = this.animatePageOut(visit);
 
 			// Wait for page to load and leave animation to finish
 			const [page] = await Promise.all([pagePromise, animationPromise]);
 
-			// Abort if another visit was started in the meantime
-			if (visit.id !== this.visit.id) {
-				return false;
-			}
-
 			// Render page: replace content and scroll to top/fragment
-			await this.renderPage(page);
+			await this.renderPage(visit, page);
 
 			// Wait for enter animation
-			await this.animatePageIn();
+			visit.advance(VisitState.ENTERING);
+			await this.animatePageIn(visit);
 
 			return true;
 		});
 
-		// Finalize visit
-		await this.hooks.call('visit:end', undefined, () => this.classes.clear());
+		// Check if failed/aborted in the meantime
+		if (visit.done) return;
 
-		// Reset visit info after finish?
-		// if (visit.to && this.isSameResolvedUrl(visit.to.url, requestedUrl)) {
-		// 	this.visit = this.createVisit({ to: undefined });
-		// }
+		// Finalize visit
+		await this.hooks.call('visit:end', visit, undefined, () => this.classes.clear());
+		visit.state = VisitState.COMPLETED;
 		this.navigating = false;
+
+		/** Run eventually queued function */
+		if (this.onVisitEnd) {
+			this.onVisitEnd();
+			this.onVisitEnd = undefined;
+		}
 	} catch (error) {
 		// Return early if error is undefined or signals an aborted request
 		if (!error || (error as FetchError)?.aborted) {
+			visit.state = VisitState.ABORTED;
 			return;
 		}
+
+		visit.state = VisitState.FAILED;
 
 		// Log to console as we swallow almost all hook errors
 		console.error(error);

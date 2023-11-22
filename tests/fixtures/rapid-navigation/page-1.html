@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Rapid Navigation Page 1</title>
+		<link rel="stylesheet" href="/assets/main.css" />
+		<style>
+			html.is-changing .transition-default {
+				transition-property: opacity, transform;
+				transition-duration: 600ms;
+			}
+			html.is-animating .transition-default {
+				opacity: 0;
+				transform: translateY(-50px);
+			}
+			html.is-leaving .transition-default {
+				transform: translateY(50px);
+			}
+		</style>
+		<script src="/dist/Swup.umd.js"></script>
+	</head>
+	<body>
+		<header class="header">
+			<ul>
+				<li><a href="/rapid-navigation/page-1.html" data-testid="link-to-page-1">Page 1</a></li>
+				<li><a href="/rapid-navigation/page-2.html" data-testid="link-to-page-2">Page 2</a></li>
+				<li><a href="/rapid-navigation/page-3.html" data-testid="link-to-page-3">Page 3</a></li>
+			</ul>
+		</header>
+		<main id="swup" class="wrapper transition-default" data-testid="container">
+			<div class="wrapper-inner">
+				<h1>Rapid Navigation Page 1</h1>
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias assumenda
+					consectetur consequatur enim esse incidunt iusto, magnam maxime molestias nisi
+					perferendis perspiciatis quibusdam quos repellat, vel veniam vero voluptate
+					voluptatem.
+				</p>
+			</div>
+		</main>
+		<script>
+			window.data = { received: [] };
+
+			window._swup = new Swup({ cache: false });
+
+			window.addEventListener('swup:any', (event) => {
+				const { hook } = event.detail;
+
+				if (hook === 'visit:start') {
+					document.documentElement.setAttribute('aria-busy', 'true');
+					window.data.received = [];
+				}
+
+				window.data.received.push(hook);
+
+				if (hook === 'visit:end') {
+					document.documentElement.removeAttribute('aria-busy');
+				}
+			});
+		</script>
+	</body>
+</html>
