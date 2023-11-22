@@ -164,7 +164,7 @@ export async function performNavigation(
 		}
 
 		// Wait for page before starting to animate out?
-		if (visit.animation.wait || this.options.native) {
+		if (visit.animation.wait) {
 			const { html } = await page;
 			visit.to.html = html;
 		}
@@ -174,26 +174,23 @@ export async function performNavigation(
 
 		// Perform the actual transition: animate and replace content
 		await this.hooks.call('visit:transition', visit, undefined, async () => {
-			// Simplest case: no animation, just await page and render
+			// No animation? Just await page and render
 			if (!visit.animation.animate) {
 				await this.hooks.call('animation:skip', undefined);
 				await this.renderPage(visit, await page);
 				return;
 			}
 
-			// Native mode: use ViewTransition API
-			if (this.options.native) {
-				const transition = document.startViewTransition(
-					async () => await this.renderPage(visit, await page)
-				);
-				await transition.finished;
-				return;
-			}
-
-			// Default: CSS animations
+			// Animate page out, render page, animate page in
 			visit.advance(VisitState.LEAVING);
 			await this.animatePageOut(visit);
-			await this.renderPage(visit, await page);
+			if (document.startViewTransition) {
+				await document.startViewTransition(
+					async () => await this.renderPage(visit, await page)
+				).finished;
+			} else {
+				await this.renderPage(visit, await page);
+			}
 			await this.animatePageIn(visit);
 		});
 

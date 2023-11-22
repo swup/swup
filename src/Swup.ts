@@ -41,8 +41,6 @@ export type Options = {
 	linkSelector: string;
 	/** How swup handles links to the same page. Default: `scroll` */
 	linkToSelf: NavigationToSelfAction;
-	/** Enable native animations using the View Transitions API. */
-	native: boolean;
 	/** Plugins to register on startup. */
 	plugins: Plugin[];
 	/** Custom headers sent along with fetch requests. */
@@ -64,7 +62,6 @@ const defaults: Options = {
 	ignoreVisit: (url, { el } = {}) => !!el?.closest('[data-no-swup]'),
 	linkSelector: 'a[href]',
 	linkToSelf: 'scroll',
-	native: false,
 	plugins: [],
 	resolveUrl: (url) => url,
 	requestHeaders: {
@@ -168,10 +165,6 @@ export default class Swup {
 			console.warn('Promise is not supported');
 			return false;
 		}
-		if (this.options.native && !document.startViewTransition) {
-			this.log('Native ViewTransitions are not supported');
-			this.options.native = false;
-		}
 		return true;
 	}
 
@@ -207,8 +200,10 @@ export default class Swup {
 
 		// Trigger enable hook
 		await this.hooks.call('enable', undefined, undefined, () => {
-			// Add swup-enabled class to html tag
-			document.documentElement.classList.add('swup-enabled');
+			const html = document.documentElement;
+			html.classList.add('swup-enabled');
+			html.classList.toggle('swup-native', !!document.startViewTransition);
+			html.classList.toggle('swup-not-native', !document.startViewTransition);
 		});
 	}
 
@@ -228,8 +223,10 @@ export default class Swup {
 
 		// trigger disable hook
 		await this.hooks.call('disable', undefined, undefined, () => {
-			// remove swup-enabled class from html tag
-			document.documentElement.classList.remove('swup-enabled');
+			const html = document.documentElement;
+			html.classList.remove('swup-enabled');
+			html.classList.remove('swup-native');
+			html.classList.remove('swup-not-native');
 		});
 
 		// remove handlers
