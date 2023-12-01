@@ -66,6 +66,6 @@ test.describe('visit object', () => {
 		await page.evaluate(() => {
 			window._swup.hooks.on('visit:start', (visit) => visit.animation.animate = false);
 		});
-		await expectSwupAnimationDuration(page, 0);
+		await expectSwupAnimationDuration(page, { out: 0, in: 0 });
 	});
 });
