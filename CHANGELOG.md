@@ -26,7 +26,7 @@
 
 ## [4.4.0] - 2023-09-19
 
-- Enable experimental `ViewTransition` support
+- Enable experimental View Transition support
 - Extend test coverage to all major browsers
 - Add request timeout option
 
