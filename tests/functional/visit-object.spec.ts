@@ -24,6 +24,18 @@ test.describe('visit object', () => {
 		});
 	});
 
+	test('has the next page html', async ({ page }) => {
+		await page.evaluate(() => {
+			window._swup.hooks.before('content:replace', (visit) => {
+				window.data = visit.to.html;
+			});
+		});
+		await navigateWithSwup(page, '/page-2.html');
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+		await page.waitForSelector('html:not(.is-changing)');
+		expect(await page.evaluate(() => window.data)).toMatch(/<h1>Page 2/i);
+	});
+
 	test('passes along click trigger and event', async ({ page }) => {
 		await page.evaluate(() => {
 			window.data = { el: null, event: null };
