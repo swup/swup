@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.5.0] - 2023-12-XX
+## [4.5.0] - 2023-12
 
 - Support View Transitions API in new native mode
 - Handle rapid link clicks to achieve smooth transitions
