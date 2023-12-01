@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import type Swup from '../../src/Swup.js';
+import { expectNumberWithTolerance } from './commands.js';
 
 declare global {
 	interface Window {
@@ -34,16 +35,10 @@ export async function expectSwupToHaveCacheEntries(page: Page, urls: string[]) {
 	}
 }
 
-export async function expectSwupAnimationDuration(page: Page, duration: number) {
-	const tolerance = duration ? 0.25 : 0; // 25% plus/minus
-	const expectedRange: [number, number] = [
-		duration * (1 - tolerance),
-		duration * (1 + tolerance)
-	];
-	let timing = { start: 0, end: 0, outStart: 0, outEnd: 0, inStart: 0, inEnd: 0 };
-
+export async function expectSwupAnimationDuration(page: Page, expected: { total?: number, out?: number, in?: number }) {
 	// Make sure we're ready to animate
 	await waitForSwup(page);
+
 	// Make sure we're not disabling animations
 	await page.emulateMedia({ reducedMotion: null });
 
@@ -64,12 +59,18 @@ export async function expectSwupAnimationDuration(page: Page, duration: number) 
 
 	await navigateWithSwup(page, page.url());
 	await page.waitForFunction(() => window.data.end > 0);
-	timing = await page.evaluate(() => window.data);
 
-	const outDuration = timing.outEnd - timing.outStart;
-	const inDuration = timing.inEnd - timing.inStart;
-	expect(outDuration).toBeGreaterThanOrEqual(expectedRange[0]);
-	expect(outDuration).toBeLessThanOrEqual(expectedRange[1]);
-	expect(inDuration).toBeGreaterThanOrEqual(expectedRange[0]);
-	expect(inDuration).toBeLessThanOrEqual(expectedRange[1]);
+	const tolerance = expected ? 0.25 : 0; // 25% plus/minus
+	const timing: { start: 0, end: 0, outStart: 0, outEnd: 0, inStart: 0, inEnd: 0 } = await page.evaluate(() => window.data);
+	const seen = { total: timing.end - timing.start, out: timing.outEnd - timing.outStart, in: timing.inEnd - timing.inStart };
+
+	if (typeof expected.out === 'number') {
+		expectNumberWithTolerance(seen.out, expected.out, tolerance);
+	}
+	if (typeof expected.in === 'number') {
+		expectNumberWithTolerance(seen.in, expected.in, tolerance);
+	}
+	if (typeof expected.total === 'number') {
+		expectNumberWithTolerance(seen.total, expected.total, tolerance);
+	}
 }

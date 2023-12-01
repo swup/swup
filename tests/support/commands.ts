@@ -87,3 +87,8 @@ export async function expectScrollPosition(page: Page, expected: number) {
 		async () => expect(await pos()).toEqual(expected)
 	).toPass();
 }
+
+export function expectNumberWithTolerance(value: number, expected: number, tolerance: number = 0.1) {
+	expect(value).toBeGreaterThanOrEqual(expected * (1 - tolerance));
+	expect(value).toBeLessThanOrEqual(expected * (1 + tolerance));
+}

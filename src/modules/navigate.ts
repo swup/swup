@@ -1,7 +1,13 @@
 import type Swup from '../Swup.js';
-import { createHistoryRecord, updateHistoryRecord, getCurrentUrl, Location } from '../helpers.js';
 import { FetchError, type FetchOptions, type PageData } from './fetchPage.js';
 import { type VisitInitOptions, type Visit, VisitState } from './Visit.js';
+import {
+	createHistoryRecord,
+	updateHistoryRecord,
+	getCurrentUrl,
+	Location,
+	classify
+} from '../helpers.js';
 
 export type HistoryAction = 'push' | 'replace';
 export type HistoryDirection = 'forwards' | 'backwards';
@@ -119,26 +125,21 @@ export async function performNavigation(
 		visit.state = VisitState.STARTED;
 
 		// Begin loading page
-		const pagePromise = this.hooks.call(
-			'page:load',
-			visit,
-			{ options },
-			async (visit, args) => {
-				// Read from cache
-				let cachedPage: PageData | undefined;
-				if (visit.cache.read) {
-					cachedPage = this.cache.get(visit.to.url);
-				}
-
-				args.page = cachedPage || (await this.fetchPage(visit.to.url, args.options));
-				args.cache = !!cachedPage;
-
-				return args.page;
+		const page = this.hooks.call('page:load', visit, { options }, async (visit, args) => {
+			// Read from cache
+			let cachedPage: PageData | undefined;
+			if (visit.cache.read) {
+				cachedPage = this.cache.get(visit.to.url);
 			}
-		);
+
+			args.page = cachedPage || (await this.fetchPage(visit.to.url, args.options));
+			args.cache = !!cachedPage;
+
+			return args.page;
+		});
 
 		// Mark as loaded when finished
-		pagePromise.then(() => visit.advance(VisitState.LOADED));
+		page.then(() => visit.advance(VisitState.LOADED));
 
 		// Create/update history record if this is not a popstate call or leads to the same URL
 		if (!visit.history.popstate) {
@@ -154,32 +155,43 @@ export async function performNavigation(
 
 		this.currentPageUrl = getCurrentUrl();
 
+		// Mark visit type with classes
+		if (visit.history.popstate) {
+			this.classes.add('is-popstate');
+		}
+		if (visit.animation.name) {
+			this.classes.add(`to-${classify(visit.animation.name)}`);
+		}
+
 		// Wait for page before starting to animate out?
 		if (visit.animation.wait) {
-			const { html } = await pagePromise;
+			const { html } = await page;
 			visit.to.html = html;
 		}
 
 		// Check if failed/aborted in the meantime
 		if (visit.done) return;
 
-		// perform the actual transition: animate and replace content
+		// Perform the actual transition: animate and replace content
 		await this.hooks.call('visit:transition', visit, undefined, async () => {
-			// Start leave animation
+			// No animation? Just await page and render
+			if (!visit.animation.animate) {
+				await this.hooks.call('animation:skip', undefined);
+				await this.renderPage(visit, await page);
+				return;
+			}
+
+			// Animate page out, render page, animate page in
 			visit.advance(VisitState.LEAVING);
-			const animationPromise = this.animatePageOut(visit);
-
-			// Wait for page to load and leave animation to finish
-			const [page] = await Promise.all([pagePromise, animationPromise]);
-
-			// Render page: replace content and scroll to top/fragment
-			await this.renderPage(visit, page);
-
-			// Wait for enter animation
-			visit.advance(VisitState.ENTERING);
+			await this.animatePageOut(visit);
+			if (this.options.native && document.startViewTransition) {
+				await document.startViewTransition(
+					async () => await this.renderPage(visit, await page)
+				).finished;
+			} else {
+				await this.renderPage(visit, await page);
+			}
 			await this.animatePageIn(visit);
-
-			return true;
 		});
 
 		// Check if failed/aborted in the meantime
