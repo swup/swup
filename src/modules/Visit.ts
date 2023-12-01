@@ -158,11 +158,6 @@ export class Visit {
 	get done(): boolean {
 		return this.state >= VisitState.COMPLETED;
 	}
-
-	/** Was the visit aborted? */
-	get aborted(): boolean {
-		return this.state === VisitState.ABORTED;
-	}
 }
 
 /** Create a new visit object. */
