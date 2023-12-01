@@ -94,4 +94,25 @@ test.describe('visit object', () => {
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
 		expect(await page.evaluate(() => window.data)).toMatch(/<h1>Page 2/i);
 	});
+
+	test('marks native animations', async ({ page }) => {
+		const supported = await page.evaluate(() => !!document.startViewTransition);
+
+		// `visit.animation.native` should always be false when `native` option is false
+		await page.evaluate(() => {
+			window._swup.hooks.on('visit:start', (visit) => (window.data = visit.animation.native));
+		});
+		await navigateWithSwup(page, '/page-2.html');
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+		expect(await page.evaluate(() => window.data)).toBe(false);
+
+		// `visit.animation.native` should be true if `native` option is true and browser supports it
+		await page.goto('/animation-native.html');
+		await page.evaluate(() => {
+			window._swup.hooks.on('visit:start', (visit) => (window.data = visit.animation.native));
+		});
+		await navigateWithSwup(page, '/page-3.html');
+		await expectToBeAt(page, '/page-3.html', 'Page 3');
+		expect(await page.evaluate(() => window.data)).toBe(supported);
+	});
 });
