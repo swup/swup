@@ -12,7 +12,7 @@ export const renderPage = async function (this: Swup, visit: Visit, page: PageDa
 
 	visit.advance(VisitState.ENTERING);
 
-	const { url, html } = page;
+	const { url } = page;
 
 	this.classes.remove('is-leaving');
 
@@ -27,9 +27,6 @@ export const renderPage = async function (this: Swup, visit: Visit, page: PageDa
 	if (visit.animation.animate) {
 		this.classes.add('is-rendering');
 	}
-
-	// save html into visit context for easier retrieval
-	visit.to.html = html;
 
 	// replace content: allow handlers and plugins to overwrite paga data and containers
 	await this.hooks.call('content:replace', visit, { page }, (visit, { page }) => {

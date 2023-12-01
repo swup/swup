@@ -138,8 +138,11 @@ export async function performNavigation(
 			return args.page;
 		});
 
-		// Mark as loaded when finished
-		page.then(() => visit.advance(VisitState.LOADED));
+		// When page loaded: mark visit as loaded, save html into visit object
+		page.then(({ html }) => {
+			visit.advance(VisitState.LOADED);
+			visit.to.html = html;
+		});
 
 		// Create/update history record if this is not a popstate call or leads to the same URL
 		if (!visit.history.popstate) {
@@ -165,8 +168,7 @@ export async function performNavigation(
 
 		// Wait for page before starting to animate out?
 		if (visit.animation.wait) {
-			const { html } = await page;
-			visit.to.html = html;
+			await page;
 		}
 
 		// Check if failed/aborted in the meantime
