@@ -35,7 +35,7 @@ test.describe('markup', () => {
 		await page.waitForFunction(() => window.data.after !== undefined);
 		expect(await page.evaluate(() => window.data)).toMatchObject({
 			before: 'swup-enabled',
-			leave: 'swup-enabled is-changing is-leaving is-animating',
+			leave: 'swup-enabled is-changing is-animating is-leaving',
 			enter: 'swup-enabled is-changing is-rendering',
 			after: 'swup-enabled'
 		});
@@ -59,7 +59,7 @@ test.describe('markup', () => {
 
 		expect(await page.evaluate(() => window.data)).toMatchObject({
 			before: 'wrapper transition-default',
-			leave: 'wrapper transition-default is-changing is-leaving is-animating',
+			leave: 'wrapper transition-default is-changing is-animating is-leaving',
 			enter: 'wrapper transition-default is-changing is-rendering',
 			after: 'wrapper transition-default'
 		});

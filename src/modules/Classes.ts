@@ -3,7 +3,14 @@ import { queryAll } from '../utils.js';
 
 export class Classes {
 	protected swup: Swup;
-	protected swupClasses = ['to-', 'is-changing', 'is-rendering', 'is-popstate', 'is-animating'];
+	protected swupClasses = [
+		'to-',
+		'is-changing',
+		'is-rendering',
+		'is-popstate',
+		'is-animating',
+		'is-leaving'
+	];
 
 	constructor(swup: Swup) {
 		this.swup = swup;

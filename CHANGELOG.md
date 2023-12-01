@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.5.0] - 2023-12
+
+- Support View Transitions API in new native mode
+- Handle rapid link clicks to achieve smooth transitions
+- Abort superseded visits with new `visit:abort` hook
+
 ## [4.4.4] - 2023-11-17
 
 - Dispatch DOM event `swup:any` every time a hook is run
@@ -20,7 +26,7 @@
 
 ## [4.4.0] - 2023-09-19
 
-- Enable experimental `ViewTransition` support
+- Enable experimental View Transition support
 - Extend test coverage to all major browsers
 - Add request timeout option
 
@@ -189,6 +195,7 @@ See [upgrade instructions](https://swup.js.org/getting-started/upgrading-v3/) fo
 
 - Fix bug where animateHistoryBrowsing option was ignored for OUT animations
 
+[4.5.0]: https://github.com/swup/swup/releases/tag/4.5.0
 [4.4.4]: https://github.com/swup/swup/releases/tag/4.4.4
 [4.4.3]: https://github.com/swup/swup/releases/tag/4.4.3
 [4.4.2]: https://github.com/swup/swup/releases/tag/4.4.3
