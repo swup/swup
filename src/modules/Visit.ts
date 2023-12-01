@@ -144,7 +144,7 @@ export class Visit {
 	}
 	/** @internal */
 	advance(state: VisitState) {
-		if (this.state <= state) {
+		if (this.state < state) {
 			this.state = state;
 		}
 	}
