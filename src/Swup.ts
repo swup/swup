@@ -190,6 +190,9 @@ export default class Swup {
 			// https://github.com/swup/swup/issues/475
 		}
 
+		// Sanitize/check native option
+		this.options.native = this.options.native && !!document.startViewTransition;
+
 		// Mount plugins
 		this.options.plugins.forEach((plugin) => this.use(plugin));
 
@@ -205,9 +208,7 @@ export default class Swup {
 		await this.hooks.call('enable', undefined, undefined, () => {
 			const html = document.documentElement;
 			html.classList.add('swup-enabled');
-			if (this.options.native) {
-				html.classList.toggle('swup-native', !!document.startViewTransition);
-			}
+			html.classList.toggle('swup-native', this.options.native);
 		});
 	}
 
