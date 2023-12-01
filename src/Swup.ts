@@ -207,7 +207,6 @@ export default class Swup {
 			html.classList.add('swup-enabled');
 			if (this.options.native) {
 				html.classList.toggle('swup-native', !!document.startViewTransition);
-				html.classList.toggle('swup-not-native', !document.startViewTransition);
 			}
 		});
 	}
@@ -231,7 +230,6 @@ export default class Swup {
 			const html = document.documentElement;
 			html.classList.remove('swup-enabled');
 			html.classList.remove('swup-native');
-			html.classList.remove('swup-not-native');
 		});
 
 		// remove handlers
