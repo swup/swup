@@ -80,4 +80,18 @@ test.describe('visit object', () => {
 		});
 		await expectSwupAnimationDuration(page, { out: 0, in: 0 });
 	});
+
+	test('allowings waiting for next page before animating', async ({ page }) => {
+		await page.evaluate(() => {
+			window._swup.hooks.on('visit:start', (visit) => {
+				visit.animation.wait = true;
+			});
+			window._swup.hooks.before('visit:transition', (visit) => {
+				window.data = visit.to.html;
+			});
+		});
+		await navigateWithSwup(page, '/page-2.html');
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+		expect(await page.evaluate(() => window.data)).toMatch(/<h1>Page 2/i);
+	});
 });
