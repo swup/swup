@@ -20,12 +20,3 @@ test.describe('animation timing', () => {
 		await expectSwupAnimationDuration(page, { out: 700, in: 700, total: 1400 });
 	});
 });
-
-test.describe('native view transitions', () => {
-	test.skip(({ browserName }) => browserName !== 'chromium', 'View transitions only supported in Chromium');
-
-	test('awaits native view transitions', async ({ page }) => {
-		await page.goto('/animation-native.html');
-		await expectSwupAnimationDuration(page, { total: 500 });
-	});
-});

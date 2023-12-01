@@ -23,6 +23,14 @@
             from { opacity: 1; }
             to { opacity: 0; }
         }
+
+        html.is-changing:not(.swup-native) .transition-custom {
+            transition: 0.4s opacity;
+            opacity: 1;
+        }
+        html.is-animating:not(.swup-native) .transition-custom {
+            opacity: 0;
+        }
     </style>
 </head>
 <body>
