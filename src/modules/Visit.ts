@@ -26,6 +26,8 @@ export interface VisitAnimation {
 	wait: boolean;
 	/** Name of a custom animation to run. */
 	name?: string;
+	/** Whether this animation uses the native browser ViewTransition API. Default: `false` */
+	native: boolean;
 	/** Elements on which to add animation classes. Default: `html` element */
 	scope: 'html' | 'containers' | string[];
 	/** Selector for detecting animation timing. Default: `[class*="transition-"]` */
@@ -121,6 +123,7 @@ export class Visit {
 			animate: true,
 			wait: false,
 			name: undefined,
+			native: swup.options.native,
 			scope: swup.options.animationScope,
 			selector: swup.options.animationSelector
 		};

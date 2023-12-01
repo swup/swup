@@ -184,7 +184,7 @@ export async function performNavigation(
 			// Animate page out, render page, animate page in
 			visit.advance(VisitState.LEAVING);
 			await this.animatePageOut(visit);
-			if (this.options.native && document.startViewTransition) {
+			if (visit.animation.native && document.startViewTransition) {
 				await document.startViewTransition(
 					async () => await this.renderPage(visit, await page)
 				).finished;
