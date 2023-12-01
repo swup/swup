@@ -3,16 +3,25 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Animation duration</title>
+    <title>Animation duration: native</title>
     <link rel="stylesheet" href="/assets/main.css">
     <script src="/dist/Swup.umd.js"></script>
     <style>
         html.is-changing .transition-custom {
-            transition: 0.4s opacity;
-            opacity: 1;
+            view-transition-name: main;
         }
-        html.is-animating .transition-custom {
-            opacity: 0;
+
+        ::view-transition-old(main) {
+            animation: 0.5s ease-in-out both page-animation;
+        }
+
+        ::view-transition-new(main) {
+            animation: 0.5s ease-in-out both reverse page-animation;
+        }
+
+        @keyframes page-animation {
+            from { opacity: 1; }
+            to { opacity: 0; }
         }
     </style>
 </head>
@@ -28,7 +37,7 @@
         </ul>
     </header>
     <main id="swup" class="wrapper transition-custom">
-        <h1>Animation duration</h1>
+        <h1>Animation duration: native</h1>
     </main>
     <script>
         window._swup = new Swup();
