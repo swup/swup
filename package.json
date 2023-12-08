@@ -76,14 +76,14 @@
     "eslint-plugin-prettier": "^5.0.1",
     "husky": "^8.0.0",
     "istanbul-lib-coverage": "^3.2.0",
-    "jsdom": "^22.1.0",
+    "jsdom": "^23.0.1",
     "microbundle": "^0.15.0",
     "nyc": "^15.1.0",
     "prettier": "^3.1.0",
     "serve": "^14.2.1",
     "typed-query-selector": "^2.11.0",
     "typescript": "^5.2.2",
-    "vitest": "^0.34.3"
+    "vitest": "^1.0.2"
   },
   "collective": {
     "type": "opencollective",
