@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-import { expectToBeAt, sleep } from '../support/commands.js';
+import { expectPageReload, expectToBeAt, sleep } from '../support/commands.js';
 import { navigateWithSwup, pushSwupHistoryState } from '../support/swup.js';
 
 test.describe('history', () => {
@@ -107,5 +107,28 @@ test.describe('history', () => {
 		await pushSwupHistoryState(page, '/page-3.html', { source: 'not-swup' });
 		await page.goBack();
 		await expectToBeAt(page, '/page-2.html', 'History');
+	});
+
+	test('replaces current history entry on error', async ({ page }) => {
+		await page.route('/error-500.html', route => route.fulfill({
+			status: 500,
+			headers: { 'Content-Type': 'text/html' },
+			body: '<!DOCTYPE html><head><title>Error</title></head><body><h1>Error</h1></body></html>'
+		}));
+
+		await navigateWithSwup(page, '/page-2.html');
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+
+		await page.goBack();
+		await expectToBeAt(page, '/history.html', 'History');
+
+		await page.goForward();
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+
+		await expectPageReload(page, () => navigateWithSwup(page, '/error-500.html'));
+		await expectToBeAt(page, '/error-500.html', 'Error');
+
+		await page.goBack();
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
 	});
 });

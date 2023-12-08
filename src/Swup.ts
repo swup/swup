@@ -154,7 +154,7 @@ export default class Swup {
 		this.hooks = new Hooks(this);
 		this.visit = this.createVisit({ to: '' });
 
-		this.currentHistoryIndex = (history.state as HistoryState)?.index ?? 1;
+		this.currentHistoryIndex = (window.history.state as HistoryState)?.index ?? 1;
 
 		if (!this.checkRequirements()) {
 			return;
@@ -197,7 +197,7 @@ export default class Swup {
 		this.options.plugins.forEach((plugin) => this.use(plugin));
 
 		// Create initial history record
-		if ((history.state as HistoryState)?.source !== 'swup') {
+		if ((window.history.state as HistoryState)?.source !== 'swup') {
 			updateHistoryRecord(null, { index: this.currentHistoryIndex });
 		}
 
@@ -326,7 +326,7 @@ export default class Swup {
 	}
 
 	protected handlePopState(event: PopStateEvent) {
-		const href: string = (event.state as HistoryState)?.url ?? location.href;
+		const href: string = (event.state as HistoryState)?.url ?? window.location.href;
 
 		// Exit early if this event should be ignored
 		if (this.options.skipPopStateHandling(event)) {
