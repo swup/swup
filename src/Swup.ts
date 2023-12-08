@@ -242,7 +242,7 @@ export default class Swup {
 		const { origin, url, hash } = Location.fromUrl(href);
 
 		// Ignore if the new origin doesn't match the current one
-		if (origin !== window.location.origin) {
+		if (origin !== location.origin) {
 			return true;
 		}
 

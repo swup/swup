@@ -44,7 +44,7 @@ export function navigate(
 
 	// Check if the visit should be ignored
 	if (this.shouldIgnoreVisit(url, { el: init.el, event: init.event })) {
-		window.location.href = url;
+		location.assign(url);
 		return;
 	}
 
@@ -221,13 +221,14 @@ export async function performNavigation(
 		// Log to console as we swallow almost all hook errors
 		console.error(error);
 
-		// Rewrite `skipPopStateHandling` to redirect manually when `history.go` is processed
+		// Remove current history entry, then load requested url in browser
+
 		this.options.skipPopStateHandling = () => {
-			window.location.href = visit.to.url + visit.to.hash;
+			location.assign(visit.to.url + visit.to.hash);
 			return true;
 		};
 
 		// Go back to the actual page we're still at
-		window.history.go(-1);
+		window.history.back();
 	}
 }
