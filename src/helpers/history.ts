@@ -19,13 +19,13 @@ export const createHistoryRecord = (url: string, data: HistoryData = {}): void =
 		source: 'swup',
 		...data
 	};
-	history.pushState(state, '', url);
+	window.history.pushState(state, '', url);
 };
 
 /** Update the current history record with a custom swup identifier. */
 export const updateHistoryRecord = (url: string | null = null, data: HistoryData = {}): void => {
 	url = url || getCurrentUrl({ hash: true });
-	const currentState = (history.state as HistoryState) || {};
+	const currentState = (window.history.state as HistoryState) || {};
 	const state: HistoryState = {
 		...currentState,
 		url,
@@ -33,5 +33,5 @@ export const updateHistoryRecord = (url: string | null = null, data: HistoryData
 		source: 'swup',
 		...data
 	};
-	history.replaceState(state, '', url);
+	window.history.replaceState(state, '', url);
 };
