@@ -44,7 +44,7 @@ export function navigate(
 
 	// Check if the visit should be ignored
 	if (this.shouldIgnoreVisit(url, { el: init.el, event: init.event })) {
-		location.assign(url);
+		window.location.assign(url);
 		return;
 	}
 
@@ -224,7 +224,7 @@ export async function performNavigation(
 		// Remove current history entry, then load requested url in browser
 
 		this.options.skipPopStateHandling = () => {
-			location.assign(visit.to.url + visit.to.hash);
+			window.location.assign(visit.to.url + visit.to.hash);
 			return true;
 		};
 

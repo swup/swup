@@ -242,7 +242,7 @@ export default class Swup {
 		const { origin, url, hash } = Location.fromUrl(href);
 
 		// Ignore if the new origin doesn't match the current one
-		if (origin !== location.origin) {
+		if (origin !== window.location.origin) {
 			return true;
 		}
 
@@ -326,7 +326,7 @@ export default class Swup {
 	}
 
 	protected handlePopState(event: PopStateEvent) {
-		const href: string = (event.state as HistoryState)?.url ?? location.href;
+		const href: string = (event.state as HistoryState)?.url ?? window.location.href;
 
 		// Exit early if this event should be ignored
 		if (this.options.skipPopStateHandling(event)) {
