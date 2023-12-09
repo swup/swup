@@ -354,7 +354,7 @@ export class Hooks {
 
 		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
 		await this.run(before, visit, args);
-		const [result] = await this.run(handler, visit, args);
+		const [result] = await this.run(handler, visit, args, true);
 		await this.run(after, visit, args);
 		this.dispatchDomEvent(hook, visit, args);
 		return result;
@@ -383,7 +383,7 @@ export class Hooks {
 		const [visit, args, defaultHandler] = this.parseCallArgs(hook, arg1, arg2, arg3);
 		const { before, handler, after } = this.getHandlers(hook, defaultHandler);
 		this.runSync(before, visit, args);
-		const [result] = this.runSync(handler, visit, args);
+		const [result] = this.runSync(handler, visit, args, true);
 		this.runSync(after, visit, args);
 		this.dispatchDomEvent(hook, visit, args);
 		return result;
@@ -416,25 +416,30 @@ export class Hooks {
 	 */
 
 	// Overload: running HookDefaultHandler: expect HookDefaultHandler return type
-	protected async run<T extends HookName>(registrations: HookRegistration<T, HookDefaultHandler<T>>[], visit: Visit | undefined, args: HookArguments<T>): Promise<Awaited<ReturnType<HookDefaultHandler<T>>>[]>; // prettier-ignore
+	protected async run<T extends HookName>(registrations: HookRegistration<T, HookDefaultHandler<T>>[], visit: Visit | undefined, args: HookArguments<T>, rethrow: true): Promise<Awaited<ReturnType<HookDefaultHandler<T>>>[]>; // prettier-ignore
 	// Overload:  running user handler: expect no specific type
 	protected async run<T extends HookName>(registrations: HookRegistration<T>[], visit: Visit | undefined, args: HookArguments<T>): Promise<unknown[]>; // prettier-ignore
 	// Implementation
 	protected async run<T extends HookName, R extends HookRegistration<T>[]>(
 		registrations: R,
-		visit: Visit | undefined,
-		args: HookArguments<T>
+		visit: Visit | undefined = this.swup.visit,
+		args: HookArguments<T>,
+		rethrow: boolean = false
 	): Promise<Awaited<ReturnType<HookDefaultHandler<T>>> | unknown[]> {
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
 			if (visit?.done) continue;
 			if (once) this.off(hook, handler);
-			const result = await runAsPromise(handler, [
-				visit || this.swup.visit,
-				args,
-				defaultHandler
-			]);
-			results.push(result);
+			try {
+				const result = await runAsPromise(handler, [visit, args, defaultHandler]);
+				results.push(result);
+			} catch (error) {
+				if (rethrow) {
+					throw error;
+				} else {
+					console.error(`Error in hook '${hook}':`, error);
+				}
+			}
 		}
 		return results;
 	}
@@ -446,26 +451,34 @@ export class Hooks {
 	 */
 
 	// Overload: running HookDefaultHandler: expect HookDefaultHandler return type
-	protected runSync<T extends HookName>(registrations: HookRegistration<T, HookDefaultHandler<T>>[], visit: Visit | undefined, args: HookArguments<T> ): ReturnType<HookDefaultHandler<T>>[]; // prettier-ignore
+	protected runSync<T extends HookName>(registrations: HookRegistration<T, HookDefaultHandler<T>>[], visit: Visit | undefined, args: HookArguments<T>, rethrow: true): ReturnType<HookDefaultHandler<T>>[]; // prettier-ignore
 	// Overload: running user handler: expect no specific type
 	protected runSync<T extends HookName>(registrations: HookRegistration<T>[], visit: Visit | undefined, args: HookArguments<T>): unknown[]; // prettier-ignore
 	// Implementation
 	protected runSync<T extends HookName, R extends HookRegistration<T>[]>(
 		registrations: R,
-		visit: Visit | undefined,
-		args: HookArguments<T>
+		visit: Visit | undefined = this.swup.visit,
+		args: HookArguments<T>,
+		rethrow: boolean = false
 	): (ReturnType<HookDefaultHandler<T>> | unknown)[] {
 		const results = [];
 		for (const { hook, handler, defaultHandler, once } of registrations) {
 			if (visit?.done) continue;
 			if (once) this.off(hook, handler);
-			const result = (handler as HookDefaultHandler<T>)(visit || this.swup.visit, args, defaultHandler); // prettier-ignore
-			results.push(result);
-			if (isPromise(result)) {
-				console.warn(
-					`Promise returned from handler for synchronous hook '${hook}'.` +
-						`Swup will not wait for it to resolve.`
-				);
+			try {
+				const result = (handler as HookDefaultHandler<T>)(visit, args, defaultHandler);
+				results.push(result);
+				if (isPromise(result)) {
+					console.warn(
+						`Swup will not await Promises in handler for synchronous hook '${hook}'.`
+					);
+				}
+			} catch (error) {
+				if (rethrow) {
+					throw error;
+				} else {
+					console.error(`Error in hook '${hook}':`, error);
+				}
 			}
 		}
 		return results;
