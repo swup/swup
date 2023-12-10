@@ -55,13 +55,11 @@ export function navigate(
 }
 
 /**
- * Start a visit to a new URL.
+ * Perform a visit. Internal method that excepts a visit context that has already been created.
  *
- * Internal method that assumes the visit context has already been created.
+ * As a user, call `swup.navigate(url)` instead.
  *
- * As a user, you should call `swup.navigate(url)` instead.
- *
- * @param url The URL to navigate to.
+ * @param visit The visit object to use for this navigation.
  * @param options Options for how to perform this visit.
  * @returns Promise<void>
  */
