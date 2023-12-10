@@ -148,10 +148,10 @@ export async function performNavigation(
 			// Add the hash directly from the trigger element
 			const newUrl = visit.to.url + visit.to.hash;
 			if (visit.history.action === 'replace' || visit.to.url === this.currentPageUrl) {
-				updateHistoryRecord(newUrl, { id: visit.id });
+				updateHistoryRecord(newUrl, { visit: visit.id });
 			} else {
 				this.currentHistoryIndex++;
-				createHistoryRecord(newUrl, { id: visit.id, index: this.currentHistoryIndex });
+				createHistoryRecord(newUrl, { visit: visit.id, index: this.currentHistoryIndex });
 			}
 		}
 
@@ -247,7 +247,7 @@ export function undoNavigation(this: Swup, visit: Visit): void {
 
 	// Undo history and url bar changes
 	const state = (window.history.state as HistoryState) || {};
-	if (state.id === visit.id) {
+	if (state.visit === visit.id) {
 		if (state.action === 'push') {
 			// this.currentPageUrl = getCurrentUrl(); // make sure popstate visit is ignored
 			window.history.back();
