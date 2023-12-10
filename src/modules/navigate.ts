@@ -218,11 +218,10 @@ export async function performNavigation(
 
 		visit.state = VisitState.FAILED;
 
-		// Log to console as we swallow almost all hook errors
+		// Log to console
 		console.error(error);
 
 		// Remove current history entry, then load requested url in browser
-
 		this.options.skipPopStateHandling = () => {
 			window.location.assign(visit.to.url + visit.to.hash);
 			return true;
