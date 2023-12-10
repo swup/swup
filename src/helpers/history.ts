@@ -5,6 +5,7 @@ export interface HistoryState {
 	source: 'swup';
 	random: number;
 	index?: number;
+	id?: number;
 	[key: string]: unknown;
 }
 

@@ -2,6 +2,7 @@ import type Swup from '../Swup.js';
 import { FetchError, type FetchOptions, type PageData } from './fetchPage.js';
 import { type VisitInitOptions, type Visit, VisitState } from './Visit.js';
 import {
+	type HistoryState,
 	createHistoryRecord,
 	updateHistoryRecord,
 	getCurrentUrl,
@@ -147,10 +148,10 @@ export async function performNavigation(
 			// Add the hash directly from the trigger element
 			const newUrl = visit.to.url + visit.to.hash;
 			if (visit.history.action === 'replace' || visit.to.url === this.currentPageUrl) {
-				updateHistoryRecord(newUrl);
+				updateHistoryRecord(newUrl, { id: visit.id });
 			} else {
 				this.currentHistoryIndex++;
-				createHistoryRecord(newUrl, { index: this.currentHistoryIndex });
+				createHistoryRecord(newUrl, { id: visit.id, index: this.currentHistoryIndex });
 			}
 		}
 
