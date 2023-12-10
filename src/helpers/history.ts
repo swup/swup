@@ -17,6 +17,7 @@ export const createHistoryRecord = (url: string, data: HistoryData = {}): void =
 		url,
 		random: Math.random(),
 		source: 'swup',
+		action: 'push',
 		...data
 	};
 	window.history.pushState(state, '', url);
@@ -31,6 +32,7 @@ export const updateHistoryRecord = (url: string | null = null, data: HistoryData
 		url,
 		random: Math.random(),
 		source: 'swup',
+		action: 'replace',
 		...data
 	};
 	window.history.replaceState(state, '', url);
