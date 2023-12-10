@@ -231,3 +231,28 @@ export async function performNavigation(
 		window.history.back();
 	}
 }
+
+/**
+ * Abort a currently running visit and undo any changes done in the meantime.
+ *
+ * @param visit The visit to abort.
+ * @returns void
+ */
+export function undoNavigation(this: Swup, visit: Visit): void {
+	// History visits cannot be undone
+	if (visit.history.popstate) return;
+
+	this.navigating = false;
+	this.classes.clear();
+
+	// Undo history and url bar changes
+	const state = (window.history.state as HistoryState) || {};
+	if (state.id === visit.id) {
+		if (state.action === 'push') {
+			// this.currentPageUrl = getCurrentUrl(); // make sure popstate visit is ignored
+			window.history.back();
+		} else {
+			updateHistoryRecord(visit.from.url);
+		}
+	}
+}
