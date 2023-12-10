@@ -142,14 +142,15 @@ export class Visit {
 			target: undefined
 		};
 	}
-	/** @internal */
+
+	/** Update the state in forward-direction only. @internal */
 	advance(state: VisitState) {
 		if (this.state < state) {
 			this.state = state;
 		}
 	}
 
-	/** @internal */
+	/** Abort the visit. */
 	abort() {
 		this.state = VisitState.ABORTED;
 	}
