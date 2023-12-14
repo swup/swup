@@ -92,6 +92,7 @@ export type VisitState = (typeof VisitState)[keyof typeof VisitState];
 
 /** An object holding details about the current visit. */
 export class Visit {
+	protected swup: Swup;
 	/** A unique ID to identify this visit */
 	id: number;
 	/** The current state of this visit @internal */
@@ -116,6 +117,7 @@ export class Visit {
 	constructor(swup: Swup, options: VisitInitOptions) {
 		const { to, from = swup.currentPageUrl, hash, el, event } = options;
 
+		this.swup = swup;
 		this.id = Math.random();
 		this.state = VisitState.CREATED;
 		this.from = { url: from, hash: window.location.hash };
@@ -158,6 +160,7 @@ export class Visit {
 		if (this.done) return;
 
 		this.state = VisitState.ABORTED;
+		this.swup.abort(this);
 	}
 
 	/** Is this visit done, i.e. completed, failed, or aborted? */
