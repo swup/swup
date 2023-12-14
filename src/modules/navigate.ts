@@ -77,8 +77,7 @@ export async function performNavigation(
 			return;
 		} else {
 			// Currently navigating and content not loaded? Abort running visit
-			await this.hooks.call('visit:abort', this.visit, undefined);
-			this.visit.state = VisitState.ABORTED;
+			this.abort(this.visit);
 		}
 	}
 
@@ -240,25 +239,32 @@ export async function performNavigation(
  */
 export function abort(this: Swup, visit?: Visit): void {
 	visit = visit || this.visit;
+	const state = (window.history.state as HistoryState) || {};
 
 	// Only undo currently running visits
 	if (!this.navigating || !visit || visit.done) return;
 
-	// History visits cannot be undone
-	if (visit.history.popstate) return;
+	// History visits cannot be aborted
+	// if (visit.history.popstate) return;
 
-	this.classes.clear();
-	this.currentPageUrl = visit.from.url;
+	const previousUrl = visit.from.url + visit.from.hash;
+
+	visit.state = VisitState.ABORTED;
 	this.navigating = false;
+	this.currentPageUrl = previousUrl;
 
-	// Check if this is the visit we're looking for
-	const state = window.history.state as HistoryState;
-	if (!state || state.visit !== visit.id) return;
+	this.hooks.callSync('visit:abort', visit, undefined, (visit) => {
+		// Remove animation classes
+		this.classes.clear();
 
-	// Undo history and url bar changes
-	if (state.action === 'replace') {
-		updateHistoryRecord(visit.from.url);
-	} else {
-		window.history.back();
-	}
+		// Undo history and url bar changes if the visit corresponds to the current history entry
+		if (state.visit === visit.id) {
+			// Undo history and url bar changes
+			if (state.action === 'replace') {
+				updateHistoryRecord(previousUrl);
+			} else {
+				window.history.back();
+			}
+		}
+	});
 }
