@@ -238,8 +238,8 @@ export async function performNavigation(
  * @param visit The visit to abort.
  * @returns void
  */
-export function abort(this: Swup): void {
-	const { visit } = this;
+export function abort(this: Swup, visit?: Visit): void {
+	visit = visit || this.visit;
 
 	// Only undo currently running visits
 	if (!this.navigating || !visit || visit.done) return;
@@ -251,13 +251,14 @@ export function abort(this: Swup): void {
 	this.currentPageUrl = visit.from.url;
 	this.navigating = false;
 
+	// Check if this is the visit we're looking for
+	const state = window.history.state as HistoryState;
+	if (!state || state.visit !== visit.id) return;
+
 	// Undo history and url bar changes
-	const state = (window.history.state as HistoryState) || {};
-	if (state.visit === visit.id) {
-		if (state.action === 'replace') {
-			updateHistoryRecord(visit.from.url);
-		} else {
-			window.history.back();
-		}
+	if (state.action === 'replace') {
+		updateHistoryRecord(visit.from.url);
+	} else {
+		window.history.back();
 	}
 }
