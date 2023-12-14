@@ -156,9 +156,6 @@ export class Visit {
 
 	/** Abort the visit. */
 	abort() {
-		// Do nothing if already completed, failed, or aborted
-		if (this.done) return;
-
 		this.swup.abort(this);
 	}
 
