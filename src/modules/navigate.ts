@@ -244,7 +244,10 @@ export function abort(this: Swup, visit?: Visit): void {
 	const state = (window.history.state as HistoryState) || {};
 
 	// Only undo currently running visits
-	if (!this.navigating || !visit || visit.done) return;
+	if (!this.navigating || !visit) return;
+
+	// Only undo if not already entering
+	if (visit.state >= VisitState.ENTERING) return;
 
 	// History visits cannot be aborted
 	// if (visit.history.popstate) return;
