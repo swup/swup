@@ -1,11 +1,13 @@
 import type Swup from '../Swup.js';
-import type { Visit } from './Visit.js';
+import { VisitState, type Visit } from './Visit.js';
 
 /**
  * Perform the out/leave animation of the current page.
  * @returns Promise<void>
  */
 export const animatePageOut = async function (this: Swup, visit: Visit) {
+	visit.advance(VisitState.LEAVING);
+
 	await this.hooks.call('animation:out:start', visit, undefined, () => {
 		this.classes.add('is-changing', 'is-animating', 'is-leaving');
 	});
