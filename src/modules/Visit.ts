@@ -159,7 +159,6 @@ export class Visit {
 		// Do nothing if already completed, failed, or aborted
 		if (this.done) return;
 
-		this.state = VisitState.ABORTED;
 		this.swup.abort(this);
 	}
 
