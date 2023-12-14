@@ -233,26 +233,31 @@ export async function performNavigation(
 }
 
 /**
- * Abort a currently running visit and undo any changes done in the meantime.
+ * Abort the currently running navigation and undo any changes done in the meantime.
  *
  * @param visit The visit to abort.
  * @returns void
  */
-export function undoNavigation(this: Swup, visit: Visit): void {
+export function abort(this: Swup): void {
+	const { visit } = this;
+
+	// Only undo currently running visits
+	if (!this.navigating || !visit || visit.done) return;
+
 	// History visits cannot be undone
 	if (visit.history.popstate) return;
 
-	this.navigating = false;
 	this.classes.clear();
+	this.currentPageUrl = visit.from.url;
+	this.navigating = false;
 
 	// Undo history and url bar changes
 	const state = (window.history.state as HistoryState) || {};
 	if (state.visit === visit.id) {
-		if (state.action === 'push') {
-			// this.currentPageUrl = getCurrentUrl(); // make sure popstate visit is ignored
-			window.history.back();
-		} else {
+		if (state.action === 'replace') {
 			updateHistoryRecord(visit.from.url);
+		} else {
+			window.history.back();
 		}
 	}
 }
