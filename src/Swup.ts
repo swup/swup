@@ -11,7 +11,7 @@ import { type Visit, createVisit } from './modules/Visit.js';
 import { Hooks } from './modules/Hooks.js';
 import { getAnchorElement } from './modules/getAnchorElement.js';
 import { awaitAnimations } from './modules/awaitAnimations.js';
-import { navigate, performNavigation, abort } from './modules/navigate.js';
+import { navigate, performNavigation, undo } from './modules/navigate.js';
 import { type NavigationToSelfAction } from './modules/navigate.js';
 import { fetchPage } from './modules/fetchPage.js';
 import { animatePageOut } from './modules/animatePageOut.js';
@@ -118,7 +118,7 @@ export default class Swup {
 	/** Navigate to a new URL */
 	navigate = navigate;
 	/** Abort the currently running navigation */
-	abort = abort;
+	undo = undo;
 	/** Actually perform a navigation */
 	protected performNavigation = performNavigation;
 	/** Create a new context for this visit */

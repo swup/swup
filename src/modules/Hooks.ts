@@ -33,7 +33,8 @@ export interface HookDefinitions {
 	'scroll:anchor': { hash: string; options: ScrollIntoViewOptions };
 	'visit:start': undefined;
 	'visit:transition': undefined;
-	'visit:abort': { replaced: boolean };
+	'visit:abort': undefined;
+	'visit:undo': undefined;
 	'visit:end': undefined;
 }
 

@@ -77,9 +77,8 @@ export async function performNavigation(
 			return;
 		} else {
 			// Currently navigating and content not loaded? Mark as aborted
-			// We don't call swup.abort() here because we don't want to undo history and animation classes
-			this.hooks.callSync('visit:abort', this.visit, { replaced: true });
-			this.visit.state = VisitState.ABORTED;
+			this.hooks.callSync('visit:abort', this.visit, undefined);
+			visit.state = VisitState.ABORTED;
 		}
 	}
 
@@ -238,8 +237,7 @@ export async function performNavigation(
  * @param visit The visit to abort.
  * @returns void
  */
-export function abort(this: Swup, visit?: Visit): void {
-	visit = visit || this.visit;
+export function undo(this: Swup, visit?: Visit): void {
 	const state = (window.history.state as HistoryState) || {};
 
 	// Only undo currently running visits
@@ -253,7 +251,7 @@ export function abort(this: Swup, visit?: Visit): void {
 		const previousUrl = visit.from.url + visit.from.hash;
 		this.currentPageUrl = previousUrl;
 		this.navigating = false;
-		this.hooks.callSync('visit:abort', visit, { replaced: false }, (visit) => {
+		this.hooks.callSync('visit:undo', visit, undefined, (visit) => {
 			// Remove animation classes
 			this.classes.clear();
 			// Undo history and url bar changes

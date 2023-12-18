@@ -42,7 +42,7 @@ test.describe('navigation', () => {
 
 	test('ignores consecutive clicks on the same link', async ({ page }) => {
 		await page.evaluate(() => {
-			window.data = { clickCount: 0 }
+			window.data = { clickCount: 0 };
 			window._swup.hooks.on('link:click', () => (window.data.clickCount += 1));
 		});
 		await clickOnLink(page, '/page-2.html', { clickCount: 3 });
@@ -84,10 +84,7 @@ test.describe('navigation', () => {
 		await page.evaluate(() => {
 			window._swup.hooks.on('animation:out:start', (visit) => visit.abort());
 		});
-		const expected = [
-			'visit:start',
-			'visit:abort'
-		];
+		const expected = ['visit:start', 'visit:abort'];
 		await clickOnLink(page, '/rapid-navigation/page-2.html');
 		await sleep(1000); // we have to wait here, since we cannot rely on anything from swup (the visit is being exited)
 		const received = await page.evaluate(() => window.data.received);
@@ -115,7 +112,7 @@ test.describe('navigation', () => {
 			'animation:in:await',
 			'animation:in:end',
 			'visit:transition',
-			'visit:end',
+			'visit:end'
 		];
 		await clickOnLink(page, '/rapid-navigation/page-2.html');
 		await sleep(1500); // we have to wait here, since we cannot rely on anything from swup (the visit is being exited)

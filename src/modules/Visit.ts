@@ -76,15 +76,15 @@ export interface VisitInitOptions {
 
 /** @internal */
 export const VisitState = {
-	CREATED: 1,
-	QUEUED: 2,
-	STARTED: 3,
-	LEAVING: 4,
-	LOADED: 5,
-	ENTERING: 6,
-	COMPLETED: 7,
-	ABORTED: 8,
-	FAILED: 9
+	CREATED: 10,
+	QUEUED: 20,
+	STARTED: 30,
+	LEAVING: 40,
+	LOADED: 50,
+	ENTERING: 60,
+	COMPLETED: 70,
+	ABORTED: 80,
+	FAILED: 90
 } as const;
 
 /** @internal */
@@ -154,9 +154,14 @@ export class Visit {
 		}
 	}
 
-	/** Abort the visit. */
+	/** Undo the visit. */
+	undo() {
+		this.swup.undo(this);
+	}
+
+	/** Discard the visit @internal */
 	abort() {
-		this.swup.abort(this);
+		this.state = VisitState.ABORTED;
 	}
 
 	/** Is this visit done, i.e. completed, failed, or aborted? */
