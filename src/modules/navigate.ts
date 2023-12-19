@@ -70,15 +70,14 @@ export async function performNavigation(
 	options: NavigationOptions & FetchOptions = {}
 ): Promise<void> {
 	if (this.navigating) {
-		if (this.visit.state >= VisitState.ENTERING) {
-			// Currently navigating and content already loaded? Finish and queue
+		if (this.visit.abortable) {
+			// Currently navigating & content not yet loaded? Abort current visit before starting new one
+			this.visit.abort();
+		} else {
+			// Currently navigating & content already loaded? Finish current visit and enqueue new one
 			visit.state = VisitState.QUEUED;
 			this.onVisitEnd = () => this.performNavigation(visit, options);
 			return;
-		} else {
-			// Currently navigating and content not loaded? Mark as aborted
-			this.hooks.callSync('visit:abort', this.visit, undefined);
-			visit.state = VisitState.ABORTED;
 		}
 	}
 
@@ -232,37 +231,37 @@ export async function performNavigation(
 }
 
 /**
- * Abort the currently running navigation and undo any changes done in the meantime.
- *
+ * Undo the most recent visit: revert history entry and remove animation classes.
  * @param visit The visit to abort.
  * @returns void
+ * @internal
  */
-export function undo(this: Swup, visit?: Visit): void {
+export function undo(this: Swup, visit: Visit): void {
 	const state = (window.history.state as HistoryState) || {};
 
 	// Only undo currently running visits
 	if (!this.navigating || !visit || visit.done) return;
 
-	// Only undo visits that haven't started entering yet
-	if (visit.state >= VisitState.ENTERING) return;
+	// Only undo visits that can be aborted, i.e. haven't started entering yet
+	if (!visit.abortable) return;
 
 	// Aborting most recent visit? Undo history and url bar changes
 	if (state.visit === visit.id) {
-		const previousUrl = visit.from.url + visit.from.hash;
-		this.currentPageUrl = previousUrl;
+		this.currentPageUrl = visit.from.url + visit.from.hash;
 		this.navigating = false;
-		this.hooks.callSync('visit:undo', visit, undefined, (visit) => {
+		this.hooks.callSync('visit:undo', visit, undefined, () => {
 			// Remove animation classes
 			this.classes.clear();
 			// Undo history and url bar changes
 			if (state.action === 'replace') {
-				updateHistoryRecord(previousUrl);
+				updateHistoryRecord(visit.from.url + visit.from.hash);
 			} else {
 				window.history.back();
 			}
 		});
 	}
 
-	// Only set this here so that hooks get called
+	// Only set this here so that hooks still get called
+	// Probably set in visit.abort() right after visit.undo(), but let's make sure
 	visit.state = VisitState.ABORTED;
 }

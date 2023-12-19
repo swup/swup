@@ -33,9 +33,9 @@ export interface HookDefinitions {
 	'scroll:anchor': { hash: string; options: ScrollIntoViewOptions };
 	'visit:start': undefined;
 	'visit:transition': undefined;
+	'visit:end': undefined;
 	'visit:abort': undefined;
 	'visit:undo': undefined;
-	'visit:end': undefined;
 }
 
 export interface HookReturnValues {
@@ -155,8 +155,9 @@ export class Hooks {
 		'scroll:anchor',
 		'visit:start',
 		'visit:transition',
+		'visit:end',
 		'visit:abort',
-		'visit:end'
+		'visit:undo'
 	];
 
 	constructor(swup: Swup) {
