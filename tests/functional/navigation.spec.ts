@@ -138,4 +138,19 @@ test.describe('navigation', () => {
 		const received = await page.evaluate(() => window.data.received);
 		expect(received).toEqual(expected);
 	});
+
+	test('can undo aborted visits from the start', async ({ page }) => {
+		await page.goto('/rapid-navigation/page-1.html');
+		await waitForSwup(page);
+		await page.evaluate(() => {
+			window._swup.hooks.before('visit:start', (visit) => visit.abort(true));
+		});
+		const expected = ['visit:start', 'visit:abort'];
+		await clickOnLink(page, '/rapid-navigation/page-2.html');
+		await sleep(500); // we have to wait here, since we cannot rely on anything from swup (the visit is being exited)
+		// Expected state: url = still at page 1
+		await expectToBeAt(page, '/rapid-navigation/page-1.html', 'Rapid Navigation Page 1');
+		const received = await page.evaluate(() => window.data.received);
+		expect(received).toEqual(expected);
+	});
 });
