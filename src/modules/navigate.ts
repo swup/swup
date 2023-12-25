@@ -265,7 +265,7 @@ export function undo(this: Swup, visit: Visit): void {
 		});
 	}
 
-	// Only set this here so that hooks still get called
-	// Probably set in visit.abort() right after visit.undo(), but let's make sure
+	// Only set this at the end so that any hooks still get called
+	// This is probably set at the end of visit.abort(), but let's make sure
 	visit.state = VisitState.ABORTED;
 }
