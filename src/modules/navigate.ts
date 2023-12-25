@@ -235,9 +235,23 @@ export async function performNavigation(
 }
 
 /**
- * Undo the most recent visit: revert history entry and remove animation classes.
+ * Abort a running visit: mark as aborted and optionally undo changes.
  * @param visit The visit to abort.
- * @returns void
+ * @param undo Whether to undo changes made by this visit.
+ * @internal
+ */
+export function abort(this: Swup, visit: Visit, undo: boolean = false): void {
+	if (!visit.abortable) return;
+	this.hooks.callSync('visit:abort', visit, undefined);
+	if (undo) {
+		this.undo(visit);
+	}
+	this.navigating = false;
+}
+
+/**
+ * Undo the most recent visit: revert history entry and remove animation classes.
+ * @param visit The visit to undo.
  * @internal
  */
 export function undo(this: Swup, visit: Visit): void {
@@ -252,7 +266,6 @@ export function undo(this: Swup, visit: Visit): void {
 	// Aborting most recent visit? Undo history and url bar changes
 	if (state.visit === visit.id) {
 		this.currentPageUrl = visit.from.url + visit.from.hash;
-		this.navigating = false;
 		this.hooks.callSync('visit:undo', visit, undefined, () => {
 			// Remove animation classes
 			this.classes.clear();
@@ -264,8 +277,4 @@ export function undo(this: Swup, visit: Visit): void {
 			}
 		});
 	}
-
-	// Only set this at the end so that any hooks still get called
-	// This is probably set at the end of visit.abort(), but let's make sure
-	visit.state = VisitState.ABORTED;
 }

@@ -157,10 +157,7 @@ export class Visit {
 	/** Abort the visit. @internal */
 	abort(undo: boolean = false) {
 		if (!this.abortable) return;
-		this.swup.hooks.callSync('visit:abort', this, undefined);
-		if (undo) {
-			this.swup.undo(this);
-		}
+		this.swup.abort(this, undo);
 		this.state = VisitState.ABORTED;
 	}
 
@@ -171,8 +168,9 @@ export class Visit {
 
 	/** Can this visit be aborted safely? @internal */
 	get abortable(): boolean {
-		return this.state < VisitState.ENTERING;
 		if (this.history.popstate) return false;
+		if (this.state >= VisitState.ENTERING) return false;
+		return true;
 	}
 }
 
