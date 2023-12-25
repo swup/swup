@@ -126,6 +126,20 @@ export async function performNavigation(
 
 		visit.state = VisitState.STARTED;
 
+		// Create/update history record if this is not a popstate call or leads to the same URL
+		if (!visit.history.popstate) {
+			// Add the hash directly from the trigger element
+			const newUrl = visit.to.url + visit.to.hash;
+			if (visit.history.action === 'replace' || visit.to.url === this.currentPageUrl) {
+				updateHistoryRecord(newUrl, { visit: visit.id });
+			} else {
+				this.currentHistoryIndex++;
+				createHistoryRecord(newUrl, { visit: visit.id, index: this.currentHistoryIndex });
+			}
+		}
+
+		this.currentPageUrl = getCurrentUrl();
+
 		// Begin loading page
 		const page = this.hooks.call('page:load', visit, { options }, async (visit, args) => {
 			// Read from cache
@@ -145,20 +159,6 @@ export async function performNavigation(
 			visit.advance(VisitState.LOADED);
 			visit.to.html = html;
 		});
-
-		// Create/update history record if this is not a popstate call or leads to the same URL
-		if (!visit.history.popstate) {
-			// Add the hash directly from the trigger element
-			const newUrl = visit.to.url + visit.to.hash;
-			if (visit.history.action === 'replace' || visit.to.url === this.currentPageUrl) {
-				updateHistoryRecord(newUrl, { visit: visit.id });
-			} else {
-				this.currentHistoryIndex++;
-				createHistoryRecord(newUrl, { visit: visit.id, index: this.currentHistoryIndex });
-			}
-		}
-
-		this.currentPageUrl = getCurrentUrl();
 
 		// Mark visit type with classes
 		if (visit.history.popstate) {
