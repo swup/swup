@@ -155,9 +155,10 @@ export async function performNavigation(
 		});
 
 		// When page loaded: mark visit as loaded, save html into visit object
-		page.then(({ html }) => {
+		page.then((data) => {
+			if (!data?.html) return; // visit might have been aborted before
 			visit.advance(VisitState.LOADED);
-			visit.to.html = html;
+			visit.to.html = data.html;
 		});
 
 		// Mark visit type with classes
