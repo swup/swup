@@ -20,7 +20,7 @@ const mockPage = (body: string): PageData => {
 };
 
 const stubGlobalDocument = (body: string): void => {
-	const dom = new JSDOM(getHtml(body));
+	const dom = new JSDOM(getHtml(body), { url: 'http://localhost:3000' });
 	vi.stubGlobal('document', dom.window.document);
 };
 

@@ -1,4 +1,4 @@
-import { updateHistoryRecord, getCurrentUrl, classify } from '../helpers.js';
+import { updateHistoryRecord, getCurrentUrl, classify, Location } from '../helpers.js';
 import type Swup from '../Swup.js';
 import type { PageData } from './fetchPage.js';
 import { VisitState, type Visit } from './Visit.js';
@@ -19,8 +19,9 @@ export const renderPage = async function (this: Swup, visit: Visit, page: PageDa
 	// update state if the url was redirected
 	if (!this.isSameResolvedUrl(getCurrentUrl(), url)) {
 		updateHistoryRecord(url);
-		this.currentPageUrl = getCurrentUrl();
-		visit.to.url = this.currentPageUrl;
+		this.location = Location.fromUrl(url);
+		visit.to.url = this.location.url;
+		visit.to.hash = this.location.hash;
 	}
 
 	// only add for animated page loads
@@ -48,5 +49,5 @@ export const renderPage = async function (this: Swup, visit: Visit, page: PageDa
 		return this.scrollToContent(visit);
 	});
 
-	await this.hooks.call('page:view', visit, { url: this.currentPageUrl, title: document.title });
+	await this.hooks.call('page:view', visit, { url: this.location.url, title: document.title });
 };

@@ -115,12 +115,12 @@ export class Visit {
 	scroll: VisitScroll;
 
 	constructor(swup: Swup, options: VisitInitOptions) {
-		const { to, from = swup.currentPageUrl, hash, el, event } = options;
+		const { to, from = swup.location.url, hash, el, event } = options;
 
 		this.swup = swup;
 		this.id = Math.random();
 		this.state = VisitState.CREATED;
-		this.from = { url: from, hash: window.location.hash };
+		this.from = { url: from, hash: swup.location.hash };
 		this.to = { url: to, hash };
 		this.containers = swup.options.containers;
 		this.animation = {

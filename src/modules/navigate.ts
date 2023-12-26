@@ -5,7 +5,6 @@ import {
 	type HistoryState,
 	createHistoryRecord,
 	updateHistoryRecord,
-	getCurrentUrl,
 	Location,
 	classify
 } from '../helpers.js';
@@ -85,7 +84,7 @@ export async function performNavigation(
 	this.visit = visit;
 
 	const { el } = visit.trigger;
-	options.referrer = options.referrer || this.currentPageUrl;
+	options.referrer = options.referrer || this.location.url;
 
 	if (options.animate === false) {
 		visit.animation.animate = false;
@@ -126,11 +125,12 @@ export async function performNavigation(
 
 		visit.state = VisitState.STARTED;
 
+		const newUrl = visit.to.url + visit.to.hash;
+
 		// Create/update history record if this is not a popstate call or leads to the same URL
 		if (!visit.history.popstate) {
 			// Add the hash directly from the trigger element
-			const newUrl = visit.to.url + visit.to.hash;
-			if (visit.history.action === 'replace' || visit.to.url === this.currentPageUrl) {
+			if (visit.history.action === 'replace' || visit.to.url === this.location.url) {
 				updateHistoryRecord(newUrl, { visit: visit.id });
 			} else {
 				this.currentHistoryIndex++;
@@ -138,7 +138,7 @@ export async function performNavigation(
 			}
 		}
 
-		this.currentPageUrl = getCurrentUrl();
+		this.location = Location.fromUrl(newUrl);
 
 		// Begin loading page
 		const page = this.hooks.call('page:load', visit, { options }, async (visit, args) => {
@@ -266,7 +266,7 @@ export function undo(this: Swup, visit: Visit): void {
 
 	// Aborting most recent visit? Undo history and url bar changes
 	if (state.visit === visit.id) {
-		this.currentPageUrl = visit.from.url + visit.from.hash;
+		this.location = Location.fromUrl(visit.from.url + visit.from.hash);
 		this.hooks.callSync('visit:undo', visit, undefined, () => {
 			// Remove animation classes
 			this.classes.clear();
