@@ -143,7 +143,7 @@ test.describe('navigation', () => {
 		await page.goto('/rapid-navigation/page-1.html');
 		await waitForSwup(page);
 		await page.evaluate(() => {
-			window._swup.hooks.before('visit:start', (visit) => visit.abort(true));
+			window._swup.hooks.on('visit:start', (visit) => visit.abort(true));
 		});
 		const expected = ['visit:start', 'visit:abort'];
 		await clickOnLink(page, '/rapid-navigation/page-2.html');
