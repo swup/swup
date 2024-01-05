@@ -2,7 +2,6 @@ import { expect, test } from '@playwright/test';
 
 import { expectSwupAnimationDuration } from '../support/swup.js';
 import { clickOnLink, expectToBeAt, sleep } from '../support/commands.js';
-import { nextTick } from '../../src/utils.js';
 
 test.describe('animation timing', () => {
 	test.skip(({ browserName }) => browserName === 'webkit', 'WebKit measurements are off');
