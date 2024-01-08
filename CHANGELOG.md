@@ -1,5 +1,10 @@
 # Changelog
 
+## [4.5.1] - 2024-01
+
+- Wait with transition class mutations when pausing before `content:replace`
+- Ignore errors in user hooks
+
 ## [4.5.0] - 2023-12
 
 - Support View Transitions API in new native mode
@@ -195,6 +200,7 @@ See [upgrade instructions](https://swup.js.org/getting-started/upgrading-v3/) fo
 
 - Fix bug where animateHistoryBrowsing option was ignored for OUT animations
 
+[4.5.1]: https://github.com/swup/swup/releases/tag/4.5.1
 [4.5.0]: https://github.com/swup/swup/releases/tag/4.5.0
 [4.4.4]: https://github.com/swup/swup/releases/tag/4.4.4
 [4.4.3]: https://github.com/swup/swup/releases/tag/4.4.3
