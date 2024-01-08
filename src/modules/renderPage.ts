@@ -14,8 +14,6 @@ export const renderPage = async function (this: Swup, visit: Visit, page: PageDa
 
 	const { url } = page;
 
-	this.classes.remove('is-leaving');
-
 	// update state if the url was redirected
 	if (!this.isSameResolvedUrl(getCurrentUrl(), url)) {
 		updateHistoryRecord(url);
@@ -23,13 +21,13 @@ export const renderPage = async function (this: Swup, visit: Visit, page: PageDa
 		visit.to.url = this.currentPageUrl;
 	}
 
-	// only add for animated page loads
-	if (visit.animation.animate) {
-		this.classes.add('is-rendering');
-	}
-
 	// replace content: allow handlers and plugins to overwrite paga data and containers
 	await this.hooks.call('content:replace', visit, { page }, (visit, { page }) => {
+		this.classes.remove('is-leaving');
+		// only add for animated page loads
+		if (visit.animation.animate) {
+			this.classes.add('is-rendering');
+		}
 		const success = this.replaceContent(page, { containers: visit.containers });
 		if (!success) {
 			throw new Error('[swup] Container mismatch, aborting');
