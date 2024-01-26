@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-import { clickOnLink, expectToBeAt } from '../support/commands.js';
+import { clickOnLink, expectToBeAt, sleep } from '../support/commands.js';
 import { expectSwupAnimationDuration, navigateWithSwup } from '../support/swup.js';
 
 test.describe('visit object', () => {
@@ -34,6 +34,39 @@ test.describe('visit object', () => {
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
 		await page.waitForSelector('html:not(.is-changing)');
 		expect(await page.evaluate(() => window.data)).toMatch(/<h1>Page 2/i);
+	});
+
+	test('has the next page document', async ({ page }) => {
+		await page.evaluate(() => {
+			window._swup.hooks.before('content:replace', (visit) => (window.data = visit.to.document));
+		});
+		await navigateWithSwup(page, '/page-2.html');
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+		await page.waitForSelector('html:not(.is-changing)');
+		expect(await page.evaluate(() => window.data && window.data instanceof Document)).toBe(true);
+	});
+
+	test('removes the next page document when finished', async ({ page }) => {
+		await page.evaluate(() => {
+			window._swup.hooks.on('visit:start', (visit) => (window.data = visit));
+		});
+		await navigateWithSwup(page, '/page-2.html');
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+		await page.waitForSelector('html:not(.is-changing)');
+		await sleep(20);
+		expect(await page.evaluate(() => window.data.to.document === undefined)).toBe(true);
+	});
+
+	test('removes the next page document when aborted', async ({ page }) => {
+		await page.evaluate(() => {
+			window._swup.hooks.once('visit:start', (visit) => (window.data = visit));
+			window._swup.hooks.once('visit:start', () => window._swup.navigate('/page-3.html'));
+		});
+		await navigateWithSwup(page, '/page-3.html');
+		await expectToBeAt(page, '/page-3.html', 'Page 3');
+		await page.waitForSelector('html:not(.is-changing)');
+		await sleep(20);
+		expect(await page.evaluate(() => window.data.to.document === undefined)).toBe(true);
 	});
 
 	test('passes along click trigger and event', async ({ page }) => {
