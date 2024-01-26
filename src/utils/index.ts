@@ -46,12 +46,11 @@ export function runAsPromise(func: Function, args: unknown[] = []): Promise<unkn
 
 /**
  * Force a layout reflow, e.g. after adding classnames
- * @returns The offset height, just here so it doesn't get optimized away by the JS engine
  * @see https://stackoverflow.com/a/21665117/3759615
  */
-export function forceReflow(element?: HTMLElement) {
+export function forceReflow(element?: HTMLElement): void {
 	element = element || document.body;
-	return element?.offsetHeight;
+	element?.getBoundingClientRect();
 }
 
 /** Escape a string with special chars to not break CSS selectors. */
