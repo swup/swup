@@ -18,7 +18,7 @@ export interface VisitTo {
 	/** The HTML content of the next page */
 	html?: string;
 	/** The parsed document of the next page, available during visit */
-	document?: HTMLElement;
+	document?: Document;
 }
 
 export interface VisitAnimation {

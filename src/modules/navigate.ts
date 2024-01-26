@@ -142,6 +142,7 @@ export async function performNavigation(
 		page.then(({ html }) => {
 			visit.advance(VisitState.LOADED);
 			visit.to.html = html;
+			visit.to.document = new DOMParser().parseFromString(html, 'text/html');
 		});
 
 		// Create/update history record if this is not a popstate call or leads to the same URL

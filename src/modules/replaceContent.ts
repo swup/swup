@@ -1,7 +1,7 @@
 import type Swup from '../Swup.js';
 import type { Options } from '../Swup.js';
 import { query, queryAll } from '../utils.js';
-import type { PageData } from './fetchPage.js';
+import type { Visit } from './Visit.js';
 
 /**
  * Perform the replacement of content after loading a page.
@@ -13,10 +13,11 @@ import type { PageData } from './fetchPage.js';
  */
 export const replaceContent = function (
 	this: Swup,
-	{ html }: PageData,
+	visit: Visit,
 	{ containers }: { containers: Options['containers'] } = this.options
 ): boolean {
-	const incomingDocument = new DOMParser().parseFromString(html, 'text/html');
+	const incomingDocument = visit.to.document;
+	if (!incomingDocument) return false;
 
 	// Update browser title
 	const title = incomingDocument.querySelector('title')?.innerText || '';
