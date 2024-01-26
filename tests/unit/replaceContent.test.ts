@@ -1,6 +1,7 @@
-import { describe, expect, it, vi, afterEach } from 'vitest';
+import { describe, expect, it, vi, afterEach, beforeEach } from 'vitest';
 import Swup from '../../src/Swup.js';
 import type { PageData } from '../../src/modules/fetchPage.js';
+import { Visit, createVisit } from '../../src/modules/Visit.js';
 import { JSDOM } from 'jsdom';
 
 const getHtml = (body: string): string => {
@@ -12,19 +13,22 @@ const getHtml = (body: string): string => {
 	`;
 };
 
-const mockPage = (body: string): PageData => {
-	return {
-		url: '',
-		html: getHtml(body)
-	};
-};
-
 const stubGlobalDocument = (body: string): void => {
 	const dom = new JSDOM(getHtml(body));
 	vi.stubGlobal('document', dom.window.document);
 };
 
+class SwupWithPublicVisitMethods extends Swup {
+	public createVisit = createVisit;
+}
+
+const swup = new SwupWithPublicVisitMethods();
+let visit: Visit;
+
 describe('replaceContent', () => {
+	beforeEach(() => {
+		visit = swup.createVisit({ to: '' });
+	});
 	afterEach(() => {
 		vi.unstubAllGlobals();
 	});
@@ -36,12 +40,13 @@ describe('replaceContent', () => {
 			<div id="container-3" data-from="current"></div>
 		`);
 
-		const page = mockPage(/*html*/ `
+		const html = `
 			<div id="container-1" data-from="incoming"></div>
-			<div id="container-2" data-from="incoming"></div>`);
-		const swup = new Swup();
+			<div id="container-2" data-from="incoming"></div>`;
+		visit.to.document = new DOMParser().parseFromString(html, 'text/html')
 
-		const result = swup.replaceContent(page, { containers: ['#container-1', '#container-2'] });
+		const swup = new Swup();
+		const result = swup.replaceContent(visit, { containers: ['#container-1', '#container-2'] });
 
 		expect(result).toBe(true);
 		expect(document.querySelector('#container-1')?.getAttribute('data-from')).toBe('incoming');
@@ -54,13 +59,14 @@ describe('replaceContent', () => {
 			<div id="container-1" data-from="current"></div>
 		`);
 		const warn = vi.spyOn(console, 'warn');
-		const page = mockPage(/*html*/ `
+		const html = `
 			<div id="container-1" data-from="incoming"></div>
 			<div id="container-2" data-from="incoming"></div>
-			`);
+			`;
+		visit.to.document = new DOMParser().parseFromString(html, 'text/html')
 
 		const swup = new Swup();
-		const result = swup.replaceContent(page, { containers: ['#container-1', '#missing'] });
+		const result = swup.replaceContent(visit, { containers: ['#container-1', '#missing'] });
 
 		expect(result).toBe(false);
 		expect(warn).not.toBeCalledWith(
@@ -76,11 +82,11 @@ describe('replaceContent', () => {
 			<div id="container-3" data-from="current"></div>
 		`);
 		const warn = vi.spyOn(console, 'warn');
-		const page = mockPage(/*html*/ `
-			<div id="container-1" data-from="incoming"></div>`);
+		const html = `<div id="container-1" data-from="incoming"></div>`;
+		visit.to.document = new DOMParser().parseFromString(html, 'text/html')
 
 		const swup = new Swup();
-		const result = swup.replaceContent(page, { containers: ['#container-1', '#missing'] });
+		const result = swup.replaceContent(visit, { containers: ['#container-1', '#missing'] });
 
 		expect(result).toBe(false);
 		expect(warn).not.toBeCalledWith(
