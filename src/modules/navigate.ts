@@ -79,6 +79,7 @@ export async function performNavigation(
 		} else {
 			// Currently navigating and content not loaded? Abort running visit
 			await this.hooks.call('visit:abort', this.visit, undefined);
+			delete this.visit.to.document;
 			this.visit.state = VisitState.ABORTED;
 		}
 	}
@@ -230,5 +231,7 @@ export async function performNavigation(
 
 		// Go back to the actual page we're still at
 		window.history.back();
+	} finally {
+		delete visit.to.document;
 	}
 }
