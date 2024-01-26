@@ -14,6 +14,7 @@ export class Location extends URL {
 	 * The full local path including query params.
 	 */
 	get url(): string {
+		if (this.origin !== window.location.origin) return this.href;
 		return this.pathname + this.search;
 	}
 
