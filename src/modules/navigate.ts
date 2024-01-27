@@ -139,7 +139,10 @@ export async function performNavigation(
 			return args.page;
 		});
 
-		// When page loaded: mark visit as loaded, save html into visit object
+		/**
+		 * When the page is loaded: mark the visit as loaded and save
+		 * the raw html and a parsed document of the received page in the visit object
+		 */
 		page.then(({ html }) => {
 			visit.advance(VisitState.LOADED);
 			visit.to.html = html;
