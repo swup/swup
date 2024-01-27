@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.5.2] - 2024-01-27
+
+- Fix reflow helper being optimized away during build step
+
 ## [4.5.1] - 2024-01-08
 
 - Wait with transition class mutations when pausing before `content:replace`
@@ -200,6 +204,7 @@ See [upgrade instructions](https://swup.js.org/getting-started/upgrading-v3/) fo
 
 - Fix bug where animateHistoryBrowsing option was ignored for OUT animations
 
+[4.5.2]: https://github.com/swup/swup/releases/tag/4.5.2
 [4.5.1]: https://github.com/swup/swup/releases/tag/4.5.1
 [4.5.0]: https://github.com/swup/swup/releases/tag/4.5.0
 [4.4.4]: https://github.com/swup/swup/releases/tag/4.4.4
