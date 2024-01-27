@@ -40,7 +40,7 @@ describe('replaceContent', () => {
 			<div id="container-3" data-from="current"></div>
 		`);
 
-		const html = `
+		const html = /*html*/ `
 			<div id="container-1" data-from="incoming"></div>
 			<div id="container-2" data-from="incoming"></div>`;
 		visit.to.document = new DOMParser().parseFromString(html, 'text/html')
@@ -59,7 +59,7 @@ describe('replaceContent', () => {
 			<div id="container-1" data-from="current"></div>
 		`);
 		const warn = vi.spyOn(console, 'warn');
-		const html = `
+		const html = /*html*/ `
 			<div id="container-1" data-from="incoming"></div>
 			<div id="container-2" data-from="incoming"></div>
 			`;
@@ -82,7 +82,7 @@ describe('replaceContent', () => {
 			<div id="container-3" data-from="current"></div>
 		`);
 		const warn = vi.spyOn(console, 'warn');
-		const html = `<div id="container-1" data-from="incoming"></div>`;
+		const html = /*html*/ `<div id="container-1" data-from="incoming"></div>`;
 		visit.to.document = new DOMParser().parseFromString(html, 'text/html')
 		visit.containers = ['#container-1', '#missing'];
 
