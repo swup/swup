@@ -5,9 +5,6 @@ import type { Visit } from './Visit.js';
 /**
  * Perform the replacement of content after loading a page.
  *
- * It takes an object with the page data as returned from `fetchPage` and a list
- * of container selectors to replace.
- *
  * @returns Whether all containers were replaced.
  */
 export const replaceContent = function (this: Swup, visit: Visit): boolean {
