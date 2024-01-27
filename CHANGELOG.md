@@ -1,11 +1,11 @@
 # Changelog
 
-## [4.5.1] - 2024-01
+## [4.5.1] - 2024-01-08
 
 - Wait with transition class mutations when pausing before `content:replace`
 - Ignore errors in user hooks
 
-## [4.5.0] - 2023-12
+## [4.5.0] - 2023-12-01
 
 - Support View Transitions API in new native mode
 - Handle rapid link clicks to achieve smooth transitions
