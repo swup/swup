@@ -1,5 +1,4 @@
 import type Swup from '../Swup.js';
-import type { Options } from '../Swup.js';
 import { query, queryAll } from '../utils.js';
 import type { Visit } from './Visit.js';
 
@@ -11,11 +10,7 @@ import type { Visit } from './Visit.js';
  *
  * @returns Whether all containers were replaced.
  */
-export const replaceContent = function (
-	this: Swup,
-	visit: Visit,
-	{ containers }: { containers: Options['containers'] } = this.options
-): boolean {
+export const replaceContent = function (this: Swup, visit: Visit): boolean {
 	const incomingDocument = visit.to.document;
 	if (!incomingDocument) return false;
 
@@ -27,7 +22,7 @@ export const replaceContent = function (
 	const persistedElements = queryAll('[data-swup-persist]:not([data-swup-persist=""])');
 
 	// Update content containers
-	const replaced = containers
+	const replaced = visit.containers
 		.map((selector) => {
 			const currentEl = document.querySelector(selector);
 			const incomingEl = incomingDocument.querySelector(selector);
@@ -55,5 +50,5 @@ export const replaceContent = function (
 	});
 
 	// Return true if all containers were replaced
-	return replaced.length === containers.length;
+	return replaced.length === visit.containers.length;
 };

@@ -44,9 +44,9 @@ describe('replaceContent', () => {
 			<div id="container-1" data-from="incoming"></div>
 			<div id="container-2" data-from="incoming"></div>`;
 		visit.to.document = new DOMParser().parseFromString(html, 'text/html')
+		visit.containers = ['#container-1', '#container-2'];
 
-		const swup = new Swup();
-		const result = swup.replaceContent(visit, { containers: ['#container-1', '#container-2'] });
+		const result = new Swup().replaceContent(visit);
 
 		expect(result).toBe(true);
 		expect(document.querySelector('#container-1')?.getAttribute('data-from')).toBe('incoming');
@@ -64,9 +64,9 @@ describe('replaceContent', () => {
 			<div id="container-2" data-from="incoming"></div>
 			`;
 		visit.to.document = new DOMParser().parseFromString(html, 'text/html')
+		visit.containers = ['#container-1', '#missing'];
 
-		const swup = new Swup();
-		const result = swup.replaceContent(visit, { containers: ['#container-1', '#missing'] });
+		const result = new Swup().replaceContent(visit);
 
 		expect(result).toBe(false);
 		expect(warn).not.toBeCalledWith(
@@ -84,9 +84,9 @@ describe('replaceContent', () => {
 		const warn = vi.spyOn(console, 'warn');
 		const html = `<div id="container-1" data-from="incoming"></div>`;
 		visit.to.document = new DOMParser().parseFromString(html, 'text/html')
+		visit.containers = ['#container-1', '#missing'];
 
-		const swup = new Swup();
-		const result = swup.replaceContent(visit, { containers: ['#container-1', '#missing'] });
+		const result = new Swup().replaceContent(visit);
 
 		expect(result).toBe(false);
 		expect(warn).not.toBeCalledWith(
