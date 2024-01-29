@@ -94,4 +94,18 @@ describe('replaceContent', () => {
 		);
 		expect(warn).toBeCalledWith('[swup] Container missing in incoming document: #missing');
 	});
+
+	it('should not modify new document in visit object', () => {
+		stubGlobalDocument(/*html*/ `<div id="container" data-from="current"></div>`);
+		const html = /*html*/ `<div id="container" data-from="incoming"></div>`;
+		visit.to.document = new DOMParser().parseFromString(html, 'text/html')
+		visit.containers = ['#container'];
+
+		const documentBefore = visit.to.document.documentElement.innerHTML;
+		new Swup().replaceContent(visit);
+		const documentAfter = visit.to.document.documentElement.innerHTML;
+
+		expect(documentBefore).toEqual(documentAfter);
+		expect(documentAfter).toContain(html);
+	});
 });
