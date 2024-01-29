@@ -24,7 +24,7 @@ export const replaceContent = function (this: Swup, visit: Visit): boolean {
 			const currentEl = document.querySelector(selector);
 			const incomingEl = incomingDocument.querySelector(selector);
 			if (currentEl && incomingEl) {
-				currentEl.replaceWith(incomingEl);
+				currentEl.replaceWith(incomingEl.cloneNode(true));
 				return true;
 			}
 			if (!currentEl) {
