@@ -28,7 +28,7 @@ export const renderPage = async function (this: Swup, visit: Visit, page: PageDa
 		if (visit.animation.animate) {
 			this.classes.add('is-rendering');
 		}
-		const success = this.replaceContent(page, { containers: visit.containers });
+		const success = this.replaceContent(visit);
 		if (!success) {
 			throw new Error('[swup] Container mismatch, aborting');
 		}

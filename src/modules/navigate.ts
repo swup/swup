@@ -79,6 +79,7 @@ export async function performNavigation(
 		} else {
 			// Currently navigating and content not loaded? Abort running visit
 			await this.hooks.call('visit:abort', this.visit, undefined);
+			delete this.visit.to.document;
 			this.visit.state = VisitState.ABORTED;
 		}
 	}
@@ -138,10 +139,14 @@ export async function performNavigation(
 			return args.page;
 		});
 
-		// When page loaded: mark visit as loaded, save html into visit object
+		/**
+		 * When the page is loaded: mark the visit as loaded and save
+		 * the raw html and a parsed document of the received page in the visit object
+		 */
 		page.then(({ html }) => {
 			visit.advance(VisitState.LOADED);
 			visit.to.html = html;
+			visit.to.document = new DOMParser().parseFromString(html, 'text/html');
 		});
 
 		// Create/update history record if this is not a popstate call or leads to the same URL
@@ -229,5 +234,7 @@ export async function performNavigation(
 
 		// Go back to the actual page we're still at
 		window.history.back();
+	} finally {
+		delete visit.to.document;
 	}
 }
