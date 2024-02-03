@@ -125,12 +125,13 @@ test.describe('navigation', () => {
 	});
 
 	test('can undo aborted visits', async ({ page }) => {
+		const expected = ['visit:start', 'visit:abort', 'visit:undo'];
+
 		await page.goto('/rapid-navigation/page-1.html');
 		await waitForSwup(page);
 		await page.evaluate(() => {
 			window._swup.hooks.before('visit:transition', (visit) => visit.abort(true));
 		});
-		const expected = ['visit:start', 'visit:abort', 'visit:undo'];
 		await clickOnLink(page, '/rapid-navigation/page-2.html');
 		await sleep(500); // we have to wait here, since we cannot rely on anything from swup (the visit is being exited)
 		// Expected state: url = reverted to page 1
@@ -140,12 +141,13 @@ test.describe('navigation', () => {
 	});
 
 	test('can undo aborted visits from the start', async ({ page }) => {
+		const expected = ['enable', 'link:click', 'visit:abort'];
+
 		await page.goto('/rapid-navigation/page-1.html');
 		await waitForSwup(page);
 		await page.evaluate(() => {
 			window._swup.hooks.on('visit:start', (visit) => visit.abort(true));
 		});
-		const expected = ['visit:start', 'visit:abort'];
 		await clickOnLink(page, '/rapid-navigation/page-2.html');
 		await sleep(500); // we have to wait here, since we cannot rely on anything from swup (the visit is being exited)
 		// Expected state: url = still at page 1
