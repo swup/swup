@@ -1,0 +1,44 @@
+/* eslint-env node */
+
+// Tweak these and run "npm run lint:compat" to see the compatibliity against these browsers
+const browsers = [
+	'defaults',
+	'Chrome >= 66',
+	'Safari >= 13',
+	'iOS >= 13',
+	'Firefox >= 60',
+	'Edge >= 16',
+	'>=1%',
+	'not op_mini all',
+	'not dead',
+];
+
+// Required to fix an issue when combining existing browserslist config with the one from this file
+// where any negations ("not op_mini all") are removed
+process.env.BROWSERSLIST = browsers.join(',');
+
+module.exports = {
+	root: true,
+	/* First exclude everything, then re-include /dist */
+	ignorePatterns: ['/*', '!/dist'],
+  env: {
+    browser: true,
+		es2024: true
+  },
+	extends: [
+		'plugin:compat/recommended',
+		'plugin:ecmascript-compat/recommended'
+	],
+	plugins: ['compat'],
+	rules: {
+		'compat/compat': 'error',
+		'ecmascript-compat/compat': ['error', { 'overrideBrowserslist': browsers }]
+	},
+	parserOptions: {
+		project: true,
+		sourceType: 'module'
+	},
+	settings: {
+		browsers
+	}
+};
