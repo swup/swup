@@ -3,11 +3,11 @@
 // Tweak these and run "npm run lint:compat" to see the compatibliity against these browsers
 const browsers = [
 	'defaults',
-	'Chrome >= 66',
-	'Safari >= 13',
-	'iOS >= 13',
-	'Firefox >= 60',
-	'Edge >= 16',
+	'Chrome >= 80',
+	'Safari >= 13.1',
+	'iOS >= 13.4',
+	'Firefox >= 74',
+	'Edge >= 80',
 	'>=1%',
 	'not op_mini all',
 	'not dead',
