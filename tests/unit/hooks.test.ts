@@ -335,6 +335,28 @@ describe('Hook registry', () => {
 		expect(defaultHandler).toBeCalledTimes(1);
 		expect(defaultHandler).toHaveBeenNthCalledWith(1, visit, args, undefined);
 	});
+
+	it('should swallow exceptions in user handlers', async () => {
+		const swup = new Swup();
+		const handlerWithError = vi.fn(() => {
+			throw new Error('UserError');
+		});
+
+		swup.hooks.on('enable', handlerWithError);
+		await expect(swup.hooks.call('enable', undefined, undefined)).resolves.toBeUndefined();
+		expect(handlerWithError).toBeCalledTimes(1);
+	});
+
+	it('should re-throw exceptions in default handlers', async () => {
+		const swup = new Swup();
+		const handlerWithError = vi.fn(() => {
+			throw new Error('UserError');
+		});
+
+		swup.hooks.before('enable', handlerWithError); // run before default handler
+		await expect(() => swup.hooks.call('enable', undefined, undefined, handlerWithError)).rejects.toThrow(/^UserError$/);
+		expect(handlerWithError).toBeCalledTimes(2);
+	});
 });
 
 describe('Types', () => {
@@ -356,9 +378,6 @@ describe('Types', () => {
 		// @ts-expect-error: event arg must be PopStateEvent
 		await swup.hooks.call('history:popstate', undefined, { event: new MouseEvent('') });
 		// @ts-expect-error: handler arg must be optional: handler?
-		swup.hooks.replace(
-			'enable',
-			(visit: Visit, args: undefined, handler: HookDefaultHandler<'enable'>) => {}
-		);
+		swup.hooks.replace('enable', (visit: Visit, args: undefined, handler: HookDefaultHandler<'enable'>) => {});
 	});
 });

@@ -154,11 +154,15 @@ export async function performNavigation(
 			return args.page;
 		});
 
-		// When page loaded: mark visit as loaded, save html into visit object
+		/**
+		 * When the page is loaded: mark the visit as loaded and save
+		 * the raw html and a parsed document of the received page in the visit object
+		 */
 		page.then((data) => {
 			if (!data?.html) return; // visit might have been aborted before
 			visit.advance(VisitState.LOADED);
 			visit.to.html = data.html;
+			visit.to.document = new DOMParser().parseFromString(data.html, 'text/html');
 		});
 
 		// Mark visit type with classes
@@ -220,11 +224,10 @@ export async function performNavigation(
 
 		visit.state = VisitState.FAILED;
 
-		// Log to console as we swallow almost all hook errors
+		// Log to console
 		console.error(error);
 
 		// Remove current history entry, then load requested url in browser
-
 		this.options.skipPopStateHandling = () => {
 			window.location.assign(visit.to.url + visit.to.hash);
 			return true;
@@ -232,6 +235,8 @@ export async function performNavigation(
 
 		// Go back to the actual page we're still at
 		window.history.back();
+	} finally {
+		delete visit.to.document;
 	}
 }
 
