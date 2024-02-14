@@ -108,7 +108,7 @@ function awaitAnimationsOnElement(element: Element): Promise<void> | false {
 	});
 }
 
-export function getTransitionInfo(element: Element) {
+function getTransitionInfo(element: Element) {
 	const styles = window.getComputedStyle(element) as AnimationStyleDeclarations;
 
 	const transitionDelays = getStyleProperties(styles, `${TRANSITION}Delay`);
