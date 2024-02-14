@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.6.0] - 2024-02-09
+
+- Provide access to the parsed document through `visit.to.document`
+
 ## [4.5.2] - 2024-01-27
 
 - Fix reflow helper being optimized away during build step
@@ -204,6 +208,7 @@ See [upgrade instructions](https://swup.js.org/getting-started/upgrading-v3/) fo
 
 - Fix bug where animateHistoryBrowsing option was ignored for OUT animations
 
+[4.6.0]: https://github.com/swup/swup/releases/tag/4.6.0
 [4.5.2]: https://github.com/swup/swup/releases/tag/4.5.2
 [4.5.1]: https://github.com/swup/swup/releases/tag/4.5.1
 [4.5.0]: https://github.com/swup/swup/releases/tag/4.5.0
