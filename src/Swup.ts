@@ -164,10 +164,6 @@ export default class Swup {
 	}
 
 	protected checkRequirements() {
-		if (typeof Promise === 'undefined') {
-			console.warn('Promise is not supported');
-			return false;
-		}
 		return true;
 	}
 
