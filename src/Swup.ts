@@ -156,15 +156,7 @@ export default class Swup {
 
 		this.currentHistoryIndex = (window.history.state as HistoryState)?.index ?? 1;
 
-		if (!this.checkRequirements()) {
-			return;
-		}
-
 		this.enable();
-	}
-
-	protected checkRequirements() {
-		return true;
 	}
 
 	/** Enable this instance, adding listeners and classnames. */
