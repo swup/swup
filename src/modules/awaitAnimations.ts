@@ -108,7 +108,7 @@ function awaitAnimationsOnElement(element: Element): Promise<void> | false {
 	});
 }
 
-export function getTransitionInfo(element: Element, expectedType?: AnimationTypes) {
+function getTransitionInfo(element: Element) {
 	const styles = window.getComputedStyle(element) as AnimationStyleDeclarations;
 
 	const transitionDelays = getStyleProperties(styles, `${TRANSITION}Delay`);
@@ -118,31 +118,14 @@ export function getTransitionInfo(element: Element, expectedType?: AnimationType
 	const animationDurations = getStyleProperties(styles, `${ANIMATION}Duration`);
 	const animationTimeout = calculateTimeout(animationDelays, animationDurations);
 
-	let type: AnimationTypes | null = null;
-	let timeout = 0;
-	let propCount = 0;
-
-	if (expectedType === TRANSITION) {
-		if (transitionTimeout > 0) {
-			type = TRANSITION;
-			timeout = transitionTimeout;
-			propCount = transitionDurations.length;
-		}
-	} else if (expectedType === ANIMATION) {
-		if (animationTimeout > 0) {
-			type = ANIMATION;
-			timeout = animationTimeout;
-			propCount = animationDurations.length;
-		}
-	} else {
-		timeout = Math.max(transitionTimeout, animationTimeout);
-		type = timeout > 0 ? (transitionTimeout > animationTimeout ? TRANSITION : ANIMATION) : null;
-		propCount = type
-			? type === TRANSITION
-				? transitionDurations.length
-				: animationDurations.length
-			: 0;
-	}
+	const timeout = Math.max(transitionTimeout, animationTimeout);
+	const type =
+		timeout > 0 ? (transitionTimeout > animationTimeout ? TRANSITION : ANIMATION) : null;
+	const propCount = type
+		? type === TRANSITION
+			? transitionDurations.length
+			: animationDurations.length
+		: 0;
 
 	return {
 		type,
