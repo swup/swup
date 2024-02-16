@@ -98,3 +98,5 @@ If you're having trouble implementing swup, check out the [Common Issues](https:
 
 Become a sponsor on [Open Collective](https://opencollective.com/swup) or support development through
 [GitHub sponsors](https://github.com/sponsors/gmrchk).
+
+This project is tested with BrowserStack.
