@@ -114,7 +114,7 @@ export class Visit {
 	scroll: VisitScroll;
 
 	constructor(swup: Swup, options: VisitInitOptions) {
-		const { to, from = swup.currentPageUrl, hash, el, event } = options;
+		const { to, from = swup.location.url, hash, el, event } = options;
 
 		this.id = Math.random();
 		this.state = VisitState.CREATED;
