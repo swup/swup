@@ -155,12 +155,20 @@ export class Visit {
 
 	/** @internal */
 	abort() {
+		if (!this.abortable) return;
 		this.state = VisitState.ABORTED;
 	}
 
 	/** Is this visit done, i.e. completed, failed, or aborted? */
 	get done(): boolean {
 		return this.state >= VisitState.COMPLETED;
+	}
+
+	/** Can this visit be aborted safely? @internal */
+	get abortable(): boolean {
+		if (this.history.popstate) return false;
+		if (this.state >= VisitState.ENTERING) return false;
+		return true;
 	}
 }
 
