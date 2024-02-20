@@ -19,6 +19,7 @@ export const renderPage = async function (this: Swup, visit: Visit, page: PageDa
 		updateHistoryRecord(url);
 		this.location = Location.fromUrl(url);
 		visit.to.url = this.location.url;
+		visit.to.hash = this.location.hash;
 	}
 
 	// replace content: allow handlers and plugins to overwrite paga data and containers

@@ -8,6 +8,8 @@ import type { HistoryAction, HistoryDirection } from './navigate.js';
 export interface VisitFrom {
 	/** The URL of the previous page */
 	url: string;
+	/** The hash of the previous page */
+	hash?: string;
 }
 
 export interface VisitTo {
@@ -114,11 +116,11 @@ export class Visit {
 	scroll: VisitScroll;
 
 	constructor(swup: Swup, options: VisitInitOptions) {
-		const { to, from = swup.location.url, hash, el, event } = options;
+		const { to, from, hash, el, event } = options;
 
 		this.id = Math.random();
 		this.state = VisitState.CREATED;
-		this.from = { url: from };
+		this.from = { url: from ?? swup.location.url, hash: swup.location.hash };
 		this.to = { url: to, hash };
 		this.containers = swup.options.containers;
 		this.animation = {
