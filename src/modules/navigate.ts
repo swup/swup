@@ -118,9 +118,6 @@ export async function performNavigation(
 	try {
 		await this.hooks.call('visit:start', visit, undefined);
 
-		// Check if failed/aborted in the first hook
-		if (visit.done) return;
-
 		visit.state = VisitState.STARTED;
 
 		// Create/update history record if this is not a popstate call or leads to the same URL
