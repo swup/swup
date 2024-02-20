@@ -93,8 +93,12 @@ export default class Swup {
 	readonly hooks: Hooks;
 	/** Animation class manager */
 	readonly classes: Classes;
-	/** URL of the currently visible page */
-	currentPageUrl: string = getCurrentUrl();
+	/** Location of the currently visible page */
+	location: Location = Location.fromUrl(getCurrentUrl({ hash: true }));
+	/** URL of the currently visible page @deprecated Use swup.location.url instead */
+	get currentPageUrl(): string {
+		return this.location.url;
+	}
 	/** Index of the current history entry */
 	protected currentHistoryIndex: number;
 	/** Delegated event subscription handle */
@@ -334,7 +338,7 @@ export default class Swup {
 		}
 
 		// Exit early if the resolved path hasn't changed
-		if (this.isSameResolvedUrl(getCurrentUrl(), this.currentPageUrl)) {
+		if (this.isSameResolvedUrl(getCurrentUrl(), this.location.url)) {
 			return;
 		}
 
