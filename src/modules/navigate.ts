@@ -65,16 +65,16 @@ export async function performNavigation(
 	options: NavigationOptions & FetchOptions = {}
 ): Promise<void> {
 	if (this.navigating) {
-		if (this.visit.state >= VisitState.ENTERING) {
-			// Currently navigating and content already loaded? Finish and queue
+		if (this.visit.abortable) {
+			// Currently navigating & content not yet loaded? Abort current visit before starting new one
+			await this.hooks.call('visit:abort', this.visit, undefined);
+			delete this.visit.to.document;
+			this.visit.abort();
+		} else {
+			// Currently navigating & content already loaded? Finish current visit and enqueue new one
 			visit.state = VisitState.QUEUED;
 			this.onVisitEnd = () => this.performNavigation(visit, options);
 			return;
-		} else {
-			// Currently navigating and content not loaded? Abort running visit
-			await this.hooks.call('visit:abort', this.visit, undefined);
-			delete this.visit.to.document;
-			this.visit.state = VisitState.ABORTED;
 		}
 	}
 
