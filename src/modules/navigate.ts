@@ -123,6 +123,18 @@ export async function performNavigation(
 
 		visit.state = VisitState.STARTED;
 
+		// Create/update history record if this is not a popstate call or leads to the same URL
+		const newUrl = visit.to.url + visit.to.hash;
+		if (!visit.history.popstate) {
+			if (visit.history.action === 'replace' || visit.to.url === this.location.url) {
+				updateHistoryRecord(newUrl);
+			} else {
+				this.currentHistoryIndex++;
+				createHistoryRecord(newUrl, { index: this.currentHistoryIndex });
+			}
+		}
+		this.location = Location.fromUrl(newUrl);
+
 		// Begin loading page
 		const page = this.hooks.call('page:load', visit, { options }, async (visit, args) => {
 			// Read from cache
@@ -146,20 +158,6 @@ export async function performNavigation(
 			visit.to.html = html;
 			visit.to.document = new DOMParser().parseFromString(html, 'text/html');
 		});
-
-		const newUrl = visit.to.url + visit.to.hash;
-
-		// Create/update history record if this is not a popstate call or leads to the same URL
-		if (!visit.history.popstate) {
-			if (visit.history.action === 'replace' || visit.to.url === this.location.url) {
-				updateHistoryRecord(newUrl);
-			} else {
-				this.currentHistoryIndex++;
-				createHistoryRecord(newUrl, { index: this.currentHistoryIndex });
-			}
-		}
-
-		this.location = Location.fromUrl(newUrl);
 
 		// Mark visit type with classes
 		if (visit.history.popstate) {
