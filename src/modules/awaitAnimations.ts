@@ -1,4 +1,4 @@
-import { queryAll, toMs } from '../utils.js';
+import { queryAll } from '../utils.js';
 import type Swup from '../Swup.js';
 import type { Options } from '../Swup.js';
 
@@ -165,4 +165,8 @@ function calculateTimeout(delays: string[], durations: string[]): number {
 	}
 
 	return Math.max(...durations.map((duration, i) => toMs(duration) + toMs(delays[i])));
+}
+
+function toMs(time: string): number {
+	return parseFloat(time) * 1000;
 }

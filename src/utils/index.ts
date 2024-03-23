@@ -52,8 +52,3 @@ export function forceReflow(element?: HTMLElement): void {
 	element = element || document.body;
 	element?.getBoundingClientRect();
 }
-
-/** Fix for Chrome below v61 formatting CSS floats with comma in some locales. */
-export const toMs = (s: string) => {
-	return Number(s.slice(0, -1).replace(',', '.')) * 1000;
-};
