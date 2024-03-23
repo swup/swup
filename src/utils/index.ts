@@ -53,11 +53,6 @@ export function forceReflow(element?: HTMLElement): void {
 	element?.getBoundingClientRect();
 }
 
-/** Escape a string with special chars to not break CSS selectors. */
-export const escapeCssIdentifier = (ident: string) => {
-	return CSS.escape(ident);
-};
-
 /** Fix for Chrome below v61 formatting CSS floats with comma in some locales. */
 export const toMs = (s: string) => {
 	return Number(s.slice(0, -1).replace(',', '.')) * 1000;
