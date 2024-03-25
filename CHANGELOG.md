@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.6.1] - 2024-03-26
+
+- Reduce bundle size by eliminating unused code paths
+
 ## [4.6.0] - 2024-02-09
 
 - Provide access to the parsed document through `visit.to.document`
@@ -208,6 +212,7 @@ See [upgrade instructions](https://swup.js.org/getting-started/upgrading-v3/) fo
 
 - Fix bug where animateHistoryBrowsing option was ignored for OUT animations
 
+[4.6.1]: https://github.com/swup/swup/releases/tag/4.6.1
 [4.6.0]: https://github.com/swup/swup/releases/tag/4.6.0
 [4.5.2]: https://github.com/swup/swup/releases/tag/4.5.2
 [4.5.1]: https://github.com/swup/swup/releases/tag/4.5.1
