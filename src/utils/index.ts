@@ -52,17 +52,3 @@ export function forceReflow(element?: HTMLElement): void {
 	element = element || document.body;
 	element?.getBoundingClientRect();
 }
-
-/** Escape a string with special chars to not break CSS selectors. */
-export const escapeCssIdentifier = (ident: string) => {
-	// @ts-ignore this is for support check, so it's correct that TS complains
-	if (window.CSS && window.CSS.escape) {
-		return CSS.escape(ident);
-	}
-	return ident;
-};
-
-/** Fix for Chrome below v61 formatting CSS floats with comma in some locales. */
-export const toMs = (s: string) => {
-	return Number(s.slice(0, -1).replace(',', '.')) * 1000;
-};
