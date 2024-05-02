@@ -1,6 +1,6 @@
 # This workflow automatically merges dependabot PRs
 
-name: auto-merge
+name: dependabot-automerge
 
 on:
   pull_request:
