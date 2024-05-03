@@ -1,0 +1,17 @@
+# This workflow automatically merges dependabot PRs
+
+name: dependabot-automerge
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ahmadnassri/action-dependabot-auto-merge@v2
+        with:
+          target: minor
+          github-token: ${{ secrets.GH_TOKEN }}
