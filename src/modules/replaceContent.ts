@@ -11,6 +11,9 @@ export const replaceContent = function (this: Swup, visit: Visit): boolean {
 	const incomingDocument = visit.to.document;
 	if (!incomingDocument) return false;
 
+	// Store currently focused element
+	const activeElement = document.activeElement;
+
 	// Update browser title
 	const title = incomingDocument.querySelector('title')?.innerText || '';
 	document.title = title;
@@ -43,6 +46,11 @@ export const replaceContent = function (this: Swup, visit: Visit): boolean {
 		const replacement = query(`[data-swup-persist="${key}"]`);
 		if (replacement && replacement !== existing) {
 			replacement.replaceWith(existing);
+
+			// Restore focus to the persisted element if it was focused before
+			if (existing === activeElement) {
+				existing.focus();
+			}
 		}
 	});
 
