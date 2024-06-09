@@ -53,7 +53,7 @@ describe('Visit', () => {
 			name: undefined,
 			scope: swup.options.animationScope,
 			selector: swup.options.animationSelector
-		 });
+		});
 	});
 
 	it('has a container array', () => {
@@ -66,7 +66,7 @@ describe('Visit', () => {
 		expect(visit.trigger).toMatchObject({
 			el: undefined,
 			event: undefined
-		 });
+		});
 	});
 
 	it('has a cache object', () => {
