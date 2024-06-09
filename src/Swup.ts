@@ -160,19 +160,7 @@ export default class Swup {
 
 		this.currentHistoryIndex = (window.history.state as HistoryState)?.index ?? 1;
 
-		if (!this.checkRequirements()) {
-			return;
-		}
-
 		this.enable();
-	}
-
-	protected checkRequirements() {
-		if (typeof Promise === 'undefined') {
-			console.warn('Promise is not supported');
-			return false;
-		}
-		return true;
 	}
 
 	/** Enable this instance, adding listeners and classnames. */

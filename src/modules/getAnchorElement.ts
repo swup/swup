@@ -1,4 +1,4 @@
-import { escapeCssIdentifier as escape, query } from '../utils.js';
+import { query } from '../utils.js';
 
 /**
  * Find the anchor element for a given hash.
@@ -21,8 +21,8 @@ export const getAnchorElement = (hash?: string): Element | null => {
 	let element =
 		document.getElementById(hash) ||
 		document.getElementById(decoded) ||
-		query(`a[name='${escape(hash)}']`) ||
-		query(`a[name='${escape(decoded)}']`);
+		query(`a[name='${CSS.escape(hash)}']`) ||
+		query(`a[name='${CSS.escape(decoded)}']`);
 
 	if (!element && hash === 'top') {
 		element = document.body;
