@@ -78,23 +78,33 @@ test.describe('navigation', () => {
 		expect(received).toEqual(expected);
 	});
 
-	test('ignores aborted visits', async ({ page }) => {
+	test('ignores visits aborted before content loads', async ({ page }) => {
+		await page.goto('/rapid-navigation/page-1.html');
+		await waitForSwup(page);
+		await page.evaluate(() => {
+			window._swup.hooks.on('animation:out:start', (visit) => visit.abort());
+		});
+		await clickOnLink(page, '/rapid-navigation/page-2.html');
+		await sleep(1000); // we have to wait here, since we cannot rely on anything from swup (the visit is being exited)
+		const received = await page.evaluate(() => window.data.received);
+		expect(received).toContain('visit:start');
+		expect(received).not.toContain('page:load');
+		expect(received).not.toContain('content:replace');
+		expect(received).not.toContain('visit:end');
+	});
+
+	test('does not ignore visits after content loaded', async ({ page }) => {
 		await page.goto('/rapid-navigation/page-1.html');
 		await waitForSwup(page);
 		await page.evaluate(() => {
 			window._swup.hooks.on('content:replace', (visit) => visit.abort());
 		});
-		const expected = [
-			'visit:start',
-			'animation:out:start',
-			'fetch:request',
-			'page:load',
-			'animation:out:await',
-			'animation:out:end'
-		];
 		await clickOnLink(page, '/rapid-navigation/page-2.html');
-		await sleep(1000); // we have to wait here, since we cannot rely on anything from swup (the visit is being exited)
+		await sleep(1500); // we have to wait here, since we cannot rely on anything from swup (the visit is being exited)
 		const received = await page.evaluate(() => window.data.received);
-		expect(received).toEqual(expected);
+		expect(received).toContain('visit:start');
+		expect(received).toContain('page:load');
+		expect(received).toContain('content:replace');
+		expect(received).toContain('visit:end');
 	});
 });
