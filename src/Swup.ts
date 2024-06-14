@@ -94,7 +94,7 @@ export default class Swup {
 	/** Animation class manager */
 	readonly classes: Classes;
 	/** Location of the currently visible page */
-	location: Location = Location.fromUrl(getCurrentUrl({ hash: true }));
+	location: Location = Location.fromUrl(window.location.href);
 	/** URL of the currently visible page @deprecated Use swup.location.url instead */
 	get currentPageUrl(): string {
 		return this.location.url;
