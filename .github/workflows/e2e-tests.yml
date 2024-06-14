@@ -160,7 +160,7 @@ jobs:
 
       - name: Create report comment
         id: report-summary
-        uses: daun/playwright-report-summary@v2.1.2
+        uses: daun/playwright-report-summary@v3.3.0
         with:
           report-file: results.json
           report-url: ${{ steps.report-id.outputs.url }}
