@@ -166,7 +166,6 @@ export class Visit {
 
 	/** Can this visit be aborted safely? @internal */
 	get abortable(): boolean {
-		if (this.history.popstate) return false;
 		if (this.state >= VisitState.ENTERING) return false;
 		return true;
 	}
