@@ -58,6 +58,7 @@ export async function expectSwupAnimationDuration(page: Page, expected: { total?
 	});
 
 	await navigateWithSwup(page, page.url());
+
 	await page.waitForFunction(() => window.data.end > 0);
 
 	const tolerance = expected ? 0.25 : 0; // 25% plus/minus
