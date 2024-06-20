@@ -1,13 +1,7 @@
 import type Swup from '../Swup.js';
 import { FetchError, type FetchOptions, type PageData } from './fetchPage.js';
 import { type VisitInitOptions, type Visit, VisitState } from './Visit.js';
-import {
-	createHistoryRecord,
-	updateHistoryRecord,
-	getCurrentUrl,
-	Location,
-	classify
-} from '../helpers.js';
+import { createHistoryRecord, updateHistoryRecord, Location, classify } from '../helpers.js';
 
 export type HistoryAction = 'push' | 'replace';
 export type HistoryDirection = 'forwards' | 'backwards';
@@ -88,7 +82,7 @@ export async function performNavigation(
 	this.visit = visit;
 
 	const { el } = visit.trigger;
-	options.referrer = options.referrer || this.currentPageUrl;
+	options.referrer = options.referrer || this.location.url;
 
 	if (options.animate === false) {
 		visit.animation.animate = false;
@@ -123,6 +117,7 @@ export async function performNavigation(
 
 	try {
 		await this.hooks.call('visit:start', visit, undefined);
+
 		visit.state = VisitState.STARTED;
 
 		// Begin loading page
@@ -150,18 +145,16 @@ export async function performNavigation(
 		});
 
 		// Create/update history record if this is not a popstate call or leads to the same URL
+		const newUrl = visit.to.url + visit.to.hash;
 		if (!visit.history.popstate) {
-			// Add the hash directly from the trigger element
-			const newUrl = visit.to.url + visit.to.hash;
-			if (visit.history.action === 'replace' || visit.to.url === this.currentPageUrl) {
+			if (visit.history.action === 'replace' || visit.to.url === this.location.url) {
 				updateHistoryRecord(newUrl);
 			} else {
 				this.currentHistoryIndex++;
 				createHistoryRecord(newUrl, { index: this.currentHistoryIndex });
 			}
 		}
-
-		this.currentPageUrl = getCurrentUrl();
+		this.location = Location.fromUrl(newUrl);
 
 		// Mark visit type with classes
 		if (visit.history.popstate) {
