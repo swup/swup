@@ -31,6 +31,7 @@ export interface HookDefinitions {
 	'page:view': { url: string; title: string };
 	'scroll:top': { options: ScrollIntoViewOptions };
 	'scroll:anchor': { hash: string; options: ScrollIntoViewOptions };
+	'scroll:store': undefined;
 	'visit:start': undefined;
 	'visit:transition': undefined;
 	'visit:abort': undefined;
@@ -152,6 +153,7 @@ export class Hooks {
 		'page:view',
 		'scroll:top',
 		'scroll:anchor',
+		'scroll:store',
 		'visit:start',
 		'visit:transition',
 		'visit:abort',

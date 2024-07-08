@@ -1,10 +1,16 @@
 import { getCurrentUrl } from './getCurrentUrl.js';
 
+export interface ScrollPosition {
+	x: number;
+	y: number;
+}
+
 export interface HistoryState {
 	url: string;
 	source: 'swup';
 	random: number;
 	index?: number;
+	scroll?: { [key: string]: ScrollPosition };
 	[key: string]: unknown;
 }
 

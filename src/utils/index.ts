@@ -52,3 +52,21 @@ export function forceReflow(element?: HTMLElement): void {
 	element = element || document.body;
 	element?.getBoundingClientRect();
 }
+
+/**
+ * Minimal debounce function.
+ * @see https://www.joshwcomeau.com/snippets/javascript/debounce/
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function debounce<F extends (...args: any[]) => any>(
+	callback: F,
+	wait = 0
+): (...args: Parameters<F>) => void {
+	let timeout: ReturnType<typeof setTimeout>;
+	return (...args: Parameters<F>) => {
+		clearTimeout(timeout);
+		timeout = setTimeout(() => {
+			callback(...args);
+		}, wait);
+	};
+}

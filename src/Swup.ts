@@ -20,7 +20,7 @@ import { animatePageIn } from './modules/animatePageIn.js';
 import { renderPage } from './modules/renderPage.js';
 import { use, unuse, findPlugin, type Plugin } from './modules/plugins.js';
 import { isSameResolvedUrl, resolveUrl } from './modules/resolveUrl.js';
-import { nextTick } from './utils.js';
+import { nextTick, debounce } from './utils.js';
 import { type HistoryState } from './helpers/history.js';
 
 /** Options for customizing swup's behavior. */
@@ -152,6 +152,7 @@ export default class Swup {
 
 		this.handleLinkClick = this.handleLinkClick.bind(this);
 		this.handlePopState = this.handlePopState.bind(this);
+		this.storeScrollPosition = debounce(this.storeScrollPosition).bind(this);
 
 		this.cache = new Cache(this);
 		this.classes = new Classes(this);
@@ -171,10 +172,10 @@ export default class Swup {
 
 		window.addEventListener('popstate', this.handlePopState);
 
-		// Set scroll restoration to manual if animating history visits
-		if (this.options.animateHistoryBrowsing) {
-			window.history.scrollRestoration = 'manual';
-		}
+		// Manage scroll position restoration
+		window.history.scrollRestoration = 'manual';
+		window.addEventListener('scroll', this.storeScrollPosition);
+		this.storeScrollPosition();
 
 		// Initial save to cache
 		if (this.options.cache) {
@@ -350,14 +351,20 @@ export default class Swup {
 		visit.scroll.reset = false;
 		visit.scroll.target = false;
 
-		// Animated history visit: re-enable animation & scroll reset
+		// Animated history visit: re-enable animation
 		if (this.options.animateHistoryBrowsing) {
 			visit.animation.animate = true;
-			visit.scroll.reset = true;
 		}
 
 		this.hooks.callSync('history:popstate', visit, { event }, () => {
 			this.performNavigation(visit);
+		});
+	}
+
+	protected storeScrollPosition() {
+		this.hooks.callSync('scroll:store', undefined, undefined, () => {
+			const scroll = { window: { x: window.scrollX, y: window.scrollY } };
+			updateHistoryRecord(null, { scroll });
 		});
 	}
 
