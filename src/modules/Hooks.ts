@@ -32,6 +32,7 @@ export interface HookDefinitions {
 	'scroll:top': { options: ScrollIntoViewOptions };
 	'scroll:anchor': { hash: string; options: ScrollIntoViewOptions };
 	'scroll:store': undefined;
+	'scroll:restore': undefined;
 	'visit:start': undefined;
 	'visit:transition': undefined;
 	'visit:abort': undefined;
@@ -44,6 +45,7 @@ export interface HookReturnValues {
 	'page:load': Promise<PageData>;
 	'scroll:top': boolean;
 	'scroll:anchor': boolean;
+	'scroll:restore': boolean;
 }
 
 export type HookArguments<T extends HookName> = HookDefinitions[T];
@@ -154,6 +156,7 @@ export class Hooks {
 		'scroll:top',
 		'scroll:anchor',
 		'scroll:store',
+		'scroll:restore',
 		'visit:start',
 		'visit:transition',
 		'visit:abort',

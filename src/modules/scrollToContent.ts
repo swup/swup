@@ -1,4 +1,5 @@
 import type Swup from '../Swup.js';
+import type { HistoryState } from '../helpers/history.js';
 import type { Visit } from './Visit.js';
 
 /**
@@ -7,12 +8,25 @@ import type { Visit } from './Visit.js';
  */
 export const scrollToContent = function (this: Swup, visit: Visit): boolean {
 	const options: ScrollIntoViewOptions = { behavior: 'auto' };
+	const { popstate } = visit.history;
 	const { target, reset } = visit.scroll;
 	const scrollTarget = target ?? visit.to.hash;
 
 	let scrolled = false;
 
-	if (scrollTarget) {
+	if (popstate) {
+		scrolled = this.hooks.callSync('scroll:restore', visit, undefined, () => {
+			const { scroll } = (window.history.state as HistoryState) ?? {};
+			if (scroll?.window) {
+				const { x: left, y: top } = scroll.window;
+				window.scrollTo({ top, left, ...options });
+				return true;
+			}
+			return false;
+		});
+	}
+
+	if (scrollTarget && !scrolled) {
 		scrolled = this.hooks.callSync(
 			'scroll:anchor',
 			visit,
