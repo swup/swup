@@ -44,6 +44,7 @@
     "test:e2e:instrument": "nyc instrument --compact=false dist tests/fixtures/dist",
     "test:e2e:serve": "npx serve -n -S -L -p 8274 --config ./tests/config/serve.json",
     "test:e2e:start": "npm run test:e2e:instrument && npm run test:e2e:serve",
+    "test:memory": "npx fuite http://localhost:8274/cache-disabled.html --debug",
     "prepare": "husky install"
   },
   "author": "Georgy Marchuk",
@@ -77,6 +78,7 @@
     "eslint-plugin-compat": "^5.0.0",
     "eslint-plugin-ecmascript-compat": "^3.2.0",
     "eslint-plugin-prettier": "^5.0.1",
+    "fuite": "^4.0.9",
     "husky": "^9.0.11",
     "istanbul-lib-coverage": "^3.2.0",
     "jsdom": "^24.1.0",
