@@ -9,7 +9,6 @@ type AnimationType = typeof TRANSITION | typeof ANIMATION;
 type AnimationEndEvent = `${AnimationType}end`;
 type AnimationProperty = 'Delay' | 'Duration';
 type AnimationStyleKey = `${AnimationType}${AnimationProperty}` | 'transitionProperty';
-type AnimationStyleDeclaration = Pick<CSSStyleDeclaration, AnimationStyleKey>;
 
 export type AnimationDirection = 'in' | 'out';
 
@@ -106,11 +105,12 @@ function awaitAnimationsOnElement(element: HTMLElement): Promise<void> | false {
 }
 
 function getTransitionInfo(element: Element) {
-	const styles = window.getComputedStyle(element) as AnimationStyleDeclaration;
+	const styles = window.getComputedStyle(element);
 
 	const transitionDelays = getStyleProperties(styles, `${TRANSITION}Delay`);
 	const transitionDurations = getStyleProperties(styles, `${TRANSITION}Duration`);
 	const transitionTimeout = calculateTimeout(transitionDelays, transitionDurations);
+
 	const animationDelays = getStyleProperties(styles, `${ANIMATION}Delay`);
 	const animationDurations = getStyleProperties(styles, `${ANIMATION}Duration`);
 	const animationTimeout = calculateTimeout(animationDelays, animationDurations);
@@ -131,7 +131,7 @@ function getTransitionInfo(element: Element) {
 	};
 }
 
-function getStyleProperties(styles: AnimationStyleDeclaration, key: AnimationStyleKey): string[] {
+function getStyleProperties(styles: CSSStyleDeclaration, key: AnimationStyleKey): string[] {
 	return (styles[key] || '').split(', ');
 }
 
