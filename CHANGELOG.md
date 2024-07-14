@@ -212,6 +212,61 @@ See [upgrade instructions](https://swup.js.org/getting-started/upgrading-v3/) fo
 
 - Fix bug where animateHistoryBrowsing option was ignored for OUT animations
 
+## [2.0.11] - 2020-07-09
+
+- Update readme
+
+## [2.0.10] - 2020-06-07
+
+- Test autopublish feature
+
+## [2.0.9] - 2020-06-07
+
+- Ensure removal of popstate handler on destroy
+- Implement end-to-end tests
+
+## 2.0.8 - 2019-11-01
+
+- Fix issue where `body` text is interpreted as tag
+
+## 2.0.7 - 2019-09-23
+
+- Update readme
+
+## 2.0.6 - 2019-09-23
+
+- Add funding information
+
+## 2.0.5 - 2019-07-14
+
+- Restore IE10 support
+- Fix build script error
+
+## 2.0.4 - 2019-05-30
+
+- Update readme
+
+## 2.0.3 - 2019-05-30
+
+- Fix import filenames
+
+## 2.0.2 - 2019-05-26
+
+- Update readme
+
+## 2.0.1 - 2019-05-26
+
+- Update readme
+
+## 2.0.0 - 2019-05-26
+
+- Create plugin system to slim down core library
+- Extract previous core functionality into plugins
+- Simplify support check and make it required
+- Allow setting custom request headers
+- Rename selector option to containers
+- Restructure project repository
+
 [4.6.1]: https://github.com/swup/swup/releases/tag/4.6.1
 [4.6.0]: https://github.com/swup/swup/releases/tag/4.6.0
 [4.5.2]: https://github.com/swup/swup/releases/tag/4.5.2
@@ -250,3 +305,6 @@ See [upgrade instructions](https://swup.js.org/getting-started/upgrading-v3/) fo
 [2.0.14]: https://github.com/swup/swup/releases/tag/2.0.14
 [2.0.13]: https://github.com/swup/swup/releases/tag/2.0.13
 [2.0.12]: https://github.com/swup/swup/releases/tag/2.0.12
+[2.0.11]: https://github.com/swup/swup/releases/tag/2.0.11
+[2.0.10]: https://github.com/swup/swup/releases/tag/2.0.10
+[2.0.9]: https://github.com/swup/swup/releases/tag/2.0.9
