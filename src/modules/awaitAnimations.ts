@@ -59,7 +59,7 @@ export async function awaitAnimations(
 	await Promise.all(awaitedAnimations);
 }
 
-function awaitAnimationsOnElement(element: Element): Promise<void> | false {
+function awaitAnimationsOnElement(element: HTMLElement): Promise<void> | false {
 	const { type, timeout, propCount } = getTransitionInfo(element);
 
 	// Resolve immediately if no transition defined
@@ -77,7 +77,7 @@ function awaitAnimationsOnElement(element: Element): Promise<void> | false {
 			resolve();
 		};
 
-		const onEnd: EventListener = (event) => {
+		const onEnd = (event: TransitionEvent | AnimationEvent) => {
 			// Skip transitions on child elements
 			if (event.target !== element) {
 				return;
