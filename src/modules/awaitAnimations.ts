@@ -5,10 +5,10 @@ import type { Options } from '../Swup.js';
 const TRANSITION = 'transition';
 const ANIMATION = 'animation';
 
-type AnimationTypes = typeof TRANSITION | typeof ANIMATION;
-type AnimationProperties = 'Delay' | 'Duration';
-type AnimationStyleKeys = `${AnimationTypes}${AnimationProperties}` | 'transitionProperty';
-type AnimationStyleDeclarations = Pick<CSSStyleDeclaration, AnimationStyleKeys>;
+type AnimationType = typeof TRANSITION | typeof ANIMATION;
+type AnimationProperty = 'Delay' | 'Duration';
+type AnimationStyleKey = `${AnimationType}${AnimationProperty}` | 'transitionProperty';
+type AnimationStyleDeclaration = Pick<CSSStyleDeclaration, AnimationStyleKey>;
 
 export type AnimationDirection = 'in' | 'out';
 
@@ -109,7 +109,7 @@ function awaitAnimationsOnElement(element: Element): Promise<void> | false {
 }
 
 function getTransitionInfo(element: Element) {
-	const styles = window.getComputedStyle(element) as AnimationStyleDeclarations;
+	const styles = window.getComputedStyle(element) as AnimationStyleDeclaration;
 
 	const transitionDelays = getStyleProperties(styles, `${TRANSITION}Delay`);
 	const transitionDurations = getStyleProperties(styles, `${TRANSITION}Duration`);
@@ -138,7 +138,7 @@ function isTransitionOrAnimationEvent(event: Event): event is TransitionEvent | 
 	return [`${TRANSITION}end`, `${ANIMATION}end`].includes(event.type);
 }
 
-function getStyleProperties(styles: AnimationStyleDeclarations, key: AnimationStyleKeys): string[] {
+function getStyleProperties(styles: AnimationStyleDeclaration, key: AnimationStyleKey): string[] {
 	return (styles[key] || '').split(', ');
 }
 
