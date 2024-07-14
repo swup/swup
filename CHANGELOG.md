@@ -267,6 +267,62 @@ See [upgrade instructions](https://swup.js.org/getting-started/upgrading-v3/) fo
 - Rename selector option to containers
 - Restructure project repository
 
+## 1.9.0 - 2019-02-03
+
+- Return promise when preloading pages
+
+## 1.8.0 - 2019-02-03
+
+- Ignore clicks when special key pressed
+
+## 1.7.0 - 2018-10-28
+
+- Implement event handler system
+
+## 1.6.0 - 2018-10-28
+
+- Allow setting custom transition via data attribute
+
+## 1.5.0 - 2018-10-25
+
+- Trigger events for animation start
+
+## 1.4.0 - 2018-10-12
+
+- Display final url after redirects
+
+## 1.3.0 - 2018-10-08
+
+- Enable animated history visits
+
+## 1.2.0 - 2018-09-23
+
+- Change default link selector and animation class
+
+## 1.1.0 - 2018-09-14
+
+- Improve server error handling
+
+## 1.0.4 - 2018-09-07
+
+- Update readme
+
+## 1.0.3 - 2018-09-07
+
+- Update readme
+
+## 1.0.2 - 2018-09-04
+
+- Improve IE/Edge compatibility
+
+## 1.0.1 - 2018-08-26
+
+- Remove manual browser detection
+
+## 1.0.0 - 2018-08-26
+
+- Initial release
+
 [4.6.1]: https://github.com/swup/swup/releases/tag/4.6.1
 [4.6.0]: https://github.com/swup/swup/releases/tag/4.6.0
 [4.5.2]: https://github.com/swup/swup/releases/tag/4.5.2
