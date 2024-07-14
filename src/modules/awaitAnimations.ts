@@ -131,11 +131,11 @@ function getTransitionInfo(element: Element) {
 	};
 }
 
-function getStyleProperties(styles: CSSStyleDeclaration, key: AnimationStyleKey): string[] {
+export function getStyleProperties(styles: CSSStyleDeclaration, key: AnimationStyleKey): string[] {
 	return (styles[key] || '').split(', ');
 }
 
-function calculateTimeout(delays: string[], durations: string[]): number {
+export function calculateTimeout(delays: string[], durations: string[]): number {
 	while (delays.length < durations.length) {
 		delays = delays.concat(delays);
 	}
@@ -143,6 +143,6 @@ function calculateTimeout(delays: string[], durations: string[]): number {
 	return Math.max(...durations.map((duration, i) => toMs(duration) + toMs(delays[i])));
 }
 
-function toMs(time: string): number {
+export function toMs(time: string): number {
 	return parseFloat(time) * 1000;
 }
