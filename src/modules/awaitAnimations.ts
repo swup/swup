@@ -6,6 +6,7 @@ const TRANSITION = 'transition';
 const ANIMATION = 'animation';
 
 type AnimationType = typeof TRANSITION | typeof ANIMATION;
+type AnimationEndEvent = `${AnimationType}end`;
 type AnimationProperty = 'Delay' | 'Duration';
 type AnimationStyleKey = `${AnimationType}${AnimationProperty}` | 'transitionProperty';
 type AnimationStyleDeclaration = Pick<CSSStyleDeclaration, AnimationStyleKey>;
@@ -67,7 +68,7 @@ function awaitAnimationsOnElement(element: Element): Promise<void> | false {
 	}
 
 	return new Promise((resolve) => {
-		const endEvent = `${type}end`;
+		const endEvent: AnimationEndEvent = `${type}end`;
 		const startTime = performance.now();
 		let propsTransitioned = 0;
 
@@ -119,7 +120,7 @@ function getTransitionInfo(element: Element) {
 	const animationTimeout = calculateTimeout(animationDelays, animationDurations);
 
 	const timeout = Math.max(transitionTimeout, animationTimeout);
-	const type =
+	const type: AnimationType | null =
 		timeout > 0 ? (transitionTimeout > animationTimeout ? TRANSITION : ANIMATION) : null;
 	const propCount = type
 		? type === TRANSITION
