@@ -83,10 +83,6 @@ function awaitAnimationsOnElement(element: HTMLElement): Promise<void> | false {
 				return;
 			}
 
-			if (!isTransitionOrAnimationEvent(event)) {
-				throw new Error('Not a transition or animation event.');
-			}
-
 			// Skip transitions that happened before we started listening
 			const elapsedTime = (performance.now() - startTime) / 1000;
 			if (elapsedTime < event.elapsedTime) {
@@ -133,10 +129,6 @@ function getTransitionInfo(element: Element) {
 		timeout,
 		propCount
 	};
-}
-
-function isTransitionOrAnimationEvent(event: Event): event is TransitionEvent | AnimationEvent {
-	return [`${TRANSITION}end`, `${ANIMATION}end`].includes(event.type);
 }
 
 function getStyleProperties(styles: AnimationStyleDeclaration, key: AnimationStyleKey): string[] {
