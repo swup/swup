@@ -20,8 +20,8 @@ export type AnimationDirection = 'in' | 'out';
 export async function awaitAnimations(
 	this: Swup,
 	{
-		elements,
-		selector
+		selector,
+		elements
 	}: {
 		selector: Options['animationSelector'];
 		elements?: NodeListOf<HTMLElement> | HTMLElement[];
