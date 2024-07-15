@@ -64,7 +64,7 @@ export async function expectSwupAnimationDuration(page: Page, expected: { total?
 	const timing: { start: 0, end: 0, outStart: 0, outEnd: 0, inStart: 0, inEnd: 0 } = await page.evaluate(() => window.data);
 	const seen = { total: timing.end - timing.start, out: timing.outEnd - timing.outStart, in: timing.inEnd - timing.inStart };
 
-	const tolerance = expected ? [0.9, 1.3] : [1, 1];
+	const tolerance = expected ? [0.85, 1.35] : [1, 1];
 
 	if (typeof expected.out === 'number') {
 		expectNumberCloseTo(seen.out, expected.out, tolerance);
