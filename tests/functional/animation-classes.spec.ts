@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { clickOnLink, expectToBeAt, sleep } from '../support/commands.js';
+import { clickOnLink, expectToBeAt } from '../support/commands.js';
 
 test.describe('animation classes', () => {
 	test("doesn't remove `is-leaving` until right before replacing the content", async ({
