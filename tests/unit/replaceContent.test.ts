@@ -1,6 +1,5 @@
 import { describe, expect, it, vi, afterEach, beforeEach } from 'vitest';
 import Swup from '../../src/Swup.js';
-import type { PageData } from '../../src/modules/fetchPage.js';
 import { Visit, createVisit } from '../../src/modules/Visit.js';
 import { JSDOM } from 'jsdom';
 
