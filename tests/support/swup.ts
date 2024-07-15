@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import type Swup from '../../src/Swup.js';
-import { expectNumberWithTolerance } from './commands.js';
+import { expectNumberCloseTo } from './commands.js';
 
 declare global {
 	interface Window {
@@ -61,17 +61,18 @@ export async function expectSwupAnimationDuration(page: Page, expected: { total?
 
 	await page.waitForFunction(() => window.data.end > 0);
 
-	const tolerance = expected ? 0.25 : 0; // 25% plus/minus
 	const timing: { start: 0, end: 0, outStart: 0, outEnd: 0, inStart: 0, inEnd: 0 } = await page.evaluate(() => window.data);
 	const seen = { total: timing.end - timing.start, out: timing.outEnd - timing.outStart, in: timing.inEnd - timing.inStart };
 
+	const tolerance = expected ? [0.9, 1.3] : [1, 1];
+
 	if (typeof expected.out === 'number') {
-		expectNumberWithTolerance(seen.out, expected.out, tolerance);
+		expectNumberCloseTo(seen.out, expected.out, tolerance);
 	}
 	if (typeof expected.in === 'number') {
-		expectNumberWithTolerance(seen.in, expected.in, tolerance);
+		expectNumberCloseTo(seen.in, expected.in, tolerance);
 	}
 	if (typeof expected.total === 'number') {
-		expectNumberWithTolerance(seen.total, expected.total, tolerance);
+		expectNumberCloseTo(seen.total, expected.total, tolerance);
 	}
 }
