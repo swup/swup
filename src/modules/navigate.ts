@@ -81,7 +81,7 @@ export async function performNavigation(
 	this.navigating = true;
 	this.visit = visit;
 
-	const { el } = visit.trigger;
+	let { el } = visit.trigger;
 	options.referrer = options.referrer || this.location.url;
 
 	if (options.animate === false) {
@@ -228,6 +228,11 @@ export async function performNavigation(
 		// Go back to the actual page we're still at
 		window.history.back();
 	} finally {
+		// Clean up to avoid memory leaks
 		delete visit.to.document;
+		delete visit.trigger.el;
+		delete visit.trigger.event;
+		visit = null!;
+		el = null!;
 	}
 }

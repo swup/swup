@@ -56,6 +56,9 @@ export async function awaitAnimations(
 	}
 
 	await Promise.all(awaitedAnimations);
+
+	// Help garbage collection
+	animatedElements = null!;
 }
 
 function awaitAnimationsOnElement(element: HTMLElement): Promise<void> | false {
@@ -74,6 +77,7 @@ function awaitAnimationsOnElement(element: HTMLElement): Promise<void> | false {
 		const end = () => {
 			element.removeEventListener(endEvent, onEnd);
 			resolve();
+			element = null!;
 		};
 
 		const onEnd = (event: TransitionEvent | AnimationEvent) => {
