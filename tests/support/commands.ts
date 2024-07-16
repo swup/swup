@@ -93,6 +93,6 @@ export function expectNumberWithinRange(value: number, min: number, max: number)
 	expect(value).toBeLessThanOrEqual(max);
 }
 
-export function expectNumberWithTolerance(value: number, expected: number, tolerance: number = 0.1) {
-	expectNumberWithinRange(value, expected * (1 - tolerance), expected * (1 + tolerance));
+export function expectNumberCloseTo(value: number, expected: number, range: number[] = []) {
+	expectNumberWithinRange(value, expected * (range[0] ?? 1), expected * (range[1] ?? 1));
 }

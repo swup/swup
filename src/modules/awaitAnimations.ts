@@ -5,10 +5,10 @@ import type { Options } from '../Swup.js';
 const TRANSITION = 'transition';
 const ANIMATION = 'animation';
 
-type AnimationTypes = typeof TRANSITION | typeof ANIMATION;
-type AnimationProperties = 'Delay' | 'Duration';
-type AnimationStyleKeys = `${AnimationTypes}${AnimationProperties}` | 'transitionProperty';
-type AnimationStyleDeclarations = Pick<CSSStyleDeclaration, AnimationStyleKeys>;
+type AnimationType = typeof TRANSITION | typeof ANIMATION;
+type AnimationEndEvent = `${AnimationType}end`;
+type AnimationProperty = 'Delay' | 'Duration';
+type AnimationStyleKey = `${AnimationType}${AnimationProperty}` | 'transitionProperty';
 
 export type AnimationDirection = 'in' | 'out';
 
@@ -19,8 +19,8 @@ export type AnimationDirection = 'in' | 'out';
 export async function awaitAnimations(
 	this: Swup,
 	{
-		elements,
-		selector
+		selector,
+		elements
 	}: {
 		selector: Options['animationSelector'];
 		elements?: NodeListOf<HTMLElement> | HTMLElement[];
@@ -58,7 +58,7 @@ export async function awaitAnimations(
 	await Promise.all(awaitedAnimations);
 }
 
-function awaitAnimationsOnElement(element: Element): Promise<void> | false {
+function awaitAnimationsOnElement(element: HTMLElement): Promise<void> | false {
 	const { type, timeout, propCount } = getTransitionInfo(element);
 
 	// Resolve immediately if no transition defined
@@ -67,7 +67,7 @@ function awaitAnimationsOnElement(element: Element): Promise<void> | false {
 	}
 
 	return new Promise((resolve) => {
-		const endEvent = `${type}end`;
+		const endEvent: AnimationEndEvent = `${type}end`;
 		const startTime = performance.now();
 		let propsTransitioned = 0;
 
@@ -76,14 +76,10 @@ function awaitAnimationsOnElement(element: Element): Promise<void> | false {
 			resolve();
 		};
 
-		const onEnd: EventListener = (event) => {
+		const onEnd = (event: TransitionEvent | AnimationEvent) => {
 			// Skip transitions on child elements
 			if (event.target !== element) {
 				return;
-			}
-
-			if (!isTransitionOrAnimationEvent(event)) {
-				throw new Error('Not a transition or animation event.');
 			}
 
 			// Skip transitions that happened before we started listening
@@ -109,17 +105,18 @@ function awaitAnimationsOnElement(element: Element): Promise<void> | false {
 }
 
 function getTransitionInfo(element: Element) {
-	const styles = window.getComputedStyle(element) as AnimationStyleDeclarations;
+	const styles = window.getComputedStyle(element);
 
 	const transitionDelays = getStyleProperties(styles, `${TRANSITION}Delay`);
 	const transitionDurations = getStyleProperties(styles, `${TRANSITION}Duration`);
 	const transitionTimeout = calculateTimeout(transitionDelays, transitionDurations);
+
 	const animationDelays = getStyleProperties(styles, `${ANIMATION}Delay`);
 	const animationDurations = getStyleProperties(styles, `${ANIMATION}Duration`);
 	const animationTimeout = calculateTimeout(animationDelays, animationDurations);
 
 	const timeout = Math.max(transitionTimeout, animationTimeout);
-	const type =
+	const type: AnimationType | null =
 		timeout > 0 ? (transitionTimeout > animationTimeout ? TRANSITION : ANIMATION) : null;
 	const propCount = type
 		? type === TRANSITION
@@ -134,15 +131,11 @@ function getTransitionInfo(element: Element) {
 	};
 }
 
-function isTransitionOrAnimationEvent(event: Event): event is TransitionEvent | AnimationEvent {
-	return [`${TRANSITION}end`, `${ANIMATION}end`].includes(event.type);
-}
-
-function getStyleProperties(styles: AnimationStyleDeclarations, key: AnimationStyleKeys): string[] {
+export function getStyleProperties(styles: CSSStyleDeclaration, key: AnimationStyleKey): string[] {
 	return (styles[key] || '').split(', ');
 }
 
-function calculateTimeout(delays: string[], durations: string[]): number {
+export function calculateTimeout(delays: string[], durations: string[]): number {
 	while (delays.length < durations.length) {
 		delays = delays.concat(delays);
 	}
@@ -150,6 +143,6 @@ function calculateTimeout(delays: string[], durations: string[]): number {
 	return Math.max(...durations.map((duration, i) => toMs(duration) + toMs(delays[i])));
 }
 
-function toMs(time: string): number {
+export function toMs(time: string): number {
 	return parseFloat(time) * 1000;
 }
