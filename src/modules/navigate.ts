@@ -18,6 +18,8 @@ type NavigationOptions = {
 	history?: HistoryAction;
 	/** Whether this visit should read from or write to the cache. */
 	cache?: CacheControl;
+	/** Custom metadata associated with this visit. */
+	meta?: Record<string, unknown>;
 };
 
 /**
