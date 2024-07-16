@@ -107,6 +107,15 @@ export async function performNavigation(
 		visit.animation.name = animation;
 	}
 
+	// Get custom metadata from option or attribute on trigger element
+	let meta: unknown = options.meta || el?.getAttribute('data-swup-meta') || undefined;
+	if (typeof meta === 'string') {
+		meta = JSON.parse(meta);
+	}
+	if (typeof meta === 'object') {
+		visit.meta = { ...meta };
+	}
+
 	// Sanitize cache option
 	if (typeof options.cache === 'object') {
 		visit.cache.read = options.cache.read ?? visit.cache.read;
