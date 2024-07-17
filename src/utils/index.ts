@@ -52,3 +52,13 @@ export function forceReflow(element?: HTMLElement): void {
 	element = element || document.body;
 	element?.getBoundingClientRect();
 }
+
+/**
+ * Read data attribute from closest element.
+ */
+export function getClosestElementAttribute(
+	el: Element | undefined,
+	attr: string
+): string | undefined {
+	return el?.closest(`[${attr}]`)?.getAttribute(attr) ?? undefined;
+}

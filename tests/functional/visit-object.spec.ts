@@ -99,12 +99,20 @@ test.describe('visit object', () => {
 
 	test('passes along custom animation', async ({ page }) => {
 		const link = page.locator('a[data-swup-animation]');
-		const animation = await link.getAttribute('data-swup-animation');
 		await page.evaluate(() => {
 			window._swup.hooks.on('visit:start', (visit) => window.data = visit.animation.name);
 		});
 		await link.click();
-		expect(await page.evaluate(() => window.data)).toEqual(animation);
+		expect(await page.evaluate(() => window.data)).toEqual('link');
+	});
+
+	test('passes along custom animation from parent', async ({ page }) => {
+		const link = page.locator('ul[data-swup-animation]');
+		await page.evaluate(() => {
+			window._swup.hooks.on('visit:start', (visit) => window.data = visit.animation.name);
+		});
+		await link.click();
+		expect(await page.evaluate(() => window.data)).toEqual('list');
 	});
 
 	test('allows disabling animations', async ({ page }) => {
