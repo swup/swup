@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, afterEach } from 'vitest';
 import { JSDOM } from 'jsdom';
 
-import { isPromise, query, queryAll } from '../../src/utils.js';
+import { getClosestElementAttribute, isPromise, query, queryAll } from '../../src/utils.js';
 
 const createDocument = (body: string): Document => {
 	const dom = new JSDOM(/*html*/ `<!DOCTYPE html><body>${body}</body>`);
@@ -95,5 +95,37 @@ describe('isPromise', () => {
 		expect(isPromise('a')).toBe(false);
 		expect(isPromise([1, 2, 3])).toBe(false);
 		expect(isPromise({ b: 'c' })).toBe(false);
+	});
+});
+
+describe('getClosestElementAttribute', () => {
+	it('gets attribute value from element', () => {
+		const doc = stubGlobalDocument(/*html*/ `<div attr="value"></div>`);
+		const el = doc.querySelector('div')!;
+		expect(getClosestElementAttribute(el, 'attr')).toBe('value');
+	});
+
+	it('gets attribute value from parent', () => {
+		const doc = stubGlobalDocument(/*html*/ `<section attr="value"><div></div></section>`);
+		const el = doc.querySelector('div')!;
+		expect(getClosestElementAttribute(el, 'attr')).toBe('value');
+	});
+
+	it('prefers attribute value from element', () => {
+		const doc = stubGlobalDocument(/*html*/ `<section attr="parent"><div attr="self"></div></section>`);
+		const el = doc.querySelector('div')!;
+		expect(getClosestElementAttribute(el, 'attr')).toBe('self');
+	});
+
+	it('returns null for missing attribute', () => {
+		const doc = stubGlobalDocument(/*html*/ `<div></div>`);
+		const el = doc.querySelector('div')!;
+		expect(getClosestElementAttribute(el, 'attr')).toBe(undefined);
+	});
+
+	it('returns null for missing element', () => {
+		const doc = stubGlobalDocument(/*html*/ `<div></div>`);
+		const el = doc.querySelector('h1')!;
+		expect(getClosestElementAttribute(el, 'attr')).toBe(undefined);
 	});
 });
