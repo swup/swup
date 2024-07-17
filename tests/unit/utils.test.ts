@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, afterEach } from 'vitest';
 import { JSDOM } from 'jsdom';
 
-import { isPromise, query } from '../../src/utils.js';
+import { isPromise, query, queryAll } from '../../src/utils.js';
 
 const createDocument = (body: string): Document => {
 	const dom = new JSDOM(/*html*/ `<!DOCTYPE html><body>${body}</body>`);
@@ -27,8 +27,7 @@ describe('query', () => {
 
 	it('should return queried element', () => {
 		stubGlobalDocument(`<div class="test">Test</div>`);
-		const el = query('.test');
-		expect(el?.textContent).toBe('Test');
+		expect(query('.test')?.textContent).toBe('Test');
 	});
 
 	it('should accept a custom root element', () => {
@@ -43,6 +42,40 @@ describe('query', () => {
 		expect(query('.sibling')).toBe(doc.querySelector('.sibling'));
 		expect(query('.sibling', root)).toBe(null);
 		expect(query('.child', root)).toBe(doc.querySelector('.child'));
+	});
+});
+
+describe('queryAll', () => {
+	it('should call querySelectorAll on document', () => {
+		const doc = stubGlobalDocument(``);
+		const spy = vi.spyOn(doc, 'querySelectorAll');
+		queryAll('.selector');
+		expect(spy).toHaveBeenCalledWith('.selector');
+	});
+
+	it('returns an array', () => {
+		const els = queryAll('.lorem-ipsum');
+		expect(Array.isArray(els)).toBe(true);
+	});
+
+	it('should return queried elements', () => {
+		stubGlobalDocument(`<div class="test">Test 1</div><div class="test">Test 2</div>`);
+		expect(queryAll('.test').map(el => el.textContent)).toStrictEqual(['Test 1', 'Test 2']);
+	});
+
+	it('should accept a custom root element', () => {
+		const doc = stubGlobalDocument(/*html*/ `
+			<div class="sibling">Sibling</div>
+			<div class="nested">
+				<div class="child">Child</div>
+				<div class="child">Child</div>
+			</div>
+		`);
+
+		const root = doc.querySelector('.nested')!;
+		expect(queryAll('.sibling')).toStrictEqual([...doc.querySelectorAll('.sibling')]);
+		expect(queryAll('.sibling', root)).toStrictEqual([]);
+		expect(queryAll('.child', root)).toStrictEqual([...doc.querySelectorAll('.child')]);
 	});
 });
 
