@@ -107,7 +107,7 @@ test.describe('visit object', () => {
 	});
 
 	test('passes along custom animation from parent', async ({ page }) => {
-		const link = page.locator('ul[data-swup-animation]');
+		const link = page.locator('ul[data-swup-animation] li:first-child a');
 		await page.evaluate(() => {
 			window._swup.hooks.on('visit:start', (visit) => window.data = visit.animation.name);
 		});
