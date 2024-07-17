@@ -2,7 +2,7 @@ import type Swup from '../Swup.js';
 import { FetchError, type FetchOptions, type PageData } from './fetchPage.js';
 import { type VisitInitOptions, type Visit, VisitState } from './Visit.js';
 import { createHistoryRecord, updateHistoryRecord, Location, classify } from '../helpers.js';
-import { getClosestElementAttribute } from '../utils.js';
+import { getContextualAttr } from '../utils.js';
 
 export type HistoryAction = 'push' | 'replace';
 export type HistoryDirection = 'forwards' | 'backwards';
@@ -95,14 +95,14 @@ export async function performNavigation(
 	}
 
 	// Get history action from option or attribute on trigger element
-	const history = options.history || getClosestElementAttribute(el, 'data-swup-history');
-	if (history && ['push', 'replace'].includes(history)) {
+	const history = options.history || getContextualAttr(el, 'data-swup-history');
+	if (typeof history === 'string' && ['push', 'replace'].includes(history)) {
 		visit.history.action = history as HistoryAction;
 	}
 
 	// Get custom animation name from option or attribute on trigger element
-	const animation = options.animation || getClosestElementAttribute(el, 'data-swup-animation');
-	if (animation) {
+	const animation = options.animation || getContextualAttr(el, 'data-swup-animation');
+	if (typeof animation === 'string') {
 		visit.animation.name = animation;
 	}
 
