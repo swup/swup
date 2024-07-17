@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, afterEach } from 'vitest';
 import { JSDOM } from 'jsdom';
 
-import { query } from '../../src/utils.js';
+import { isPromise, query } from '../../src/utils.js';
 
 const createDocument = (body: string): Document => {
 	const dom = new JSDOM(/*html*/ `<!DOCTYPE html><body>${body}</body>`);
@@ -43,5 +43,24 @@ describe('query', () => {
 		expect(query('.sibling')).toBe(doc.querySelector('.sibling'));
 		expect(query('.sibling', root)).toBe(null);
 		expect(query('.child', root)).toBe(doc.querySelector('.child'));
+	});
+});
+
+describe('isPromise', () => {
+	it('accepts promises', () => {
+		expect(isPromise(Promise.resolve())).toBe(true);
+		expect(isPromise(new Promise(() => {}))).toBe(true);
+	});
+
+	it('accepts Promise-like objects', () => {
+		expect(isPromise({ then: () => {} })).toBe(true);
+		expect(isPromise({ then: () => {}, catch: () => {} })).toBe(true);
+	});
+
+	it('rejects non-promises', () => {
+		expect(isPromise(0)).toBe(false);
+		expect(isPromise('a')).toBe(false);
+		expect(isPromise([1, 2, 3])).toBe(false);
+		expect(isPromise({ b: 'c' })).toBe(false);
 	});
 });
