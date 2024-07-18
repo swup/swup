@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.7.0] - 2024-07-18
+
+- Inherit `data-swup-*` attributes from parent elements
+- Store current location as object at `swup.location`
+- Deprecate `swup.currentPageUrl` in favor of `swup.location.url`
+- Make previous page's hash available at `visit.from.hash`
+
 ## [4.6.1] - 2024-03-26
 
 - Reduce bundle size by eliminating unused code paths
@@ -323,6 +330,7 @@ See [upgrade instructions](https://swup.js.org/getting-started/upgrading-v3/) fo
 
 - Initial release
 
+[4.7.0]: https://github.com/swup/swup/releases/tag/4.7.0
 [4.6.1]: https://github.com/swup/swup/releases/tag/4.6.1
 [4.6.0]: https://github.com/swup/swup/releases/tag/4.6.0
 [4.5.2]: https://github.com/swup/swup/releases/tag/4.5.2
