@@ -175,8 +175,8 @@ test.describe('visit object', () => {
 			window.data = null;
 			window._swup.hooks.on('visit:start', (visit) => (window.data = visit.meta));
 		});
-		await clickOnLink(page, '/page-2.html');
-		await expectToBeAt(page, '/page-2.html', 'Page 2');
+		await clickOnLink(page, '/page-1.html');
+		await expectToBeAt(page, '/page-1.html', 'Page 1');
 		expect(await page.evaluate(() => window.data)).toMatchObject({ dolor: 'sit amet' });
 	});
 
@@ -187,8 +187,20 @@ test.describe('visit object', () => {
 			window.data = null;
 			window._swup.hooks.on('visit:start', (visit) => (window.data = visit.meta));
 		});
+		await clickOnLink(page, '/page-2.html');
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+		expect(await page.evaluate(() => window.data)).toMatchObject({ value: 'just-a-string' });
+	});
+
+	test('passes along invalid metadata from link', async ({ page }) => {
+		await page.goto('/metadata.html');
+
+		await page.evaluate(() => {
+			window.data = null;
+			window._swup.hooks.on('visit:start', (visit) => (window.data = visit.meta));
+		});
 		await clickOnLink(page, '/page-3.html');
 		await expectToBeAt(page, '/page-3.html', 'Page 3');
-		expect(await page.evaluate(() => window.data)).toMatchObject({ value: 'just-a-string' });
+		expect(await page.evaluate(() => window.data)).toMatchObject({ value: '{ "dolor: "sit amet) }' });
 	});
 });
