@@ -114,7 +114,7 @@ export async function performNavigation(
 		try {
 			meta = JSON.parse(meta);
 		} catch (error) {
-			meta = {};
+			meta = { value: meta };
 		}
 	}
 	if (typeof meta === 'object') {

@@ -157,7 +157,7 @@ test.describe('visit object', () => {
 		expect(await page.evaluate(() => window.data)).toBe(supported);
 	});
 
-	test('passes along custom metadata', async ({ page }) => {
+	test('passes along custom metadata from api', async ({ page }) => {
 		await page.evaluate(() => {
 			window.data = null;
 			window._swup.hooks.on('visit:start', (visit) => (window.data = visit.meta));
@@ -168,7 +168,7 @@ test.describe('visit object', () => {
 		expect(await page.evaluate(() => window.data)).toMatchObject({ lorem: 'ipsum' });
 	});
 
-	test('reads custom metadata from trigger element', async ({ page }) => {
+	test('passes along custom metadata from link', async ({ page }) => {
 		await page.goto('/metadata.html');
 
 		await page.evaluate(() => {
@@ -178,5 +178,17 @@ test.describe('visit object', () => {
 		await clickOnLink(page, '/page-2.html');
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
 		expect(await page.evaluate(() => window.data)).toMatchObject({ dolor: 'sit amet' });
+	});
+
+	test('passes along string metadata from link', async ({ page }) => {
+		await page.goto('/metadata.html');
+
+		await page.evaluate(() => {
+			window.data = null;
+			window._swup.hooks.on('visit:start', (visit) => (window.data = visit.meta));
+		});
+		await clickOnLink(page, '/page-3.html');
+		await expectToBeAt(page, '/page-3.html', 'Page 3');
+		expect(await page.evaluate(() => window.data)).toMatchObject({ value: 'just-a-string' });
 	});
 });
