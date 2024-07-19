@@ -109,7 +109,7 @@ export async function performNavigation(
 	}
 
 	// Get custom metadata from option or attribute on trigger element
-	let meta: unknown = options.meta || el?.getAttribute('data-swup-meta') || undefined;
+	let meta: unknown = options.meta || getContextualAttr(el, 'data-swup-meta');
 	if (typeof meta === 'string') {
 		try {
 			meta = JSON.parse(meta);
