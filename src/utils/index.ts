@@ -57,17 +57,14 @@ export function forceReflow(element?: HTMLElement): void {
  * Minimal debounce function.
  * @see https://www.joshwcomeau.com/snippets/javascript/debounce/
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function debounce<F extends (...args: any[]) => any>(
+export function debounce<F extends (...args: unknown[]) => unknown>(
 	callback: F,
 	wait = 0
 ): (...args: Parameters<F>) => void {
 	let timeout: ReturnType<typeof setTimeout>;
 	return (...args: Parameters<F>) => {
 		clearTimeout(timeout);
-		timeout = setTimeout(() => {
-			callback(...args);
-		}, wait);
+		timeout = setTimeout(() => callback(...args), wait);
 	};
 }
 
