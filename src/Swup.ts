@@ -8,7 +8,7 @@ import { type DelegateEventUnsubscribe } from './helpers/delegateEvent.js';
 import { Cache } from './modules/Cache.js';
 import { Classes } from './modules/Classes.js';
 import { type Visit, createVisit } from './modules/Visit.js';
-import { Hooks } from './modules/Hooks.js';
+import { Hooks, type HookName, type HookHandler } from './modules/Hooks.js';
 import { getAnchorElement } from './modules/getAnchorElement.js';
 import { awaitAnimations } from './modules/awaitAnimations.js';
 import { navigate, performNavigation, type NavigationToSelfAction } from './modules/navigate.js';
@@ -43,6 +43,8 @@ export type Options = {
 	linkToSelf: NavigationToSelfAction;
 	/** Enable native animations using the View Transitions API. */
 	native: boolean;
+	/** Hook handlers to register. */
+	hooks: Partial<{ [K in HookName]: HookHandler<K> }>;
 	/** Plugins to register on startup. */
 	plugins: Plugin[];
 	/** Custom headers sent along with fetch requests. */
@@ -61,6 +63,7 @@ const defaults: Options = {
 	animationScope: 'html',
 	cache: true,
 	containers: ['#swup'],
+	hooks: {},
 	ignoreVisit: (url, { el } = {}) => !!el?.closest('[data-no-swup]'),
 	linkSelector: 'a[href]',
 	linkToSelf: 'scroll',
@@ -187,6 +190,12 @@ export default class Swup {
 
 		// Mount plugins
 		this.options.plugins.forEach((plugin) => this.use(plugin));
+
+		// Install user hooks
+		for (const [name, handler] of Object.entries(this.options.hooks)) {
+			// @ts-expect-error: object.entries() seems incapable of preserving key types
+			this.hooks.on(name, handler);
+		}
 
 		// Create initial history record
 		if ((window.history.state as HistoryState)?.source !== 'swup') {
