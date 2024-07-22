@@ -70,3 +70,17 @@ export function debounce<F extends (...args: any[]) => any>(
 		}, wait);
 	};
 }
+
+/**
+ * Read data attribute from closest element with that attribute.
+ *
+ * Returns `undefined` if no element is found or attribute is missing.
+ * Returns `true` if attribute is present without a value.
+ */
+export function getContextualAttr(
+	el: Element | undefined,
+	attr: string
+): string | boolean | undefined {
+	const target = el?.closest(`[${attr}]`);
+	return target?.hasAttribute(attr) ? target?.getAttribute(attr) || true : undefined;
+}
