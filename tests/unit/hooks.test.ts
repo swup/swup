@@ -357,6 +357,15 @@ describe('Hook registry', () => {
 		await expect(() => swup.hooks.call('enable', undefined, undefined, handlerWithError)).rejects.toThrow(/^UserError$/);
 		expect(handlerWithError).toBeCalledTimes(2);
 	});
+
+	it('should register hook handlers from options', async function () {
+		const handler = vi.fn();
+		const swup = new Swup({ hooks: { 'visit:start': handler } });
+
+		await swup.hooks.call('visit:start', undefined, undefined);
+
+		expect(handler).toBeCalledTimes(1);
+	});
 });
 
 describe('Types', () => {
