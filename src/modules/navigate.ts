@@ -232,3 +232,81 @@ export async function performNavigation(
 		delete visit.to.document;
 	}
 }
+
+const writeableVisitOptions = {
+	id: false,
+	state: false,
+	from: false,
+	to: false,
+	trigger: false,
+	animation: {
+		native: false
+	},
+	history: {
+		popstate: false,
+		direction: false
+	}
+};
+
+function findAncestorsWithSwupAttribute(el: Element): Element[] {
+	const elements: Element[] = [];
+	try {
+		const result = document.evaluate(
+			'ancestor-or-self::*[@*[starts-with(name(), "data-swup-")]]',
+			el,
+			null,
+			XPathResult.ORDERED_NODE_ITERATOR_TYPE
+		);
+
+		let element = result.iterateNext();
+		while (element) {
+			elements.push(element as Element);
+			element = result.iterateNext();
+		}
+	} catch (error) {
+		return [];
+	}
+
+	// elements.reverse();
+
+	return elements;
+}
+
+export function mergeVisitOptionsFromContext(
+	visit: Visit,
+	options: NavigationOptions,
+	el: Element
+): Visit {
+	// Find all elements with a data-swup-* prefixed attribute
+	const swupAttributeElements = el ? findAncestorsWithSwupAttribute(el) : [];
+	console.log(swupAttributeElements);
+
+	if (writeableVisitOptions) {
+		console.log(writeableVisitOptions);
+		console.log(sanitizeVisitOption(options.animate, true));
+	}
+
+	// Get history action from option or attribute on trigger element
+	const history = options.history || getContextualAttr(el, 'data-swup-history');
+	if (typeof history === 'string' && ['push', 'replace'].includes(history)) {
+		visit.history.action = history as HistoryAction;
+	}
+
+	// Get custom animation name from option or attribute on trigger element
+	const animation = options.animation || getContextualAttr(el, 'data-swup-animation');
+	if (typeof animation === 'string') {
+		visit.animation.name = animation;
+	}
+
+	return visit;
+}
+
+function sanitizeVisitOption(option: unknown, defaultValue: unknown): unknown {
+	if (typeof option === 'boolean') {
+		return option;
+	} else if (typeof option === 'string') {
+		return option;
+	} else {
+		return defaultValue;
+	}
+}
