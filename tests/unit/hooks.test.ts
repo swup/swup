@@ -359,12 +359,32 @@ describe('Hook registry', () => {
 	});
 
 	it('should register hook handlers from options', async function () {
+		const hookSpy = vi.spyOn(Hooks.prototype, 'on');
 		const handler = vi.fn();
 		const swup = new Swup({ hooks: { 'visit:start': handler } });
 
 		await swup.hooks.call('visit:start', undefined, undefined);
 
+		expect(hookSpy).toBeCalledTimes(1);
+		expect(hookSpy).toBeCalledWith('visit:start', handler, {});
 		expect(handler).toBeCalledTimes(1);
+	});
+
+	it('should accept hook registration modifiers from options', async function () {
+		const hookSpy = vi.spyOn(Hooks.prototype, 'on');
+		const handler = vi.fn();
+		const swup = new Swup({
+			hooks: {
+				'visit:start': handler,
+				'visit:start.before': handler,
+				'visit:start.once': handler
+			}
+		});
+
+		expect(hookSpy).toBeCalledTimes(3);
+		expect(hookSpy).toBeCalledWith('visit:start', handler, {});
+		expect(hookSpy).toBeCalledWith('visit:start', handler, { before: true });
+		expect(hookSpy).toBeCalledWith('visit:start', handler, { once: true });
 	});
 });
 

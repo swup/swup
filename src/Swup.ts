@@ -8,7 +8,7 @@ import { type DelegateEventUnsubscribe } from './helpers/delegateEvent.js';
 import { Cache } from './modules/Cache.js';
 import { Classes } from './modules/Classes.js';
 import { type Visit, createVisit } from './modules/Visit.js';
-import { Hooks, type HookName, type HookHandler } from './modules/Hooks.js';
+import { Hooks, type HookName, type HookInitOptions } from './modules/Hooks.js';
 import { getAnchorElement } from './modules/getAnchorElement.js';
 import { awaitAnimations } from './modules/awaitAnimations.js';
 import { navigate, performNavigation, type NavigationToSelfAction } from './modules/navigate.js';
@@ -44,7 +44,7 @@ export type Options = {
 	/** Enable native animations using the View Transitions API. */
 	native: boolean;
 	/** Hook handlers to register. */
-	hooks: Partial<{ [K in HookName]: HookHandler<K> }>;
+	hooks: Partial<HookInitOptions>;
 	/** Plugins to register on startup. */
 	plugins: Plugin[];
 	/** Custom headers sent along with fetch requests. */
@@ -192,9 +192,11 @@ export default class Swup {
 		this.options.plugins.forEach((plugin) => this.use(plugin));
 
 		// Install user hooks
-		for (const [name, handler] of Object.entries(this.options.hooks)) {
-			// @ts-expect-error: object.entries() seems incapable of preserving key types
-			this.hooks.on(name, handler);
+		for (const [key, handler] of Object.entries(this.options.hooks)) {
+			// Buld options object from hook modifier: 'content:replace.before' => { before: true }
+			const [hook, modifiers] = this.hooks.parseName(key as HookName);
+			// @ts-expect-error: object.entries() is unable to preserve key/value types
+			this.hooks.on(hook, handler, modifiers);
 		}
 
 		// Create initial history record

@@ -49,6 +49,10 @@ export type HookArguments<T extends HookName> = HookDefinitions[T];
 
 export type HookName = keyof HookDefinitions;
 
+export type HookNameWithModifier = `${HookName}.${HookModifier}`;
+
+type HookModifier = 'once' | 'before' | 'replace';
+
 /** A generic hook handler. */
 export type HookHandler<T extends HookName> = (
 	/** Context about the current visit. */
@@ -69,6 +73,12 @@ export type HookDefaultHandler<T extends HookName> = (
 
 export type Handlers = {
 	[K in HookName]: HookHandler<K>[];
+};
+
+export type HookInitOptions = {
+	[K in HookName]: HookHandler<K>;
+} & {
+	[K in HookName as `${HookName}.${HookModifier}`]: HookHandler<K>;
 };
 
 /** Unregister a previously registered hook handler. */
@@ -569,5 +579,15 @@ export class Hooks {
 		document.dispatchEvent(
 			new CustomEvent<HookEventDetail>(`swup:${hook}`, { detail, bubbles: true })
 		);
+	}
+
+	/**
+	 * Parse a hook name into the name and any modifiers.
+	 * @param hook Name of the hook.
+	 */
+	parseName(hook: HookName | HookNameWithModifier): [HookName, Partial<HookOptions>] {
+		const [name, ...modifiers] = hook.split('.');
+		const options = modifiers.reduce((acc, mod) => ({ ...acc, [mod]: true }), {});
+		return [name as HookName, options];
 	}
 }
