@@ -53,7 +53,9 @@ export type HookNameWithModifier = `${HookName}.${HookModifier}`;
 
 type HookModifier = 'once' | 'before' | 'replace';
 
-/** A generic hook handler. */
+type HookWildcard = '*';
+
+/** A userland hook handler. */
 export type HookHandler<T extends HookName> = (
 	/** Context about the current visit. */
 	visit: Visit,
@@ -71,12 +73,23 @@ export type HookDefaultHandler<T extends HookName> = (
 	defaultHandler?: HookDefaultHandler<T>
 ) => T extends keyof HookReturnValues ? HookReturnValues[T] : Promise<unknown> | unknown;
 
-export type Handlers = {
-	[K in HookName]: HookHandler<K>[];
+/** A generic hook handler for wildcard registrations. */
+export type HookWildcardHandler = (
+	/** Context about the current visit. */
+	visit: Visit,
+	/** Local arguments passed into the handler. */
+	args?: object
+) => Promise<unknown> | unknown;
+
+/** A map between hook names and their correct handler. */
+export type HookHandlerMap = {
+	[K in HookName]: HookHandler<K>;
+} & {
+	[K in HookWildcard]: HookWildcardHandler;
 };
 
 export type HookInitOptions = {
-	[K in HookName as K | `${K}.${HookModifier}`]: HookHandler<K>;
+	[K in HookName as K | `${K}.${HookModifier}` | HookWildcard]: HookHandlerMap[K];
 };
 
 /** Unregister a previously registered hook handler. */
@@ -94,14 +107,15 @@ export type HookOptions = {
 	replace?: boolean;
 };
 
-export type HookRegistration<
-	T extends HookName,
-	H extends HookHandler<T> | HookDefaultHandler<T> = HookHandler<T>
-> = {
+export type HookRegistration<T extends HookName | HookWildcard, D extends boolean = false> = {
 	id: number;
 	hook: T;
-	handler: H;
-	defaultHandler?: HookDefaultHandler<T>;
+	handler: T extends HookName
+		? D extends true
+			? HookDefaultHandler<T>
+			: HookHandler<T>
+		: HookWildcardHandler;
+	defaultHandler?: T extends HookName ? HookDefaultHandler<T> : undefined;
 } & HookOptions;
 
 type HookEventDetail = {
@@ -112,11 +126,13 @@ type HookEventDetail = {
 
 export type HookEvent = CustomEvent<HookEventDetail>;
 
-type HookLedger<T extends HookName> = Map<HookHandler<T>, HookRegistration<T>>;
+type HookLedger<T extends HookName | HookWildcard> = T extends HookName
+	? Map<HookHandler<T>, HookRegistration<T>>
+	: Map<HookWildcardHandler, HookRegistration<T>>;
 
-interface HookRegistry extends Map<HookName, HookLedger<HookName>> {
-	get<K extends HookName>(key: K): HookLedger<K> | undefined;
-	set<K extends HookName>(key: K, value: HookLedger<K>): this;
+interface HookRegistry extends Map<HookName | HookWildcard, HookLedger<HookName | HookWildcard>> {
+	get<K extends HookName | HookWildcard>(key: K): HookLedger<K> | undefined;
+	set<K extends HookName | HookWildcard>(key: K, value: HookLedger<K>): this;
 }
 
 /**
@@ -166,6 +182,8 @@ export class Hooks {
 		'visit:end'
 	];
 
+	protected wildcard: HookWildcard = '*';
+
 	constructor(swup: Swup) {
 		this.swup = swup;
 		this.init();
@@ -175,15 +193,16 @@ export class Hooks {
 	 * Create ledgers for all core hooks.
 	 */
 	protected init() {
+		this.create(this.wildcard);
 		this.hooks.forEach((hook) => this.create(hook));
 	}
 
 	/**
 	 * Create a new hook type.
 	 */
-	create(hook: string) {
-		if (!this.registry.has(hook as HookName)) {
-			this.registry.set(hook as HookName, new Map());
+	create(hook: HookName | HookWildcard) {
+		if (!this.registry.has(hook)) {
+			this.registry.set(hook, new Map());
 		}
 	}
 
@@ -424,7 +443,7 @@ export class Hooks {
 	 */
 
 	// Overload: running HookDefaultHandler: expect HookDefaultHandler return type
-	protected async run<T extends HookName>(registrations: HookRegistration<T, HookDefaultHandler<T>>[], visit: Visit | undefined, args: HookArguments<T>, rethrow: true): Promise<Awaited<ReturnType<HookDefaultHandler<T>>>[]>; // prettier-ignore
+	protected async run<T extends HookName>(registrations: HookRegistration<T, true>[], visit: Visit | undefined, args: HookArguments<T>, rethrow: true): Promise<Awaited<ReturnType<HookDefaultHandler<T>>>[]>; // prettier-ignore
 	// Overload:  running user handler: expect no specific type
 	protected async run<T extends HookName>(registrations: HookRegistration<T>[], visit: Visit | undefined, args: HookArguments<T>): Promise<unknown[]>; // prettier-ignore
 	// Implementation
