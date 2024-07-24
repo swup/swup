@@ -193,9 +193,9 @@ export default class Swup {
 
 		// Install user hooks
 		for (const [key, handler] of Object.entries(this.options.hooks)) {
-			// Buld options object from hook modifier: 'content:replace.before' => { before: true }
+			// Build hook options from modifier suffix: 'content:replace.before' => { before: true }
 			const [hook, modifiers] = this.hooks.parseName(key as HookName);
-			// @ts-expect-error: object.entries() is unable to preserve key/value types
+			// @ts-expect-error: object.entries() does not preserve key/value types
 			this.hooks.on(hook, handler, modifiers);
 		}
 
