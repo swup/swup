@@ -19,6 +19,8 @@ type NavigationOptions = {
 	history?: HistoryAction;
 	/** Whether this visit should read from or write to the cache. */
 	cache?: CacheControl;
+	/** Custom metadata associated with this visit. */
+	meta?: Record<string, unknown>;
 };
 
 /**
@@ -105,6 +107,9 @@ export async function performNavigation(
 	if (typeof animation === 'string') {
 		visit.animation.name = animation;
 	}
+
+	// Get custom metadata from option
+	visit.meta = options.meta || {};
 
 	// Sanitize cache option
 	if (typeof options.cache === 'object') {
