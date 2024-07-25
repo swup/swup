@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 
 import { expectPageReload, expectToBeAt, sleep } from '../support/commands.js';
 import { navigateWithSwup, pushSwupHistoryState } from '../support/swup.js';
+import { HistoryState } from '../../src/helpers/history.js';
 
 test.describe('history', () => {
 	test.beforeEach(async ({ page }) => {
@@ -59,12 +60,29 @@ test.describe('history', () => {
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
 	});
 
-	test('saves state into the history', async ({ page }) => {
+	test('saves state into history', async ({ page }) => {
 		await navigateWithSwup(page, '/page-2.html');
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
 		await page.goBack();
 		const state = await page.evaluate(() => window.history.state);
 		expect(state).toMatchObject({ source: 'swup', url: '/history.html' });
+	});
+
+	test('saves scroll position into history', async ({ page }) => {
+		let state: HistoryState;
+		await page.evaluate(() => window.scrollTo(0, 200));
+		await navigateWithSwup(page, '/page-2.html');
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+		await page.evaluate(() => window.scrollTo(0, 100));
+		await page.goBack();
+
+		state = await page.evaluate(() => window.history.state);
+		expect(await page.evaluate(() => window.history.state)).toMatchObject({ scroll: { window: { x: 0, y: 200 }} });
+
+		await page.goForward();
+
+		state = await page.evaluate(() => window.history.state);
+		expect(state).toMatchObject({ scroll: { window: { x: 0, y: 100 }} });
 	});
 
 	test('calculates travel direction of history visits', async ({ page }) => {
