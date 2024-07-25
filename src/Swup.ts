@@ -155,7 +155,7 @@ export default class Swup {
 
 		this.handleLinkClick = this.handleLinkClick.bind(this);
 		this.handlePopState = this.handlePopState.bind(this);
-		this.storeScrollPosition = debounce(this.storeScrollPosition.bind(this));
+		this.storeScrollPosition = debounce(this.storeScrollPosition.bind(this), 100);
 
 		this.cache = new Cache(this);
 		this.classes = new Classes(this);
