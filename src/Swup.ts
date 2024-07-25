@@ -373,7 +373,9 @@ export default class Swup {
 	}
 
 	protected storeScrollPosition() {
-		this.hooks.callSync('scroll:store', undefined, undefined, () => {
+		// Create temporary visit to avoid re-using the previous one
+		const visit = this.createVisit({ to: '' });
+		this.hooks.callSync('scroll:store', visit, undefined, () => {
 			const scroll = { window: { x: window.scrollX, y: window.scrollY } };
 			updateHistoryRecord(null, { scroll });
 		});
