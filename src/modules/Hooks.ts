@@ -4,6 +4,7 @@ import type Swup from '../Swup.js';
 import { isPromise, runAsPromise } from '../utils.js';
 import { Visit } from './Visit.js';
 import type { FetchOptions, PageData } from './fetchPage.js';
+import type { HistoryScrollPositions, HistoryScrollRestorations } from '../helpers/history.js';
 
 export interface HookDefinitions {
 	'animation:out:start': undefined;
@@ -31,8 +32,8 @@ export interface HookDefinitions {
 	'page:view': { url: string; title: string };
 	'scroll:top': { options: ScrollIntoViewOptions };
 	'scroll:anchor': { hash: string; options: ScrollIntoViewOptions };
-	'scroll:store': undefined;
-	'scroll:restore': undefined;
+	'scroll:store': { scroll: HistoryScrollPositions };
+	'scroll:restore': { restore: HistoryScrollRestorations; options: ScrollIntoViewOptions };
 	'visit:start': undefined;
 	'visit:transition': undefined;
 	'visit:abort': undefined;
@@ -45,7 +46,6 @@ export interface HookReturnValues {
 	'page:load': Promise<PageData>;
 	'scroll:top': boolean;
 	'scroll:anchor': boolean;
-	'scroll:restore': boolean;
 }
 
 export type HookArguments<T extends HookName> = HookDefinitions[T];
