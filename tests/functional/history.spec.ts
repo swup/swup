@@ -70,14 +70,17 @@ test.describe('history', () => {
 
 	test('saves scroll position into history', async ({ page }) => {
 		let state: HistoryState;
+
 		await page.evaluate(() => window.scrollTo(0, 200));
+
 		await navigateWithSwup(page, '/page-2.html');
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
+
 		await page.evaluate(() => window.scrollTo(0, 100));
 		await page.goBack();
 
 		state = await page.evaluate(() => window.history.state);
-		expect(await page.evaluate(() => window.history.state)).toMatchObject({ scroll: { window: { x: 0, y: 200 }} });
+		expect(state).toMatchObject({ scroll: { window: { x: 0, y: 200 }} });
 
 		await page.goForward();
 

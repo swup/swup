@@ -335,15 +335,13 @@ export default class Swup {
 	}
 
 	protected handlePopState(event: PopStateEvent) {
-		const state: HistoryState = event.state as HistoryState;
-		const href: string = state?.url ?? window.location.href;
-
 		// Exit early if this event should be ignored
 		if (this.options.skipPopStateHandling(event)) {
 			return;
 		}
 
-		const location = Location.fromUrl(href);
+		const state: HistoryState = event.state as HistoryState;
+		const location = Location.fromUrl(state?.url ?? window.location.href);
 		const { url, hash } = location;
 
 		const visit = this.createVisit({ to: url, hash, event });
@@ -371,7 +369,7 @@ export default class Swup {
 		}
 
 		// Resolved path hasn't changed? Update visit+location and restore scroll position
-		if (this.isSameResolvedUrl(href, this.location.href)) {
+		if (this.isSameResolvedUrl(url, this.location.url)) {
 			this.visit = visit;
 			this.location = location;
 			this.restoreScrollPosition(visit);
