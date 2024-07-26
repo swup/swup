@@ -55,10 +55,30 @@ test.describe('scrolling', () => {
 		await expect(page.getByTestId('anchor-with-unicode')).toBeInViewport();
 	});
 
+	test('scrolls to top after navigation', async ({ page }) => {
+		await page.getByTestId('link-to-page').click();
+		await expectToBeAt(page, '/scrolling-2.html', 'Scrolling 2');
+		await expectScrollPosition(page, 0);
+	});
+
 	test('scrolls to requested hash after navigation', async ({ page }) => {
 		await page.getByTestId('link-to-page-anchor').click();
 		await expectToBeAt(page, '/scrolling-2.html#anchor', 'Scrolling 2');
 		await expect(page.getByTestId('anchor')).toBeInViewport();
+	});
+
+	test('restores scroll position on history visits', async ({ page }) => {
+		await page.evaluate(() => window.scrollTo(0, 200));
+		await page.getByTestId('link-to-page').click();
+		await expectToBeAt(page, '/scrolling-2.html', 'Scrolling 2');
+		await page.evaluate(() => window.scrollTo(0, 100));
+		await page.goBack();
+
+		await expectScrollPosition(page, 200);
+
+		await page.goForward();
+
+		await expectScrollPosition(page, 100);
 	});
 
 	test('appends the hash if changing visit.to.hash on the fly', async ({ page }) => {

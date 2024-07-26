@@ -7,7 +7,7 @@ import { type DelegateEventUnsubscribe } from './helpers/delegateEvent.js';
 
 import { Cache } from './modules/Cache.js';
 import { Classes } from './modules/Classes.js';
-import { type Visit, createVisit } from './modules/Visit.js';
+import { type Visit, VisitState, createVisit } from './modules/Visit.js';
 import { Hooks, type HookName, type HookInitOptions } from './modules/Hooks.js';
 import { getAnchorElement } from './modules/getAnchorElement.js';
 import { awaitAnimations } from './modules/awaitAnimations.js';
@@ -15,12 +15,12 @@ import { navigate, performNavigation, type NavigationToSelfAction } from './modu
 import { fetchPage } from './modules/fetchPage.js';
 import { animatePageOut } from './modules/animatePageOut.js';
 import { replaceContent } from './modules/replaceContent.js';
-import { scrollToContent } from './modules/scrollToContent.js';
+import { storeScrollPosition, restoreScrollPosition, scrollToContent } from './modules/scroll.js';
 import { animatePageIn } from './modules/animatePageIn.js';
 import { renderPage } from './modules/renderPage.js';
 import { use, unuse, findPlugin, type Plugin } from './modules/plugins.js';
 import { isSameResolvedUrl, resolveUrl } from './modules/resolveUrl.js';
-import { nextTick } from './utils.js';
+import { nextTick, debounce } from './utils.js';
 import { type HistoryState } from './helpers/history.js';
 
 /** Options for customizing swup's behavior. */
@@ -139,6 +139,8 @@ export default class Swup {
 	protected animatePageIn = animatePageIn;
 	protected animatePageOut = animatePageOut;
 	protected scrollToContent = scrollToContent;
+	protected storeScrollPosition = storeScrollPosition;
+	protected restoreScrollPosition = restoreScrollPosition;
 	/** Find the anchor element for a given hash */
 	getAnchorElement = getAnchorElement;
 
@@ -155,6 +157,7 @@ export default class Swup {
 
 		this.handleLinkClick = this.handleLinkClick.bind(this);
 		this.handlePopState = this.handlePopState.bind(this);
+		this.storeScrollPosition = debounce(this.storeScrollPosition.bind(this), 100);
 
 		this.cache = new Cache(this);
 		this.classes = new Classes(this);
@@ -174,10 +177,10 @@ export default class Swup {
 
 		window.addEventListener('popstate', this.handlePopState);
 
-		// Set scroll restoration to manual if animating history visits
-		if (this.options.animateHistoryBrowsing) {
-			window.history.scrollRestoration = 'manual';
-		}
+		// Manage scroll position restoration
+		window.history.scrollRestoration = 'manual';
+		window.addEventListener('scroll', this.storeScrollPosition, { passive: true });
+		this.storeScrollPosition();
 
 		// Initial save to cache
 		if (this.options.cache) {
@@ -217,11 +220,14 @@ export default class Swup {
 
 	/** Disable this instance, removing listeners and classnames. */
 	async destroy() {
-		// remove delegated listener
+		// remove delegated click listener
 		this.clickDelegate!.destroy();
 
 		// remove popstate listener
 		window.removeEventListener('popstate', this.handlePopState);
+
+		// remove scroll listener
+		window.removeEventListener('scroll', this.storeScrollPosition);
 
 		// empty cache
 		this.cache.clear();
@@ -329,27 +335,23 @@ export default class Swup {
 	}
 
 	protected handlePopState(event: PopStateEvent) {
-		const href: string = (event.state as HistoryState)?.url ?? window.location.href;
-
 		// Exit early if this event should be ignored
 		if (this.options.skipPopStateHandling(event)) {
 			return;
 		}
 
-		// Exit early if the resolved path hasn't changed
-		if (this.isSameResolvedUrl(getCurrentUrl(), this.location.url)) {
-			return;
-		}
-
-		const { url, hash } = Location.fromUrl(href);
+		const state: HistoryState = event.state as HistoryState;
+		const location = Location.fromUrl(state?.url ?? window.location.href);
+		const { url, hash } = location;
 
 		const visit = this.createVisit({ to: url, hash, event });
 
 		// Mark as history visit
 		visit.history.popstate = true;
+		visit.history.state = state;
 
 		// Determine direction of history visit
-		const index = (event.state as HistoryState)?.index ?? 0;
+		const index = state?.index ?? 0;
 		if (index && index !== this.currentHistoryIndex) {
 			const direction = index - this.currentHistoryIndex > 0 ? 'forwards' : 'backwards';
 			visit.history.direction = direction;
@@ -361,12 +363,21 @@ export default class Swup {
 		visit.scroll.reset = false;
 		visit.scroll.target = false;
 
-		// Animated history visit: re-enable animation & scroll reset
+		// Animated history visit: re-enable animation
 		if (this.options.animateHistoryBrowsing) {
 			visit.animation.animate = true;
-			visit.scroll.reset = true;
 		}
 
+		// Resolved path hasn't changed? Update visit+location and restore scroll position
+		if (this.isSameResolvedUrl(url, this.location.url)) {
+			this.visit = visit;
+			this.location = location;
+			this.restoreScrollPosition(visit);
+			this.visit.advance(VisitState.COMPLETED);
+			return;
+		}
+
+		// Otherwise, perform full navigation
 		this.hooks.callSync('history:popstate', visit, { event }, () => {
 			this.performNavigation(visit);
 		});

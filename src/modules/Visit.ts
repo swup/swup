@@ -1,3 +1,4 @@
+import type { HistoryState } from '../helpers/history.js';
 import type Swup from '../Swup.js';
 import type { Options } from '../Swup.js';
 import type { HistoryAction, HistoryDirection } from './navigate.js';
@@ -66,6 +67,8 @@ export interface VisitHistory {
 	popstate: boolean;
 	/** The direction of travel in case of a browser history navigation: backward or forward. */
 	direction: HistoryDirection | undefined;
+	/** The state associated with this history entry. */
+	state: HistoryState | undefined;
 }
 
 export interface VisitInitOptions {
@@ -141,7 +144,8 @@ export class Visit {
 		this.history = {
 			action: 'push',
 			popstate: false,
-			direction: undefined
+			direction: undefined,
+			state: undefined
 		};
 		this.scroll = {
 			reset: true,

@@ -54,6 +54,21 @@ export function forceReflow(element?: HTMLElement): void {
 }
 
 /**
+ * Minimal debounce function.
+ * @see https://www.joshwcomeau.com/snippets/javascript/debounce/
+ */
+export function debounce<F extends (...args: unknown[]) => unknown>(
+	callback: F,
+	wait = 0
+): (...args: Parameters<F>) => void {
+	let timeout: ReturnType<typeof setTimeout>;
+	return (...args: Parameters<F>) => {
+		clearTimeout(timeout);
+		timeout = setTimeout(() => callback(...args), wait);
+	};
+}
+
+/**
  * Read data attribute from closest element with that attribute.
  *
  * Returns `undefined` if no element is found or attribute is missing.
