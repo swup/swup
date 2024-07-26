@@ -1,8 +1,22 @@
 import { getCurrentUrl } from './getCurrentUrl.js';
 
-export interface ScrollPosition {
+export interface HistoryScrollPosition {
 	x: number;
 	y: number;
+}
+
+export interface HistoryScrollPositions {
+	[key: string]: HistoryScrollPosition;
+}
+
+export interface HistoryScrollRestoration {
+	el: Window | Element;
+	x: number;
+	y: number;
+}
+
+export interface HistoryScrollRestorations {
+	[key: string]: HistoryScrollRestoration;
 }
 
 export interface HistoryState {
@@ -10,7 +24,7 @@ export interface HistoryState {
 	source: 'swup';
 	random: number;
 	index?: number;
-	scroll?: { [key: string]: ScrollPosition };
+	scroll?: HistoryScrollPositions;
 	[key: string]: unknown;
 }
 
