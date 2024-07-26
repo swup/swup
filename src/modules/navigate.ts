@@ -121,6 +121,12 @@ export async function performNavigation(
 	// Delete this so that window.fetch doesn't mis-interpret it
 	delete options.cache;
 
+	// Store current scroll position into history state
+	// (unless this is a popstate call where we no longer have access to the previous history state)
+	if (!visit.history.popstate) {
+		this.storeScrollPosition();
+	}
+
 	try {
 		await this.hooks.call('visit:start', visit, undefined);
 
