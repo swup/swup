@@ -25,7 +25,8 @@ wiki-wishlist
 
 # Build or output files and directories
 /lib
-/dist
+/dist/*
+!dist/.gitkeep
 *.tgz
 
 # Testing tools and outputs
