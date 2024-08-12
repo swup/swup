@@ -59,9 +59,9 @@ export function restoreScrollPosition(this: Swup, visit: Visit) {
 		visit,
 		{ restore, options },
 		(visit, { restore, options }) => {
-			for (const [key, { el, y, x }] of Object.entries(restore)) {
-				console.log(key, y, x, options);
-				scrollToPosition(el, y, x, options);
+			for (const [key, { el, x, y }] of Object.entries(restore)) {
+				console.log(key, x, y, options);
+				scrollToPosition(el, x, y, options);
 			}
 		}
 	);
@@ -77,10 +77,10 @@ export function scrollToElement(el: Element | null, options?: ScrollIntoViewOpti
 
 export function scrollToPosition(
 	el: Window | Element,
-	top: number,
 	left: number,
+	top: number,
 	options?: ScrollIntoViewOptions
 ): boolean {
-	el.scrollTo({ top, left, ...options });
+	el.scrollTo({ left, top, ...options });
 	return true;
 }
