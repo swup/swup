@@ -1,6 +1,7 @@
 import type Swup from '../Swup.js';
 import {
 	updateHistoryRecord,
+	type HistoryScrollPositions,
 	type HistoryScrollRestorations,
 	type HistoryState
 } from '../helpers/history.js';
@@ -39,7 +40,7 @@ export function scrollToContent(this: Swup, visit: Visit): boolean {
 export function storeScrollPosition(this: Swup) {
 	// Create temporary visit to avoid re-using the previous one
 	const visit = this.createVisit({ to: '' });
-	const scroll = { window: { x: window.scrollX, y: window.scrollY } };
+	const scroll: HistoryScrollPositions = { window: { x: window.scrollX, y: window.scrollY } };
 
 	this.hooks.callSync('scroll:store', visit, { scroll }, (visit, { scroll }) => {
 		console.log('scroll:store', scroll);
