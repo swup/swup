@@ -7,7 +7,7 @@ import { type DelegateEventUnsubscribe } from './helpers/delegateEvent.js';
 
 import { Cache } from './modules/Cache.js';
 import { Classes } from './modules/Classes.js';
-import { type Visit, VisitState, createVisit } from './modules/Visit.js';
+import { type Visit, createVisit } from './modules/Visit.js';
 import { Hooks, type HookName, type HookInitOptions } from './modules/Hooks.js';
 import { getAnchorElement } from './modules/getAnchorElement.js';
 import { awaitAnimations } from './modules/awaitAnimations.js';
@@ -324,8 +324,9 @@ export default class Swup {
 				return;
 			}
 
-			// Exit early if the resolved path hasn't changed
+			// Exit if the resolved path hasn't changed
 			if (this.isSameResolvedUrl(url, from)) {
+				this.storeScrollPosition();
 				return;
 			}
 
@@ -370,10 +371,7 @@ export default class Swup {
 
 		// Resolved path hasn't changed? Update visit+location and restore scroll position
 		if (this.isSameResolvedUrl(url, this.location.url)) {
-			this.visit = visit;
-			this.location = location;
 			this.restoreScrollPosition(visit);
-			this.visit.advance(VisitState.COMPLETED);
 			return;
 		}
 
