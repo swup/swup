@@ -57,6 +57,7 @@ test.describe('navigation', () => {
 			'animation:out:start',
 			'fetch:request',
 			'page:load',
+			'scroll:store',
 			'animation:out:await',
 			'animation:out:end',
 			'content:replace',
@@ -89,6 +90,7 @@ test.describe('navigation', () => {
 			'animation:out:start',
 			'fetch:request',
 			'page:load',
+			'scroll:store',
 			'animation:out:await',
 			'animation:out:end'
 		];
