@@ -59,8 +59,7 @@ export function restoreScrollPosition(this: Swup, visit: Visit) {
 		visit,
 		{ restore, options },
 		(visit, { restore, options }) => {
-			for (const [key, { el, x, y }] of Object.entries(restore)) {
-				console.log(key, x, y, options);
+			for (const { el, x, y } of Object.values(restore)) {
 				scrollToPosition(el, x, y, options);
 			}
 		}
