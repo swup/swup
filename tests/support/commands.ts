@@ -77,7 +77,7 @@ export async function delayRequest(page: Page, url: string, timeout: number, tim
 	}, { times });
 }
 
-export function scrollToPosition(page: Page,y: number) {
+export function scrollToPosition(page: Page, y: number) {
 	return page.evaluate((y) => window.scrollTo(0, y), y);
 }
 
@@ -86,6 +86,12 @@ export async function expectScrollPosition(page: Page, expected: number) {
 	await expect(
 		async () => expect(await pos()).toEqual(expected)
 	).toPass();
+}
+
+export async function expectHistoryStateContents(page: Page, expected: Record<string, unknown>) {
+	await expect(async () => {
+		expect(await page.evaluate(() => window.history.state)).toMatchObject(expected);
+	}).toPass();
 }
 
 export function expectNumberWithinRange(value: number, min: number, max: number) {
