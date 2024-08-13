@@ -43,7 +43,6 @@ export function storeScrollPosition(this: Swup) {
 	const scroll: HistoryScrollPositions = { window: { x: window.scrollX, y: window.scrollY } };
 
 	this.hooks.callSync('scroll:store', visit, { scroll }, (visit, { scroll }) => {
-		console.log('scroll:store', scroll);
 		updateHistoryRecord(null, { scroll });
 	});
 }
