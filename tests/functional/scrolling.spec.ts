@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-import { expectScrollPosition, expectToBeAt } from '../support/commands.js';
-import { waitForSwup } from '../support/swup.js';
+import { expectScrollPosition, expectToBeAt, scrollToPosition } from '../support/commands.js';
+import { navigateWithSwup, waitForSwup } from '../support/swup.js';
 
 test.describe('scrolling', () => {
 	test.beforeEach(async ({ page }) => {
@@ -68,17 +68,25 @@ test.describe('scrolling', () => {
 	});
 
 	test('restores scroll position on history visits', async ({ page }) => {
-		await page.evaluate(() => window.scrollTo(0, 200));
+		scrollToPosition(page, 100);
+		expectScrollPosition(page, 100);
+
 		await page.getByTestId('link-to-page').click();
 		await expectToBeAt(page, '/scrolling-2.html', 'Scrolling 2');
-		await page.evaluate(() => window.scrollTo(0, 100));
-		await page.goBack();
+		expectScrollPosition(page, 0);
 
-		await expectScrollPosition(page, 200);
+		await page.goBack();
+		expectScrollPosition(page, 100);
 
 		await page.goForward();
+		expectScrollPosition(page, 0);
 
-		await expectScrollPosition(page, 100);
+		scrollToPosition(page, 200);
+		await page.goBack();
+		expectScrollPosition(page, 100);
+
+		await page.goForward();
+		expectScrollPosition(page, 200);
 	});
 
 	test('appends the hash if changing visit.to.hash on the fly', async ({ page }) => {
