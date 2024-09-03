@@ -63,7 +63,7 @@ jobs:
         run: echo "version=$(cat ./package-lock.json | jq -re '.packages["node_modules/@playwright/test"].version')" >> $GITHUB_OUTPUT
 
       - name: Download dist folder
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: dist-folder
           path: dist
@@ -101,7 +101,7 @@ jobs:
         run: npm ci
 
       - name: Download blob reports
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: blob-reports
           path: playwright-blob-reports
