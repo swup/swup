@@ -27,7 +27,7 @@ jobs:
         run: npm run build
 
       - name: Upload dist folder
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: dist-folder
@@ -63,7 +63,7 @@ jobs:
         run: echo "version=$(cat ./package-lock.json | jq -re '.packages["node_modules/@playwright/test"].version')" >> $GITHUB_OUTPUT
 
       - name: Download dist folder
-        uses: actions/download-artifact@v4.1.7
+        uses: actions/download-artifact@v4
         with:
           name: dist-folder
           path: dist
@@ -72,7 +72,7 @@ jobs:
         run: HOME=/root npx playwright test --config ./tests/config/playwright.config.ts --shard ${{ matrix.shard }} # --workers 1
 
       - name: Upload blob report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: blob-reports
@@ -101,7 +101,7 @@ jobs:
         run: npm ci
 
       - name: Download blob reports
-        uses: actions/download-artifact@v4.1.7
+        uses: actions/download-artifact@v4
         with:
           name: blob-reports
           path: playwright-blob-reports
