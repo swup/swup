@@ -14,7 +14,6 @@ describe('matchPath', () => {
 		const match = urlMatch('/users/bob');
 		expect(match).toEqual({
 			path: '/users/bob',
-			index: 0,
 			params: { user: 'bob' }
 		});
 	});
