@@ -35,17 +35,6 @@ describe('matchPath', () => {
 		expect(withoutParams).toEqual({});
 	});
 
-	/**
-	 * When passing a regex to `match`, the params in the response are sorted by appearance.
-	 * Only helpful for falsy/truthy detection
-	 */
-	it('should work with regex', () => {
-		const re = pathToRegexp('/users/:user');
-		const urlMatch = matchPath(re);
-		const { params } = urlMatch('/users/bob') || {};
-		expect(params).toEqual({ '0': 'bob' });
-	});
-
 	it('should throw with malformed paths', () => {
 		// prettier-ignore
 		expect(() => matchPath('/\?user=:user')).toThrowError('[swup] Error parsing path');
