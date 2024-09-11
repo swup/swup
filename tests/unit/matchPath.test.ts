@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { matchPath } from '../../src/index.js';
-import { pathToRegexp } from 'path-to-regexp';
 
 describe('matchPath', () => {
 	it('should return false if not matching', () => {
