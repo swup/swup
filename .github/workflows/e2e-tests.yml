@@ -71,11 +71,15 @@ jobs:
       - name: Run tests
         run: HOME=/root npx playwright test --config ./tests/config/playwright.config.ts --shard ${{ matrix.shard }} # --workers 1
 
+      - name: Sanitize shard name
+        id: sanitize-shard
+        run: echo "shard=$(echo ${{ matrix.shard }} | tr -d '/')" >> $GITHUB_OUTPUT
+
       - name: Upload blob report
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: blob-report-${{ matrix.shard }}
+          name: blob-report-${{ steps.sanitize-shard.outputs.shard }}
           path: tests/reports/blobs
           retention-days: 1
 
