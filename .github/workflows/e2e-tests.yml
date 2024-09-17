@@ -27,7 +27,7 @@ jobs:
         run: npm run build
 
       - name: Upload dist folder
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: dist-folder
@@ -63,7 +63,7 @@ jobs:
         run: echo "version=$(cat ./package-lock.json | jq -re '.packages["node_modules/@playwright/test"].version')" >> $GITHUB_OUTPUT
 
       - name: Download dist folder
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: dist-folder
           path: dist
@@ -71,11 +71,15 @@ jobs:
       - name: Run tests
         run: HOME=/root npx playwright test --config ./tests/config/playwright.config.ts --shard ${{ matrix.shard }} # --workers 1
 
+      - name: Sanitize shard name
+        id: sanitize-shard
+        run: echo "shard=$(echo ${{ matrix.shard }} | tr -d '/')" >> $GITHUB_OUTPUT
+
       - name: Upload blob report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: blob-reports
+          name: blob-report-${{ steps.sanitize-shard.outputs.shard }}
           path: tests/reports/blobs
           retention-days: 1
 
@@ -101,16 +105,17 @@ jobs:
         run: npm ci
 
       - name: Download blob reports
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
-          name: blob-reports
+          pattern: blob-report-*
           path: playwright-blob-reports
+          merge-multiple: true
 
       - name: Merge blob reports
         run: PLAYWRIGHT_JSON_OUTPUT_NAME=results.json npx playwright merge-reports --reporter html,json ./playwright-blob-reports
 
       - name: Upload HTML report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: html-report # --attempt-${{ github.run_attempt }}
