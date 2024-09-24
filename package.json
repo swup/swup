@@ -44,7 +44,7 @@
     "test:e2e:instrument": "nyc instrument --compact=false dist tests/fixtures/dist",
     "test:e2e:serve": "npx serve -n -S -L -p 8274 --config ./tests/config/serve.json",
     "test:e2e:start": "npm run test:e2e:instrument && npm run test:e2e:serve",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "author": "Georgy Marchuk",
   "license": "MIT",
