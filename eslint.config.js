@@ -20,7 +20,8 @@ export default [
 			'/',
 			'/*.*',
 			'!src/',
-			'**/*.test.ts'
+			'**/*.test.ts',
+			'**/*.spec.ts'
 		]
 	},
 	{
