@@ -3,6 +3,7 @@
 import compat from 'eslint-plugin-compat';
 
 // doesn't yet work with eslint v9 config format
+// waiting on https://github.com/robatwilliams/es-compat/pull/106
 // import escompat from 'eslint-plugin-ecmascript-compat';
 
 // Tweak these and run "npm run lint:compat" to see the compatibility against these browsers
