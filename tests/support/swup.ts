@@ -6,6 +6,7 @@ import { expectNumberCloseTo } from './commands.js';
 declare global {
 	interface Window {
 		_swup: Swup;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		data: any;
 	}
 }
