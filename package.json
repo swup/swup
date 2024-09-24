@@ -30,7 +30,7 @@
     "lint": "npm run lint:ts && npm run lint:es",
     "lint:ts": "tsc --noEmit --skipLibCheck",
     "lint:es": "npx eslint .",
-    "lint:compat": "npx eslint --config .eslintrc.compat.cjs --no-eslintrc .",
+    "lint:compat": "npx eslint --config eslint.compat.js .",
     "lint:prettier": "prettier 'src/**/*.ts'",
     "prepublishOnly": "npm run build",
     "postinstall": "opencollective-postinstall || true",
