@@ -1,5 +1,10 @@
 # Changelog
 
+## [4.8.0] - 2024-09-25
+
+- Add `hooks` option to allow registering all hooks at once
+- Add `visit.meta` key for custom data
+
 ## [4.7.0] - 2024-07-18
 
 - Inherit `data-swup-*` attributes from parent elements
@@ -330,6 +335,7 @@ See [upgrade instructions](https://swup.js.org/getting-started/upgrading-v3/) fo
 
 - Initial release
 
+[4.8.0]: https://github.com/swup/swup/releases/tag/4.8.0
 [4.7.0]: https://github.com/swup/swup/releases/tag/4.7.0
 [4.6.1]: https://github.com/swup/swup/releases/tag/4.6.1
 [4.6.0]: https://github.com/swup/swup/releases/tag/4.6.0
