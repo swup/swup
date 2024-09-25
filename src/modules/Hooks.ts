@@ -77,6 +77,8 @@ export type Handlers = {
 
 export type HookInitOptions = {
 	[K in HookName as K | `${K}.${HookModifier}`]: HookHandler<K>;
+} & {
+	[K in HookName as K | `${K}.${HookModifier}.${HookModifier}`]: HookHandler<K>;
 };
 
 /** Unregister a previously registered hook handler. */
