@@ -398,9 +398,10 @@ describe('Hook registry', () => {
 			}
 		});
 
-		expect(hookSpy).toBeCalledTimes(3);
+		expect(hookSpy).toBeCalledTimes(4);
 		expect(hookSpy).toBeCalledWith('visit:start', handler, {});
 		expect(hookSpy).toBeCalledWith('visit:start', handler, { before: true });
+		expect(hookSpy).toBeCalledWith('visit:start', handler, { once: true });
 		expect(hookSpy).toBeCalledWith('visit:start', handler, { once: true, before: true });
 	});
 });
