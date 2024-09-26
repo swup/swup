@@ -526,7 +526,7 @@ export class Hooks {
 			handler = [{ id: 0, hook, handler: defaultHandler }];
 			if (replaced) {
 				const index = replace.length - 1;
-				const replacingHandler = replace[index].handler;
+				const { handler: replacingHandler, once } = replace[index];
 				const createDefaultHandler = (index: number): HookDefaultHandler<T> | undefined => {
 					const next = replace[index - 1];
 					if (next) {
@@ -537,9 +537,7 @@ export class Hooks {
 					}
 				};
 				const nestedDefaultHandler = createDefaultHandler(index);
-				handler = [
-					{ id: 0, hook, handler: replacingHandler, defaultHandler: nestedDefaultHandler }
-				];
+				handler = [{ id: 0, hook, once, handler: replacingHandler, defaultHandler: nestedDefaultHandler }]; // prettier-ignore
 			}
 		}
 
