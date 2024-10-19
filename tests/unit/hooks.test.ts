@@ -290,6 +290,22 @@ describe('Hook registry', () => {
 		expect(listener).toBeCalledWith(visit, undefined, undefined);
 	});
 
+	it('should allow replacing original handler only once', async () => {
+		const swup = new Swup();
+		const customHandler = vi.fn();
+		const defaultHandler = vi.fn();
+
+		swup.hooks.on('enable', customHandler, { replace: true, once: true });
+
+		await swup.hooks.call('enable', undefined, undefined, defaultHandler);
+		expect(defaultHandler).toBeCalledTimes(0);
+		expect(customHandler).toBeCalledTimes(1);
+
+		await swup.hooks.call('enable', undefined, undefined, defaultHandler);
+		expect(defaultHandler).toBeCalledTimes(1);
+		expect(customHandler).toBeCalledTimes(1);
+	});
+
 	it('should trigger hook handler with visit and args', async () => {
 		const swup = new SwupWithPublicVisitMethods();
 		const handler: HookHandler<'history:popstate'> = vi.fn();
@@ -356,6 +372,37 @@ describe('Hook registry', () => {
 		swup.hooks.before('enable', handlerWithError); // run before default handler
 		await expect(() => swup.hooks.call('enable', undefined, undefined, handlerWithError)).rejects.toThrow(/^UserError$/);
 		expect(handlerWithError).toBeCalledTimes(2);
+	});
+
+	it('should register hook handlers from options', async function () {
+		const hookSpy = vi.spyOn(Hooks.prototype, 'on');
+		const handler = vi.fn();
+		const swup = new Swup({ hooks: { 'visit:start': handler } });
+
+		await swup.hooks.call('visit:start', undefined, undefined);
+
+		expect(hookSpy).toBeCalledTimes(1);
+		expect(hookSpy).toBeCalledWith('visit:start', handler, {});
+		expect(handler).toBeCalledTimes(1);
+	});
+
+	it('should accept hook registration modifiers from options', async function () {
+		const hookSpy = vi.spyOn(Hooks.prototype, 'on');
+		const handler = vi.fn();
+		const swup = new Swup({
+			hooks: {
+				'visit:start': handler,
+				'visit:start.before': handler,
+				'visit:start.once': handler,
+				'visit:start.once.before': handler
+			}
+		});
+
+		expect(hookSpy).toBeCalledTimes(4);
+		expect(hookSpy).toBeCalledWith('visit:start', handler, {});
+		expect(hookSpy).toBeCalledWith('visit:start', handler, { before: true });
+		expect(hookSpy).toBeCalledWith('visit:start', handler, { once: true });
+		expect(hookSpy).toBeCalledWith('visit:start', handler, { once: true, before: true });
 	});
 });
 
