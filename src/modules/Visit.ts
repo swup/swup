@@ -114,6 +114,8 @@ export class Visit {
 	history: VisitHistory;
 	/** Scroll behavior on this visit */
 	scroll: VisitScroll;
+	/** User-defined metadata */
+	meta: Record<string, unknown>;
 
 	constructor(swup: Swup, options: VisitInitOptions) {
 		const { to, from, hash, el, event } = options;
@@ -145,7 +147,9 @@ export class Visit {
 			reset: true,
 			target: undefined
 		};
+		this.meta = {};
 	}
+
 	/** @internal */
 	advance(state: VisitState) {
 		if (this.state < state) {
