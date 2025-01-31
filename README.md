@@ -15,8 +15,8 @@
 [![npm version](https://img.shields.io/npm/v/swup.svg)](https://www.npmjs.com/package/swup)
 [![Bundle size](https://img.shields.io/bundlejs/size/swup?exports=default%20as%20Swup&label=size)](https://bundlejs.com/?q=swup&treeshake=%5B%7B+default+%7D%5D)
 [![npm downloads](https://img.shields.io/npm/dt/swup.svg)](https://www.npmjs.com/package/swup)
-[![Test status](https://img.shields.io/github/actions/workflow/status/swup/swup/e2e-tests.yml?branch=master&label=tests)](https://github.com/swup/swup/actions/workflows/e2e-tests.yml)
-[![License](https://img.shields.io/github/license/swup/swup.svg)](https://github.com/swup/swup/blob/master/LICENSE)
+[![Test status](https://img.shields.io/github/actions/workflow/status/swup/swup/e2e-tests.yml?branch=main&label=tests)](https://github.com/swup/swup/actions/workflows/e2e-tests.yml)
+[![License](https://img.shields.io/github/license/swup/swup.svg)](https://github.com/swup/swup/blob/main/LICENSE)
 
 </div>
 
