@@ -1,8 +1,0 @@
-name: Automerge Dependabot PRs
-
-on:
-  pull_request:
-
-jobs:
-  auto-merge:
-    uses: swup/.github/.github/workflows/dependabot-automerge.yml@main
