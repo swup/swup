@@ -86,7 +86,7 @@
     "serve": "^14.2.1",
     "typed-query-selector": "^2.11.0",
     "typescript": "^5.2.2",
-    "vitest": "^2.1.1"
+    "vitest": "^3.0.9"
   },
   "collective": {
     "type": "opencollective",
