@@ -46,7 +46,11 @@
     "test:e2e:start": "npm run test:e2e:instrument && npm run test:e2e:serve",
     "prepare": "husky"
   },
-  "author": "Georgy Marchuk",
+  "author": {
+    "name": "Georgy Marchuk",
+    "email": "gmarcuk@gmail.com",
+    "url": "https://gmrchk.com"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
