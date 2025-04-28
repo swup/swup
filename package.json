@@ -52,6 +52,7 @@
     "type": "git",
     "url": "https://github.com/swup/swup.git"
   },
+  "homepage": "https://swup.js.org",
   "keywords": [
     "css",
     "page",
