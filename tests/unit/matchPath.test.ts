@@ -51,4 +51,12 @@ describe('matchPath', () => {
 		// prettier-ignore
 		expect(() => matchPath('/\?user=:user')).toThrowError('[swup] Error parsing path');
 	});
+
+	it('should treat an empty array like an empty string', () => {
+		const urlMatch = matchPath([]);
+
+		expect(urlMatch('')).toEqual({ path: '', params: {} });
+
+		expect(urlMatch('/foo/bar')).toBe(false);
+	});
 });
