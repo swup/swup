@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.8.2] - 2025-29-04
+## [4.8.2] - 2025-04-29
 
 - Fix `matchPath` to treat an empty array like an empty string
 
