@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.8.2] - 2025-29-04
+
+- Fix `matchPath` to treat an empty array like an empty string
+
 ## [4.8.1] - 2024-09-28
 
 - Fix usage of combined hook options `once` and `replace`
@@ -339,6 +343,7 @@ See [upgrade instructions](https://swup.js.org/getting-started/upgrading-v3/) fo
 
 - Initial release
 
+[4.8.2]: https://github.com/swup/swup/releases/tag/4.8.2
 [4.8.1]: https://github.com/swup/swup/releases/tag/4.8.1
 [4.8.0]: https://github.com/swup/swup/releases/tag/4.8.0
 [4.7.0]: https://github.com/swup/swup/releases/tag/4.7.0
