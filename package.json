@@ -78,7 +78,7 @@
   "dependencies": {
     "delegate-it": "^6.0.0",
     "opencollective-postinstall": "^2.0.2",
-    "path-to-regexp": "^6.2.1"
+    "path-to-regexp": "^8.2.0"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.18.6",
