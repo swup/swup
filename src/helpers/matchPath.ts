@@ -11,6 +11,10 @@ export const matchPath = <P extends object = object>(
 	path: Params[0],
 	options?: Params[1]
 ): MatchFunction<P> => {
+	if (Array.isArray(path) && !path.length) {
+		path = '';
+	}
+
 	try {
 		return match<P>(path, options);
 	} catch (error) {
