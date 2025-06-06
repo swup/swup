@@ -21,10 +21,10 @@ module.exports = {
 	root: true,
 	/* First exclude everything, then re-include /dist */
 	ignorePatterns: ['/*', '!/dist'],
-  env: {
-    browser: true,
+	env: {
+		browser: true,
 		es2024: true
-  },
+	},
 	extends: [
 		'plugin:compat/recommended',
 		'plugin:ecmascript-compat/recommended'
