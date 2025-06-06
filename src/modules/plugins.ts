@@ -5,7 +5,7 @@ export type Plugin = {
 	isSwupPlugin: true;
 	/** Name of this plugin */
 	name: string;
-	/** Version of this plugin. Currently not in use, defined here for backward compatiblity. */
+	/** Version of this plugin. Currently not in use, defined here for backward compatibility. */
 	version?: string;
 	/** The swup instance that mounted this plugin */
 	swup?: Swup;

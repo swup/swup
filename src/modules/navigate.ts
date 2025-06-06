@@ -118,7 +118,7 @@ export async function performNavigation(
 	} else if (options.cache !== undefined) {
 		visit.cache = { read: !!options.cache, write: !!options.cache };
 	}
-	// Delete this so that window.fetch doesn't mis-interpret it
+	// Delete this so that window.fetch doesn't misinterpret it
 	delete options.cache;
 
 	try {
