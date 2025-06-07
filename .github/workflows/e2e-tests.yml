@@ -122,7 +122,21 @@ jobs:
           path: playwright-report
           retention-days: 14
 
+      - name: Check repo context
+        id: context-check
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            if [ "${{ github.event.pull_request.head.repo.full_name }}" = "${{ github.repository }}" ]; then
+              echo "internal=true" >> $GITHUB_OUTPUT
+            else
+              echo "internal=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "internal=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Check out reports branch
+        if: steps.context-check.outputs.internal == 'true'
         uses: actions/checkout@v4
         with:
           ref: test-reports
@@ -131,6 +145,7 @@ jobs:
 
       - name: Generate report name and URL
         id: report-id
+        if: steps.context-check.outputs.internal == 'true'
         run: |
           name=$(date +"%Y-%m-%d-%H-%M-%S")
           echo "name=$name" >> $GITHUB_OUTPUT
@@ -138,6 +153,7 @@ jobs:
           echo "url=https://swup.github.io/swup/reports/$name/" >> $GITHUB_OUTPUT
 
       - name: Copy html report and push reports branch
+        if: steps.context-check.outputs.internal == 'true'
         run: |
           mkdir -p test-reports-branch/${{ steps.report-id.outputs.path }}
           cp -r playwright-report/. test-reports-branch/${{ steps.report-id.outputs.path }}
@@ -160,6 +176,7 @@ jobs:
           done
 
       - name: Output report url
+        if: steps.context-check.outputs.internal == 'true'
         run: |
           echo "::notice title=Published Playwright test report::${{ steps.report-id.outputs.url }}"
 
