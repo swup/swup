@@ -74,7 +74,7 @@ Swup is small by design. Extended features can be added via [plugins](https://sw
 - Animate [form submissions](https://swup.js.org/plugins/forms-plugin/)
 - Get help in [debug mode](https://swup.js.org/plugins/debug-plugin/)
 
-Check out the list of [official plugins](https://swup.js.org/plugins/) and [third-party integrations](https://swup.js.org/third-party-integrations/).
+Check out the list of [official](https://swup.js.org/plugins/) and [third-party](https://swup.js.org/third-party-plugins/) plugins.
 
 ## Themes
 
