@@ -16,12 +16,13 @@ jobs:
 
     steps:
       - name: Check out repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 16
+          node-version: 20
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci

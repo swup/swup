@@ -12,13 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Set up node
+        uses: actions/setup-node@v5
         with:
-          node-version: 16
-          registry-url: https://registry.npmjs.org
+          node-version: 20
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
