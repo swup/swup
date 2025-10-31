@@ -39,7 +39,7 @@ jobs:
     name: Run playwright tests (${{ matrix.shard }})
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.47.2
+      image: mcr.microsoft.com/playwright:v1.56.1-jammy
     timeout-minutes: 20
     needs: install
     strategy:
