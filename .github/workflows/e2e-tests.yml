@@ -11,6 +11,8 @@ jobs:
     name: Install
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    outputs:
+      playwright-version: ${{ steps.playwright-version.outputs.version }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
@@ -27,6 +29,10 @@ jobs:
       - name: Bundle library
         run: npm run build
 
+      - name: Get playwright version
+        id: playwright-version
+        run: echo "version=$(cat ./package-lock.json | jq -re '.packages["node_modules/@playwright/test"].version')" >> $GITHUB_OUTPUT
+
       - name: Upload dist folder
         uses: actions/upload-artifact@v4
         if: always()
@@ -39,7 +45,7 @@ jobs:
     name: Run playwright tests (${{ matrix.shard }})
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.56.1-jammy
+      image: mcr.microsoft.com/playwright:v${{ needs.install.outputs.playwright-version }}-jammy
     timeout-minutes: 20
     needs: install
     strategy:
@@ -59,10 +65,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Get playwright version
-        id: playwright-version
-        run: echo "version=$(cat ./package-lock.json | jq -re '.packages["node_modules/@playwright/test"].version')" >> $GITHUB_OUTPUT
 
       - name: Download dist folder
         uses: actions/download-artifact@v4
