@@ -5,17 +5,21 @@ name: Publish package
 on:
   release:
     types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # For OIDC Trusted Publishing
 
 jobs:
   publish-npm:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: 20
+          registry-url: https://registry.npmjs.org
+          node-version: 24
           cache: 'npm'
       - run: npm ci
       - run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
