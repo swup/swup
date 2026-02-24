@@ -33,7 +33,6 @@
     "lint:compat": "npx eslint --config .eslintrc.compat.cjs --no-eslintrc .",
     "lint:prettier": "prettier 'src/**/*.ts'",
     "prepublishOnly": "npm run build",
-    "postinstall": "opencollective-postinstall || true",
     "test": "npm run test:unit && npm run test:e2e",
     "test:ci": "npm run test:unit && npm run test:e2e:ci",
     "test:unit": "vitest run --config ./tests/config/vitest.config.ts",
