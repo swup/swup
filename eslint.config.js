@@ -4,15 +4,14 @@ import tseslint from 'typescript-eslint';
 import prettiereslintRecommended from 'eslint-plugin-prettier/recommended';
 
 export default defineConfig(
+	{
+		ignores: ['dist/', 'node_modules/', 'tests/', '*.cjs', '*.js'],
+	},
 	eslint.configs.recommended,
 	tseslint.configs.recommendedTypeChecked,
 	prettiereslintRecommended,
 	{
-		/* First exclude everything, then re-include /src, then exclude tests */
-		ignores: ['/*', '!/src', '**/*.test.ts'],
-	},
-	{
-		files: ['**/*.ts', '!*.test.ts'],
+		files: ['src/**/*.ts'],
 		rules: {
 			'no-unused-vars': 'off',
 			'@typescript-eslint/no-unused-vars': ['error', { vars: 'all', args: 'none' }],
