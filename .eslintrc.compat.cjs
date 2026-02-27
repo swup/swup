@@ -1,5 +1,13 @@
 /* eslint-env node */
 
+/**
+ * TODO: migrate this to a supported combination of ESLint and plugins
+ *
+ * Issues:
+ *   - `eslint-plugin-ecmascript-compat` is unmaintained and goes up to ESLint 8
+ *   - An alternative is `eslint-config-target-es, but it only goes up to ESLint 9
+ */
+
 // Tweak these and run "npm run lint:compat" to see the compatibliity against these browsers
 const browsers = [
 	'defaults',
