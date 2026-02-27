@@ -68,10 +68,9 @@ export function unuse(this: Swup, pluginOrName: Plugin | string) {
 
 /** Find a plugin by name or reference. */
 export function findPlugin(this: Swup, pluginOrName: Plugin | string) {
-	return this.plugins.find(
-		(plugin) =>
-			plugin === pluginOrName ||
-			plugin.name === pluginOrName ||
-			plugin.name === `Swup${String(pluginOrName)}`
-	);
+	return this.plugins.find((plugin) => {
+		return typeof pluginOrName === 'string'
+			? [`Swup${pluginOrName}`, pluginOrName].includes(plugin.name)
+			: plugin === pluginOrName;
+	});
 }
