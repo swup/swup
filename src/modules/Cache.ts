@@ -2,7 +2,7 @@ import type Swup from '../Swup.js';
 import { Location } from '../helpers.js';
 import { type PageData } from './fetchPage.js';
 
-export interface CacheData extends PageData {}
+export type CacheData = PageData;
 
 /**
  * In-memory page cache.
