@@ -30,7 +30,7 @@
     "lint": "npm run lint:ts && npm run lint:es",
     "lint:ts": "tsc --noEmit --skipLibCheck",
     "lint:es": "npx eslint .",
-    "lint:compat": "npx eslint --config .eslintrc.compat.cjs --no-eslintrc .",
+    "lint:compat": "npx eslint --config .eslintrc.compat.cjs .",
     "lint:prettier": "prettier 'src/**/*.ts'",
     "prepublishOnly": "npm run build",
     "test": "npm run test:unit && npm run test:e2e",
