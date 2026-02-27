@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import Swup from '../../src/Swup.js';
 import { Hooks, type HookHandler, type HookDefaultHandler } from '../../src/modules/Hooks.js';
 import { type Visit, createVisit } from '../../src/modules/Visit.js';
@@ -10,6 +10,10 @@ class SwupWithPublicVisitMethods extends Swup {
 const swup = new SwupWithPublicVisitMethods();
 
 describe('Hook registry', () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
 	it('should add handlers', () => {
 		const swup = new Swup();
 		const handler = vi.fn();
