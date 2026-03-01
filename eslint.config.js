@@ -5,7 +5,7 @@ import prettiereslintRecommended from 'eslint-plugin-prettier/recommended';
 
 export default defineConfig(
 	{
-		ignores: ['dist/', 'node_modules/', 'tests/', '*.cjs', '*.js'],
+		ignores: ['dist/', 'node_modules/', 'tests/', '*.cjs', '*.js', '*.config.ts'],
 	},
 	eslint.configs.recommended,
 	tseslint.configs.recommendedTypeChecked,
