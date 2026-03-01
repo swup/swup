@@ -22,6 +22,7 @@ export default defineConfig([
 		dts: true,
 		clean: true,
 		minify: true,
+		deps: { onlyAllowBundle: false },
 		hooks: {
 			'build:done': renameDtsFiles
 		}
@@ -31,7 +32,8 @@ export default defineConfig([
 		entry: { Swup: 'src/index.ts' },
 		format: ['cjs'],
 		dts: false,
-		minify: true
+		minify: true,
+		deps: { onlyAllowBundle: false }
 	},
 	// IIFE build: browser bundle with all deps bundled
 	{
@@ -40,6 +42,6 @@ export default defineConfig([
 		globalName: 'Swup',
 		platform: 'browser',
 		minify: true,
-		noExternal: [/.*/]
+		deps: { alwaysBundle: [/.*/], onlyAllowBundle: false }
 	}
 ]);
