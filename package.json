@@ -4,16 +4,16 @@
   "version": "4.8.3",
   "description": "Versatile and extensible page transition library for server-rendered websites",
   "type": "module",
-  "source": "./src/Swup.ts",
-  "main": "./dist/Swup.cjs",
-  "module": "./dist/Swup.js",
-  "unpkg": "./dist/Swup.iife.js",
-  "types": "./dist/Swup.d.ts",
+  "source": "./src/index.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "unpkg": "./dist/index.iife.js",
+  "types": "./dist/index.d.mts",
   "exports": {
     ".": {
-      "types": "./dist/Swup.d.ts",
-      "import": "./dist/Swup.js",
-      "require": "./dist/Swup.cjs"
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
     }
   },
   "files": [

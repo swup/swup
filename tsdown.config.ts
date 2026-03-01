@@ -2,40 +2,20 @@ import { defineConfig } from 'tsdown';
 import { rename, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 
-async function renameDtsFiles() {
-	const files = await readdir('dist');
-	for (const file of files) {
-		// Rename hashed .d.ts files to stable names (e.g., Swup-abc123.d.ts -> Swup.d.ts)
-		const match = file.match(/^Swup-[^.]+\.(d\.ts|d\.mts|d\.cts)(\.map)?$/);
-		if (match) {
-			const newName = file.replace(/^Swup-[^.]+\./, 'Swup.');
-			await rename(join('dist', file), join('dist', newName));
-		}
-	}
-}
-
 export default defineConfig([
-	// ESM build
+	// ESM & CJS
 	{
-		entry: { Swup: 'src/index.ts' },
-		format: ['esm'],
+		entry: ['src/index.ts'],
+		format: ['esm', 'cjs'],
 		dts: true,
 		clean: true,
 		minify: true,
 		deps: { onlyAllowBundle: false },
 		hooks: {
-			'build:done': renameDtsFiles
+			'build:done': cleanDtsFiles
 		}
 	},
-	// CJS build
-	{
-		entry: { Swup: 'src/index.ts' },
-		format: ['cjs'],
-		dts: false,
-		minify: true,
-		deps: { onlyAllowBundle: false }
-	},
-	// IIFE build: browser bundle with all deps bundled
+	// IIFE: browser bundle with all deps bundled
 	{
 		entry: { Swup: 'src/Swup.ts' },
 		format: ['iife'],
@@ -45,3 +25,14 @@ export default defineConfig([
 		deps: { alwaysBundle: [/.*/], onlyAllowBundle: false }
 	}
 ]);
+
+// Rename hashed .d.ts files to stable names (e.g., index-abc123.d.ts -> index.d.ts)
+async function cleanDtsFiles() {
+	const files = await readdir('dist');
+	for (const file of files) {
+		if (file.match(/^\w+-[^.]+(\.d\.(m|c)?ts)(\.map)?$/)) {
+			const clean = file.replace(/^(\w+)-[^.]+\./, '$1.');
+			await rename(join('dist', file), join('dist', clean));
+		}
+	}
+}
