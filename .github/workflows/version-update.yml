@@ -19,15 +19,15 @@ jobs:
     name: Update package version
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
         with:
           node-version: 20
           cache: 'npm'
       - run: echo "Updating ${{ inputs.segment }} version"
       - name: Update version
         run: npm --no-git-tag-version version ${{ inputs.segment }}
-      - uses: peter-evans/create-pull-request@v4
+      - uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
         with:
           base: 'main'
           branch: 'version/automated'

@@ -43,7 +43,8 @@
     "test:e2e:instrument": "nyc instrument --compact=false dist tests/fixtures/dist",
     "test:e2e:serve": "npx serve -n -S -L -p 8274 --config ./tests/config/serve.json",
     "test:e2e:start": "npm run test:e2e:instrument && npm run test:e2e:serve",
-    "prepare": "husky"
+    "prepare": "husky",
+    "actions-up": "actions-up --yes"
   },
   "author": {
     "name": "Georgy Marchuk",
@@ -86,6 +87,7 @@
     "@swup/prettier-config": "^1.0.0",
     "@types/dom-view-transitions": "^1.0.2",
     "@types/jsdom": "^28.0.0",
+    "actions-up": "^1.12.0",
     "eslint": "^10.0.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-compat": "^7.0.0",
