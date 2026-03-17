@@ -1,0 +1,27 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - list [ref=e3]:
+      - listitem [ref=e4]:
+        - link "Duration" [ref=e5] [cursor=pointer]:
+          - /url: /animation-duration.html
+      - listitem [ref=e6]:
+        - link "Complex" [ref=e7] [cursor=pointer]:
+          - /url: /animation-complex.html
+      - listitem [ref=e8]:
+        - link "Keyframes" [ref=e9] [cursor=pointer]:
+          - /url: /animation-keyframes.html
+      - listitem [ref=e10]:
+        - link "Native" [ref=e11] [cursor=pointer]:
+          - /url: /animation-native.html
+      - listitem [ref=e12]:
+        - link "Partial" [ref=e13] [cursor=pointer]:
+          - /url: /animation-partial.html
+      - listitem [ref=e14]:
+        - link "None" [ref=e15] [cursor=pointer]:
+          - /url: /animation-none.html
+  - main [ref=e16]:
+    - 'heading "Animation duration: native" [level=1] [ref=e17]'
+```
