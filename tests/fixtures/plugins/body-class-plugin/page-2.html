@@ -5,7 +5,6 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>Body Class Plugin 2</title>
 		<link rel="stylesheet" href="/assets/main.css" />
-		<script src="/dist/Swup.umd.js"></script>
 		<script src="https://unpkg.com/@swup/body-class-plugin@3"></script>
 	</head>
 	<body class="body-2">
@@ -19,7 +18,9 @@
 				voluptatem.
 			</p>
 		</main>
-		<script>
+		<script type="module">
+			import Swup from '/dist/index.mjs';
+			window.Swup = Swup;
 			window._swup = new Swup({
 				plugins: [new SwupBodyClassPlugin()]
 			});

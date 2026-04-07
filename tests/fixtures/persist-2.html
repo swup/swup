@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Persist 2</title>
     <link rel="stylesheet" href="/assets/main.css">
-    <script src="/dist/Swup.umd.js"></script>
 </head>
 <body>
     <header class="header">
@@ -25,7 +24,9 @@
             <p data-testid="persisted" data-swup-persist="paragraph">Persist 2</p>
         </div>
     </main>
-    <script>
+    <script type="module">
+        import Swup from '/dist/index.mjs';
+        window.Swup = Swup;
         window._swup = new Swup();
     </script>
 </body>

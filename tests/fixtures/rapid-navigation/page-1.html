@@ -18,7 +18,6 @@
 				transform: translateY(50px);
 			}
 		</style>
-		<script src="/dist/Swup.umd.js"></script>
 	</head>
 	<body>
 		<header class="header">
@@ -39,7 +38,9 @@
 				</p>
 			</div>
 		</main>
-		<script>
+		<script type="module">
+			import Swup from '/dist/index.mjs';
+			window.Swup = Swup;
 			window.data = { received: [] };
 
 			window._swup = new Swup({ cache: false });

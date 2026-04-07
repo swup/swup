@@ -5,7 +5,6 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>Page 2</title>
 		<link rel="stylesheet" href="/assets/main.css" />
-		<script src="/dist/Swup.umd.js"></script>
 		<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js"></script>
 	</head>
 	<body>
@@ -77,7 +76,9 @@
 				</p>
 			</div>
 		</main>
-		<script>
+		<script type="module">
+			import Swup from '/dist/index.mjs';
+			window.Swup = Swup;
 			window._swup = new Swup();
 		</script>
 	</body>

@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Animation duration: none</title>
     <link rel="stylesheet" href="/assets/main.css">
-    <script src="/dist/Swup.umd.js"></script>
     <style>
         .transition-none {
             transition: none;
@@ -26,7 +25,9 @@
     <main id="swup" class="wrapper transition-none">
         <h1>Animation duration: none</h1>
     </main>
-    <script>
+    <script type="module">
+        import Swup from '/dist/index.mjs';
+        window.Swup = Swup;
         window._swup = new Swup();
     </script>
 </body>
