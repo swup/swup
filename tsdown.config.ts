@@ -11,7 +11,7 @@ export default defineConfig([
 		dts: true,
 		clean: true,
 		minify: true,
-		deps: { onlyAllowBundle: false },
+		deps: { onlyBundle: false },
 		hooks: {
 			'build:done': cleanDtsFiles
 		}
@@ -22,7 +22,7 @@ export default defineConfig([
 		format: ['esm'],
 		platform: 'browser',
 		minify: false,
-		deps: { alwaysBundle: [/.*/], onlyAllowBundle: false }
+		deps: { alwaysBundle: [/.*/], onlyBundle: false }
 	},
 	// IIFE: nomodule build with all deps bundled and global Swup export
 	{
@@ -31,7 +31,7 @@ export default defineConfig([
 		globalName: 'Swup',
 		platform: 'browser',
 		minify: true,
-		deps: { alwaysBundle: [/.*/], onlyAllowBundle: false }
+		deps: { alwaysBundle: [/.*/], onlyBundle: false }
 	},
 ]);
 
