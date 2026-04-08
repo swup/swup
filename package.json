@@ -6,13 +6,13 @@
   "type": "module",
   "source": "./src/index.ts",
   "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "unpkg": "./dist/index.iife.js",
-  "types": "./dist/index.d.mts",
+  "module": "./dist/index.js",
+  "unpkg": "./dist/swup.iife.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.mts",
-      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     }
   },
