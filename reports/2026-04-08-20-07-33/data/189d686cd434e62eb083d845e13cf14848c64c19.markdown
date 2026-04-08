@@ -1,0 +1,96 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: events.spec.ts >> events >> custom dom events bubble to window
+- Location: tests/functional/events.spec.ts:23:2
+
+# Error details
+
+```
+Error: "route.fetch: Target page, context or browser has been closed
+Call log:
+  - → GET http://localhost:8274/page-2.html
+    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0.2) Gecko/20100101 Firefox/148.0.2
+    - accept: text/html, application/xhtml+xml
+    - accept-encoding: gzip, deflate, br, zstd
+    - host: localhost:8274
+    - accept-language: en-US
+    - referer: http://localhost:8274/page-1.html
+    - x-requested-with: swup
+    - sec-fetch-dest: empty
+    - sec-fetch-mode: cors
+    - sec-fetch-site: same-origin
+    - connection: keep-alive
+" while running route callback.
+Consider awaiting `await page.unrouteAll({ behavior: 'ignoreErrors' })`
+before the end of the test to ignore remaining routes in flight.
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - list [ref=e3]:
+      - listitem [ref=e4]:
+        - link "Page 1" [ref=e5] [cursor=pointer]:
+          - /url: /page-1.html
+      - listitem [ref=e6]:
+        - link "Page 2" [active] [ref=e7] [cursor=pointer]:
+          - /url: /page-2.html
+      - listitem [ref=e8]:
+        - link "Page 3" [ref=e9] [cursor=pointer]:
+          - /url: /page-3.html
+  - main [ref=e10]:
+    - generic [ref=e11]:
+      - heading "Page 1" [level=1] [ref=e12]
+      - paragraph [ref=e13]: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias assumenda consectetur consequatur enim esse incidunt iusto, magnam maxime molestias nisi perferendis perspiciatis quibusdam quos repellat, vel veniam vero voluptate voluptatem.
+      - paragraph [ref=e14]: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias assumenda consectetur consequatur enim esse incidunt iusto, magnam maxime molestias nisi perferendis perspiciatis quibusdam quos repellat, vel veniam vero voluptate voluptatem.
+      - paragraph [ref=e15]: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias assumenda consectetur consequatur enim esse incidunt iusto, magnam maxime molestias nisi perferendis perspiciatis quibusdam quos repellat, vel veniam vero voluptate voluptatem.
+      - paragraph [ref=e16]: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias assumenda consectetur consequatur enim esse incidunt iusto, magnam maxime molestias nisi perferendis perspiciatis quibusdam quos repellat, vel veniam vero voluptate voluptatem.
+      - paragraph [ref=e17]: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias assumenda consectetur consequatur enim esse incidunt iusto, magnam maxime molestias nisi perferendis perspiciatis quibusdam quos repellat, vel veniam vero voluptate voluptatem.
+      - paragraph [ref=e18]: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias assumenda consectetur consequatur enim esse incidunt iusto, magnam maxime molestias nisi perferendis perspiciatis quibusdam quos repellat, vel veniam vero voluptate voluptatem.
+      - paragraph [ref=e19]: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias assumenda consectetur consequatur enim esse incidunt iusto, magnam maxime molestias nisi perferendis perspiciatis quibusdam quos repellat, vel veniam vero voluptate voluptatem.
+      - paragraph [ref=e20]: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias assumenda consectetur consequatur enim esse incidunt iusto, magnam maxime molestias nisi perferendis perspiciatis quibusdam quos repellat, vel veniam vero voluptate voluptatem.
+      - paragraph [ref=e21]:
+        - link "Custom animation" [ref=e22] [cursor=pointer]:
+          - /url: /page-2.html
+      - list [ref=e23]:
+        - listitem [ref=e24]:
+          - link "Custom animation" [ref=e25] [cursor=pointer]:
+            - /url: /page-2.html
+        - listitem [ref=e26]:
+          - link "Custom animation" [ref=e27] [cursor=pointer]:
+            - /url: /page-3.html
+```
+
+# Test source
+
+```ts
+  1  | import { test as base, expect } from '@playwright/test';
+  2  | import { injectImportMap } from './utils.js';
+  3  | import { importMap } from '../config/playwright.config.js';
+  4  | 
+  5  | // Custom base test fixture that automatically injects import maps
+  6  | export const test = base.extend({
+  7  | 	page: async ({ page }, use) => {
+  8  | 		await page.route('**/*.html', async (route) => {
+> 9  | 			const response = await route.fetch();
+     |                                 ^ Error: "route.fetch: Target page, context or browser has been closed
+  10 | 			const headers = response.headers();
+  11 | 			const body = injectImportMap(await response.text(), importMap);
+  12 | 			await route.fulfill({ response, headers, body });
+  13 | 		});
+  14 | 		await use(page);
+  15 | 	}
+  16 | });
+  17 | 
+  18 | // Re-export expect for convenience
+  19 | export { expect };
+  20 | 
+```

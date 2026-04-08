@@ -1,0 +1,150 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: redirects.spec.ts >> redirects >> follows redirects
+- Location: tests/functional/redirects.spec.ts:13:2
+
+# Error details
+
+```
+Error: expect(page).toHaveURL(expected) failed
+
+Expected: "http://localhost:8274/redirect-3.html"
+Received: "http://localhost:8274/redirect-2.html"
+Timeout:  3000ms
+
+Call log:
+  - Expect "toHaveURL" with timeout 3000ms
+    7 × unexpected value "http://localhost:8274/redirect-2.html"
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - list [ref=e3]:
+      - listitem [ref=e4]:
+        - link "Page 1" [ref=e5] [cursor=pointer]:
+          - /url: /redirect-1.html
+      - listitem [ref=e6]:
+        - link "Page 2" [ref=e7] [cursor=pointer]:
+          - /url: /redirect-2.html
+      - listitem [ref=e8]:
+        - link "Page 3" [ref=e9] [cursor=pointer]:
+          - /url: /redirect-3.html
+  - main [ref=e10]:
+    - heading "Redirect 3" [level=1] [ref=e11]
+    - paragraph [ref=e12]: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias assumenda consectetur consequatur enim esse incidunt iusto, magnam maxime molestias nisi perferendis perspiciatis quibusdam quos repellat, vel veniam vero voluptate voluptatem.
+```
+
+# Test source
+
+```ts
+  1  | import { expect, Locator, Page, Request } from '@playwright/test';
+  2  | 
+  3  | export function sleep(timeout = 0): Promise<void> {
+  4  |   return new Promise((resolve) => setTimeout(() => resolve(undefined), timeout))
+  5  | }
+  6  | 
+  7  | export function clickOnLink(page: Page, url: string, options?: Parameters<Page['click']>[1]) {
+  8  | 	return page.click(`a[href="${url}"]`, options);
+  9  | }
+  10 | 
+  11 | export async function expectToBeAt(page: Page, url: string, title?: string) {
+> 12 | 	await expect(page).toHaveURL(url);
+     |                     ^ Error: expect(page).toHaveURL(expected) failed
+  13 | 	if (title) {
+  14 | 		await expectTitle(page, title);
+  15 | 		await expectH1(page, title);
+  16 | 	}
+  17 | }
+  18 | 
+  19 | export async function expectTitle(page: Page, title: string) {
+  20 | 	await expect(page).toHaveTitle(title);
+  21 | }
+  22 | 
+  23 | export async function expectH1(page: Page, title: string) {
+  24 | 	await expect(page.locator('h1')).toContainText(title);
+  25 | }
+  26 | 
+  27 | export async function expectH2(page: Page, title: string) {
+  28 | 	await expect(page.locator('h2')).toContainText(title);
+  29 | }
+  30 | 
+  31 | export function expectToHaveText(locator: Locator, text: string) {
+  32 | 	return expect(locator).toContainText(text);
+  33 | }
+  34 | 
+  35 | export function expectToHaveClass(locator: Locator, className: string, not = false) {
+  36 | 	const regexp = new RegExp(`\\b${className}\\b`);
+  37 | 	return not
+  38 | 		? expect(locator).not.toHaveClass(regexp)
+  39 | 		: expect(locator).toHaveClass(regexp);
+  40 | }
+  41 | 
+  42 | export function expectNotToHaveClass(locator: Locator, className: string) {
+  43 | 	return expectToHaveClass(locator, className, true);
+  44 | }
+  45 | 
+  46 | export function expectToHaveClasses(locator: Locator, classNames: string, not = false) {
+  47 | 	const classes = classNames.split(' ');
+  48 | 	return Promise.all(classes.map(className => expectToHaveClass(locator, className, not)));
+  49 | }
+  50 | 
+  51 | export function expectNotToHaveClasses(locator: Locator, classNames: string) {
+  52 | 	return expectToHaveClasses(locator, classNames, true);
+  53 | }
+  54 | 
+  55 | export async function expectPageReload(page: Page, action: (page: Page) => Promise<unknown> | unknown, not: boolean = false) {
+  56 | 	const origin = () => page.evaluate(() => Math.floor(window.performance.timeOrigin));
+  57 | 	const before = await origin();
+  58 | 	await action(page);
+  59 | 	await expect(async () => (await origin()) !== before).toPass();
+  60 | }
+  61 | 
+  62 | export function expectNoPageReload(page: Page, action: (page: Page) => Promise<unknown> | unknown) {
+  63 | 	return expectPageReload(page, action, true);
+  64 | }
+  65 | 
+  66 | export async function expectRequestHeaders(request: Request, headers: Record<string, string>) {
+  67 | 	const expected = Object.fromEntries(
+  68 | 		Object.entries(headers).map(([header, value]) => [header.toLowerCase(), value])
+  69 | 	);
+  70 | 	expect(request.headers()).toMatchObject(expected);
+  71 | }
+  72 | 
+  73 | export async function delayRequest(page: Page, url: string, timeout: number, times: number = 1) {
+  74 | 	await page.route(url, async (route) => {
+  75 | 		await sleep(timeout);
+  76 | 		route.continue();
+  77 | 	}, { times });
+  78 | }
+  79 | 
+  80 | export function scrollToPosition(page: Page,y: number) {
+  81 | 	return page.evaluate((y) => window.scrollTo(0, y), y);
+  82 | }
+  83 | 
+  84 | export async function expectScrollPosition(page: Page, expected: number) {
+  85 | 	const pos = () => page.evaluate(() => window.scrollY);
+  86 | 	await expect(
+  87 | 		async () => expect(await pos()).toEqual(expected)
+  88 | 	).toPass();
+  89 | }
+  90 | 
+  91 | export function expectNumberWithinRange(value: number, min: number, max: number) {
+  92 | 	expect(value).toBeGreaterThanOrEqual(min);
+  93 | 	expect(value).toBeLessThanOrEqual(max);
+  94 | }
+  95 | 
+  96 | export function expectNumberCloseTo(value: number, expected: number, range: number[] = []) {
+  97 | 	expectNumberWithinRange(value, expected * (range[0] ?? 1), expected * (range[1] ?? 1));
+  98 | }
+  99 | 
+```

@@ -1,0 +1,78 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: containers.spec.ts >> containers >> forces reload on container mismatch
+- Location: tests/functional/containers.spec.ts:21:2
+
+# Error details
+
+```
+Error: "route.fetch: Target page, context or browser has been closed
+Call log:
+  - → GET http://localhost:8274/containers-missing.html
+    - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0.2) Gecko/20100101 Firefox/148.0.2
+    - accept: text/html, application/xhtml+xml
+    - accept-encoding: gzip, deflate, br, zstd
+    - host: localhost:8274
+    - accept-language: en-US
+    - referer: http://localhost:8274/containers-1.html
+    - x-requested-with: swup
+    - sec-fetch-dest: empty
+    - sec-fetch-mode: cors
+    - sec-fetch-site: same-origin
+    - connection: keep-alive
+" while running route callback.
+Consider awaiting `await page.unrouteAll({ behavior: 'ignoreErrors' })`
+before the end of the test to ignore remaining routes in flight.
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - list [ref=e3]:
+      - listitem [ref=e4]:
+        - link "Page 1" [ref=e5] [cursor=pointer]:
+          - /url: /containers-1.html
+      - listitem [ref=e6]:
+        - link "Page 2" [ref=e7] [cursor=pointer]:
+          - /url: /containers-2.html
+  - main [ref=e8]:
+    - heading "Containers 1" [level=1] [ref=e9]
+    - paragraph [ref=e10]: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias assumenda consectetur consequatur enim esse incidunt iusto, magnam maxime molestias nisi perferendis perspiciatis quibusdam quos repellat, vel veniam vero voluptate voluptatem.
+  - complementary [ref=e11]:
+    - heading "Heading 1" [level=2] [ref=e12]
+    - paragraph [ref=e13]: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias assumenda consectetur consequatur enim esse incidunt iusto, magnam maxime molestias nisi perferendis perspiciatis quibusdam quos repellat, vel veniam vero voluptate voluptatem.
+```
+
+# Test source
+
+```ts
+  1  | import { test as base, expect } from '@playwright/test';
+  2  | import { injectImportMap } from './utils.js';
+  3  | import { importMap } from '../config/playwright.config.js';
+  4  | 
+  5  | // Custom base test fixture that automatically injects import maps
+  6  | export const test = base.extend({
+  7  | 	page: async ({ page }, use) => {
+  8  | 		await page.route('**/*.html', async (route) => {
+> 9  | 			const response = await route.fetch();
+     |                                 ^ Error: "route.fetch: Target page, context or browser has been closed
+  10 | 			const headers = response.headers();
+  11 | 			const body = injectImportMap(await response.text(), importMap);
+  12 | 			await route.fulfill({ response, headers, body });
+  13 | 		});
+  14 | 		await use(page);
+  15 | 	}
+  16 | });
+  17 | 
+  18 | // Re-export expect for convenience
+  19 | export { expect };
+  20 | 
+```
