@@ -97,7 +97,7 @@
     "nyc": "^18.0.0",
     "prettier": "^3.1.0",
     "serve": "^14.2.5",
-    "tsdown": "^0.21.0-beta.2",
+    "tsdown": "^0.21.7",
     "typed-query-selector": "^2.11.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.56.1",
