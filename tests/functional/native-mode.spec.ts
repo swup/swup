@@ -21,6 +21,7 @@ test.describe('native mode', () => {
 	});
 	test('awaits native view transitions', async ({ page }) => {
 		await page.goto('/animation-native.html');
+		await waitForSwup(page);
 		const supported = await page.evaluate(() => !!document.startViewTransition);
 		await expectSwupAnimationDuration(page, { total: supported ? 500 : 800 });
 	});

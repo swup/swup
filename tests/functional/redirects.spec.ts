@@ -1,12 +1,13 @@
 import { test } from '../support/test.js';
 
 import { expectToBeAt } from '../support/commands.js';
-import { expectSwupToHaveCacheEntries, navigateWithSwup } from '../support/swup.js';
+import { expectSwupToHaveCacheEntries, navigateWithSwup, waitForSwup } from '../support/swup.js';
 
 test.describe('redirects', () => {
 	test.beforeEach(async ({ page }) => {
 		// The redirects are handled by the server in tests/config/serve.json
 		await page.goto('/redirect-1.html');
+		await waitForSwup(page);
 	});
 
 	test('follows redirects', async ({ page }) => {

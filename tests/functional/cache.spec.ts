@@ -4,12 +4,14 @@ import { expectToBeAt } from '../support/commands.js';
 import {
 	expectSwupToHaveCacheEntries,
 	expectSwupToHaveCacheEntry,
-	navigateWithSwup
+	navigateWithSwup,
+	waitForSwup
 } from '../support/swup.js';
 
 test.describe('cache', () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/page-1.html');
+		await waitForSwup(page);
 	});
 
 	test('caches pages', async ({ page }) => {

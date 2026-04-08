@@ -1,10 +1,12 @@
 import { test } from '../support/test.js';
 
 import { expectToBeAt } from '../support/commands.js';
+import { waitForSwup } from '../support/swup.js';
 
 test.describe('api navigation', () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/page-1.html');
+		await waitForSwup(page);
 	});
 
 	test('navigate to pages using swup api', async ({ page }) => {

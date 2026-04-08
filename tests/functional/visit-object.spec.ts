@@ -1,11 +1,12 @@
 import { test, expect } from '../support/test.js';
 
 import { clickOnLink, expectToBeAt, sleep } from '../support/commands.js';
-import { expectSwupAnimationDuration, navigateWithSwup } from '../support/swup.js';
+import { expectSwupAnimationDuration, navigateWithSwup, waitForSwup } from '../support/swup.js';
 
 test.describe('visit object', () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/page-1.html');
+		await waitForSwup(page);
 	});
 
 	test('has the current and next url', async ({ page }) => {

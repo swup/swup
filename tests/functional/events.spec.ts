@@ -1,10 +1,12 @@
 import { test, expect } from '../support/test.js';
 
 import { clickOnLink } from '../support/commands.js';
+import { waitForSwup } from '../support/swup.js';
 
 test.describe('events', () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/page-1.html');
+		await waitForSwup(page);
 	});
 
 	test('triggers custom dom events on document', async ({ page }) => {

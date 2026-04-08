@@ -1,12 +1,17 @@
 import { expect, test } from '../support/test.js';
 
 import { clickOnLink, expectToBeAt } from '../support/commands.js';
+import { waitForSwup } from '../support/swup.js';
 
 test.describe('animation classes', () => {
+	test.beforeEach(async ({ page }) => {
+		await page.goto('/page-1.html');
+		await waitForSwup(page);
+	});
+
 	test("doesn't remove `is-leaving` until right before replacing the content", async ({
 		page
 	}) => {
-		await page.goto('/page-1.html');
 		await page.evaluate(() => {
 			window.data = {};
 			window._swup.hooks.before('content:replace', async (visit) => {
@@ -29,7 +34,6 @@ test.describe('animation classes', () => {
 	test("doesn't add `is-rendering` until right before replacing the content", async ({
 		page
 	}) => {
-		await page.goto('/page-1.html');
 		await page.evaluate(() => {
 			window.data = {};
 			window._swup.hooks.before('content:replace', async (visit) => {
