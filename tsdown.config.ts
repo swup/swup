@@ -26,7 +26,7 @@ export default defineConfig([
 	},
 	// IIFE: nomodule build with all deps bundled and global Swup export
 	{
-		entry: { 'swup.iife': 'src/Swup.ts' },
+		entry: { 'swup': 'src/Swup.ts' },
 		format: ['iife'],
 		globalName: 'Swup',
 		platform: 'browser',
