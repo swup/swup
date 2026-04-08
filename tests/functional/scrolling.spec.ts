@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../support/test.js';
 
 import { expectScrollPosition, expectToBeAt } from '../support/commands.js';
 import { waitForSwup } from '../support/swup.js';

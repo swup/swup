@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test } from '../support/test.js';
 
 import { clickOnLink, delayRequest, expectPageReload, expectRequestHeaders, expectToBeAt } from '../support/commands.js';
 import { navigateWithSwup } from '../support/swup.js';

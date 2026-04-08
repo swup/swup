@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test } from '../support/test.js';
 
 import { expectToBeAt } from '../support/commands.js';
 import { expectSwupToHaveCacheEntries, navigateWithSwup } from '../support/swup.js';

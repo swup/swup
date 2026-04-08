@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test } from '../support/test.js';
 
 import { expectNoPageReload, expectPageReload, expectToBeAt } from '../support/commands.js';
 

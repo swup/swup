@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test } from '../support/test.js';
 
 import { expectSwupAnimationDuration, waitForSwup } from '../support/swup.js';
 import { expectNotToHaveClass, expectToHaveClass } from '../support/commands.js';
