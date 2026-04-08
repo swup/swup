@@ -12,9 +12,7 @@ const baseURL = 'http://localhost:8274';
  * Import map for ESM tests
  */
 export const importMap = {
-	'swup': '/dist/index.mjs',
-	'delegate-it': 'https://esm.sh/delegate-it@6',
-	'path-to-regexp': 'https://esm.sh/path-to-regexp@6'
+	'swup': '/dist/index.bundle.js'
 };
 
 /**
