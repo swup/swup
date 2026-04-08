@@ -3,10 +3,11 @@ import { rename, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 
 export default defineConfig([
-	// ESM & CJS
+	// ESM & CJS: dependencies unbundled, for use in bundlers
 	{
 		entry: ['src/index.ts'],
 		format: ['esm', 'cjs'],
+		platform: 'browser',
 		dts: true,
 		clean: true,
 		minify: true,
@@ -15,15 +16,23 @@ export default defineConfig([
 			'build:done': cleanDtsFiles
 		}
 	},
-	// IIFE: browser bundle with all deps bundled
+	// ESM bundle: module build with all deps bundled, mainly for browser testing
 	{
-		entry: { Swup: 'src/Swup.ts' },
+		entry: { 'index.bundle': 'src/index.ts' },
+		format: ['esm'],
+		platform: 'browser',
+		minify: false,
+		deps: { alwaysBundle: [/.*/], onlyAllowBundle: false }
+	},
+	// IIFE: nomodule build with all deps bundled and global Swup export
+	{
+		entry: { 'swup.iife': 'src/Swup.ts' },
 		format: ['iife'],
 		globalName: 'Swup',
 		platform: 'browser',
 		minify: true,
 		deps: { alwaysBundle: [/.*/], onlyAllowBundle: false }
-	}
+	},
 ]);
 
 // Rename hashed .d.ts files to stable names (e.g., index-abc123.d.ts -> index.d.ts)
