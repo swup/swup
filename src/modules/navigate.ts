@@ -175,6 +175,11 @@ export async function performNavigation(
 			await page;
 		}
 
+		// Ignored in the meantime? Throw to trigger catch block and exit visit
+		if (visit.ignored) {
+			throw new Error(`Visit to ${visit.to.url} manually ignored`);
+		}
+
 		// Check if failed/aborted in the meantime
 		if (visit.done) return;
 
