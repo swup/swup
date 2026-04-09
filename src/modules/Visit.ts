@@ -86,7 +86,8 @@ export const VisitState = {
 	ENTERING: 6,
 	COMPLETED: 7,
 	ABORTED: 8,
-	FAILED: 9
+	FAILED: 9,
+	IGNORED: 10
 } as const;
 
 /** @internal */
@@ -162,9 +163,18 @@ export class Visit {
 		this.state = VisitState.ABORTED;
 	}
 
-	/** Is this visit done, i.e. completed, failed, or aborted? */
+	ignore() {
+		this.state = VisitState.IGNORED;
+	}
+
+	/** Is this visit done, i.e. completed, aborted, failed, or ignored? */
 	get done(): boolean {
 		return this.state >= VisitState.COMPLETED;
+	}
+
+	/** Was this visit aborted? */
+	get ignored(): boolean {
+		return this.state === VisitState.IGNORED;
 	}
 }
 
