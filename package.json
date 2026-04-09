@@ -94,7 +94,7 @@
     "eslint-plugin-compat": "^7.0.0",
     "eslint-plugin-ecmascript-compat": "^3.2.0",
     "eslint-plugin-prettier": "^5.0.1",
-    "fuite": "^4.0.9",
+    "fuite": "^5.0.9",
     "husky": "^9.0.11",
     "istanbul-lib-coverage": "^3.2.0",
     "jsdom": "^28.1.0",
