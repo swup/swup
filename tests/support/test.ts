@@ -11,7 +11,11 @@ export const test = base.extend({
 			const body = injectImportMap(await response.text(), importMap);
 			await route.fulfill({ response, headers, body });
 		});
-		await use(page);
+		try {
+			await use(page);
+		} finally {
+			await page.unrouteAll({ behavior: 'ignoreErrors' });
+		}
 	}
 });
 
