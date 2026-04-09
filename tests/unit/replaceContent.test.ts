@@ -26,6 +26,7 @@ let visit: Visit;
 
 describe('replaceContent', () => {
 	beforeEach(() => {
+		vi.spyOn(Swup.prototype, 'enable').mockImplementation(async () => {});
 		visit = swup.createVisit({ to: '' });
 	});
 	afterEach(() => {

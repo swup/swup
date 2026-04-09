@@ -93,4 +93,9 @@ describe('Visit', () => {
 			target: undefined
 		});
 	});
+
+	it('has a meta object', () => {
+		expect(visit.meta).to.be.an('object');
+		expect(visit.meta).toEqual({});
+	});
 });

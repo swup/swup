@@ -32,10 +32,10 @@ export function isPromise<T>(obj: unknown): obj is PromiseLike<T> {
 }
 
 /** Call a function as a Promise. Resolves with the returned Promsise or immediately. */
-// eslint-disable-next-line @typescript-eslint/ban-types, @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export function runAsPromise(func: Function, args: unknown[] = []): Promise<unknown> {
 	return new Promise((resolve, reject) => {
-		const result: unknown = func(...args);
+		const result: unknown = (func as (...args: unknown[]) => unknown)(...args);
 		if (isPromise(result)) {
 			result.then(resolve, reject);
 		} else {

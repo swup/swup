@@ -44,9 +44,11 @@ export async function awaitAnimations(
 		}
 	}
 
-	const awaitedAnimations = animatedElements.map((el) => awaitAnimationsOnElement(el));
-	const hasAnimations = awaitedAnimations.filter(Boolean).length > 0;
-	if (!hasAnimations) {
+	const awaitedAnimations = animatedElements
+		.map((el) => awaitAnimationsOnElement(el))
+		.filter((p): p is Promise<void> => p !== false);
+
+	if (!awaitedAnimations.length) {
 		if (selector) {
 			console.warn(
 				`[swup] No CSS animation duration defined on elements matching \`${selector}\``

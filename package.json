@@ -1,7 +1,7 @@
 {
   "name": "swup",
   "amdName": "Swup",
-  "version": "4.7.0",
+  "version": "4.8.3",
   "description": "Versatile and extensible page transition library for server-rendered websites",
   "type": "module",
   "source": "./src/Swup.ts",
@@ -30,10 +30,9 @@
     "lint": "npm run lint:ts && npm run lint:es",
     "lint:ts": "tsc --noEmit --skipLibCheck",
     "lint:es": "npx eslint .",
-    "lint:compat": "npx eslint --config .eslintrc.compat.cjs --no-eslintrc .",
+    "lint:compat": "npx eslint --config .eslintrc.compat.cjs .",
     "lint:prettier": "prettier 'src/**/*.ts'",
     "prepublishOnly": "npm run build",
-    "postinstall": "opencollective-postinstall || true",
     "test": "npm run test:unit && npm run test:e2e",
     "test:ci": "npm run test:unit && npm run test:e2e:ci",
     "test:unit": "vitest run --config ./tests/config/vitest.config.ts",
@@ -45,14 +44,32 @@
     "test:e2e:serve": "npx serve -n -S -L -p 8274 --config ./tests/config/serve.json",
     "test:e2e:start": "npm run test:e2e:instrument && npm run test:e2e:serve",
     "test:memory": "npx fuite http://localhost:8274/cache-disabled.html --debug",
-    "prepare": "husky install"
+    "prepare": "husky",
+    "actions-up": "actions-up --yes"
   },
-  "author": "Georgy Marchuk",
+  "author": {
+    "name": "Georgy Marchuk",
+    "email": "gmarcuk@gmail.com",
+    "url": "https://gmrchk.com"
+  },
+  "contributors": [
+    {
+      "name": "Philipp Daun",
+      "email": "daun@daun.ltd",
+      "url": "https://philippdaun.net"
+    },
+    {
+      "name": "Rasso Hilber",
+      "email": "mail@rassohilber.com",
+      "url": "https://rassohilber.com"
+    }
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/swup/swup.git"
   },
+  "homepage": "https://swup.js.org",
   "keywords": [
     "css",
     "page",
@@ -61,34 +78,34 @@
   ],
   "dependencies": {
     "delegate-it": "^6.0.0",
-    "opencollective-postinstall": "^2.0.2",
     "path-to-regexp": "^6.2.1"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.18.6",
-    "@playwright/test": "^1.37.1",
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.58.2",
     "@swup/browserslist-config": "^1.0.0",
     "@swup/prettier-config": "^1.0.0",
     "@types/dom-view-transitions": "^1.0.2",
-    "@types/jsdom": "^21.1.1",
-    "@typescript-eslint/eslint-plugin": "^7.13.0",
-    "@typescript-eslint/parser": "^7.13.0",
-    "eslint": "^8.46.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-compat": "^5.0.0",
+    "@types/jsdom": "^28.0.0",
+    "actions-up": "^1.12.0",
+    "eslint": "^10.0.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-compat": "^7.0.0",
     "eslint-plugin-ecmascript-compat": "^3.2.0",
     "eslint-plugin-prettier": "^5.0.1",
     "fuite": "^4.0.9",
     "husky": "^9.0.11",
     "istanbul-lib-coverage": "^3.2.0",
-    "jsdom": "^24.1.0",
+    "jsdom": "^28.1.0",
     "microbundle": "^0.15.0",
-    "nyc": "^17.0.0",
+    "nyc": "^18.0.0",
     "prettier": "^3.1.0",
-    "serve": "^14.2.1",
+    "serve": "^14.2.5",
     "typed-query-selector": "^2.11.0",
-    "typescript": "^5.2.2",
-    "vitest": "^1.0.2"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.56.1",
+    "vitest": "^4.0.18"
   },
   "collective": {
     "type": "opencollective",

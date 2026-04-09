@@ -19,6 +19,8 @@ type NavigationOptions = {
 	history?: HistoryAction;
 	/** Whether this visit should read from or write to the cache. */
 	cache?: CacheControl;
+	/** Custom metadata associated with this visit. */
+	meta?: Record<string, unknown>;
 };
 
 /**
@@ -106,6 +108,9 @@ export async function performNavigation(
 		visit.animation.name = animation;
 	}
 
+	// Get custom metadata from option
+	visit.meta = options.meta || {};
+
 	// Sanitize cache option
 	if (typeof options.cache === 'object') {
 		visit.cache.read = options.cache.read ?? visit.cache.read;
@@ -113,7 +118,7 @@ export async function performNavigation(
 	} else if (options.cache !== undefined) {
 		visit.cache = { read: !!options.cache, write: !!options.cache };
 	}
-	// Delete this so that window.fetch doesn't mis-interpret it
+	// Delete this so that window.fetch doesn't misinterpret it
 	delete options.cache;
 
 	try {

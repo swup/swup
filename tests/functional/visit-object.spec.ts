@@ -156,4 +156,15 @@ test.describe('visit object', () => {
 		await expectToBeAt(page, '/page-3.html', 'Page 3');
 		expect(await page.evaluate(() => window.data)).toBe(supported);
 	});
+
+	test('passes along custom metadata from api', async ({ page }) => {
+		await page.evaluate(() => {
+			window.data = null;
+			window._swup.hooks.on('visit:start', (visit) => (window.data = visit.meta));
+		});
+
+		navigateWithSwup(page, '/page-2.html', { meta: { lorem: 'ipsum' } });
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+		expect(await page.evaluate(() => window.data)).toMatchObject({ lorem: 'ipsum' });
+	});
 });

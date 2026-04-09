@@ -56,7 +56,7 @@ export async function expectPageReload(page: Page, action: (page: Page) => Promi
 	const origin = () => page.evaluate(() => Math.floor(window.performance.timeOrigin));
 	const before = await origin();
 	await action(page);
-	await expect(async () => expect(await origin()).not.toBe(before)).toPass();
+	await expect(async () => (await origin()) !== before).toPass();
 }
 
 export function expectNoPageReload(page: Page, action: (page: Page) => Promise<unknown> | unknown) {
