@@ -239,6 +239,7 @@ export async function performNavigation(
 		delete visit.trigger.el;
 		delete visit.trigger.event;
 		visit = null!;
+		// eslint-disable-next-line no-useless-assignment
 		el = null!;
 	}
 }

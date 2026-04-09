@@ -60,6 +60,7 @@ export async function awaitAnimations(
 	await Promise.all(awaitedAnimations);
 
 	// Help garbage collection
+	// eslint-disable-next-line no-useless-assignment
 	animatedElements = null!;
 }
 
