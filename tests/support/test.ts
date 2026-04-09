@@ -6,10 +6,14 @@ import { importMap } from '../config/playwright.config.js';
 export const test = base.extend({
 	page: async ({ page }, use) => {
 		await page.route('**/*.html', async (route) => {
-			const response = await route.fetch();
-			const headers = response.headers();
-			const body = injectImportMap(await response.text(), importMap);
-			await route.fulfill({ response, headers, body });
+			if (route.request().isNavigationRequest()) {
+				const response = await route.fetch();
+				const headers = response.headers();
+				const body = injectImportMap(await response.text(), importMap);
+				await route.fulfill({ response, headers, body });
+			} else {
+				await route.continue();
+			}
 		});
 		try {
 			await use(page);
