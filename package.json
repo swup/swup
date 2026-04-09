@@ -43,7 +43,7 @@
     "test:e2e:instrument": "nyc instrument --compact=false dist tests/fixtures/dist",
     "test:e2e:serve": "npx serve -n -S -L -p 8274 --config ./tests/config/serve.json",
     "test:e2e:start": "npm run test:e2e:instrument && npm run test:e2e:serve",
-    "test:memory": "npx fuite http://localhost:8274/cache-disabled.html --debug",
+    "test:memory": "npx fuite http://localhost:8274/cache-disabled.html",
     "prepare": "husky",
     "actions-up": "actions-up --yes"
   },
