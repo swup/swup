@@ -216,11 +216,11 @@ export async function performNavigation(
 	} catch (error) {
 		// Return early if error is undefined or signals an aborted request
 		if (!error || (error as FetchError)?.aborted) {
-			visit.state = VisitState.ABORTED;
+			visit.advance(VisitState.ABORTED);
 			return;
 		}
 
-		visit.state = VisitState.FAILED;
+		visit.advance(VisitState.FAILED);
 
 		// Log to console
 		console.error(error);
