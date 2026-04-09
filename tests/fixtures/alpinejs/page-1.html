@@ -5,7 +5,6 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>Page 1</title>
 		<link rel="stylesheet" href="/assets/main.css" />
-		<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js"></script>
 	</head>
 	<body>
 		<header class="header">
@@ -80,7 +79,11 @@
 			</div>
 		</main>
 		<script type="module">
+			import Alpine from 'alpinejs';
 			import Swup from 'swup';
+
+			Alpine.start();
+
 			window.Swup = Swup;
 			window._swup = new Swup();
 		</script>
