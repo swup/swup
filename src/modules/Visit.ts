@@ -172,7 +172,7 @@ export class Visit {
 		return this.state >= VisitState.COMPLETED;
 	}
 
-	/** Was this visit aborted? */
+	/** Was this visit ignored by swup, i.e. left to the browser? */
 	get ignored(): boolean {
 		return this.state === VisitState.IGNORED;
 	}
