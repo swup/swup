@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-import { clickOnLink, delayRequest, expectToBeAt, sleep } from '../support/commands.js';
+import { clickOnLink, delayRequest, expectPageReload, expectToBeAt, sleep } from '../support/commands.js';
 import { navigateWithSwup, waitForSwup } from '../support/swup.js';
 
 test.describe('navigation', () => {
@@ -96,5 +96,21 @@ test.describe('navigation', () => {
 		await sleep(1000); // we have to wait here, since we cannot rely on anything from swup (the visit is being exited)
 		const received = await page.evaluate(() => window.data.received);
 		expect(received).toEqual(expected);
+	});
+
+	test('forces reload for visits ignored from hook', async ({ page }) => {
+		await page.goto('/page-1.html');
+		await waitForSwup(page);
+		await page.evaluate(() => {
+			window._swup.hooks.on('visit:start', (visit) => visit.animation.wait = true);
+			window._swup.hooks.on('page:load', (visit, { page }) => {
+				if (page!.html.includes('Page 2')) {
+					visit.ignore();
+				}
+			});
+		});
+
+		await expectPageReload(page, () => clickOnLink(page, '/page-2.html'));
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
 	});
 });
