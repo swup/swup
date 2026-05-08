@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.9.0] - 2026-05-08
+
+- Allow ignoring visits from hook handlers
+
 ## [4.8.3] - 2026-02-24
 
 - Remove `postinstall` script to prevent warnings when installing swup via pnpm
@@ -347,6 +351,7 @@ See [upgrade instructions](https://swup.js.org/getting-started/upgrading-v3/) fo
 
 - Initial release
 
+[4.9.0]: https://github.com/swup/swup/releases/tag/4.9.0
 [4.8.3]: https://github.com/swup/swup/releases/tag/4.8.3
 [4.8.2]: https://github.com/swup/swup/releases/tag/4.8.2
 [4.8.1]: https://github.com/swup/swup/releases/tag/4.8.1
