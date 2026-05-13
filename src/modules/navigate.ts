@@ -45,7 +45,7 @@ export function navigate(
 		if (!protocol || protocol === 'http:' || protocol === 'https:') {
 			window.location.assign(url);
 		} else {
-			console.warn(`[swup] Refusing to navigate to unsupported scheme: ${protocol}`);
+			console.warn(`[swup] Unsupported scheme: ${protocol}`);
 		}
 		return;
 	}
