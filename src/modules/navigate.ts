@@ -41,7 +41,12 @@ export function navigate(
 
 	// Check if the visit should be ignored
 	if (this.shouldIgnoreVisit(url, { el: init.el, event: init.event })) {
-		window.location.assign(url);
+		const { protocol } = Location.fromUrl(url);
+		if (!protocol || protocol === 'http:' || protocol === 'https:') {
+			window.location.assign(url);
+		} else {
+			console.warn(`[swup] Refusing to navigate to unsupported scheme: ${protocol}`);
+		}
 		return;
 	}
 
