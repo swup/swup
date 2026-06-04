@@ -227,7 +227,7 @@ export default class Swup {
 		this.cache.clear();
 
 		// unmount plugins
-		this.options.plugins.forEach((plugin) => this.unuse(plugin));
+		this.plugins.forEach((plugin) => this.unuse(plugin));
 
 		// trigger disable hook
 		await this.hooks.call('disable', undefined, undefined, () => {
