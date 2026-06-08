@@ -2,7 +2,8 @@ import type Swup from '../Swup.js';
 import { Location } from '../helpers.js';
 import { type PageData } from './fetchPage.js';
 
-export type CacheData = PageData;
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface CacheData extends PageData {}
 
 /**
  * In-memory page cache.
