@@ -1,4 +1,4 @@
-import { DelegateEvent } from 'delegate-it';
+import type { DelegateEvent } from 'delegate-it';
 import { describe, it } from 'vitest';
 
 import { delegateEvent } from '../../src/helpers/delegateEvent.js';

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import Swup from '../../src/Swup.js';
-import { Cache, CacheData } from '../../src/modules/Cache.js';
+import { Cache } from '../../src/modules/Cache.js';
+import type { CacheData } from '../../src/modules/Cache.js';
 import { Visit } from '../../src/modules/Visit.js';
 
 interface CacheTtlData {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import pckg from '../../package.json';
+import pckg from '../../package.json' with { type: 'json' };
 import Swup, { Location } from '../../src/index.js';
 import { Cache } from '../../src/modules/Cache.js';
 import { Hooks } from '../../src/modules/Hooks.js';
