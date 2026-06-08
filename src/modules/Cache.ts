@@ -2,6 +2,7 @@ import type Swup from '../Swup.js';
 import { Location } from '../helpers.js';
 import { type PageData } from './fetchPage.js';
 
+// CacheData is intended for augmentation in user land
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface CacheData extends PageData {}
 
