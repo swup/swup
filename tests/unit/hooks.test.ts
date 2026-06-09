@@ -378,7 +378,7 @@ describe('Hook registry', () => {
 		expect(handlerWithError).toBeCalledTimes(2);
 	});
 
-	it('should register hook handlers from options', async function () {
+	it('should register hook handlers from options', async () => {
 		const hookSpy = vi.spyOn(Hooks.prototype, 'on');
 		const handler = vi.fn();
 		const swup = new Swup({ hooks: { 'visit:start': handler } });
@@ -390,7 +390,7 @@ describe('Hook registry', () => {
 		expect(handler).toBeCalledTimes(1);
 	});
 
-	it('should accept hook registration modifiers from options', async function () {
+	it('should accept hook registration modifiers from options', async () => {
 		const hookSpy = vi.spyOn(Hooks.prototype, 'on');
 		const handler = vi.fn();
 		const swup = new Swup({
@@ -407,6 +407,25 @@ describe('Hook registry', () => {
 		expect(hookSpy).toBeCalledWith('visit:start', handler, { before: true });
 		expect(hookSpy).toBeCalledWith('visit:start', handler, { once: true });
 		expect(hookSpy).toBeCalledWith('visit:start', handler, { once: true, before: true });
+	});
+
+	it('should assign hook ids without collisions', () => {
+		const swup = new Swup();
+		const h1 = () => {};
+		const h2 = () => {};
+		const h3 = () => {};
+
+		swup.hooks.on('enable', h1);
+		swup.hooks.on('enable', h2);
+		swup.hooks.off('enable', h1);
+		swup.hooks.on('enable', h3);
+
+		const hooks = swup.hooks as any;
+		const ledger = hooks.registry.get('enable');
+		const registrations = Array.from(ledger.values()) as Array<{ id: number }>;
+		const ids = registrations.map((r) => r.id);
+
+		expect(new Set(ids).size).toBe(ids.length);
 	});
 });
 
