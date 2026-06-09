@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import Swup from '../../src/Swup.js';
-import { Cache, CacheData } from '../../src/modules/Cache.js';
+import { Cache } from '../../src/modules/Cache.js';
+import type { CacheData } from '../../src/modules/Cache.js';
 import { Visit } from '../../src/modules/Visit.js';
 
 interface CacheTtlData {
@@ -143,7 +144,19 @@ describe('Cache', () => {
 	});
 });
 
+// Augment CacheData via declaration merging — only possible if it's an interface
+declare module '../../src/modules/Cache.js' {
+	interface CacheData {
+		customProp?: string;
+	}
+}
+
 describe('Types', () => {
+	it('CacheData can be augmented via declaration merging', () => {
+		const cache = new Cache(new Swup());
+		cache.set('/page', { url: '/page', html: '', customProp: 'hello' });
+	});
+
 	it('error when necessary', async () => {
 		const swup = new Swup();
 		const cache = new Cache(swup);

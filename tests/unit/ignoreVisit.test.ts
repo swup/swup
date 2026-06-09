@@ -1,4 +1,4 @@
-import { DelegateEvent } from 'delegate-it';
+import type { DelegateEvent } from 'delegate-it';
 import { describe, expect, it, vi } from 'vitest';
 
 import Swup from '../../src/index.js';
