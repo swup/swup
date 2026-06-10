@@ -1,5 +1,10 @@
 # Changelog
 
+## [4.9.1] - 2026-06-10
+
+- Revert the `CacheData` type alias back to an augmentable `interface`
+- Avoid collisions in hook ids
+
 ## [4.9.0] - 2026-05-08
 
 - Allow ignoring visits from hook handlers
@@ -351,6 +356,7 @@ See [upgrade instructions](https://swup.js.org/getting-started/upgrading-v3/) fo
 
 - Initial release
 
+[4.9.1]: https://github.com/swup/swup/releases/tag/4.9.1
 [4.9.0]: https://github.com/swup/swup/releases/tag/4.9.0
 [4.8.3]: https://github.com/swup/swup/releases/tag/4.8.3
 [4.8.2]: https://github.com/swup/swup/releases/tag/4.8.2
