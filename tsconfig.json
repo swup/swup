@@ -1,7 +1,6 @@
 {
   /** @see https://www.totaltypescript.com/tsconfig-cheat-sheet#quickstart */
-  "include": ["src", "tests"],
-  "exclude": ["tests/fixtures"],
+  "include": ["src"],
   "compilerOptions": {
     /* Base Options: */
     "esModuleInterop": true,
@@ -17,7 +16,7 @@
     /* If transpiling with TypeScript: */
     "moduleResolution": "NodeNext",
     "module": "NodeNext",
-    "rootDir": ".",
+    "rootDir": "src",
     "outDir": "dist",
     "sourceMap": true,
     /* If your code runs in the DOM: */

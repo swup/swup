@@ -28,7 +28,7 @@
     "dev": "npm run clean && BROWSERSLIST_ENV=development microbundle src/index.ts -w -f modern",
     "format": "npx eslint . --fix",
     "lint": "npm run lint:ts && npm run lint:es",
-    "lint:ts": "tsc --noEmit --skipLibCheck",
+    "lint:ts": "tsc --noEmit --skipLibCheck && tsc --noEmit --skipLibCheck --project tsconfig.tests.json",
     "lint:es": "npx eslint .",
     "lint:compat": "npx eslint --config .eslintrc.compat.cjs .",
     "lint:prettier": "prettier 'src/**/*.ts'",
