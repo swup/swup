@@ -1,11 +1,12 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../support/test.js';
 
 import { expectPageReload, expectToBeAt, sleep } from '../support/commands.js';
-import { navigateWithSwup, pushSwupHistoryState } from '../support/swup.js';
+import { navigateWithSwup, pushSwupHistoryState, waitForSwup } from '../support/swup.js';
 
 test.describe('history', () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/history.html');
+		await waitForSwup(page);
 	});
 
 	test('creates a new history state on visit', async ({ page }) => {

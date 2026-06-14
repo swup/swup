@@ -4,16 +4,16 @@
   "version": "4.8.3",
   "description": "Versatile and extensible page transition library for server-rendered websites",
   "type": "module",
-  "source": "./src/Swup.ts",
-  "main": "./dist/Swup.cjs",
-  "module": "./dist/Swup.module.js",
-  "unpkg": "./dist/Swup.umd.js",
-  "types": "./dist/types/index.d.ts",
+  "source": "./src/index.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "unpkg": "./dist/swup.iife.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/types/index.d.ts",
-      "import": "./dist/Swup.modern.js",
-      "require": "./dist/Swup.cjs"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     }
   },
   "files": [
@@ -22,10 +22,8 @@
   ],
   "scripts": {
     "clean": "rm -rf ./dist",
-    "build": "npm run build:module && npm run build:bundle",
-    "build:module": "BROWSERSLIST_ENV=modern microbundle src/index.ts -f modern,esm,cjs",
-    "build:bundle": "BROWSERSLIST_ENV=production microbundle src/Swup.ts -f umd --external none",
-    "dev": "npm run clean && BROWSERSLIST_ENV=development microbundle src/index.ts -w -f modern",
+    "build": "tsdown",
+    "dev": "tsdown --watch",
     "format": "npx eslint . --fix",
     "lint": "npm run lint:ts && npm run lint:es",
     "lint:ts": "tsc --noEmit --skipLibCheck",
@@ -96,10 +94,10 @@
     "husky": "^9.0.11",
     "istanbul-lib-coverage": "^3.2.0",
     "jsdom": "^28.1.0",
-    "microbundle": "^0.15.0",
     "nyc": "^18.0.0",
     "prettier": "^3.1.0",
     "serve": "^14.2.5",
+    "tsdown": "^0.21.7",
     "typed-query-selector": "^2.11.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.56.1",

@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test } from '../support/test.js';
 
 import { expectSwupAnimationDuration, waitForSwup } from '../support/swup.js';
 import { expectNotToHaveClass, expectToHaveClass } from '../support/commands.js';
@@ -21,6 +21,7 @@ test.describe('native mode', () => {
 	});
 	test('awaits native view transitions', async ({ page }) => {
 		await page.goto('/animation-native.html');
+		await waitForSwup(page);
 		const supported = await page.evaluate(() => !!document.startViewTransition);
 		await expectSwupAnimationDuration(page, { total: supported ? 500 : 800 });
 	});

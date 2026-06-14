@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Animation duration: complex</title>
     <link rel="stylesheet" href="/assets/main.css">
-    <script src="/dist/Swup.umd.js"></script>
     <style>
         html.is-changing .transition-custom {
             transition: opacity 100ms 200ms, transform 400ms 200ms;
@@ -31,7 +30,8 @@
     <main id="swup" class="wrapper transition-custom">
         <h1>Animation duration: complex</h1>
     </main>
-    <script>
+    <script type="module">
+        import Swup from 'swup';
         window._swup = new Swup();
     </script>
 </body>

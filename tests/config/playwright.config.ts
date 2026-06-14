@@ -9,6 +9,16 @@ import { defineConfig, devices } from '@playwright/test';
 const baseURL = 'http://localhost:8274';
 
 /**
+ * Import map for ESM tests
+ */
+export const importMap = {
+	'swup': '/dist/index.bundle.js',
+	'@swup/body-class-plugin': 'https://esm.sh/@swup/body-class-plugin@3',
+	'@swup/scroll-plugin': 'https://esm.sh/@swup/scroll-plugin@3',
+	'alpinejs': 'https://esm.sh/alpinejs@3',
+};
+
+/**
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({

@@ -1,10 +1,12 @@
-import { test } from '@playwright/test';
+import { test } from '../support/test.js';
 
 import { expectNoPageReload, expectPageReload, expectToBeAt } from '../support/commands.js';
+import { waitForSwup } from '../support/swup.js';
 
 test.describe('link selector', () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/link-selector.html');
+		await waitForSwup(page);
 	});
 
 	test('ignores SVG links by default', async ({ page }) => {

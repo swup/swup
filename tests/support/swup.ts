@@ -12,9 +12,14 @@ declare global {
 
 export async function waitForSwup(page: Page) {
 	await page.waitForSelector('html.swup-enabled');
+	await page.waitForFunction(() => {
+		const swup = window._swup as unknown as { navigate?: unknown } | undefined;
+		return !!swup && typeof swup.navigate === 'function';
+	});
 }
 
-export function navigateWithSwup(page: Page, url: string, options?: Parameters<Swup['navigate']>[1]) {
+export async function navigateWithSwup(page: Page, url: string, options?: Parameters<Swup['navigate']>[1]) {
+	await waitForSwup(page);
 	return page.evaluate(({ url, options }) => window._swup.navigate(url, options), { url, options });
 }
 
@@ -36,9 +41,6 @@ export async function expectSwupToHaveCacheEntries(page: Page, urls: string[]) {
 }
 
 export async function expectSwupAnimationDuration(page: Page, expected: { total?: number, out?: number, in?: number }) {
-	// Make sure we're ready to animate
-	await waitForSwup(page);
-
 	// Make sure we're not disabling animations
 	await page.emulateMedia({ reducedMotion: null });
 

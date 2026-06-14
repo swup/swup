@@ -1,11 +1,12 @@
-import { test } from '@playwright/test';
+import { test } from '../support/test.js';
 
 import { expectH1, expectH2, expectPageReload, expectToBeAt } from '../support/commands.js';
-import { navigateWithSwup } from '../support/swup.js';
+import { navigateWithSwup, waitForSwup } from '../support/swup.js';
 
 test.describe('containers', () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/containers-1.html');
+		await waitForSwup(page);
 	});
 
 	test('can be customized from visit object', async ({ page }) => {

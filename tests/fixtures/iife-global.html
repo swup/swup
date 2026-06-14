@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>IIFE Global Test</title>
+    <link rel="stylesheet" href="/assets/main.css">
+    <script src="/dist/swup.iife.js"></script>
+</head>
+<body>
+    <header class="header">
+        <ul>
+            <li><a href="/page-1.html">Page 1</a></li>
+            <li><a href="/page-2.html">Page 2</a></li>
+        </ul>
+    </header>
+    <main id="swup" class="wrapper transition-default" data-testid="container">
+        <h1>IIFE Global</h1>
+        <p>Make sure an IIFE build is available globally at `window.Swup`.</p>
+    </main>
+    <script>
+        window._swup = new Swup();
+    </script>
+</body>
+</html>

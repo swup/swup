@@ -1,11 +1,12 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../support/test.js';
 
 import { clickOnLink, expectPageReload, expectScrollPosition, expectToBeAt, scrollToPosition, sleep } from '../support/commands.js';
-import { pushSwupHistoryState } from '../support/swup.js';
+import { pushSwupHistoryState, waitForSwup } from '../support/swup.js';
 
 test.describe('link resolution', () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/link-resolution.html');
+		await waitForSwup(page);
 	});
 
 	test('skips links to different origins', async ({ page }) => {

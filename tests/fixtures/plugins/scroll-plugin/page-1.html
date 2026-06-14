@@ -5,8 +5,6 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>Scroll Plugin 1</title>
 		<link rel="stylesheet" href="/assets/main.css" />
-		<script src="/dist/Swup.umd.js"></script>
-		<script src="https://unpkg.com/@swup/scroll-plugin@3"></script>
 		<style>
 			.scroll-anchors > * {
 				display: block;
@@ -105,7 +103,9 @@
 				</li>
 			</ul>
 		</main>
-		<script>
+		<script type="module">
+			import Swup from 'swup';
+			import SwupScrollPlugin from '@swup/scroll-plugin';
 			window._swup = new Swup({
 				plugins: [new SwupScrollPlugin({ scrollFriction: 0.1, scrollAcceleration: 0.2 })]
 			});

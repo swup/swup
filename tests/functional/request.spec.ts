@@ -1,11 +1,12 @@
-import { test } from '@playwright/test';
+import { test } from '../support/test.js';
 
 import { clickOnLink, delayRequest, expectPageReload, expectRequestHeaders, expectToBeAt } from '../support/commands.js';
-import { navigateWithSwup } from '../support/swup.js';
+import { navigateWithSwup, waitForSwup } from '../support/swup.js';
 
 test.describe('request', () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/page-1.html');
+		await waitForSwup(page);
 	});
 
 	test('sends the correct referer', async ({ page, baseURL }) => {

@@ -1,11 +1,12 @@
-import { test } from '@playwright/test';
+import { test } from '../support/test.js';
 
 import { expectPageReload, expectToBeAt } from '../support/commands.js';
-import { navigateWithSwup } from '../support/swup.js';
+import { navigateWithSwup, waitForSwup } from '../support/swup.js';
 
 test.describe('ignore visit', () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/ignore-visits.html');
+		await waitForSwup(page);
 	});
 
 	test('ignores links with data-no-swup attr', async ({ page }) => {
