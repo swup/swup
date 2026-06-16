@@ -41,7 +41,7 @@ test.describe('link resolution', () => {
 		await page.exposeBinding('navigated', () => (navigated = true));
 		await page.evaluate(() => {
 			window._swup.options.linkToSelf = 'navigate';
-			window._swup.hooks.on('visit:start', () => window.navigated());
+			window._swup.hooks.on('visit:start', () => window.navigated?.());
 		});
 		scrollToPosition(page, 200);
 		await expectScrollPosition(page, 200);

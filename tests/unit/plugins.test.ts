@@ -30,6 +30,23 @@ describe('Plugins', () => {
 		expect(plugin.mount.mock.calls).toHaveLength(1);
 	});
 
+	it('should unmount all plugins on destroy', async () => {
+		const runtimePlugin = {
+			name: 'RuntimePlugin',
+			isSwupPlugin: true as const,
+			mount: vi.fn(),
+			unmount: vi.fn(),
+			_checkRequirements: () => true,
+		};
+
+		const swup = new Swup();
+		swup.use(runtimePlugin);
+		expect(runtimePlugin.mount).toHaveBeenCalledTimes(1);
+
+		await swup.destroy();
+		expect(runtimePlugin.unmount).toHaveBeenCalledTimes(1);
+	});
+
 	it('should find a plugin instance by reference', function () {
 		const plugin = createPlugin({ name: 'SwupExamplePlugin' });
 		const swup = new Swup({ plugins: [plugin] });

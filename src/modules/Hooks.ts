@@ -168,6 +168,8 @@ export class Hooks {
 		'visit:end'
 	];
 
+	protected nextHookId = 0;
+
 	constructor(swup: Swup) {
 		this.swup = swup;
 		this.init();
@@ -245,7 +247,7 @@ export class Hooks {
 			return () => {};
 		}
 
-		const id = ledger.size + 1;
+		const id = ++this.nextHookId;
 		const registration: HookRegistration<T> = { ...options, id, hook, handler };
 		ledger.set(handler, registration);
 

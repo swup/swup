@@ -1,4 +1,5 @@
-import { expect, Locator, Page, Request } from '@playwright/test';
+import { expect } from '@playwright/test';
+import type { Locator, Page, Request } from '@playwright/test';
 
 export function sleep(timeout = 0): Promise<void> {
   return new Promise((resolve) => setTimeout(() => resolve(undefined), timeout))

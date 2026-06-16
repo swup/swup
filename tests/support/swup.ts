@@ -7,6 +7,7 @@ declare global {
 	interface Window {
 		_swup: Swup;
 		data: any;
+		navigated?: () => void;
 	}
 }
 
@@ -20,7 +21,7 @@ export async function waitForSwup(page: Page) {
 
 export async function navigateWithSwup(page: Page, url: string, options?: Parameters<Swup['navigate']>[1]) {
 	await waitForSwup(page);
-	return page.evaluate(({ url, options }) => window._swup.navigate(url, options), { url, options });
+	return page.evaluate(({ url, options }) => window._swup.navigate(url, options), { url, options } as any);
 }
 
 export async function pushSwupHistoryState(page: Page, url: string, data: Record<string, unknown> = {}) {

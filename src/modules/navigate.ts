@@ -175,6 +175,11 @@ export async function performNavigation(
 			await page;
 		}
 
+		// Ignored in the meantime? Throw to trigger catch block and exit visit
+		if (visit.ignored) {
+			throw new Error(`Visit to ${visit.to.url} manually ignored`);
+		}
+
 		// Check if failed/aborted in the meantime
 		if (visit.done) return;
 
@@ -216,11 +221,11 @@ export async function performNavigation(
 	} catch (error) {
 		// Return early if error is undefined or signals an aborted request
 		if (!error || (error as FetchError)?.aborted) {
-			visit.state = VisitState.ABORTED;
+			visit.advance(VisitState.ABORTED);
 			return;
 		}
 
-		visit.state = VisitState.FAILED;
+		visit.advance(VisitState.FAILED);
 
 		// Log to console
 		console.error(error);
