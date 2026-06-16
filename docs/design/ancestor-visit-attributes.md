@@ -150,7 +150,7 @@ later click builds a **fresh** visit that re-resolves against current DOM.
 
 ### 9. Plugin extensibility — public register API
 ```ts
-swup.defineVisitAttribute({
+swup.defineAttribute({
   path: 'scroll.target',
   attr: 'data-swup-scroll-target',
   type: 'string',          // 'boolean' | 'string' | 'string|false' | enum via `values`
@@ -170,20 +170,19 @@ Never throw. Invalid/unsupported values → ignore + dev-warn (dev builds only).
 
 ## Implementation outline
 
-**New file** `src/modules/visitAttributes.ts`:
-- `VisitAttributeType = 'boolean' | 'string' | 'string|false' | 'enum'`
-- `VisitAttributeSchemaEntry = { path; attr; type; values?; alias?; popstate? }`
+**New file** `src/modules/attributes.ts`:
+- `AttributeType = 'boolean' | 'string' | 'string|false' | 'enum'`
+- `AttributeSchemaEntry = { path; attr; type; values?; alias?; popstate? }`
 - internal registry (`Map<attrName, entry>` + `Map<path, entry>`)
 - `coerce(value: string, entry): unknown | IGNORE`
-- `resolveVisitAttributes(visit, { popstate })` — the ancestor walk + applyPatch
-- `defineVisitAttribute(entry)` — register/override + dev-warn on clash
-- `registerCoreVisitAttributes()` — the v1 table above
+- `resolveAttributes(visit)` — the ancestor walk + applyPatch
+- `defineAttribute(entry)` — register/override + dev-warn on clash
+- top-level `coreAttributes` — the v1 table above, registered at module load
 
 **`src/Swup.ts`:**
-- call `registerCoreVisitAttributes()` at init
-- expose `swup.defineVisitAttribute = defineVisitAttribute`
+- expose `swup.defineAttribute = defineAttribute`
 - in `createVisit()`, after building defaults and **before** applying explicit
-  options / firing hooks, call `resolveVisitAttributes(visit, { popstate })`
+  options / firing hooks, call `resolveAttributes(visit)`
 - ensure explicit `navigate()` options are layered **after** the patch so they win
 
 **`src/modules/navigate.ts`:**
@@ -204,7 +203,7 @@ Never throw. Invalid/unsupported values → ignore + dev-warn (dev builds only).
   `cache`/`scroll`/`animation`
 - programmatic `navigate()` (no el) resolves from `<html>` incl. `history.action`
 - preload visit resolves `cache.write` (fetch honors it)
-- `defineVisitAttribute` override + dev-warn on clash; plugin-registered attr resolves
+- `defineAttribute` override + dev-warn on clash; plugin-registered attr resolves
 
 ## Open (non-blocking) at implementation time
 - `scroll.target` empty→null vs the `string|false|undefined` type (prefer
