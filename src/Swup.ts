@@ -19,6 +19,7 @@ import { scrollToContent } from './modules/scrollToContent.js';
 import { animatePageIn } from './modules/animatePageIn.js';
 import { renderPage } from './modules/renderPage.js';
 import { use, unuse, findPlugin, type Plugin } from './modules/plugins.js';
+import { defineAttribute } from './modules/attributes.js';
 import { isSameResolvedUrl, resolveUrl } from './modules/resolveUrl.js';
 import { nextTick } from './utils.js';
 import { type HistoryState } from './helpers/history.js';
@@ -117,6 +118,8 @@ export default class Swup {
 	unuse = unuse;
 	/** Find a plugin by name or instance */
 	findPlugin = findPlugin;
+	/** Register or override an attribute */
+	defineAttribute = defineAttribute;
 
 	/** Log a message. Has no effect unless debug plugin is installed */
 	log: (message: string, context?: unknown) => void = () => {};
