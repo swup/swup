@@ -1,19 +1,14 @@
 {
   "name": "swup",
-  "amdName": "Swup",
   "version": "4.8.3",
   "description": "Versatile and extensible page transition library for server-rendered websites",
   "type": "module",
   "source": "./src/index.ts",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "unpkg": "./dist/swup.iife.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": "./dist/index.js"
     }
   },
   "files": [
@@ -21,7 +16,7 @@
     "dist"
   ],
   "scripts": {
-    "clean": "rm -rf ./dist",
+    "clean": "rm -rf ./dist ./tests/fixtures/dist",
     "build": "tsdown",
     "dev": "tsdown --watch",
     "format": "npx eslint . --fix",
@@ -38,7 +33,7 @@
     "test:e2e": "npx playwright test --config ./tests/config/playwright.config.ts",
     "test:e2e:dev": "npx playwright test --ui --config ./tests/config/playwright.config.ts",
     "test:e2e:install": "npx playwright install --with-deps",
-    "test:e2e:instrument": "nyc instrument --compact=false dist tests/fixtures/dist",
+    "test:e2e:instrument": "rm -rf tests/fixtures/dist && nyc instrument --compact=false dist tests/fixtures/dist",
     "test:e2e:serve": "npx serve -n -S -L -p 8274 --config ./tests/config/serve.json",
     "test:e2e:start": "npm run test:e2e:instrument && npm run test:e2e:serve",
     "prepare": "husky",
@@ -97,7 +92,7 @@
     "nyc": "^18.0.0",
     "prettier": "^3.1.0",
     "serve": "^14.2.5",
-    "tsdown": "^0.21.7",
+    "tsdown": "^0.22.2",
     "typed-query-selector": "^2.11.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.56.1",
