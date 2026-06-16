@@ -2,7 +2,6 @@ import type Swup from '../Swup.js';
 import { FetchError, type FetchOptions, type PageData } from './fetchPage.js';
 import { type VisitInitOptions, type Visit, VisitState } from './Visit.js';
 import { createHistoryRecord, updateHistoryRecord, Location, classify } from '../helpers.js';
-import { getContextualAttr } from '../utils.js';
 
 export type HistoryAction = 'push' | 'replace';
 export type HistoryDirection = 'forwards' | 'backwards';
@@ -84,7 +83,6 @@ export async function performNavigation(
 	this.navigating = true;
 	this.visit = visit;
 
-	const { el } = visit.trigger;
 	options.referrer = options.referrer || this.location.url;
 
 	if (options.animate === false) {
@@ -96,14 +94,14 @@ export async function performNavigation(
 		this.classes.clear();
 	}
 
-	// Get history action from option or attribute on trigger element
-	const history = options.history || getContextualAttr(el, 'data-swup-history');
+	// Get history action from option
+	const { history } = options;
 	if (typeof history === 'string' && ['push', 'replace'].includes(history)) {
-		visit.history.action = history as HistoryAction;
+		visit.history.action = history;
 	}
 
-	// Get custom animation name from option or attribute on trigger element
-	const animation = options.animation || getContextualAttr(el, 'data-swup-animation');
+	// Get custom animation name from option
+	const { animation } = options;
 	if (typeof animation === 'string') {
 		visit.animation.name = animation;
 	}

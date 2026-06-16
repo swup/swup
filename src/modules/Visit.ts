@@ -1,6 +1,7 @@
 import type Swup from '../Swup.js';
 import type { Options } from '../Swup.js';
 import type { HistoryAction, HistoryDirection } from './navigate.js';
+import { resolveAttributes } from './attributes.js';
 
 /** See below for the class Visit {} definition */
 // export interface Visit {}
@@ -182,5 +183,7 @@ export class Visit {
 
 /** Create a new visit object. */
 export function createVisit(this: Swup, options: VisitInitOptions): Visit {
-	return new Visit(this, options);
+	const visit = new Visit(this, options);
+	resolveAttributes(visit);
+	return visit;
 }
