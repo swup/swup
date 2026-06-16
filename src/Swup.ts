@@ -64,7 +64,7 @@ const defaults: Options = {
 	cache: true,
 	containers: ['#swup'],
 	hooks: {},
-	ignoreVisit: (url, { el } = {}) => !!el?.closest('[data-no-swup]'),
+	ignoreVisit: (url, { el } = {}) => !!el?.closest('[data-swup-ignore]'),
 	linkSelector: 'a[href]',
 	linkToSelf: 'scroll',
 	native: false,
