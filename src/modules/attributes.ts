@@ -83,6 +83,9 @@ const coreAttributes: AttributeSchemaEntry[] = [
 /** Register or override an attribute. */
 export function defineAttribute(entry: AttributeSchemaEntry) {
 	const normalized = normalizeEntry(entry);
+	if (hasUnsafePathSegment(normalized.path)) {
+		return;
+	}
 	const existingForPath = attributesByPath.get(normalized.path);
 	const attrs = [normalized.attr, normalized.alias].filter((attr): attr is string => !!attr);
 	const clashingEntries = new Set<NormalizedAttributeSchemaEntry>();
@@ -227,7 +230,7 @@ function applyPatch(visit: Visit, patch: Map<string, unknown>) {
 function setPath(target: object, path: string, value: unknown) {
 	const segments = path.split('.');
 	const key = segments.pop();
-	if (!key) return;
+	if (!key || hasUnsafePathSegment(path)) return;
 
 	let parent: Record<string, unknown> = target as Record<string, unknown>;
 	for (const segment of segments) {
@@ -236,6 +239,12 @@ function setPath(target: object, path: string, value: unknown) {
 		parent = next as Record<string, unknown>;
 	}
 	parent[key] = value;
+}
+
+function hasUnsafePathSegment(path: string) {
+	return path.split('.').some((segment) => {
+		return ['__proto__', 'prototype', 'constructor'].includes(segment);
+	});
 }
 
 function normalizeAttrName(attr: string) {

@@ -255,4 +255,32 @@ describe('attributes', () => {
 			expect.stringContaining('Attribute path "animation.__testOverride" is already registered')
 		);
 	});
+
+	it('rejects unsafe plugin-defined attribute paths', () => {
+		document.body.innerHTML = `
+			<div data-swup-test-pollute="yes">
+				<a href="/next">next</a>
+			</div>
+		`;
+
+		try {
+			const swup = new SwupWithPublicVisitMethods();
+			swup.defineAttribute({
+				path: 'meta.__proto__.__swupPolluted',
+				attr: 'data-swup-test-pollute',
+				type: 'string'
+			});
+
+			const link = document.querySelector('a')!;
+			const visit = swup.createVisit({ to: '/next', el: link });
+
+			expect(visit.meta).not.toHaveProperty('__swupPolluted');
+			expect('__swupPolluted' in {}).toBe(false);
+			expect(console.warn).toHaveBeenCalledWith(
+				expect.stringContaining('Ignoring unsafe attribute path')
+			);
+		} finally {
+			delete (Object.prototype as { __swupPolluted?: unknown }).__swupPolluted;
+		}
+	});
 });
