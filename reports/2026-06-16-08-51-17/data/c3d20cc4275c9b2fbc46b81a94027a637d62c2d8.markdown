@@ -1,0 +1,130 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: history.spec.ts >> history >> replaces current history entry on error
+- Location: tests/functional/history.spec.ts:113:2
+
+# Error details
+
+```
+Test timeout of 10000ms exceeded while running "beforeEach" hook.
+```
+
+```
+Error: page.waitForSelector: Test timeout of 10000ms exceeded.
+Call log:
+  - waiting for locator('html.swup-enabled') to be visible
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - list [ref=e3]:
+      - listitem [ref=e4]:
+        - link "Page 2" [ref=e5]:
+          - /url: /page-2.html
+      - listitem [ref=e6]:
+        - 'link "Page 3: create" [ref=e7]':
+          - /url: /page-3.html
+      - listitem [ref=e8]:
+        - 'link "Page 3: update" [ref=e9]':
+          - /url: /page-3.html
+  - main [ref=e10]:
+    - heading "History" [level=1] [ref=e11]
+    - paragraph [ref=e12]: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias assumenda consectetur consequatur enim esse incidunt iusto, magnam maxime molestias nisi perferendis perspiciatis quibusdam quos repellat, vel veniam vero voluptate voluptatem.
+```
+
+# Test source
+
+```ts
+  1  | import { expect } from '@playwright/test';
+  2  | import type { Page } from '@playwright/test';
+  3  | import type Swup from '../../src/Swup.js';
+  4  | import { expectNumberCloseTo } from './commands.js';
+  5  | 
+  6  | declare global {
+  7  | 	interface Window {
+  8  | 		_swup: Swup;
+  9  | 		data: any;
+  10 | 	}
+  11 | }
+  12 | 
+  13 | export async function waitForSwup(page: Page) {
+> 14 | 	await page.waitForSelector('html.swup-enabled');
+     |             ^ Error: page.waitForSelector: Test timeout of 10000ms exceeded.
+  15 | 	await page.waitForFunction(() => {
+  16 | 		const swup = window._swup as unknown as { navigate?: unknown } | undefined;
+  17 | 		return !!swup && typeof swup.navigate === 'function';
+  18 | 	});
+  19 | }
+  20 | 
+  21 | export async function navigateWithSwup(page: Page, url: string, options?: Parameters<Swup['navigate']>[1]) {
+  22 | 	await waitForSwup(page);
+  23 | 	return page.evaluate(({ url, options }) => window._swup.navigate(url, options), { url, options });
+  24 | }
+  25 | 
+  26 | export async function pushSwupHistoryState(page: Page, url: string, data: Record<string, unknown> = {}) {
+  27 | 	const state = { url, random: Math.random(), source: 'swup', ...data };
+  28 | 	await page.evaluate(({ url, state }) => window.history.pushState(state, '', url), { url, state });
+  29 | }
+  30 | 
+  31 | export async function expectSwupToHaveCacheEntry(page: Page, url: string) {
+  32 | 	const entry = await page.evaluate((url) => window._swup.cache.get(url), url);
+  33 | 	expect(entry).toBeTruthy();
+  34 | 	expect(entry).toHaveProperty('url', url);
+  35 | }
+  36 | 
+  37 | export async function expectSwupToHaveCacheEntries(page: Page, urls: string[]) {
+  38 | 	for (const url of urls) {
+  39 | 		await expectSwupToHaveCacheEntry(page, url);
+  40 | 	}
+  41 | }
+  42 | 
+  43 | export async function expectSwupAnimationDuration(page: Page, expected: { total?: number, out?: number, in?: number }) {
+  44 | 	// Make sure we're not disabling animations
+  45 | 	await page.emulateMedia({ reducedMotion: null });
+  46 | 
+  47 | 	await page.evaluate(() => {
+  48 | 		window.data = {};
+  49 | 		const measure = (key: string, value?: number) => window.data[key] = value ?? performance.now();
+  50 | 		window._swup.hooks.on('visit:start', () => measure('start'));
+  51 | 		window._swup.hooks.on('visit:end', () => measure('end'));
+  52 | 		window._swup.hooks.on('animation:out:start', () => measure('outStart'));
+  53 | 		window._swup.hooks.on('animation:out:end', () => measure('outEnd'));
+  54 | 		window._swup.hooks.on('animation:in:start', () => measure('inStart'));
+  55 | 		window._swup.hooks.on('animation:in:end', () => measure('inEnd'));
+  56 | 		window._swup.hooks.on('animation:skip', () => measure('inStart', 0));
+  57 | 		window._swup.hooks.on('animation:skip', () => measure('inEnd', 0));
+  58 | 		window._swup.hooks.on('animation:skip', () => measure('outStart', 0));
+  59 | 		window._swup.hooks.on('animation:skip', () => measure('outEnd', 0));
+  60 | 	});
+  61 | 
+  62 | 	await navigateWithSwup(page, page.url());
+  63 | 
+  64 | 	await page.waitForFunction(() => window.data.end > 0);
+  65 | 
+  66 | 	const timing: { start: 0, end: 0, outStart: 0, outEnd: 0, inStart: 0, inEnd: 0 } = await page.evaluate(() => window.data);
+  67 | 	const seen = { total: timing.end - timing.start, out: timing.outEnd - timing.outStart, in: timing.inEnd - timing.inStart };
+  68 | 
+  69 | 	const tolerance = expected ? [0.85, 1.35] : [1, 1];
+  70 | 
+  71 | 	if (typeof expected.out === 'number') {
+  72 | 		expectNumberCloseTo(seen.out, expected.out, tolerance);
+  73 | 	}
+  74 | 	if (typeof expected.in === 'number') {
+  75 | 		expectNumberCloseTo(seen.in, expected.in, tolerance);
+  76 | 	}
+  77 | 	if (typeof expected.total === 'number') {
+  78 | 		expectNumberCloseTo(seen.total, expected.total, tolerance);
+  79 | 	}
+  80 | }
+  81 | 
+```
