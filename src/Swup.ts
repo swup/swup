@@ -343,10 +343,7 @@ export default class Swup {
 
 		const { url, hash } = Location.fromUrl(href);
 
-		const visit = this.createVisit({ to: url, hash, event });
-
-		// Mark as history visit
-		visit.history.popstate = true;
+		const visit = this.createVisit({ to: url, hash, event, popstate: true });
 
 		// Determine direction of history visit
 		const index = (event.state as HistoryState)?.index ?? 0;
@@ -354,17 +351,6 @@ export default class Swup {
 			const direction = index - this.currentHistoryIndex > 0 ? 'forwards' : 'backwards';
 			visit.history.direction = direction;
 			this.currentHistoryIndex = index;
-		}
-
-		// Disable animation & scrolling for history visits
-		visit.animation.animate = false;
-		visit.scroll.reset = false;
-		visit.scroll.target = false;
-
-		// Animated history visit: re-enable animation & scroll reset
-		if (this.options.animateHistoryBrowsing) {
-			visit.animation.animate = true;
-			visit.scroll.reset = true;
 		}
 
 		this.hooks.callSync('history:popstate', visit, { event }, () => {

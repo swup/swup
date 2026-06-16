@@ -74,6 +74,7 @@ export interface VisitInitOptions {
 	hash?: string;
 	el?: Element;
 	event?: Event;
+	popstate?: boolean;
 }
 
 /** @internal */
@@ -118,7 +119,7 @@ export class Visit {
 	meta: Record<string, unknown>;
 
 	constructor(swup: Swup, options: VisitInitOptions) {
-		const { to, from, hash, el, event } = options;
+		const { to, from, hash, el, event, popstate = false } = options;
 
 		this.id = Math.random();
 		this.state = VisitState.CREATED;
@@ -140,7 +141,7 @@ export class Visit {
 		};
 		this.history = {
 			action: 'push',
-			popstate: false,
+			popstate,
 			direction: undefined
 		};
 		this.scroll = {
@@ -148,6 +149,17 @@ export class Visit {
 			target: undefined
 		};
 		this.meta = {};
+
+		if (popstate) {
+			this.animation.animate = false;
+			this.scroll.reset = false;
+			this.scroll.target = false;
+
+			if (swup.options.animateHistoryBrowsing) {
+				this.animation.animate = true;
+				this.scroll.reset = true;
+			}
+		}
 	}
 
 	/** @internal */
