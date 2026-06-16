@@ -75,7 +75,7 @@ Get started quickly with one of three official themes: [fade](https://swup.js.or
 
 ## Examples
 
-<img src="https://user-images.githubusercontent.com/9338324/49190360-50125480-f372-11e8-89e9-d2fb091a2240.gif" width="100%">
+<img src="https://swup.js.org/assets/images/swup-demos.avif" width="100%">
 
 Take a look at the [interactive demos](https://swup.js.org/getting-started/demos/) and
 [sites using swup](https://github.com/swup/swup/discussions/333) for more examples.
