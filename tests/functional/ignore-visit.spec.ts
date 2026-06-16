@@ -9,12 +9,12 @@ test.describe('ignore visit', () => {
 		await waitForSwup(page);
 	});
 
-	test('ignores links with data-no-swup attr', async ({ page }) => {
+	test('ignores links with data-swup-ignore attr', async ({ page }) => {
 		await expectPageReload(page, () => page.getByTestId('ignore-element').click());
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
 	});
 
-	test('ignores links with data-no-swup parent', async ({ page }) => {
+	test('ignores links with data-swup-ignore parent', async ({ page }) => {
 		await expectPageReload(page, () =>  page.getByTestId('ignore-parent').click());
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
 	});

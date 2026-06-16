@@ -16,7 +16,7 @@ describe('Exports', () => {
 			animationSelector: '[class*="transition-"]',
 			cache: true,
 			containers: ['#swup'],
-			ignoreVisit: (url, { el } = {}) => !!el?.closest('[data-no-swup]'),
+			ignoreVisit: (url, { el } = {}) => !!el?.closest('[data-swup-ignore]'),
 			linkSelector: 'a[href]',
 			plugins: [],
 			hooks: {},
