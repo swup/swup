@@ -25,6 +25,7 @@ import type {
 	HookEvent
 } from './modules/Hooks.js';
 import type { Plugin } from './modules/plugins.js';
+import type { AttributeSchemaEntry, AttributeType } from './modules/attributes.js';
 
 export default Swup;
 export * from './helpers.js';
@@ -52,6 +53,8 @@ export type {
 	HookOptions,
 	HookUnregister,
 	HookEvent,
+	AttributeSchemaEntry,
+	AttributeType,
 	DelegateEvent,
 	DelegateEventHandler,
 	DelegateEventUnsubscribe
