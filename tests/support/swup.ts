@@ -5,6 +5,7 @@ import { expectNumberCloseTo } from './commands.js';
 
 declare global {
 	interface Window {
+		Swup: typeof Swup;
 		_swup: Swup;
 		data: any;
 		navigated?: () => void;
