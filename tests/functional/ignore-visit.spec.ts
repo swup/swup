@@ -1,6 +1,6 @@
 import { test } from '../support/test.js';
 
-import { expectPageReload, expectToBeAt } from '../support/commands.js';
+import { expectNoPageReload, expectPageReload, expectToBeAt } from '../support/commands.js';
 import { navigateWithSwup, waitForSwup } from '../support/swup.js';
 
 test.describe('ignore visit', () => {
@@ -23,6 +23,11 @@ test.describe('ignore visit', () => {
 		await page.evaluate(() => window._swup.options.ignoreVisit = () => true);
 		await expectPageReload(page, () => navigateWithSwup(page, '/page-2.html'));
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
+	});
+
+	test('ignores links with default-prevented click events', async ({ page }) => {
+		await expectNoPageReload(page, () => page.getByTestId('ignore-prevented').click());
+		await expectToBeAt(page, '/ignore-visits.html', 'Ignore visits');
 	});
 
 	test('ignores links via custom ignored path', async ({ page }) => {
