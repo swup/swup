@@ -40,7 +40,8 @@ export function navigate(
 	}
 
 	// Check if the visit should be ignored
-	if (this.shouldIgnoreVisit(url, { el: init.el, event: init.event })) {
+	// Allow prevented events: the caller likely prevented the event on purpose before navigating
+	if (this.shouldIgnoreVisit(url, { el: init.el, event: init.event, allowPrevented: true })) {
 		window.location.assign(url);
 		return;
 	}
