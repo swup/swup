@@ -361,8 +361,8 @@ export default class Swup {
 		visit.scroll.reset = false;
 		visit.scroll.target = false;
 
-		// Animated history visit: re-enable animation & scroll reset
-		if (this.options.animateHistoryBrowsing) {
+		// Animated history visit: re-enable animation & scroll reset (unless browser already animated)
+		if (this.options.animateHistoryBrowsing && !event.hasUAVisualTransition) {
 			visit.animation.animate = true;
 			visit.scroll.reset = true;
 		}
