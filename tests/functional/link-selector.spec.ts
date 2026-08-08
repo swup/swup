@@ -1,6 +1,7 @@
 import { test } from '@playwright/test';
 
 import { expectNoPageReload, expectPageReload, expectToBeAt } from '../support/commands.js';
+import { waitForSwup } from '../support/swup.js';
 
 test.describe('link selector', () => {
 	test.beforeEach(async ({ page }) => {
@@ -13,7 +14,11 @@ test.describe('link selector', () => {
 	});
 
 	test('follow SVG links when added to selector', async ({ page }) => {
-		await page.evaluate(() => window._swup.options.linkSelector = 'a[href], svg a[*|href]');
+		await page.evaluate(async () => {
+			await window._swup.destroy();
+			window._swup = new window.Swup({ linkSelector: 'a[href], svg a[*|href]' });
+		});
+		await waitForSwup(page);
 		await expectNoPageReload(page, () => page.locator('svg a').click());
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
 	});
