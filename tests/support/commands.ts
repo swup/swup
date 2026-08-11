@@ -53,15 +53,23 @@ export function expectNotToHaveClasses(locator: Locator, classNames: string) {
 	return expectToHaveClasses(locator, classNames, true);
 }
 
-export async function expectPageReload(page: Page, action: (page: Page) => Promise<unknown> | unknown, not: boolean = false) {
-	const origin = () => page.evaluate(() => Math.floor(window.performance.timeOrigin));
-	const before = await origin();
-	await action(page);
-	await expect(async () => (await origin()) !== before).toPass();
+function documentOrigin(page: Page) {
+	return page.evaluate(() => Math.floor(window.performance.timeOrigin));
 }
 
-export function expectNoPageReload(page: Page, action: (page: Page) => Promise<unknown> | unknown) {
-	return expectPageReload(page, action, true);
+export async function expectPageReload(page: Page, action: (page: Page) => Promise<unknown> | unknown) {
+	const before = await documentOrigin(page);
+	await action(page);
+	// Retry: the navigation is async and evaluating in a destroyed context throws
+	await expect(async () => expect(await documentOrigin(page)).not.toEqual(before)).toPass();
+}
+
+export async function expectNoPageReload(page: Page, action: (page: Page) => Promise<unknown> | unknown) {
+	const before = await documentOrigin(page);
+	await action(page);
+	// Wait for a reload to potentially happen, then assert we're still in the same document
+	await sleep(500);
+	expect(await documentOrigin(page)).toEqual(before);
 }
 
 export async function expectRequestHeaders(request: Request, headers: Record<string, string>) {
