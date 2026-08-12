@@ -39,8 +39,10 @@ export function navigate(
 		throw new Error(`swup.navigate() requires a URL parameter`);
 	}
 
-	// Check if the visit should be ignored
-	if (this.shouldIgnoreVisit(url, { el: init.el, event: init.event })) {
+	// Check if the visit should be ignored. We allow defaultPrevented events here since
+	// the caller likely prevented the event's default action on purpose before navigating.
+	const { el, event } = init;
+	if (this.shouldIgnoreVisit(url, { el, event, respectDefaultPrevented: false })) {
 		window.location.assign(url);
 		return;
 	}

@@ -38,4 +38,39 @@ describe('ignoreVisit', () => {
 
 		expect(ignoreVisit.mock.calls).toHaveLength(1);
 	});
+
+	it('should ignore visits with default-prevented events', () => {
+		const ignoreVisit = vi.fn(() => false);
+		const swup = new Swup({ ignoreVisit });
+		const event = new MouseEvent('click', { cancelable: true });
+		event.preventDefault();
+
+		expect(swup.shouldIgnoreVisit(`${baseUrl}/path/`, { event })).toBe(true);
+		expect(ignoreVisit.mock.calls).toHaveLength(0);
+	});
+
+	it('should not ignore visits with events that were not prevented', () => {
+		const ignoreVisit = vi.fn(() => false);
+		const swup = new Swup({ ignoreVisit });
+		const event = new MouseEvent('click', { cancelable: true });
+
+		expect(swup.shouldIgnoreVisit(`${baseUrl}/path/`, { event })).toBe(false);
+		expect(ignoreVisit.mock.calls).toHaveLength(1);
+	});
+
+	it('should not ignore programmatic visits with default-prevented events', () => {
+		const el = document.createElement('a');
+		el.href = `${baseUrl}/path/`;
+		const event = new MouseEvent('click', { cancelable: true });
+		event.preventDefault();
+
+		const ignoreVisit = vi.fn(() => true);
+		const swup = new Swup({ ignoreVisit });
+		swup.navigate(el.href, {}, { el, event });
+
+		expect(ignoreVisit.mock.calls).toHaveLength(1);
+		expect((ignoreVisit.mock.lastCall as any)[1]).toEqual(
+			expect.objectContaining({ el, event })
+		);
+	});
 });

@@ -24,6 +24,9 @@
             <li>
                 <a href="/page-2.html#hash" data-testid="ignore-path-end">Ignored path with hash</a>
             </li>
+            <li>
+                <a href="/page-2.html" data-testid="ignore-prevented">Prevented link</a>
+            </li>
         </ul>
     </header>
     <main id="swup" class="wrapper transition-default" data-testid="container">
@@ -36,6 +39,9 @@
     <script type="module">
         import Swup from 'swup';
         window._swup = new Swup();
+
+        // Attached here before swup's delegated document listener
+        document.querySelector('[data-testid="ignore-prevented"]').addEventListener('click', (event) => event.preventDefault());
     </script>
 </body>
 </html>
