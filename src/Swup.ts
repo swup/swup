@@ -240,14 +240,14 @@ export default class Swup {
 		this.hooks.clear();
 	}
 
-	/** Determine if a visit should be ignored by swup, based on URL, trigger element or default-prevented event. */
+	/** Determine if a visit should be ignored by swup, based on URL, trigger element or event cancellation state. */
 	shouldIgnoreVisit(
 		href: string,
 		{
 			el,
 			event,
-			allowPrevented = false
-		}: { el?: Element; event?: Event; allowPrevented?: boolean } = {}
+			respectDefaultPrevented = true
+		}: { el?: Element; event?: Event; respectDefaultPrevented?: boolean } = {}
 	) {
 		const { origin, url, hash } = Location.fromUrl(href);
 
@@ -256,8 +256,8 @@ export default class Swup {
 			return true;
 		}
 
-		// Ignore if the triggering event was already handled elsewhere
-		if (event?.defaultPrevented && !allowPrevented) {
+		// Ignore if the triggering event had its default action prevented
+		if (respectDefaultPrevented && event?.defaultPrevented) {
 			return true;
 		}
 
