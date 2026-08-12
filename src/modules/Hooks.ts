@@ -35,6 +35,7 @@ export interface HookDefinitions {
 	'visit:transition': undefined;
 	'visit:abort': undefined;
 	'visit:end': undefined;
+	'visit:fail': { error: unknown };
 }
 
 export interface HookReturnValues {
@@ -165,7 +166,8 @@ export class Hooks {
 		'visit:start',
 		'visit:transition',
 		'visit:abort',
-		'visit:end'
+		'visit:end',
+		'visit:fail'
 	];
 
 	protected nextHookId = 0;

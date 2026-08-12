@@ -1,7 +1,13 @@
 import type Swup from '../Swup.js';
 import { FetchError, type FetchOptions, type PageData } from './fetchPage.js';
 import { type VisitInitOptions, type Visit, VisitState } from './Visit.js';
-import { createHistoryRecord, updateHistoryRecord, Location, classify } from '../helpers.js';
+import {
+	createHistoryRecord,
+	updateHistoryRecord,
+	getCurrentUrl,
+	Location,
+	classify
+} from '../helpers.js';
 import { getContextualAttr } from '../utils.js';
 
 export type HistoryAction = 'push' | 'replace';
@@ -225,20 +231,36 @@ export async function performNavigation(
 			return;
 		}
 
+		// Ignored visits are handed to the browser
+		if (visit.ignored) {
+			performNativeNavigation.call(this, visit);
+			return;
+		}
+
+		await this.hooks.call('visit:fail', visit, { error }, (visit, { error }) => {
+			console.error(error);
+			performNativeNavigation.call(this, visit);
+		});
+
 		visit.advance(VisitState.FAILED);
-
-		// Log to console
-		console.error(error);
-
-		// Remove current history entry, then load requested url in browser
-		this.options.skipPopStateHandling = () => {
-			window.location.assign(visit.to.url + visit.to.hash);
-			return true;
-		};
-
-		// Go back to the actual page we're still at
-		window.history.back();
 	} finally {
 		delete visit.to.document;
+	}
+}
+
+/**
+ * Perform a visit natively in the browser and restore a clean history.
+ */
+function performNativeNavigation(this: Swup, visit: Visit): void {
+	const url = visit.to.url + visit.to.hash;
+	if (getCurrentUrl() === visit.to.url) {
+		// History state was already moved forward to reflect this visit's target url
+		// Bind custom popstate handler to unwind thprevious history state
+		window.removeEventListener('popstate', this.handlePopState);
+		window.addEventListener('popstate', () => window.location.assign(url), { once: true });
+		window.history.back();
+	} else {
+		// History was never touched: the current entry is intact, just leave
+		window.location.assign(url);
 	}
 }
