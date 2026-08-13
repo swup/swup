@@ -217,6 +217,8 @@ export async function performNavigation(
 		// Finalize visit
 		await this.hooks.call('visit:end', visit, undefined, () => this.classes.clear());
 		visit.state = VisitState.COMPLETED;
+
+		// Needs to happen here and in finally {} to fix race condition with superseded visits
 		this.navigating = false;
 
 		/** Run eventually queued function */
@@ -247,6 +249,7 @@ export async function performNavigation(
 		visit.advance(VisitState.FAILED);
 	} finally {
 		delete visit.to.document;
+		// Release pipeline unless a new visit has claimed it
 		if (this.visit === visit) {
 			this.navigating = false;
 		}
