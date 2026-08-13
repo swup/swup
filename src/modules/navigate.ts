@@ -247,6 +247,9 @@ export async function performNavigation(
 		visit.advance(VisitState.FAILED);
 	} finally {
 		delete visit.to.document;
+		if (this.visit === visit) {
+			this.navigating = false;
+		}
 	}
 }
 
