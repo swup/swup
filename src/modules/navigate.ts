@@ -249,18 +249,18 @@ export async function performNavigation(
 }
 
 /**
- * Perform a visit natively in the browser and restore a clean history.
+ * Navigate to a visit's url natively in the browser, without leaving incomplete history entries behind.
  */
 function performNativeNavigation(this: Swup, visit: Visit): void {
 	const url = visit.to.url + visit.to.hash;
 	if (getCurrentUrl() === visit.to.url) {
 		// History state was already moved forward to reflect this visit's target url
-		// Bind custom popstate handler to unwind thprevious history state
+		// Bind a custom popstate handler and go back to unwind the current history entry
 		window.removeEventListener('popstate', this.handlePopState);
 		window.addEventListener('popstate', () => window.location.assign(url), { once: true });
 		window.history.back();
 	} else {
-		// History was never touched: the current entry is intact, just leave
+		// History was never touched: the current entry is intact and we can just leave
 		window.location.assign(url);
 	}
 }
