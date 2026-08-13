@@ -231,17 +231,19 @@ export async function performNavigation(
 			return;
 		}
 
-		// Ignored visits are handed to the browser
+		// Ignored visits are handed to the browser to navigate
 		if (visit.ignored) {
 			performNativeNavigation.call(this, visit);
 			return;
 		}
 
+		// Failed visits are logged & handed to the browser, but we allow customizing the behavior
 		await this.hooks.call('visit:fail', visit, { error }, (visit, { error }) => {
 			console.error(error);
 			performNativeNavigation.call(this, visit);
 		});
 
+		// Marking as failed is the last step to allow all hooks to execute
 		visit.advance(VisitState.FAILED);
 	} finally {
 		delete visit.to.document;
