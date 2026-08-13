@@ -131,4 +131,55 @@ test.describe('history', () => {
 		await page.goBack();
 		await expectToBeAt(page, '/page-2.html', 'Page 2');
 	});
+
+	test('leaves a clean history state on error', async ({ page }) => {
+		await page.route('/error-500.html', route => route.fulfill({
+			status: 500,
+			headers: { 'Content-Type': 'text/html' },
+			body: '<!DOCTYPE html><head><title>Error</title></head><body><h1>Error</h1></body></html>'
+		}));
+
+		await navigateWithSwup(page, '/page-2.html');
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+
+		await expectPageReload(page, () => navigateWithSwup(page, '/error-500.html'));
+		await expectToBeAt(page, '/error-500.html', 'Error');
+
+		expect(await page.evaluate(() => window.history.state)).toEqual(null);
+	});
+
+	test('creates no ghost history entries on error', async ({ page }) => {
+		await page.route('/error-500.html', route => route.fulfill({
+			status: 500,
+			headers: { 'Content-Type': 'text/html' },
+			body: '<!DOCTYPE html><head><title>Error</title></head><body><h1>Error</h1></body></html>'
+		}));
+
+		await navigateWithSwup(page, '/page-2.html');
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+
+		const length = await page.evaluate(() => window.history.length);
+
+		await expectPageReload(page, () => navigateWithSwup(page, '/error-500.html'));
+		await expectToBeAt(page, '/error-500.html', 'Error');
+
+		expect(await page.evaluate(() => window.history.length)).toEqual(length + 1);
+	});
+
+	test('forces reload on error during popstate visits', async ({ page }) => {
+		await navigateWithSwup(page, '/page-2.html');
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+		await navigateWithSwup(page, '/page-3.html');
+		await expectToBeAt(page, '/page-3.html', 'Page 3');
+
+		await page.evaluate(() => window._swup.cache.clear());
+		await page.route('/page-2.html', route => route.fulfill({
+			status: 500,
+			headers: { 'Content-Type': 'text/html' },
+			body: '<!DOCTYPE html><head><title>Error</title></head><body><h1>Error</h1></body></html>'
+		}));
+
+		await expectPageReload(page, () => page.goBack());
+		await expectToBeAt(page, '/page-2.html', 'Error');
+	});
 });

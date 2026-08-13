@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
 import { clickOnLink, delayRequest, expectPageReload, expectRequestHeaders, expectToBeAt } from '../support/commands.js';
 import { navigateWithSwup } from '../support/swup.js';
@@ -30,6 +30,36 @@ test.describe('request', () => {
 		await page.route('/error-500.html', route => route.fulfill({ status: 500, body: '<!DOCTYPE html>' }));
 		await expectPageReload(page, () => navigateWithSwup(page, '/error-500.html'));
 		await expectToBeAt(page, '/error-500.html');
+	});
+
+	test('preserves the hash when forcing a reload on error', async ({ page }) => {
+		await page.route('/error-500.html', route => route.fulfill({ status: 500, body: '<!DOCTYPE html>' }));
+		await expectPageReload(page, () => navigateWithSwup(page, '/error-500.html#anchor'));
+		await expectToBeAt(page, '/error-500.html#anchor');
+	});
+
+	test('forces reload on errors before the history update', async ({ page }) => {
+		await page.evaluate(() => {
+			window.history.pushState = () => { throw new Error('History update failed') };
+		});
+		await expectPageReload(page, () => navigateWithSwup(page, '/page-2.html'));
+		await expectToBeAt(page, '/page-2.html', 'Page 2');
+		await page.goBack();
+		await expectToBeAt(page, '/page-1.html', 'Page 1');
+	});
+
+	test('allows replacing the visit:fail handler', async ({ page }) => {
+		await page.route('/error-500.html', route => route.fulfill({ status: 500, body: '<!DOCTYPE html>' }));
+		await page.evaluate(() => {
+			window.data = false;
+			window._swup.hooks.replace('visit:fail', (_visit, { error }) => {
+				window.data = String(error);
+			});
+		});
+		await navigateWithSwup(page, '/error-500.html');
+		await page.waitForFunction(() => window.data !== false);
+		expect(await page.evaluate(() => window.data)).toContain('/error-500.html');
+		await expectToBeAt(page, '/error-500.html', 'Page 1');
 	});
 
 	test('forces reload on network error', async ({ page }) => {

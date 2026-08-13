@@ -1,7 +1,13 @@
 import type Swup from '../Swup.js';
 import { FetchError, type FetchOptions, type PageData } from './fetchPage.js';
 import { type VisitInitOptions, type Visit, VisitState } from './Visit.js';
-import { createHistoryRecord, updateHistoryRecord, Location, classify } from '../helpers.js';
+import {
+	createHistoryRecord,
+	updateHistoryRecord,
+	getCurrentUrl,
+	Location,
+	classify
+} from '../helpers.js';
 import { getContextualAttr } from '../utils.js';
 
 export type HistoryAction = 'push' | 'replace';
@@ -211,6 +217,8 @@ export async function performNavigation(
 		// Finalize visit
 		await this.hooks.call('visit:end', visit, undefined, () => this.classes.clear());
 		visit.state = VisitState.COMPLETED;
+
+		// Needs to happen here and in finally {} to fix race condition with superseded visits
 		this.navigating = false;
 
 		/** Run eventually queued function */
@@ -225,20 +233,42 @@ export async function performNavigation(
 			return;
 		}
 
+		// Ignored visits are handed to the browser to navigate
+		if (visit.ignored) {
+			performNativeNavigation.call(this, visit);
+			return;
+		}
+
+		// Failed visits are logged & handed to the browser, but we allow customizing the behavior
+		await this.hooks.call('visit:fail', visit, { error }, (visit, { error }) => {
+			console.error(error);
+			performNativeNavigation.call(this, visit);
+		});
+
+		// Marking as failed is the last step to allow all hooks to execute
 		visit.advance(VisitState.FAILED);
-
-		// Log to console
-		console.error(error);
-
-		// Remove current history entry, then load requested url in browser
-		this.options.skipPopStateHandling = () => {
-			window.location.assign(visit.to.url + visit.to.hash);
-			return true;
-		};
-
-		// Go back to the actual page we're still at
-		window.history.back();
 	} finally {
 		delete visit.to.document;
+		// Release pipeline unless a new visit has claimed it
+		if (this.visit === visit) {
+			this.navigating = false;
+		}
+	}
+}
+
+/**
+ * Navigate to a visit's url natively in the browser, without leaving incomplete history entries behind.
+ */
+function performNativeNavigation(this: Swup, visit: Visit): void {
+	const url = visit.to.url + visit.to.hash;
+	if (getCurrentUrl() === visit.to.url) {
+		// History state was already moved forward to reflect this visit's target url
+		// Bind a custom popstate handler and go back to unwind the current history entry
+		window.removeEventListener('popstate', this.handlePopState);
+		window.addEventListener('popstate', () => window.location.assign(url), { once: true });
+		window.history.back();
+	} else {
+		// History was never touched: the current entry is intact and we can just leave
+		window.location.assign(url);
 	}
 }
