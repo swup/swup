@@ -1,8 +1,13 @@
 # Changelog
 
+## [4.10.0] - 2026-09-03
+
+- Skip history animation if the browser ran a native visual transition
+- Refactor logic for better handling of failed visits
+
 ## [4.9.2] - 2026-06-12
 
-- Fix a regression introduced in [4.9.1](https://github.com/swup/swup/releases/tag/4.9.1), where types weren't exported correctly
+- Fix a regression where types weren't exported correctly
 
 ## [4.9.1] - 2026-06-10
 
@@ -360,6 +365,7 @@ See [upgrade instructions](https://swup.js.org/getting-started/upgrading-v3/) fo
 
 - Initial release
 
+[4.10.0]: https://github.com/swup/swup/releases/tag/4.10.0
 [4.9.2]: https://github.com/swup/swup/releases/tag/4.9.2
 [4.9.1]: https://github.com/swup/swup/releases/tag/4.9.1
 [4.9.0]: https://github.com/swup/swup/releases/tag/4.9.0
