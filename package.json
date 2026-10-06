@@ -105,6 +105,11 @@
     "typescript-eslint": "^8.56.1",
     "vitest": "^4.0.18"
   },
+  "overrides": {
+    "rollup-plugin-typescript2": {
+      "picomatch": "2.3.1"
+    }
+  },
   "collective": {
     "type": "opencollective",
     "url": "https://opencollective.com/swup"
