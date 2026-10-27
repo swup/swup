@@ -103,7 +103,7 @@
     "typed-query-selector": "^2.11.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.56.1",
-    "vitest": "^4.0.18"
+    "vitest": "^5.0.5"
   },
   "overrides": {
     "rollup-plugin-typescript2": {
